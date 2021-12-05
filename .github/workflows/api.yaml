@@ -1,0 +1,47 @@
+name: Publish API
+on:
+  push:
+    branches: main
+    paths:
+      - "functions/**"
+      - "src/**"
+      - "package.json"
+      - ".github/workflows/api.yaml"
+
+env:
+  API_URL: https://api.crowdinvestin.me
+  AWS_ACCESS_KEY_ID: ${{ secrets.LAMBDA_AWS_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.LAMBDA_AWS_ACCESS_SECRET }}
+  AWS_REGION: us-east-1
+  CLERK_API_KEY: ${{ secrets.CLERK_API_KEY }}
+  CLERK_FRONTEND_API: clerk.crowdinvestin.me
+  FE_DIR_PREFIX: /tmp
+  HOST: https://crowdinvestin.me
+  STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+  TYPEORM_CONNECTION: mysql
+  TYPEORM_HOST: vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com
+  TYPEORM_USERNAME: crowdinvestin_me
+  TYPEORM_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+  TYPEORM_DATABASE: crowdinvestin_me
+  TYPEORM_PORT: 5432
+  TYPEORM_SYNCHRONIZE: false
+  TYPEORM_LOGGING: false
+  TYPEORM_ENTITIES: db/*.ts
+  TYPEORM_MIGRATIONS: db/migrations/*.ts
+  TYPEORM_MIGRATIONS_DIR: db/migrations
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14.17.6
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.17.6
+      - name: install
+        run: npm install
+      - name: build
+        run: npm run compile
+      - name: deploy
+        run: npm run publish

@@ -1,0 +1,34 @@
+name: Migrate DB
+on:
+  push:
+    branches: main
+    paths:
+      - "db/**"
+      - ".github/workflows/db.yaml"
+
+env:
+  TYPEORM_CONNECTION: mysql
+  TYPEORM_HOST: vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com
+  TYPEORM_USERNAME: crowdinvestin_me
+  TYPEORM_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+  TYPEORM_DATABASE: crowdinvestin_me
+  TYPEORM_PORT: 5432
+  TYPEORM_SYNCHRONIZE: false
+  TYPEORM_LOGGING: false
+  TYPEORM_ENTITIES: db/*.ts
+  TYPEORM_MIGRATIONS: db/migrations/*.ts
+  TYPEORM_MIGRATIONS_DIR: db/migrations
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14.17.6
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.17.6
+      - name: install
+        run: npm install
+      - name: migrate
+        run: npm run migrate
