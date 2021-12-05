@@ -1,20 +1,19 @@
 import React from "react";
-import DefaultLayout, {
-  LayoutHead as DefaultLayoutHead,
-} from "@dvargas92495/ui/dist/components/Layout";
+import DefaultLayout from "@dvargas92495/ui/dist/components/Layout";
+import { Head as DefaultHead } from "@dvargas92495/ui/dist/components/Document";
 
 const Layout: React.FC = ({ children }) => {
   return <DefaultLayout homeIcon={"Home"}>{children}</DefaultLayout>;
 };
 
-type HeadProps = Omit<Parameters<typeof DefaultLayoutHead>[0], "title">;
+type HeadProps = Omit<Parameters<typeof DefaultHead>[0], "title">;
 
 export const LayoutHead = ({
   title = "Welcome",
   ...rest
 }: HeadProps & { title?: string }): React.ReactElement => {
   return (
-    <DefaultLayoutHead title={`${title} | crowdinvestin`} {...rest} />
+    <DefaultHead title={`${title} | crowdinvestin`} {...rest} />
   );
 };
 
