@@ -14,7 +14,8 @@
     "fe": "fuego fe",
     "migrate": "npm run typeorm migration:run",
     "publish": "fuego publish",
-    "typeorm": "ts-node --transpile-only ./node_modules/typeorm/cli.js"
+    "typeorm": "ts-node --transpile-only ./node_modules/typeorm/cli.js",
+    "start": "concurrently \"npm:api\" \"npm:fe\""
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.85",
@@ -23,6 +24,7 @@
     "@types/react-dom": "^17.0.11",
     "@typescript-eslint/eslint-plugin": "^5.5.0",
     "@typescript-eslint/parser": "^5.5.0",
+    "concurrently": "^6.4.0",
     "eslint": "^8.4.0",
     "fuegojs": "^0.16.4",
     "prettier": "^2.5.1",
@@ -33,7 +35,7 @@
   },
   "dependencies": {
     "@dvargas92495/api": "^0.3.1",
-    "@dvargas92495/ui": "^0.44.11",
+    "@dvargas92495/ui": "^0.45.2",
     "aws-sdk-plus": "^0.5.2",
     "axios": "^0.24.0",
     "stripe": "^8.191.0"
