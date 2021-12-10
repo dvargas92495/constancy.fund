@@ -26,7 +26,7 @@
     "@typescript-eslint/parser": "^5.5.0",
     "concurrently": "^6.4.0",
     "eslint": "^8.4.0",
-    "fuegojs": "^0.16.4",
+    "fuegojs": "^0.17.2",
     "prettier": "^2.5.1",
     "ts-node": "^10.4.0",
     "tslint-config-prettier": "^1.18.0",
@@ -38,6 +38,7 @@
     "@dvargas92495/ui": "^0.45.2",
     "aws-sdk-plus": "^0.5.2",
     "axios": "^0.24.0",
+    "country-region-data": "^1.11.0",
     "stripe": "^8.191.0"
   }
 }

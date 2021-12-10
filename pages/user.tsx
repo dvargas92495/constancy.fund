@@ -3,7 +3,7 @@ import Document from "@dvargas92495/ui/dist/components/Document";
 import RedirectToLogin from "@dvargas92495/ui/dist/components/RedirectToLogin";
 import clerkUserProfileCss from "@dvargas92495/ui/dist/clerkUserProfileCss";
 import React, { useState } from "react";
-import { SignedIn,  UserButton, UserProfile } from "@clerk/clerk-react";
+import { SignedIn, UserButton, useUser } from "@clerk/clerk-react";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
@@ -16,23 +16,251 @@ import Link from "@mui/material/Link";
 import HomeIcon from "@mui/icons-material/Home";
 import ContractIcon from "@mui/icons-material/Note";
 import SettingsIcon from "@mui/icons-material/Settings";
+import Body from "@dvargas92495/ui/dist/components/Body";
 import H1 from "@dvargas92495/ui/dist/components/H1";
+import H4 from "@dvargas92495/ui/dist/components/H4";
 import GlobalStyles from "@mui/material/GlobalStyles";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import FormLabel from "@mui/material/FormLabel";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import WebIcon from "@mui/icons-material/Public";
+import Avatar from "@mui/material/Avatar";
+import CircularProgress from "@mui/material/CircularProgress";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import ExternalLink from "@dvargas92495/ui/dist/components/ExternalLink";
+import CountryRegionData from "country-region-data";
+
+const SOCIAL_PROFILES = [
+  { icon: <TwitterIcon /> },
+  { icon: <GitHubIcon /> },
+  { icon: <LinkedInIcon /> },
+  { icon: <WebIcon /> },
+];
+
+const QUESTIONAIRES = [
+  { q: "Summary of your project or idea (500 char)" },
+  { q: "What do you want to do with the money? (500 char)" },
+  { q: "What's your track record as a creator of company? (500 char)" },
+  { q: "What's your plans of making revenue? (500 char)" },
+];
+
+const SocialProfile = React.memo(
+  ({
+    icon,
+    val = "",
+    setVal,
+  }: {
+    icon: React.ReactNode;
+    val?: string;
+    setVal: (s: string) => void;
+  }) => (
+    <div>
+      <Avatar sx={{ mx: 2 }}>{icon}</Avatar>
+      <TextField
+        placeholder="https://"
+        value={val}
+        onChange={(e) => setVal(e.target.value)}
+      />
+    </div>
+  )
+);
+
+const Questionaire = React.memo(
+  ({
+    q,
+    val = "",
+    setVal,
+  }: {
+    q: string;
+    val?: string;
+    setVal: (s: string) => void;
+  }) => (
+    <TextField
+      label={q}
+      multiline
+      value={val}
+      onChange={(e) => setVal(e.target.value)}
+    />
+  )
+);
 
 const ProfileContent = () => {
+  const {
+    update,
+    firstName,
+    emailAddresses,
+    primaryEmailAddressId,
+    profileImageUrl,
+    unsafeMetadata: {
+      middleName,
+      contactEmail = emailAddresses.find((e) => e.id === primaryEmailAddressId)
+        ?.emailAddress,
+      socialProfiles,
+      questionaires,
+      attachDeck,
+      companyName,
+      registeredCountry,
+      ...rest
+    } = {},
+    lastName,
+  } = useUser();
+  const [loading, setLoading] = useState(false);
+  const [firstNameValue, setFirstNameValue] = useState(firstName || "");
+  const [middleNameValue, setMiddleNameValue] = useState(middleName || "");
+  const [lastNameValue, setLastNameValue] = useState(lastName || "");
+  const [contactEmailValue, setContactEmailValue] = useState(
+    contactEmail || ""
+  );
+  const [socialProfileValues, setSocialProfileValues] = useState(
+    (socialProfiles as string[]) || []
+  );
+  const [questionaireValues, setQuestionaireValues] = useState(
+    (questionaires as string[]) || []
+  );
+  const [attachDeckValue, setAttachDeckValue] = useState(attachDeck || "");
+  const [companyNameValue, setCompanyNameValue] = useState(companyName || "");
+  const [registeredCountryValue, setRegisteredCountryValue] = useState(
+    registeredCountry || ""
+  );
   return (
     <>
-      <H1>Profile</H1>
-      <style>{`.cl-component.cl-user-profile nav.cl-navbar, .cl-component div.cl-page-heading {
-  display: none;
-}
-
-.cl-component.cl-user-profile div.cl-content {
-  margin: unset;
-  padding-bottom: 2em;
-  font-family: "Century Gothic", sans-serif
-}`}</style>
-      <UserProfile />
+      <H1 sx={{ fontSize: 30 }}>Setup your fundraising profile</H1>
+      <H4 sx={{ fontSize: 20 }}>Contact Details</H4>
+      <TextField
+        variant={"filled"}
+        sx={{ mb: 2 }}
+        value={firstNameValue}
+        onChange={(e) => setFirstNameValue(e.target.value)}
+        label={"First Name"}
+        required
+      />
+      <div>
+        <TextField
+          variant={"standard"}
+          sx={{ mb: 2 }}
+          value={lastNameValue}
+          onChange={(e) => setLastNameValue(e.target.value)}
+          label={"Last Name"}
+          required
+        />
+        <TextField
+          value={middleNameValue}
+          onChange={(e) => setMiddleNameValue(e.target.value)}
+          label={"Middle Name"}
+        />
+      </div>
+      <TextField
+        value={contactEmailValue}
+        helperText={"visible to investors"}
+        onChange={(e) => setContactEmailValue(e.target.value)}
+        required
+        label={"Contact Email"}
+      />
+      <FormLabel required>
+        Profile Picture
+        <img
+          src={profileImageUrl}
+          alt={"Profile Image"}
+          style={{ borderRadius: "4px" }}
+          width={129}
+          height={129}
+        />
+      </FormLabel>
+      <FormLabel>
+        Social Profiles
+        {SOCIAL_PROFILES.map(({ icon }, i) => (
+          <SocialProfile
+            key={i}
+            icon={icon}
+            val={socialProfileValues[i]}
+            setVal={(newValue) =>
+              setSocialProfileValues(
+                socialProfileValues.map((oldValue, j) =>
+                  i === j ? newValue : oldValue
+                )
+              )
+            }
+          />
+        ))}
+      </FormLabel>
+      <H4 sx={{ fontSize: 20 }}>Why should people invest in you?</H4>
+      {QUESTIONAIRES.map(({ q }, i) => (
+        <Questionaire
+          key={i}
+          q={q}
+          val={questionaireValues[i]}
+          setVal={(newValue) =>
+            setQuestionaireValues(
+              questionaireValues.map((oldValue, j) =>
+                i === j ? newValue : oldValue
+              )
+            )
+          }
+        />
+      ))}
+      <TextField
+        value={attachDeckValue}
+        onChange={(e) => setAttachDeckValue(e.target.value)}
+        placeholder="https://"
+        label={"Attach Deck"}
+      />
+      <H4 sx={{ fontSize: 20 }}>Legal Information</H4>
+      <Body>
+        You must have a registered company to be able to use this service. If
+        you do not, there are fast ways to open up a company.{" "}
+        <ExternalLink href={"https://stripe.com/atlas"}>
+          Learn More.
+        </ExternalLink>
+      </Body>
+      <TextField
+        label={"Company Name"}
+        value={companyNameValue}
+        onChange={(e) => setCompanyNameValue(e.target.value)}
+        required
+      />
+      <FormLabel>
+        Registered Country
+        <Select
+          value={registeredCountryValue}
+          variant={"filled"}
+          onChange={(e) => setRegisteredCountryValue(e.target.value)}
+        >
+          {CountryRegionData.map((c) => (
+            <MenuItem value={c.countryName} key={c.countryShortCode}>
+              {c.countryName}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormLabel>
+      <div>
+        <Button
+          onClick={() => {
+            setLoading(true);
+            update({
+              firstName: firstNameValue,
+              lastName: lastNameValue,
+              unsafeMetadata: {
+                ...rest,
+                middleName: middleNameValue,
+                contactEmail: contactEmailValue,
+                socialProfiles: socialProfileValues,
+                questionaires: questionaireValues,
+                attachDeck: attachDeckValue,
+                companyName: companyNameValue,
+                registeredCountry: registeredCountryValue,
+              },
+            }).finally(() => setLoading(false));
+          }}
+          variant={"contained"}
+        >
+          Save Edits
+        </Button>
+        {loading && <CircularProgress size={20} />}
+      </div>
     </>
   );
 };
@@ -116,7 +344,8 @@ const Dashboard = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          px: 3,
+          pb: 2,
           color: "text.primary",
         }}
         flexDirection={"column"}
