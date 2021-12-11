@@ -31,6 +31,8 @@ import Avatar from "@mui/material/Avatar";
 import CircularProgress from "@mui/material/CircularProgress";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import RadioGroup from "@mui/material/RadioGroup";
+import Radio from "@mui/material/Radio";
 import ExternalLink from "@dvargas92495/ui/dist/components/ExternalLink";
 import CountryRegionData from "country-region-data";
 
@@ -58,14 +60,14 @@ const SocialProfile = React.memo(
     val?: string;
     setVal: (s: string) => void;
   }) => (
-    <div>
+    <Box sx={{ display: "flex", mb: 2, alignItems: "center" }}>
       <Avatar sx={{ mx: 2 }}>{icon}</Avatar>
       <TextField
         placeholder="https://"
         value={val}
         onChange={(e) => setVal(e.target.value)}
       />
-    </div>
+    </Box>
   )
 );
 
@@ -80,13 +82,18 @@ const Questionaire = React.memo(
     setVal: (s: string) => void;
   }) => (
     <TextField
+      sx={{ mb: 2 }}
       label={q}
       multiline
       value={val}
+      minRows={4}
       onChange={(e) => setVal(e.target.value)}
+      required
     />
   )
 );
+
+const PAYMENT_PREFERENCES = [{ label: "PayPal" }, { label: "Bank Transfer" }];
 
 const ProfileContent = () => {
   const {
@@ -104,6 +111,12 @@ const ProfileContent = () => {
       attachDeck,
       companyName,
       registeredCountry,
+      companyRegistrationNumber,
+      companyAddressStreet,
+      companyAddressNumber,
+      companyAddressCity,
+      companyAddressZip,
+      paymentPreference,
       ...rest
     } = {},
     lastName,
@@ -116,22 +129,38 @@ const ProfileContent = () => {
     contactEmail || ""
   );
   const [socialProfileValues, setSocialProfileValues] = useState(
-    (socialProfiles as string[]) || []
+    (socialProfiles as string[]) || SOCIAL_PROFILES.map(() => "")
   );
   const [questionaireValues, setQuestionaireValues] = useState(
-    (questionaires as string[]) || []
+    (questionaires as string[]) || QUESTIONAIRES.map(() => "")
   );
   const [attachDeckValue, setAttachDeckValue] = useState(attachDeck || "");
   const [companyNameValue, setCompanyNameValue] = useState(companyName || "");
   const [registeredCountryValue, setRegisteredCountryValue] = useState(
     registeredCountry || ""
   );
+  const [companyRegistrationNumberValue, setCompanyRegistrationNumberValue] =
+    useState(companyRegistrationNumber || "");
+  const [companyAddressStreetValue, setCompanyAddressStreetValue] = useState(
+    companyAddressStreet || ""
+  );
+  const [companyAddressNumberValue, setCompanyAddressNumberValue] = useState(
+    companyAddressNumber || ""
+  );
+  const [companyAddressCityValue, setCompanyAddressCityValue] = useState(
+    companyAddressCity || ""
+  );
+  const [companyAddressZipValue, setCompanyAddressZipValue] = useState(
+    companyAddressZip || ""
+  );
+  const [paymentPreferenceValue, setPaymentPreferenceValue] = useState(
+    paymentPreference || ""
+  );
   return (
     <>
       <H1 sx={{ fontSize: 30 }}>Setup your fundraising profile</H1>
-      <H4 sx={{ fontSize: 20 }}>Contact Details</H4>
+      <H4 sx={{ fontSize: 20, mt: 0 }}>Contact Details</H4>
       <TextField
-        variant={"filled"}
         sx={{ mb: 2 }}
         value={firstNameValue}
         onChange={(e) => setFirstNameValue(e.target.value)}
@@ -140,7 +169,6 @@ const ProfileContent = () => {
       />
       <div>
         <TextField
-          variant={"standard"}
           sx={{ mb: 2 }}
           value={lastNameValue}
           onChange={(e) => setLastNameValue(e.target.value)}
@@ -148,45 +176,43 @@ const ProfileContent = () => {
           required
         />
         <TextField
+          sx={{ ml: 2 }}
           value={middleNameValue}
           onChange={(e) => setMiddleNameValue(e.target.value)}
           label={"Middle Name"}
         />
       </div>
       <TextField
+        sx={{ mb: 2 }}
         value={contactEmailValue}
         helperText={"visible to investors"}
         onChange={(e) => setContactEmailValue(e.target.value)}
         required
         label={"Contact Email"}
       />
-      <FormLabel required>
-        Profile Picture
-        <img
-          src={profileImageUrl}
-          alt={"Profile Image"}
-          style={{ borderRadius: "4px" }}
-          width={129}
-          height={129}
-        />
-      </FormLabel>
-      <FormLabel>
-        Social Profiles
-        {SOCIAL_PROFILES.map(({ icon }, i) => (
-          <SocialProfile
-            key={i}
-            icon={icon}
-            val={socialProfileValues[i]}
-            setVal={(newValue) =>
-              setSocialProfileValues(
-                socialProfileValues.map((oldValue, j) =>
-                  i === j ? newValue : oldValue
-                )
+      <FormLabel required>Profile Picture</FormLabel>
+      <img
+        src={profileImageUrl}
+        alt={"Profile Image"}
+        style={{ borderRadius: "4px" }}
+        width={129}
+        height={129}
+      />
+      <FormLabel sx={{ mt: 2, mb: 1 }}>Social Profiles</FormLabel>
+      {SOCIAL_PROFILES.map(({ icon }, i) => (
+        <SocialProfile
+          key={i}
+          icon={icon}
+          val={socialProfileValues[i]}
+          setVal={(newValue) =>
+            setSocialProfileValues(
+              socialProfileValues.map((oldValue, j) =>
+                i === j ? newValue : oldValue
               )
-            }
-          />
-        ))}
-      </FormLabel>
+            )
+          }
+        />
+      ))}
       <H4 sx={{ fontSize: 20 }}>Why should people invest in you?</H4>
       {QUESTIONAIRES.map(({ q }, i) => (
         <Questionaire
@@ -209,7 +235,7 @@ const ProfileContent = () => {
         label={"Attach Deck"}
       />
       <H4 sx={{ fontSize: 20 }}>Legal Information</H4>
-      <Body>
+      <Body sx={{ mt: 0, mb: 2 }}>
         You must have a registered company to be able to use this service. If
         you do not, there are fast ways to open up a company.{" "}
         <ExternalLink href={"https://stripe.com/atlas"}>
@@ -221,22 +247,74 @@ const ProfileContent = () => {
         value={companyNameValue}
         onChange={(e) => setCompanyNameValue(e.target.value)}
         required
+        sx={{ mb: 2 }}
       />
-      <FormLabel>
-        Registered Country
-        <Select
-          value={registeredCountryValue}
-          variant={"filled"}
-          onChange={(e) => setRegisteredCountryValue(e.target.value)}
-        >
-          {CountryRegionData.map((c) => (
-            <MenuItem value={c.countryName} key={c.countryShortCode}>
-              {c.countryName}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormLabel>
-      <div>
+      <FormLabel required>Registered Country</FormLabel>
+      <Select
+        value={registeredCountryValue}
+        maxRows={10}
+        sx={{ mb: 2 }}
+        MenuProps={{ sx: { maxHeight: 200 } }}
+        onChange={(e) => setRegisteredCountryValue(e.target.value)}
+      >
+        {CountryRegionData.map((c) => (
+          <MenuItem value={c.countryName} key={c.countryShortCode}>
+            {c.countryName}
+          </MenuItem>
+        ))}
+      </Select>
+      <TextField
+        label={"Company Registration Number"}
+        value={companyRegistrationNumberValue}
+        onChange={(e) => setCompanyRegistrationNumberValue(e.target.value)}
+        required
+        sx={{ mb: 2 }}
+      />
+      <Box sx={{ mb: 2 }}>
+        <TextField
+          label={"Street"}
+          value={companyAddressStreetValue}
+          onChange={(e) => setCompanyAddressStreetValue(e.target.value)}
+          required
+        />
+        <TextField
+          sx={{ ml: 2 }}
+          label={"No"}
+          value={companyAddressNumberValue}
+          onChange={(e) => setCompanyAddressNumberValue(e.target.value)}
+          required
+        />
+      </Box>
+      <Box sx={{ mb: 2 }}>
+        <TextField
+          label={"City"}
+          value={companyAddressCityValue}
+          onChange={(e) => setCompanyAddressCityValue(e.target.value)}
+          required
+        />
+        <TextField
+          sx={{ ml: 2 }}
+          label={"Zip"}
+          value={companyAddressZipValue}
+          onChange={(e) => setCompanyAddressZipValue(e.target.value)}
+          required
+        />
+      </Box>
+      <H4>Payment Preferences</H4>
+      <Body sx={{ mt: 0, mb: 2 }}>How do you want to be paid?</Body>
+      <RadioGroup
+        sx={{ mb: 2 }}
+        value={paymentPreferenceValue}
+        onChange={(e) => setPaymentPreferenceValue(e.target.value)}
+      >
+        {PAYMENT_PREFERENCES.map(({ label }, key) => (
+          <Box sx={{ display: "flex", alignItems: "center" }} key={key}>
+            <Radio value={label} sx={{ mx: 1 }} />
+            {label}
+          </Box>
+        ))}
+      </RadioGroup>
+      <Box sx={{ alignItems: "center", display: "flex" }}>
         <Button
           onClick={() => {
             setLoading(true);
@@ -252,15 +330,22 @@ const ProfileContent = () => {
                 attachDeck: attachDeckValue,
                 companyName: companyNameValue,
                 registeredCountry: registeredCountryValue,
+                companyRegistrationNumber: companyRegistrationNumberValue,
+                companyAddressNumber: companyAddressNumberValue,
+                companyAddressStreet: companyAddressStreetValue,
+                companyAddressCity: companyAddressCityValue,
+                companyAddressZip: companyAddressZipValue,
+                paymentPreference: paymentPreferenceValue,
               },
             }).finally(() => setLoading(false));
           }}
           variant={"contained"}
+          sx={{ mr: 2 }}
         >
           Save Edits
         </Button>
         {loading && <CircularProgress size={20} />}
-      </div>
+      </Box>
     </>
   );
 };
@@ -269,7 +354,7 @@ const DRAWER_WIDTH = 255;
 const TABS = [
   { text: "My Profile", Icon: HomeIcon, content: ProfileContent },
   {
-    text: "My Contracts",
+    text: "My Fundraises",
     Icon: ContractIcon,
     content: () => <div>Coming Soon!</div>,
   },
@@ -347,6 +432,7 @@ const Dashboard = () => {
           px: 3,
           pb: 2,
           color: "text.primary",
+          height: "fit-content",
         }}
         flexDirection={"column"}
         display={"flex"}
