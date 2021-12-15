@@ -34,7 +34,7 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
-    "@dvargas92495/api": "^0.3.1",
+    "@dvargas92495/api": "^0.4.1",
     "@dvargas92495/ui": "^0.45.2",
     "aws-sdk-plus": "^0.5.2",
     "axios": "^0.24.0",

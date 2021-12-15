@@ -2,7 +2,7 @@ import { LayoutHead, themeProps } from "./_common/Layout";
 import Document from "@dvargas92495/ui/dist/components/Document";
 import RedirectToLogin from "@dvargas92495/ui/dist/components/RedirectToLogin";
 import clerkUserProfileCss from "@dvargas92495/ui/dist/clerkUserProfileCss";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SignedIn, UserButton, useUser } from "@clerk/clerk-react";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
@@ -17,14 +17,17 @@ import HomeIcon from "@mui/icons-material/Home";
 import ContractIcon from "@mui/icons-material/Note";
 import SettingsIcon from "@mui/icons-material/Settings";
 import Body from "@dvargas92495/ui/dist/components/Body";
-import H1 from "@dvargas92495/ui/dist/components/H1";
-import H4 from "@dvargas92495/ui/dist/components/H4";
+import _H1 from "@dvargas92495/ui/dist/components/H1";
+import _H4 from "@dvargas92495/ui/dist/components/H4";
+import useAuthenticatedHandler from "@dvargas92495/ui/dist/useAuthenticatedHandler";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import FormLabel from "@mui/material/FormLabel";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import GitHubIcon from "@mui/icons-material/GitHub";
+import MoreIcon from "@mui/icons-material/More";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import WebIcon from "@mui/icons-material/Public";
 import Avatar from "@mui/material/Avatar";
@@ -35,6 +38,20 @@ import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
 import ExternalLink from "@dvargas92495/ui/dist/components/ExternalLink";
 import CountryRegionData from "country-region-data";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import type { Handler as GetHandler } from "../functions/fundraises/get";
+
+const H1 = (props: Parameters<typeof _H1>[0]) => (
+  <_H1 sx={{ fontSize: 30 }} {...props} />
+);
+
+const H4 = (props: Parameters<typeof _H4>[0]) => (
+  <_H4 sx={{ fontSize: 20, mt: 0 }} {...props} />
+);
 
 const SOCIAL_PROFILES = [
   { icon: <TwitterIcon /> },
@@ -60,7 +77,7 @@ const SocialProfile = React.memo(
     val?: string;
     setVal: (s: string) => void;
   }) => (
-    <Box sx={{ display: "flex", mb: 2, alignItems: "center" }}>
+    <Box sx={{ display: "flex", mb: 2, alignItems: "center", width: "100%" }}>
       <Avatar sx={{ mx: 2 }}>{icon}</Avatar>
       <TextField
         placeholder="https://"
@@ -89,6 +106,7 @@ const Questionaire = React.memo(
       minRows={4}
       onChange={(e) => setVal(e.target.value)}
       required
+      fullWidth
     />
   )
 );
@@ -103,71 +121,72 @@ const ProfileContent = () => {
     primaryEmailAddressId,
     profileImageUrl,
     unsafeMetadata: {
-      middleName,
-      contactEmail = emailAddresses.find((e) => e.id === primaryEmailAddressId)
+      middle_name,
+      contact_email = emailAddresses.find((e) => e.id === primaryEmailAddressId)
         ?.emailAddress,
-      socialProfiles,
+      social_profiles,
       questionaires,
-      attachDeck,
-      companyName,
-      registeredCountry,
-      companyRegistrationNumber,
-      companyAddressStreet,
-      companyAddressNumber,
-      companyAddressCity,
-      companyAddressZip,
-      paymentPreference,
+      attach_deck,
+      company_name,
+      registered_country,
+      company_registration_number,
+      company_address_street,
+      company_address_number,
+      company_address_city,
+      company_address_zip,
+      payment_preference,
       ...rest
     } = {},
     lastName,
   } = useUser();
   const [loading, setLoading] = useState(false);
   const [firstNameValue, setFirstNameValue] = useState(firstName || "");
-  const [middleNameValue, setMiddleNameValue] = useState(middleName || "");
+  const [middleNameValue, setMiddleNameValue] = useState(middle_name || "");
   const [lastNameValue, setLastNameValue] = useState(lastName || "");
   const [contactEmailValue, setContactEmailValue] = useState(
-    contactEmail || ""
+    contact_email || ""
   );
   const [socialProfileValues, setSocialProfileValues] = useState(
-    (socialProfiles as string[]) || SOCIAL_PROFILES.map(() => "")
+    (social_profiles as string[]) || SOCIAL_PROFILES.map(() => "")
   );
   const [questionaireValues, setQuestionaireValues] = useState(
     (questionaires as string[]) || QUESTIONAIRES.map(() => "")
   );
-  const [attachDeckValue, setAttachDeckValue] = useState(attachDeck || "");
-  const [companyNameValue, setCompanyNameValue] = useState(companyName || "");
+  const [attachDeckValue, setAttachDeckValue] = useState(attach_deck || "");
+  const [companyNameValue, setCompanyNameValue] = useState(company_name || "");
   const [registeredCountryValue, setRegisteredCountryValue] = useState(
-    registeredCountry || ""
+    registered_country || ""
   );
   const [companyRegistrationNumberValue, setCompanyRegistrationNumberValue] =
-    useState(companyRegistrationNumber || "");
+    useState(company_registration_number || "");
   const [companyAddressStreetValue, setCompanyAddressStreetValue] = useState(
-    companyAddressStreet || ""
+    company_address_street || ""
   );
   const [companyAddressNumberValue, setCompanyAddressNumberValue] = useState(
-    companyAddressNumber || ""
+    company_address_number || ""
   );
   const [companyAddressCityValue, setCompanyAddressCityValue] = useState(
-    companyAddressCity || ""
+    company_address_city || ""
   );
   const [companyAddressZipValue, setCompanyAddressZipValue] = useState(
-    companyAddressZip || ""
+    company_address_zip || ""
   );
   const [paymentPreferenceValue, setPaymentPreferenceValue] = useState(
-    paymentPreference || ""
+    payment_preference || ""
   );
   return (
-    <>
-      <H1 sx={{ fontSize: 30 }}>Setup your fundraising profile</H1>
-      <H4 sx={{ fontSize: 20, mt: 0 }}>Contact Details</H4>
+    <Box sx={{ maxWidth: "600px" }}>
+      <H1>Setup your fundraising profile</H1>
+      <H4>Contact Details</H4>
       <TextField
         sx={{ mb: 2 }}
         value={firstNameValue}
         onChange={(e) => setFirstNameValue(e.target.value)}
         label={"First Name"}
         required
+        fullWidth
       />
-      <div>
+      <Box sx={{ width: "100%" }}>
         <TextField
           sx={{ mb: 2 }}
           value={lastNameValue}
@@ -181,7 +200,7 @@ const ProfileContent = () => {
           onChange={(e) => setMiddleNameValue(e.target.value)}
           label={"Middle Name"}
         />
-      </div>
+      </Box>
       <TextField
         sx={{ mb: 2 }}
         value={contactEmailValue}
@@ -189,15 +208,20 @@ const ProfileContent = () => {
         onChange={(e) => setContactEmailValue(e.target.value)}
         required
         label={"Contact Email"}
+        fullWidth
       />
-      <FormLabel required>Profile Picture</FormLabel>
-      <img
-        src={profileImageUrl}
-        alt={"Profile Image"}
-        style={{ borderRadius: "4px" }}
-        width={129}
-        height={129}
-      />
+      <Box>
+        <FormLabel required>Profile Picture</FormLabel>
+      </Box>
+      <Box sx={{ mb: 2 }}>
+        <img
+          src={profileImageUrl}
+          alt={"Profile Image"}
+          style={{ borderRadius: "4px" }}
+          width={129}
+          height={129}
+        />
+      </Box>
       <FormLabel sx={{ mt: 2, mb: 1 }}>Social Profiles</FormLabel>
       {SOCIAL_PROFILES.map(({ icon }, i) => (
         <SocialProfile
@@ -213,7 +237,7 @@ const ProfileContent = () => {
           }
         />
       ))}
-      <H4 sx={{ fontSize: 20 }}>Why should people invest in you?</H4>
+      <H4>Why should people invest in you?</H4>
       {QUESTIONAIRES.map(({ q }, i) => (
         <Questionaire
           key={i}
@@ -233,8 +257,10 @@ const ProfileContent = () => {
         onChange={(e) => setAttachDeckValue(e.target.value)}
         placeholder="https://"
         label={"Attach Deck"}
+        sx={{ mb: 2 }}
+        fullWidth
       />
-      <H4 sx={{ fontSize: 20 }}>Legal Information</H4>
+      <H4>Legal Information</H4>
       <Body sx={{ mt: 0, mb: 2 }}>
         You must have a registered company to be able to use this service. If
         you do not, there are fast ways to open up a company.{" "}
@@ -247,6 +273,7 @@ const ProfileContent = () => {
         value={companyNameValue}
         onChange={(e) => setCompanyNameValue(e.target.value)}
         required
+        fullWidth
         sx={{ mb: 2 }}
       />
       <FormLabel required>Registered Country</FormLabel>
@@ -256,6 +283,7 @@ const ProfileContent = () => {
         sx={{ mb: 2 }}
         MenuProps={{ sx: { maxHeight: 200 } }}
         onChange={(e) => setRegisteredCountryValue(e.target.value)}
+        fullWidth
       >
         {CountryRegionData.map((c) => (
           <MenuItem value={c.countryName} key={c.countryShortCode}>
@@ -269,6 +297,7 @@ const ProfileContent = () => {
         onChange={(e) => setCompanyRegistrationNumberValue(e.target.value)}
         required
         sx={{ mb: 2 }}
+        fullWidth
       />
       <Box sx={{ mb: 2 }}>
         <TextField
@@ -336,6 +365,7 @@ const ProfileContent = () => {
                 companyAddressCity: companyAddressCityValue,
                 companyAddressZip: companyAddressZipValue,
                 paymentPreference: paymentPreferenceValue,
+                completed: true,
               },
             }).finally(() => setLoading(false));
           }}
@@ -346,7 +376,82 @@ const ProfileContent = () => {
         </Button>
         {loading && <CircularProgress size={20} />}
       </Box>
-    </>
+    </Box>
+  );
+};
+
+const FundraiseContent = ({ setTab }: { setTab: (t: number) => void }) => {
+  const {
+    unsafeMetadata: { completed = false },
+  } = useUser();
+  const [rows, setRows] = useState<
+    Awaited<ReturnType<GetHandler>>["fundraises"]
+  >([]);
+  const getFundraises = useAuthenticatedHandler({
+    path: "fundraises",
+    method: "GET",
+  });
+  useEffect(() => {
+    getFundraises().then((r) => setRows(r.fundraises));
+  }, [getFundraises, setRows]);
+  return (
+    <Box sx={{ maxWidth: 1000 }}>
+      <H1
+        sx={{
+          fontSize: 30,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        Your Fundraises
+        {!!rows.length && (
+          <Button variant={"contained"}>Start New Fundraise</Button>
+        )}
+      </H1>
+      {completed ? (
+        <>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Fundraising Type</TableCell>
+                <TableCell>Fundraising Progress</TableCell>
+                <TableCell># Investors</TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow key={row.uuid}>
+                  <TableCell>{row.type}</TableCell>
+                  <TableCell>{row.progress}</TableCell>
+                  <TableCell>{row.investorCount}</TableCell>
+                  <TableCell>
+                    <Button variant="outlined">Invite Investor</Button>
+                    <IconButton>
+                      <MoreIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          {!rows.length && (
+            <Box sx={{ mt: 4 }} textAlign={"center"}>
+              <H4>Set up your first fundraise</H4>
+              <Button variant={"contained"}>Start New Fundraise</Button>
+            </Box>
+          )}
+        </>
+      ) : (
+        <Body>
+          <Link onClick={() => setTab(0)} sx={{ cursor: "pointer" }}>
+            Setup your profile
+          </Link>{" "}
+          in order to start fundraising.
+        </Body>
+      )}
+    </Box>
   );
 };
 
@@ -356,7 +461,7 @@ const TABS = [
   {
     text: "My Fundraises",
     Icon: ContractIcon,
-    content: () => <div>Coming Soon!</div>,
+    content: FundraiseContent,
   },
   {
     text: "Settings",
@@ -439,7 +544,7 @@ const Dashboard = () => {
       >
         <Toolbar />
         <Box flexGrow={1} display={"flex"} flexDirection={"column"}>
-          <TabContent />
+          <TabContent setTab={setTab} />
         </Box>
       </Box>
     </Box>
