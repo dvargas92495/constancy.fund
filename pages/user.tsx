@@ -2,7 +2,7 @@ import { LayoutHead, themeProps } from "./_common/Layout";
 import Document from "@dvargas92495/ui/dist/components/Document";
 import RedirectToLogin from "@dvargas92495/ui/dist/components/RedirectToLogin";
 import clerkUserProfileCss from "@dvargas92495/ui/dist/clerkUserProfileCss";
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { SignedIn, UserButton, useUser } from "@clerk/clerk-react";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
@@ -43,14 +43,24 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import Card from "@mui/material/Card";
 import type { Handler as GetHandler } from "../functions/fundraises/get";
+import {
+  Link as RRLink,
+  HashRouter,
+  Route,
+  Routes,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 const H1 = (props: Parameters<typeof _H1>[0]) => (
-  <_H1 sx={{ fontSize: 30 }} {...props} />
+  <_H1 sx={{ fontSize: 30, ...props.sx }} {...props} />
 );
 
 const H4 = (props: Parameters<typeof _H4>[0]) => (
-  <_H4 sx={{ fontSize: 20, mt: 0 }} {...props} />
+  <_H4 sx={{ fontSize: 20, mt: 0, ...props.sx }} {...props} />
 );
 
 const SOCIAL_PROFILES = [
@@ -380,7 +390,7 @@ const ProfileContent = () => {
   );
 };
 
-const FundraiseContent = ({ setTab }: { setTab: (t: number) => void }) => {
+const FundraiseContentTable = () => {
   const {
     unsafeMetadata: { completed = false },
   } = useUser();
@@ -394,8 +404,20 @@ const FundraiseContent = ({ setTab }: { setTab: (t: number) => void }) => {
   useEffect(() => {
     getFundraises().then((r) => setRows(r.fundraises));
   }, [getFundraises, setRows]);
+  const navigate = useNavigate();
+  const startFundraiseButton = useMemo(
+    () => (
+      <Button
+        variant={"contained"}
+        onClick={() => navigate(`/fundraises/setup`)}
+      >
+        Start New Fundraise
+      </Button>
+    ),
+    [navigate]
+  );
   return (
-    <Box sx={{ maxWidth: 1000 }}>
+    <>
       <H1
         sx={{
           fontSize: 30,
@@ -405,9 +427,7 @@ const FundraiseContent = ({ setTab }: { setTab: (t: number) => void }) => {
         }}
       >
         Your Fundraises
-        {!!rows.length && (
-          <Button variant={"contained"}>Start New Fundraise</Button>
-        )}
+        {!!rows.length && startFundraiseButton}
       </H1>
       {completed ? (
         <>
@@ -439,40 +459,236 @@ const FundraiseContent = ({ setTab }: { setTab: (t: number) => void }) => {
           {!rows.length && (
             <Box sx={{ mt: 4 }} textAlign={"center"}>
               <H4>Set up your first fundraise</H4>
-              <Button variant={"contained"}>Start New Fundraise</Button>
+              {startFundraiseButton}
             </Box>
           )}
         </>
       ) : (
         <Body>
-          <Link onClick={() => setTab(0)} sx={{ cursor: "pointer" }}>
-            Setup your profile
-          </Link>{" "}
-          in order to start fundraising.
+          <RRLink to={TABS[0].path}>Setup your profile</RRLink> in order to
+          start fundraising.
         </Body>
       )}
+    </>
+  );
+};
+
+const FUNDRAISE_TYPES = [
+  {
+    name: "Income Sharing Agreement (ISA)",
+    description:
+      "Raise a monthly stipend or a one-time sum and pay it back with your future revenues once you hit a certain revenue threshold. ",
+    help: "Ideal if you are just getting started and don't have revenues yet.",
+    enabled: true,
+  },
+  {
+    name: "Classic Loan",
+    description:
+      "Raise a one-time sum and pay back a fixed amount on a monthly basis",
+    help: "Ideal if you have already have stable revenue",
+    enabled: false,
+  },
+  {
+    name: "Simple Agreement for Future Equity (SAFE)",
+    description:
+      "Raise a one-time sum and give investors the right to convert to equity in the future",
+    help: "Ideal if you are getting started and don’t want to raise debt financing",
+    enabled: false,
+  },
+  {
+    name: "Simple Agreement for Future Tokens (SAFT)",
+    description:
+      "Raise a one-time sum and give investors the right to convert to equity in the future",
+    help: "Ideal if you are getting started and plan to sell a token later",
+    enabled: false,
+  },
+];
+
+const ChooseFundraiseType = () => {
+  const navigate = useNavigate();
+  return (
+    <>
+      <H1>Step 1: Choose your fundraise type</H1>
+      {FUNDRAISE_TYPES.map(({ name, description, help, enabled }) => (
+        <Card
+          sx={{ display: "flex", height: 160, borderRadius: 2, py: 2, mb: 2 }}
+          key={name}
+        >
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: "flex",
+              flexDirection: "column",
+              pl: 5,
+            }}
+          >
+            <Box sx={{ flexGrow: 1 }}>
+              <H4 sx={{ my: 1, fontSize: "16px", lineHeight: "20px" }}>
+                {name}
+              </H4>
+              <Body
+                sx={{
+                  color: "#3F3F3F",
+                  fontSize: "12px",
+                  lineHeight: "18px",
+                  opacity: 0.7,
+                }}
+              >
+                {description}
+              </Body>
+            </Box>
+            <Box>
+              <Body
+                sx={{
+                  color: "#3F3F3F",
+                  fontSize: "12px",
+                  lineHeight: "18px",
+                  fontWeight: 600,
+                  opacity: 0.7,
+                }}
+              >
+                {help}
+              </Body>
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              px: 5,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            {enabled ? (
+              <Button
+                variant={"contained"}
+                onClick={() =>
+                  navigate("/fundraises/details", {
+                    state: { name },
+                  })
+                }
+              >
+                Select
+              </Button>
+            ) : (
+              <Button disabled variant={"outlined"}>
+                Coming Soon
+              </Button>
+            )}
+          </Box>
+        </Card>
+      ))}
+    </>
+  );
+};
+
+const FundraiseDetails = () => {
+  const location = useLocation();
+  return (
+    <>
+      <H1>Step 2: {location.state.name} Contract Details</H1>
+      <Box>Coming Soon...</Box>
+    </>
+  );
+};
+
+const FundraisePreview = () => {
+  return (
+    <>
+      <H1>Step 3: Preview Contract</H1>
+      <Box>Coming Soon...</Box>
+    </>
+  );
+};
+
+const FundraiseSign = () => {
+  return (
+    <>
+      <H1>Step 4: Sign Contract</H1>
+      <Box>Coming Soon...</Box>
+    </>
+  );
+};
+
+const FundraiseContract = () => {
+  return (
+    <>
+      <H1>Your Fundraises {">"} Income Sharing Agreement</H1>
+      <Box>Coming Soon...</Box>
+    </>
+  );
+};
+
+const FundraiseContent = () => {
+  return (
+    <Box sx={{ maxWidth: 1000 }}>
+      <Outlet />
     </Box>
   );
 };
 
 const DRAWER_WIDTH = 255;
 const TABS = [
-  { text: "My Profile", Icon: HomeIcon, content: ProfileContent },
+  {
+    text: "My Profile",
+    Icon: HomeIcon,
+    content: ProfileContent,
+    path: "",
+    nested: [],
+  },
   {
     text: "My Fundraises",
     Icon: ContractIcon,
     content: FundraiseContent,
+    path: "fundraises",
+    nested: [
+      { content: FundraiseContentTable, path: "" },
+      { content: ChooseFundraiseType, path: "setup" },
+      { content: FundraiseDetails, path: "details" },
+      { content: FundraisePreview, path: "preview" },
+      { content: FundraiseSign, path: "sign" },
+      { content: FundraiseContract, path: "contract/:id" },
+    ],
   },
   {
     text: "Settings",
     Icon: SettingsIcon,
     content: () => <div>Coming Soon!</div>,
+    path: "settings",
+    nested: [],
   },
 ] as const;
 
+const DashboardTab = ({ path, Icon, text }: typeof TABS[number]) => {
+  const location = useLocation();
+  const isMatch = path
+    ? location.pathname.startsWith(`/${path}`)
+    : location.pathname === "/";
+  return (
+    <RRLink to={path}>
+      <ListItem
+        button
+        key={path}
+        sx={{
+          display: "flex",
+          background: isMatch ? "#0000000a" : "unset",
+          borderLeft: isMatch ? "2px solid #DDE2FF" : "unset",
+          paddingLeft: "32px",
+          py: "20px",
+          fontSize: 14,
+          color: "#A4A6B3",
+        }}
+      >
+        <ListItemIcon sx={{ color: "inherit" }}>
+          <Icon />
+        </ListItemIcon>
+        <ListItemText primary={text} />
+      </ListItem>
+    </RRLink>
+  );
+};
+
 const Dashboard = () => {
-  const [tab, setTab] = useState(0);
-  const TabContent = TABS[tab].content;
   return (
     <Box sx={{ display: "flex", height: "100%" }}>
       <AppBar
@@ -504,29 +720,15 @@ const Dashboard = () => {
         <Toolbar>
           <Link href="/">Home</Link>
         </Toolbar>
-        <List>
-          {TABS.map(({ text, Icon }, index) => (
-            <ListItem
-              button
-              key={index}
-              onClick={() => {
-                setTab(index);
-              }}
-              sx={{
-                display: "flex",
-                background: index === tab ? "#0000000a" : "unset",
-                borderLeft: index === tab ? "2px solid #DDE2FF" : "unset",
-                paddingLeft: "32px",
-                py: "20px",
-                fontSize: 14,
-                color: "#A4A6B3",
-              }}
-            >
-              <ListItemIcon sx={{ color: "inherit" }}>
-                <Icon />
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
+        <List
+          sx={{
+            a: {
+              textDecoration: "none",
+            },
+          }}
+        >
+          {TABS.map((t) => (
+            <DashboardTab {...t} key={t.path} />
           ))}
         </List>
       </Drawer>
@@ -534,7 +736,7 @@ const Dashboard = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          px: 3,
+          px: 8,
           pb: 2,
           color: "text.primary",
           height: "fit-content",
@@ -544,7 +746,7 @@ const Dashboard = () => {
       >
         <Toolbar />
         <Box flexGrow={1} display={"flex"} flexDirection={"column"}>
-          <TabContent setTab={setTab} />
+          <Outlet />
         </Box>
       </Box>
     </Box>
@@ -565,7 +767,27 @@ const UserPage = (): React.ReactElement => (
   <Document themeProps={themeProps}>
     {globalStyles}
     <SignedIn>
-      <Dashboard />
+      <HashRouter>
+        <Routes>
+          <Route element={<Dashboard />} path={"/"}>
+            {TABS.map(({ content: Content, path, nested }) =>
+              path === "" ? (
+                <Route element={<Content />} key={path} index={true} />
+              ) : (
+                <Route element={<Content />} key={path} path={path}>
+                  {nested.map(({ content: Content, path }) => (
+                    <Route
+                      element={<Content />}
+                      key={path}
+                      {...(path === "" ? { index: true } : { path })}
+                    />
+                  ))}
+                </Route>
+              )
+            )}
+          </Route>
+        </Routes>
+      </HashRouter>
     </SignedIn>
     <RedirectToLogin />
   </Document>

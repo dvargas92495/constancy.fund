@@ -39,6 +39,8 @@
     "aws-sdk-plus": "^0.5.2",
     "axios": "^0.24.0",
     "country-region-data": "^1.11.0",
+    "history": "^5.1.0",
+    "react-router-dom": "^6.1.1",
     "stripe": "^8.191.0"
   }
 }
