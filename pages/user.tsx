@@ -45,6 +45,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Card from "@mui/material/Card";
 import type { Handler as GetHandler } from "../functions/fundraises/get";
+import type { Handler as ContractHandler } from "../functions/contract/post";
 import {
   Link as RRLink,
   HashRouter,
@@ -54,6 +55,8 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import FUNDRAISE_TYPES from "../db/fundraise_types";
+import InputAdornment from "@mui/material/InputAdornment";
 
 const H1 = (props: Parameters<typeof _H1>[0]) => (
   <_H1 sx={{ fontSize: 30, ...props.sx }} {...props} />
@@ -473,46 +476,15 @@ const FundraiseContentTable = () => {
   );
 };
 
-const FUNDRAISE_TYPES = [
-  {
-    name: "Income Sharing Agreement (ISA)",
-    description:
-      "Raise a monthly stipend or a one-time sum and pay it back with your future revenues once you hit a certain revenue threshold. ",
-    help: "Ideal if you are just getting started and don't have revenues yet.",
-    enabled: true,
-  },
-  {
-    name: "Classic Loan",
-    description:
-      "Raise a one-time sum and pay back a fixed amount on a monthly basis",
-    help: "Ideal if you have already have stable revenue",
-    enabled: false,
-  },
-  {
-    name: "Simple Agreement for Future Equity (SAFE)",
-    description:
-      "Raise a one-time sum and give investors the right to convert to equity in the future",
-    help: "Ideal if you are getting started and don’t want to raise debt financing",
-    enabled: false,
-  },
-  {
-    name: "Simple Agreement for Future Tokens (SAFT)",
-    description:
-      "Raise a one-time sum and give investors the right to convert to equity in the future",
-    help: "Ideal if you are getting started and plan to sell a token later",
-    enabled: false,
-  },
-];
-
 const ChooseFundraiseType = () => {
   const navigate = useNavigate();
   return (
     <>
       <H1>Step 1: Choose your fundraise type</H1>
-      {FUNDRAISE_TYPES.map(({ name, description, help, enabled }) => (
+      {FUNDRAISE_TYPES.map(({ name, description, help, enabled, id }) => (
         <Card
           sx={{ display: "flex", height: 160, borderRadius: 2, py: 2, mb: 2 }}
-          key={name}
+          key={id}
         >
           <Box
             sx={{
@@ -564,7 +536,7 @@ const ChooseFundraiseType = () => {
                 variant={"contained"}
                 onClick={() =>
                   navigate("/fundraises/details", {
-                    state: { name },
+                    state: { id },
                   })
                 }
               >
@@ -582,12 +554,279 @@ const ChooseFundraiseType = () => {
   );
 };
 
-const FundraiseDetails = () => {
-  const location = useLocation();
+type DetailProps = {
+  data: Record<string, string>;
+  setData: (e: Record<string, string>) => void;
+};
+
+const ISA_SUPPORT_TYPES = [
+  {
+    label: "Monthly Stipend",
+    description: "Get a monthly payout & cancel anytime",
+    value: "monthly",
+  },
+  {
+    label: "One-time Payout",
+    description: "Get a one-time payment from your supporters",
+    value: "once",
+  },
+];
+
+const ISADetailForm = ({ data, setData }: DetailProps) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const target = e.target;
+    setData({
+      ...data,
+      [target.name]: target.value,
+    });
+  };
   return (
     <>
-      <H1>Step 2: {location.state.name} Contract Details</H1>
-      <Box>Coming Soon...</Box>
+      <FormLabel sx={{ mt: 0, mb: 2, display: "inline-block" }}>
+        How do you want to receive your support?
+      </FormLabel>
+      <RadioGroup
+        sx={{ mb: 6, display: "flex", flexDirection: "row" }}
+        name="supportType"
+        value={data["supportType"]}
+        onChange={onChange}
+      >
+        {ISA_SUPPORT_TYPES.map(({ label, value, description }) => (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              marginRight: "24px",
+              borderRadius: "4px",
+              padding: "16px",
+              width: "240px",
+              background: "#ffffff",
+            }}
+            key={value}
+          >
+            <Box sx={{ minWidth: "48px" }}>
+              <Radio value={value} />
+            </Box>
+            <Box>
+              <H4 sx={{ fontSize: 14 }}>{label}</H4>
+              <Body sx={{ fontSize: 14 }}>{description}</Body>
+            </Box>
+          </Box>
+        ))}
+      </RadioGroup>
+      {data["supportType"] === "monthly" ? (
+        <Box>
+          <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
+            <TextField
+              sx={{ mr: 2 }}
+              type={"number"}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position={"start"}>$</InputAdornment>
+                ),
+              }}
+              name={"amount"}
+              value={data["amount"]}
+              onChange={onChange}
+              label={"How much do you want to raise?"}
+            />
+            <span>per month</span>
+          </Box>
+          <TextField
+            type={"number"}
+            name={"frequency"}
+            value={data["frequency"]}
+            onChange={onChange}
+            label={"For how many months?"}
+            sx={{ mb: 2 }}
+          />
+          <hr />
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Body sx={{ fontWeight: 600 }}>Total Funding Request</Body>
+            <Body>
+              ${Number(data["amount"]) * Number(data["frequency"]) || 0}.00
+            </Body>
+          </Box>
+        </Box>
+      ) : data["supportType"] === "once" ? (
+        <Box>
+          <TextField
+            type={"number"}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position={"start"}>$</InputAdornment>
+              ),
+            }}
+            name={"amount"}
+            value={data["amount"]}
+            onChange={onChange}
+            label={"How much do you want to raise?"}
+          />
+        </Box>
+      ) : (
+        <Box />
+      )}
+      <Box sx={{ mb: "144px" }} />
+      <H4>Return Conditions</H4>
+      <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
+        <TextField
+          sx={{ mr: 2 }}
+          type={"number"}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position={"start"}>$</InputAdornment>
+            ),
+          }}
+          name={"return"}
+          value={data["return"]}
+          onChange={onChange}
+          label={"How much will your investors get back?"}
+          helperText={<a>Get help on how to determine a fair return</a>}
+        />{" "}
+        <span>
+          ={" "}
+          {(100 * (Number(data["return"]) || 0)) /
+            (Number(data["amount"]) || 1)}
+          % return
+        </span>
+      </Box>
+      <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
+        <TextField
+          sx={{ mr: 2 }}
+          type={"number"}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position={"start"}>$</InputAdornment>
+            ),
+          }}
+          name={"threshold"}
+          value={data["threshold"]}
+          onChange={onChange}
+          label={"Your abundance threshold"}
+          helperText={
+            "The yearly income (before taxes) after which you start paying back"
+          }
+        />{" "}
+        <span>= average {(Number(data["threshold"]) || 0) / 12} / month</span>
+      </Box>
+      <TextField
+        sx={{ mb: 2 }}
+        type={"number"}
+        InputProps={{
+          startAdornment: <InputAdornment position={"start"}>%</InputAdornment>,
+        }}
+        name={"share"}
+        value={data["share"]}
+        onChange={onChange}
+        label={"Share of revenue used for payback"}
+        helperText={
+          "% of your income you want to use for the payback once you hit the abundance threshold"
+        }
+      />
+      <TextField
+        sx={{ mb: 2 }}
+        type={"number"}
+        InputProps={{
+          startAdornment: <InputAdornment position={"start"}>Y</InputAdornment>,
+        }}
+        name={"cap"}
+        value={data["cap"]}
+        onChange={onChange}
+        label={"Time Cap"}
+        helperText={
+          "Number of years before this agreement runs out, whether you paid everything back or not."
+        }
+      />
+      <TextField
+        sx={{ mb: 2 }}
+        name={"clauses"}
+        value={data["clauses"]}
+        onChange={onChange}
+        label={"Additional Contract Clauses"}
+        multiline
+        minRows={5}
+        helperText={
+          <span>
+            Do you have any special requirements in this contract that you'd
+            like to add? It is <b>strongly</b> advised to cross-check these
+            terms with a legal professional.
+          </span>
+        }
+      />
+    </>
+  );
+};
+
+const NoForm = () => {
+  return <Box>Coming Soon...</Box>;
+};
+
+const FUNDRAISE_DETAIL_FORMS: {
+  [k in typeof FUNDRAISE_TYPES[number]["id"]]: (
+    p: DetailProps
+  ) => React.ReactElement;
+} = {
+  isa: ISADetailForm,
+  loan: NoForm,
+  safe: NoForm,
+  saft: NoForm,
+};
+
+const FUNDRAISE_NAMES_BY_IDS = Object.fromEntries(
+  FUNDRAISE_TYPES.map(({ name, id }) => [id, name])
+);
+
+const FundraiseDetails = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const contractHandler = useAuthenticatedHandler<ContractHandler>({
+    path: "contract",
+    method: "POST",
+  });
+  const [data, setData] = useState<Record<string, string>>({});
+  const id = useMemo(
+    () => (location.state?.id as keyof typeof FUNDRAISE_DETAIL_FORMS) || "isa",
+    []
+  );
+  const DetailForm = useMemo(() => FUNDRAISE_DETAIL_FORMS[id], [id]);
+  return (
+    <>
+      <H1>Step 2: {FUNDRAISE_NAMES_BY_IDS[id]} Contract Details</H1>
+      <form
+        onSubmit={(e) => {
+          /* In case performance is too bad
+          const formElement = e.target as HTMLFormElement;
+          const data = Object.fromEntries(
+            Object.keys(formElement.elements)
+              .filter((k) => isNaN(Number(k)))
+              .map((k) => [
+                k,
+                (formElement.elements.namedItem(k) as { value: string | null })
+                  ?.value || "",
+              ])
+          );
+          */
+          setLoading(true);
+          contractHandler({ data, id })
+            .then((state) => navigate(`/fundraises/preview`, { state }))
+            .catch((e) => {
+              setError(e.message);
+              setLoading(false);
+            });
+          e.preventDefault();
+        }}
+      >
+        <DetailForm data={data} setData={setData} />
+        <Box>
+          <Button variant={"contained"} type={"submit"}>
+            Save {"&"} Preview Contract
+          </Button>
+          {loading && <CircularProgress size={20} />}
+        </Box>
+        <Body sx={{ color: "error" }}>{error}</Body>
+      </form>
     </>
   );
 };
