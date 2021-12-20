@@ -46,6 +46,10 @@ variable "stripe_secret" {
   type = string
 }
 
+variable "staging_clerk_api_key" {
+    type = string
+}
+
 provider "aws" {
   region = "us-east-1"
   access_key = var.aws_access_token
@@ -59,7 +63,7 @@ provider "github" {
 
 module "aws_static_site" {
   source  = "dvargas92495/static-site/aws"
-  version = "3.1.5"
+  version = "3.2.0"
 
   domain = "crowdinvestin.me"
   secret = var.secret
@@ -77,6 +81,44 @@ module "aws-serverless-backend" {
   version = "2.2.0"
 
   api_name = "crowdinvestin-me"
+}
+
+module "aws_static_site_staging" {
+  source  = "dvargas92495/static-site/aws"
+  version = "3.2.0"
+
+  domain = "staging.crowdinvestin.me"
+  secret = var.secret
+  tags = {
+      Application = "crowdinvestin-me"
+  }
+
+  providers = {
+    aws.us-east-1 = aws
+  }
+}
+
+module "aws-serverless-backend_staging" {
+  source  = "dvargas92495/serverless-backend/aws"
+  version = "2.2.1"
+
+  api_name = "staging-crowdinvestin-me"
+}
+
+module "aws_email" {
+  source  = "dvargas92495/email/aws"
+  version = "2.0.4"
+
+  domain = "crowdinvestin.me"
+  zone_id = module.aws_static_site.route53_zone_id
+}
+
+module "aws_email_staging" {
+  source  = "dvargas92495/email/aws"
+  version = "2.0.4"
+
+  domain = "staging.crowdinvestin.me"
+  zone_id = module.aws_static_site_staging.route53_zone_id
 }
 
 module "aws_clerk" {
@@ -133,4 +175,34 @@ resource "github_actions_secret" "stripe_secret" {
   repository       = "crowdinvestin.me"
   secret_name      = "STRIPE_SECRET_KEY"
   plaintext_value  = var.stripe_secret
+}
+
+resource "github_actions_secret" "stagingd_aws_access_key" {
+  repository       = "crowdinvestin.me"
+  secret_name      = "STAGINGD_AWS_ACCESS_KEY"
+  plaintext_value  = module.aws_static_site_staging.deploy-id
+}
+
+resource "github_actions_secret" "stagingd_aws_access_secret" {
+  repository       = "crowdinvestin.me"
+  secret_name      = "STAGINGD_AWS_ACCESS_SECRET"
+  plaintext_value  = module.aws_static_site_staging.deploy-secret
+}
+
+resource "github_actions_secret" "stagingl_aws_access_key" {
+  repository       = "crowdinvestin.me"
+  secret_name      = "STAGINGL_AWS_ACCESS_KEY"
+  plaintext_value  = module.aws-serverless-backend_staging.access_key
+}
+
+resource "github_actions_secret" "stagingl_aws_access_secret" {
+  repository       = "crowdinvestin.me"
+  secret_name      = "STAGINGL_AWS_ACCESS_SECRET"
+  plaintext_value  = module.aws-serverless-backend_staging.secret_key
+}
+
+resource "github_actions_secret" "staging_clerk_api_key" {
+  repository       = "crowdinvestin.me"
+  secret_name      = "STAGING_CLERK_API_KEY"
+  plaintext_value  = var.staging_clerk_api_key
 }
