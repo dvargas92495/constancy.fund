@@ -14,7 +14,7 @@
     "fe": "fuego fe",
     "migrate": "prisma migrate deploy",
     "publish": "fuego publish",
-    "postinstall": "prisma generate",
+    "precompile": "prisma generate",
     "typeorm": "ts-node --transpile-only ./node_modules/typeorm/cli.js",
     "start": "concurrently \"npm:api\" \"npm:fe\""
   },

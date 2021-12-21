@@ -28,6 +28,8 @@ jobs:
           node-version: 14.17.6
       - name: install
         run: npm install
+      - name: migrate
+        run: npm run migrate
       - name: build api
         run: npm run compile
       - name: deploy api
