@@ -10,9 +10,9 @@ generator client {
 model Contract {
   uuid String @id @default(uuid())
   type Int
-  status Int
   userId String
   contractDetails ContractDetail[]
+  agreements Agreement[]
 }
 
 model ContractDetail {
@@ -20,5 +20,15 @@ model ContractDetail {
   label String
   value String
   contractUuid String
+  contract Contract @relation(fields: [contractUuid], references: [uuid])
+}
+
+model Agreement {
+  uuid String @id @default(uuid())
+  name String
+  email String
+  amount Int
+  contractUuid String
+  stage Int
   contract Contract @relation(fields: [contractUuid], references: [uuid])
 }

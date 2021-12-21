@@ -645,7 +645,9 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Body sx={{ fontWeight: 600 }}>Total Funding Request</Body>
             <Body>
-              ${(Number(data["amount"]) || 0) * (Number(data["frequency"]) || 1)}.00
+              $
+              {(Number(data["amount"]) || 0) * (Number(data["frequency"]) || 1)}
+              .00
             </Body>
           </Box>
         </Box>
@@ -833,7 +835,7 @@ const FundraiseDetails = () => {
 };
 
 const FundraisePreview = () => {
-  const {id} = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
   useEffect(() => {
     console.log(id);
@@ -848,7 +850,7 @@ const FundraisePreview = () => {
             alignItems: "center",
             justifyContent: "center",
             flexDirection: "column",
-            height: "50%"
+            height: "50%",
           }}
         >
           <b>"explain me like I am 5" summary of the contract</b>
@@ -860,7 +862,7 @@ const FundraisePreview = () => {
             justifyContent: "center",
             flexDirection: "column",
             background: "#C4C4C4",
-            height: "50%"
+            height: "50%",
           }}
         >
           <b>
@@ -876,7 +878,13 @@ const FundraisePreview = () => {
           alignItems: "center",
         }}
       >
-        <Button variant={"contained"} color={"primary"} onClick={() => navigate(`/fundraises/sign/${id}`)}>
+        <Button
+          variant={"contained"}
+          color={"primary"}
+          onClick={() =>
+            navigate(`/fundraises/contract/${id}`, { state: { open: true } })
+          }
+        >
           Sign Contract {"&"} Invite Investors
         </Button>
         <Button variant={"outlined"} color={"primary"}>
@@ -887,19 +895,31 @@ const FundraisePreview = () => {
   );
 };
 
-const FundraiseSign = () => {
+const FundraiseContract = () => {
+  const { id } = useParams();
+  const location = useLocation();
+  const {
+    type: defaultType = FUNDRAISE_TYPES[0].id,
+  } = location.state || {};
+  const [type, setType] = useState(defaultType);
+  const [agreements, setAgreements] = useState([]);
+  useEffect(() => {
+    // getContractById
+  }, [id]);
   return (
     <>
-      <H1>Step 4: Sign Contract</H1>
+      <H1>
+        Your Fundraises {">"} {FUNDRAISE_NAMES_BY_IDS[type]}
+      </H1>
       <Box>Coming Soon...</Box>
     </>
   );
 };
 
-const FundraiseContract = () => {
+const FundraiseSign = () => {
   return (
     <>
-      <H1>Your Fundraises {">"} Income Sharing Agreement</H1>
+      <H1>Step 4: Sign Contract</H1>
       <Box>Coming Soon...</Box>
     </>
   );

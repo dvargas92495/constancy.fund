@@ -2,6 +2,8 @@ import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import { PrismaClient } from "@prisma/client";
 import { dbIdByTypeId } from "../../db/fundraise_types";
+import invokeAsync from "@dvargas92495/api/invokeAsync";
+import type { Handler as AsyncHandler } from "../create-contract-pdf";
 
 const prismaClient = new PrismaClient();
 
@@ -18,7 +20,6 @@ const logic = ({
     .create({
       data: {
         type: dbIdByTypeId[id],
-        status: 0,
         userId,
       },
     })
@@ -31,6 +32,12 @@ const logic = ({
             contractUuid: contract.uuid,
           })),
         })
+        .then(() =>
+          invokeAsync<Parameters<AsyncHandler>[0]>({
+            path: "create-contract-pdf",
+            data: { uuid: contract.uuid },
+          })
+        )
         .then(() => ({ id: contract.uuid }))
     );
 };
