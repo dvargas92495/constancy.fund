@@ -50,6 +50,10 @@ variable "staging_clerk_api_key" {
     type = string
 }
 
+variable "staging_mysql_password" {
+  type = string
+}
+
 provider "aws" {
   region = "us-east-1"
   access_key = var.aws_access_token
@@ -205,4 +209,10 @@ resource "github_actions_secret" "staging_clerk_api_key" {
   repository       = "crowdinvestin.me"
   secret_name      = "STAGING_CLERK_API_KEY"
   plaintext_value  = var.staging_clerk_api_key
+}
+
+resource "github_actions_secret" "staging_mysql_password" {
+  repository       = "crowdinvestin.me"
+  secret_name      = "STAGING_MYSQL_PASSWORD"
+  plaintext_value  = var.staging_mysql_password
 }
