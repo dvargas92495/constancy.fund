@@ -9,7 +9,7 @@ env:
   AWS_REGION: us-east-1
   CLERK_API_KEY: ${{ secrets.STAGING_CLERK_API_KEY }}
   CLERK_FRONTEND_API: clerk.rjzug.yeali.lcl.dev
-  DATABASE_URL: mysql://crowdinvestin_me:${{ secrets.STAGING_MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/crowdinvestin_me
+  DATABASE_URL: mysql://staging_crowdinvestin_me:${{ secrets.STAGING_MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/staging_crowdinvestin_me
   FE_DIR_PREFIX: /tmp
   HOST: https://staging.crowdinvestin.me
   STRIPE_PUBLIC_KEY: ${{ secrets.STAGING_STRIPE_PUBLIC_KEY }}
