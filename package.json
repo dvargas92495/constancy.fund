@@ -12,8 +12,9 @@
     "compile": "fuego compile",
     "deploy": "fuego deploy",
     "fe": "fuego fe",
-    "migrate": "npm run typeorm migration:run",
+    "migrate": "prisma migrate deploy",
     "publish": "fuego publish",
+    "postinstall": "prisma generate",
     "typeorm": "ts-node --transpile-only ./node_modules/typeorm/cli.js",
     "start": "concurrently \"npm:api\" \"npm:fe\""
   },
@@ -28,6 +29,7 @@
     "eslint": "^8.4.0",
     "fuegojs": "^0.17.2",
     "prettier": "^2.5.1",
+    "prisma": "^3.6.0",
     "ts-node": "^10.4.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-react-hooks": "^2.2.2",
@@ -36,11 +38,15 @@
   "dependencies": {
     "@dvargas92495/api": "^0.4.1",
     "@dvargas92495/ui": "^0.45.2",
+    "@prisma/client": "^3.6.0",
     "aws-sdk-plus": "^0.5.2",
     "axios": "^0.24.0",
     "country-region-data": "^1.11.0",
     "history": "^5.1.0",
     "react-router-dom": "^6.1.1",
     "stripe": "^8.191.0"
+  },
+  "prisma": {
+    "schema": "db/schema.prisma"
   }
 }

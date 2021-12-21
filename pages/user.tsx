@@ -54,6 +54,7 @@ import {
   Outlet,
   useLocation,
   useNavigate,
+  useParams,
 } from "react-router-dom";
 import FUNDRAISE_TYPES from "../db/fundraise_types";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -644,7 +645,7 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Body sx={{ fontWeight: 600 }}>Total Funding Request</Body>
             <Body>
-              ${Number(data["amount"]) * Number(data["frequency"]) || 0}.00
+              ${(Number(data["amount"]) || 0) * (Number(data["frequency"]) || 1)}.00
             </Body>
           </Box>
         </Box>
@@ -686,7 +687,7 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
         <span>
           ={" "}
           {(100 * (Number(data["return"]) || 0)) /
-            (Number(data["amount"]) || 1)}
+            ((Number(data["amount"]) || 0) * (Number(data["frequency"]) || 1))}
           % return
         </span>
       </Box>
@@ -810,7 +811,7 @@ const FundraiseDetails = () => {
           */
           setLoading(true);
           contractHandler({ data, id })
-            .then((state) => navigate(`/fundraises/preview`, { state }))
+            .then((state) => navigate(`/fundraises/preview/${state.id}`))
             .catch((e) => {
               setError(e.message);
               setLoading(false);
@@ -832,10 +833,56 @@ const FundraiseDetails = () => {
 };
 
 const FundraisePreview = () => {
+  const {id} = useParams();
+  const navigate = useNavigate();
+  useEffect(() => {
+    console.log(id);
+  }, [id]);
   return (
     <>
       <H1>Step 3: Preview Contract</H1>
-      <Box>Coming Soon...</Box>
+      <Box sx={{ height: "600px", marginBottom: "144px" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
+            height: "50%"
+          }}
+        >
+          <b>"explain me like I am 5" summary of the contract</b>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
+            background: "#C4C4C4",
+            height: "50%"
+          }}
+        >
+          <b>
+            Uneditable text preview of contract details. Highlight variables
+            that were filled in before
+          </b>
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Button variant={"contained"} color={"primary"} onClick={() => navigate(`/fundraises/sign/${id}`)}>
+          Sign Contract {"&"} Invite Investors
+        </Button>
+        <Button variant={"outlined"} color={"primary"}>
+          Download PDF Preview
+        </Button>
+      </Box>
     </>
   );
 };
@@ -884,8 +931,8 @@ const TABS = [
       { content: FundraiseContentTable, path: "" },
       { content: ChooseFundraiseType, path: "setup" },
       { content: FundraiseDetails, path: "details" },
-      { content: FundraisePreview, path: "preview" },
-      { content: FundraiseSign, path: "sign" },
+      { content: FundraisePreview, path: "preview/:id" },
+      { content: FundraiseSign, path: "sign/:id" },
       { content: FundraiseContract, path: "contract/:id" },
     ],
   },

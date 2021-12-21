@@ -1,4 +1,4 @@
-export default [
+const TYPES = [
   {
     id: "isa",
     name: "Income Sharing Agreement (ISA)",
@@ -32,3 +32,7 @@ export default [
     enabled: false,
   },
 ] as const;
+
+export const dbIdByTypeId = Object.fromEntries(TYPES.map(({ id }, i) => [id, i]));
+
+export default TYPES;

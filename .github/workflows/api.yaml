@@ -15,20 +15,10 @@ env:
   AWS_REGION: us-east-1
   CLERK_API_KEY: ${{ secrets.CLERK_API_KEY }}
   CLERK_FRONTEND_API: clerk.crowdinvestin.me
+  DATABASE_URL: mysql://crowdinvestin_me:${{ secrets.MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/crowdinvestin_me
   FE_DIR_PREFIX: /tmp
   HOST: https://crowdinvestin.me
   STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-  TYPEORM_CONNECTION: mysql
-  TYPEORM_HOST: vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com
-  TYPEORM_USERNAME: crowdinvestin_me
-  TYPEORM_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-  TYPEORM_DATABASE: crowdinvestin_me
-  TYPEORM_PORT: 5432
-  TYPEORM_SYNCHRONIZE: false
-  TYPEORM_LOGGING: false
-  TYPEORM_ENTITIES: db/*.ts
-  TYPEORM_MIGRATIONS: db/migrations/*.ts
-  TYPEORM_MIGRATIONS_DIR: db/migrations
 
 jobs:
   deploy:
