@@ -58,6 +58,10 @@ import {
 } from "react-router-dom";
 import FUNDRAISE_TYPES from "../db/fundraise_types";
 import InputAdornment from "@mui/material/InputAdornment";
+import { Viewer, Worker } from "@react-pdf-viewer/core";
+import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
+import "@react-pdf-viewer/core/lib/styles/index.css";
+import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 
 const H1 = (props: Parameters<typeof _H1>[0]) => (
   <_H1 sx={{ fontSize: 30, ...props.sx }} {...props} />
@@ -347,7 +351,7 @@ const ProfileContent = () => {
       <Body sx={{ mt: 0, mb: 2 }}>How do you want to be paid?</Body>
       <RadioGroup
         sx={{ mb: 2 }}
-        value={paymentPreferenceValue}
+        value={paymentPreferenceValue || ""}
         onChange={(e) => setPaymentPreferenceValue(e.target.value)}
       >
         {PAYMENT_PREFERENCES.map(({ label }, key) => (
@@ -837,14 +841,12 @@ const FundraiseDetails = () => {
 const FundraisePreview = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  useEffect(() => {
-    console.log(id);
-  }, [id]);
+  const defaultLayoutPluginInstance = defaultLayoutPlugin();
   return (
     <>
       <H1>Step 3: Preview Contract</H1>
       <Box sx={{ height: "600px", marginBottom: "144px" }}>
-        <Box
+        {/*<Box
           sx={{
             display: "flex",
             alignItems: "center",
@@ -854,7 +856,7 @@ const FundraisePreview = () => {
           }}
         >
           <b>"explain me like I am 5" summary of the contract</b>
-        </Box>
+        </Box>*/}
         <Box
           sx={{
             display: "flex",
@@ -862,13 +864,15 @@ const FundraisePreview = () => {
             justifyContent: "center",
             flexDirection: "column",
             background: "#C4C4C4",
-            height: "50%",
+            height: "100%",
           }}
         >
-          <b>
-            Uneditable text preview of contract details. Highlight variables
-            that were filled in before
-          </b>
+          <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.11.338/build/pdf.worker.min.js">
+            <Viewer
+              fileUrl={`/_contracts/${id}/draft.pdf`}
+              plugins={[defaultLayoutPluginInstance]}
+            />
+          </Worker>
         </Box>
       </Box>
       <Box
@@ -885,11 +889,13 @@ const FundraisePreview = () => {
             navigate(`/fundraises/contract/${id}`, { state: { open: true } })
           }
         >
-          Sign Contract {"&"} Invite Investors
+          Invite Investors
         </Button>
-        <Button variant={"outlined"} color={"primary"}>
-          Download PDF Preview
-        </Button>
+        {process.env.NODE_ENV === "development" && (
+          <Button variant={"outlined"} color={"primary"}>
+            Refresh PDF Preview
+          </Button>
+        )}
       </Box>
     </>
   );
@@ -898,9 +904,7 @@ const FundraisePreview = () => {
 const FundraiseContract = () => {
   const { id } = useParams();
   const location = useLocation();
-  const {
-    type: defaultType = FUNDRAISE_TYPES[0].id,
-  } = location.state || {};
+  const { type: defaultType = FUNDRAISE_TYPES[0].id } = location.state || {};
   const [type, setType] = useState(defaultType);
   const [agreements, setAgreements] = useState([]);
   useEffect(() => {
@@ -1100,6 +1104,9 @@ const UserPage = (): React.ReactElement => (
 );
 
 export const Head = (): React.ReactElement => (
-  <LayoutHead title={"User"} styles={clerkUserProfileCss} />
+  <>
+    <LayoutHead title={"User"} styles={clerkUserProfileCss} />
+    <link rel="stylesheet" href="/user.css" />
+  </>
 );
 export default UserPage;
