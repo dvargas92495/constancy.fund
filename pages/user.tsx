@@ -2,7 +2,7 @@ import { LayoutHead, themeProps } from "./_common/Layout";
 import Document from "@dvargas92495/ui/dist/components/Document";
 import RedirectToLogin from "@dvargas92495/ui/dist/components/RedirectToLogin";
 import clerkUserProfileCss from "@dvargas92495/ui/dist/clerkUserProfileCss";
-import React, { useMemo, useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState, useCallback } from "react";
 import { SignedIn, UserButton, useUser } from "@clerk/clerk-react";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
@@ -16,6 +16,7 @@ import Link from "@mui/material/Link";
 import HomeIcon from "@mui/icons-material/Home";
 import ContractIcon from "@mui/icons-material/Note";
 import SettingsIcon from "@mui/icons-material/Settings";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Body from "@dvargas92495/ui/dist/components/Body";
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
@@ -27,7 +28,7 @@ import TextField from "@mui/material/TextField";
 import FormLabel from "@mui/material/FormLabel";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import MoreIcon from "@mui/icons-material/More";
+import MoreIcon from "@mui/icons-material/MoreRounded";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import WebIcon from "@mui/icons-material/Public";
 import Avatar from "@mui/material/Avatar";
@@ -46,6 +47,7 @@ import TableRow from "@mui/material/TableRow";
 import Card from "@mui/material/Card";
 import type { Handler as GetHandler } from "../functions/fundraises/get";
 import type { Handler as ContractHandler } from "../functions/contract/post";
+import type { Handler as DeleteHandler } from "../functions/contract/delete";
 import {
   Link as RRLink,
   HashRouter,
@@ -58,8 +60,10 @@ import {
 } from "react-router-dom";
 import FUNDRAISE_TYPES from "../db/fundraise_types";
 import InputAdornment from "@mui/material/InputAdornment";
+import Popover from "@mui/material/Popover";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
+import Skeleton from "@mui/material/Skeleton";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 
@@ -398,20 +402,90 @@ const ProfileContent = () => {
   );
 };
 
+type Fundraises = Awaited<ReturnType<GetHandler>>["fundraises"];
+
+const FundraiseContentRow = ({
+  onDeleteSuccess,
+  ...row
+}: Fundraises[number] & { onDeleteSuccess: (uuid: string) => void }) => {
+  const [isOpen, setIsOpen] = useState<HTMLButtonElement | undefined>();
+  const deleteHandler = useAuthenticatedHandler<DeleteHandler>({
+    method: "DELETE",
+    path: "contract",
+  });
+  const onDelete = useCallback(() => {
+    deleteHandler({
+      uuid: row.uuid,
+    }).then(() => onDeleteSuccess(row.uuid));
+  }, [row]);
+  return (
+    <TableRow>
+      <TableCell>{row.type}</TableCell>
+      <TableCell>
+        {row.details
+          .sort(({ label: a }, { label: b }) => a.localeCompare(b))
+          .map((detail) => (
+            <p key={detail.uuid}>
+              <b>{detail.label}:</b> {detail.value}
+            </p>
+          ))}
+      </TableCell>
+      <TableCell>{row.progress}</TableCell>
+      <TableCell>{row.investorCount}</TableCell>
+      <TableCell>
+        <Button variant="outlined" sx={{ marginRight: 1 }}>
+          Invite Investor
+        </Button>
+        <IconButton onClick={(e) => setIsOpen(e.target as HTMLButtonElement)}>
+          <MoreIcon />
+        </IconButton>
+        <Popover
+          open={!!isOpen}
+          anchorEl={isOpen}
+          onClose={() => setIsOpen(undefined)}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+        >
+          <List>
+            <ListItem button onClick={onDelete} sx={{ display: "flex" }}>
+              <ListItemIcon>
+                <DeleteIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Delete"} />
+            </ListItem>
+          </List>
+        </Popover>
+      </TableCell>
+    </TableRow>
+  );
+};
+
 const FundraiseContentTable = () => {
   const {
     unsafeMetadata: { completed = false },
   } = useUser();
-  const [rows, setRows] = useState<
-    Awaited<ReturnType<GetHandler>>["fundraises"]
-  >([]);
-  const getFundraises = useAuthenticatedHandler({
+  const [loading, setLoading] = useState(true);
+  const [rows, setRows] = useState<Fundraises>([]);
+  const getFundraises = useAuthenticatedHandler<GetHandler>({
     path: "fundraises",
     method: "GET",
   });
+  const onDeleteSuccess = useCallback(
+    (uuid: string) => {
+      setRows(rows.filter((r) => r.uuid !== uuid));
+    },
+    [setRows, rows]
+  );
   useEffect(() => {
-    getFundraises().then((r) => setRows(r.fundraises));
-  }, [getFundraises, setRows]);
+    if (completed) {
+      setLoading(true);
+      getFundraises()
+        .then((r) => setRows(r.fundraises))
+        .finally(() => setLoading(false));
+    }
+  }, [getFundraises, setRows, setLoading, completed]);
   const navigate = useNavigate();
   const startFundraiseButton = useMemo(
     () => (
@@ -424,6 +498,13 @@ const FundraiseContentTable = () => {
     ),
     [navigate]
   );
+  const Container: React.FC = loading
+    ? ({ children }) => (
+        <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
+          {children}
+        </Skeleton>
+      )
+    : Box;
   return (
     <>
       <H1
@@ -438,29 +519,24 @@ const FundraiseContentTable = () => {
         {!!rows.length && startFundraiseButton}
       </H1>
       {completed ? (
-        <>
+        <Container>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
                 <TableCell>Fundraising Type</TableCell>
-                <TableCell>Fundraising Progress</TableCell>
+                <TableCell>Details</TableCell>
+                <TableCell>Progress</TableCell>
                 <TableCell># Investors</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {rows.map((row) => (
-                <TableRow key={row.uuid}>
-                  <TableCell>{row.type}</TableCell>
-                  <TableCell>{row.progress}</TableCell>
-                  <TableCell>{row.investorCount}</TableCell>
-                  <TableCell>
-                    <Button variant="outlined">Invite Investor</Button>
-                    <IconButton>
-                      <MoreIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
+                <FundraiseContentRow
+                  key={row.uuid}
+                  {...row}
+                  onDeleteSuccess={onDeleteSuccess}
+                />
               ))}
             </TableBody>
           </Table>
@@ -470,7 +546,7 @@ const FundraiseContentTable = () => {
               {startFundraiseButton}
             </Box>
           )}
-        </>
+        </Container>
       ) : (
         <Body>
           <RRLink to={TABS[0].path}>Setup your profile</RRLink> in order to
