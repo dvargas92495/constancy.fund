@@ -47,7 +47,9 @@ import TableRow from "@mui/material/TableRow";
 import Card from "@mui/material/Card";
 import type { Handler as GetHandler } from "../functions/fundraises/get";
 import type { Handler as ContractHandler } from "../functions/contract/post";
+import type { Handler as GetContractHandler } from "../functions/contract/get";
 import type { Handler as DeleteHandler } from "../functions/contract/delete";
+import type { Handler as PostAgreementHandler } from "../functions/agreement/post";
 import {
   Link as RRLink,
   HashRouter,
@@ -64,6 +66,9 @@ import Popover from "@mui/material/Popover";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import Skeleton from "@mui/material/Skeleton";
+import FormDialog from "@dvargas92495/ui/dist/components/FormDialog";
+import StringField from "@dvargas92495/ui/dist/components/StringField";
+import NumberField from "@dvargas92495/ui/dist/components/NumberField";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 
@@ -418,6 +423,7 @@ const FundraiseContentRow = ({
       uuid: row.uuid,
     }).then(() => onDeleteSuccess(row.uuid));
   }, [row]);
+  const navigate = useNavigate();
   return (
     <TableRow>
       <TableCell>{row.type}</TableCell>
@@ -433,7 +439,15 @@ const FundraiseContentRow = ({
       <TableCell>{row.progress}</TableCell>
       <TableCell>{row.investorCount}</TableCell>
       <TableCell>
-        <Button variant="outlined" sx={{ marginRight: 1 }}>
+        <Button
+          variant="outlined"
+          sx={{ marginRight: 1 }}
+          onClick={() => {
+            navigate(`/fundraises/contract/${row.uuid}`, {
+              state: { open: true },
+            });
+          }}
+        >
           Invite Investor
         </Button>
         <IconButton onClick={(e) => setIsOpen(e.target as HTMLButtonElement)}>
@@ -977,21 +991,123 @@ const FundraisePreview = () => {
   );
 };
 
+type Agreements = Awaited<ReturnType<GetContractHandler>>["agreements"];
+
+const AgreementRow = (row: Agreements[number]) => {
+  return (
+    <TableRow>
+      <TableCell>{row.name}</TableCell>
+      <TableCell>{row.amount}</TableCell>
+      <TableCell>{row.stage}</TableCell>
+      <TableCell></TableCell>
+    </TableRow>
+  );
+};
+
 const FundraiseContract = () => {
-  const { id } = useParams();
+  const { id = "" } = useParams();
   const location = useLocation();
+  // const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const getFundraise = useAuthenticatedHandler<GetContractHandler>({
+    path: "contract",
+    method: "GET",
+  });
+  const postAgreement = useAuthenticatedHandler<PostAgreementHandler>({
+    path: "agreement",
+    method: "POST",
+  });
+  const [rows, setRows] = useState<Agreements>([]);
   const { type: defaultType = FUNDRAISE_TYPES[0].id } = location.state || {};
   const [type, setType] = useState(defaultType);
-  const [agreements, setAgreements] = useState([]);
   useEffect(() => {
-    // getContractById
-  }, [id]);
+    setLoading(true);
+    getFundraise({ uuid: id })
+      .then((r) => {
+        setType(r.type);
+        setRows(r.agreements);
+      })
+      .finally(() => setLoading(false));
+  }, [id, setType, setRows, setLoading]);
+  const Container: React.FC = loading
+    ? ({ children }) => (
+        <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
+          {children}
+        </Skeleton>
+      )
+    : Box;
+  const defaultIsOpen = useMemo(() => location.state.isOpen, [location]);
   return (
     <>
-      <H1>
-        Your Fundraises {">"} {FUNDRAISE_NAMES_BY_IDS[type]}
+      <H1
+        sx={{
+          fontSize: 30,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Box
+          component={"span"}
+          sx={{
+            a: {
+              textDecoration: "none",
+              color: "#333333",
+            },
+          }}
+        >
+          <RRLink to={"/fundraises"}>Your Fundraises</RRLink>
+          {" > "}
+          {FUNDRAISE_NAMES_BY_IDS[type]}
+        </Box>
+        <FormDialog<{ name: string; email: string; amount: number }>
+          formElements={{
+            name: {
+              defaultValue: "",
+              order: 0,
+              component: StringField,
+              validate: (s) => (!s ? "Name is required" : ""),
+            },
+            email: {
+              defaultValue: "",
+              order: 1,
+              component: StringField,
+              validate: (s) => (!s ? "Email is required" : ""),
+            },
+            amount: {
+              defaultValue: 0,
+              order: 2,
+              component: NumberField,
+              validate: (n) => (n < 0 ? "Amount must be greater than 0" : ""),
+            },
+          }}
+          title={"Invite New Investor"}
+          buttonText={"Invite Investor"}
+          onSave={(body) =>
+            postAgreement({ uuid: id, ...body }).then((r) =>
+              setRows([...rows, { ...body, uuid: r.uuid, stage: 0 }])
+            )
+          }
+          defaultIsOpen={defaultIsOpen}
+        />
       </H1>
-      <Box>Coming Soon...</Box>
+      <Container>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Investor</TableCell>
+              <TableCell>Amount</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row) => (
+              <AgreementRow key={row.uuid} {...row} />
+            ))}
+          </TableBody>
+        </Table>
+      </Container>
     </>
   );
 };
