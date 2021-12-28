@@ -17,6 +17,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import ContractIcon from "@mui/icons-material/Note";
 import SettingsIcon from "@mui/icons-material/Settings";
 import DeleteIcon from "@mui/icons-material/Delete";
+import PreviewIcon from "@mui/icons-material/Preview";
 import Body from "@dvargas92495/ui/dist/components/Body";
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
@@ -47,6 +48,7 @@ import TableRow from "@mui/material/TableRow";
 import Card from "@mui/material/Card";
 import type { Handler as GetHandler } from "../functions/fundraises/get";
 import type { Handler as ContractHandler } from "../functions/contract/post";
+import type { Handler as ContractRefreshHandler } from "../functions/contract-refresh/put";
 import type { Handler as GetContractHandler } from "../functions/contract/get";
 import type { Handler as DeleteHandler } from "../functions/contract/delete";
 import type { Handler as PostAgreementHandler } from "../functions/agreement/post";
@@ -424,6 +426,9 @@ const FundraiseContentRow = ({
     }).then(() => onDeleteSuccess(row.uuid));
   }, [row]);
   const navigate = useNavigate();
+  const onPreview = useCallback(() => {
+    navigate(`/fundraises/preview/${row.uuid}`);
+  }, [navigate, row.uuid]);
   return (
     <TableRow>
       <TableCell>{row.type}</TableCell>
@@ -444,7 +449,7 @@ const FundraiseContentRow = ({
           sx={{ marginRight: 1 }}
           onClick={() => {
             navigate(`/fundraises/contract/${row.uuid}`, {
-              state: { open: true },
+              state: { isOpen: true },
             });
           }}
         >
@@ -468,6 +473,12 @@ const FundraiseContentRow = ({
                 <DeleteIcon />
               </ListItemIcon>
               <ListItemText primary={"Delete"} />
+            </ListItem>
+            <ListItem button onClick={onPreview} sx={{ display: "flex" }}>
+              <ListItemIcon>
+                <PreviewIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Preview"} />
             </ListItem>
           </List>
         </Popover>
@@ -929,9 +940,14 @@ const FundraiseDetails = () => {
 };
 
 const FundraisePreview = () => {
-  const { id } = useParams();
+  const { id = '' } = useParams();
   const navigate = useNavigate();
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
+  const refreshPreview = useAuthenticatedHandler<ContractRefreshHandler>({
+    method: "PUT",
+    path: "contract-refresh",
+  });
+  const [loading, setLoading] = useState(false);
   return (
     <>
       <H1>Step 3: Preview Contract</H1>
@@ -957,12 +973,19 @@ const FundraisePreview = () => {
             height: "100%",
           }}
         >
-          <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.11.338/build/pdf.worker.min.js">
-            <Viewer
-              fileUrl={`/_contracts/${id}/draft.pdf`}
-              plugins={[defaultLayoutPluginInstance]}
+          {loading ? (
+            <Skeleton
+              variant={"rectangular"}
+              sx={{ width: "100%", height: "100%" }}
             />
-          </Worker>
+          ) : (
+            <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.11.338/build/pdf.worker.min.js">
+              <Viewer
+                fileUrl={`/_contracts/${id}/draft.pdf`}
+                plugins={[defaultLayoutPluginInstance]}
+              />
+            </Worker>
+          )}
         </Box>
       </Box>
       <Box
@@ -976,13 +999,20 @@ const FundraisePreview = () => {
           variant={"contained"}
           color={"primary"}
           onClick={() =>
-            navigate(`/fundraises/contract/${id}`, { state: { open: true } })
+            navigate(`/fundraises/contract/${id}`, { state: { isOpen: true } })
           }
         >
           Invite Investors
         </Button>
         {process.env.NODE_ENV === "development" && (
-          <Button variant={"outlined"} color={"primary"}>
+          <Button
+            variant={"outlined"}
+            color={"primary"}
+            onClick={() => {
+              setLoading(true);
+              refreshPreview({ uuid: id }).then(() => setLoading(false));
+            }}
+          >
             Refresh PDF Preview
           </Button>
         )}
