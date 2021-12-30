@@ -15,12 +15,31 @@ const contentByType = {
 const prismaClient = new PrismaClient();
 const DEFAULT_FONT = "Helvetica";
 type NestedString = string | string[] | NestedString[];
+type TextPart = {
+  method: "text";
+  argument: string;
+  options: PDFKit.Mixins.TextOptions & {
+    font?: string;
+    x?: number;
+    y?: number;
+  };
+};
+type MoveDownPart = { method: "moveDown" };
+type ListPart = {
+  method: "list";
+  argument: NestedString;
+};
+type TablePart = {
+  method: "table";
+  argument: TextPart[][][];
+  options: {
+    columnWidths: number[];
+    indent: number;
+  };
+};
+type ContractPart = TextPart | MoveDownPart | ListPart | TablePart;
 type ContractData = {
-  parts?: {
-    method: "text" | "moveDown";
-    argument: NestedString;
-    options: PDFKit.Mixins.TextOptions & { font: string };
-  }[];
+  parts?: ContractPart[];
 };
 
 const getFirst = (s: NestedString): string =>
@@ -53,23 +72,72 @@ export const handler = ({ uuid }: { uuid: string }) => {
     const dirname = path.dirname(outFile);
     if (!fs.existsSync(dirname)) fs.mkdirSync(dirname, { recursive: true });
     doc.pipe(fs.createWriteStream(outFile));
-    (data.parts || []).forEach(
-      ({ method = "text", argument = "", options = {} }) => {
-        if (method === "text") {
-          const { font = DEFAULT_FONT, ...opts } = options;
-          doc.font(font);
-          doc.text(getFirst(argument), opts);
-        } else if (method === "moveDown") {
-          doc.moveDown();
-        } else if (method) {
-          doc.font(DEFAULT_FONT);
-          doc.list(
-            typeof argument === "string" ? [argument] : argument,
-            options
-          );
-        }
+    const renderText = (part: TextPart) => {
+      const { argument = "", options = {} } = part;
+      const { font = DEFAULT_FONT, x = 0, y = 0, ...opts } = options;
+      doc.font(font);
+      if (x > 0 || y > 0) {
+        doc.text(argument, x, y, opts);
+      } else {
+        doc.text(argument, opts);
       }
-    );
+    };
+    (data.parts || []).forEach((part) => {
+      if (part.method === "text") {
+        renderText(part);
+      } else if (part.method === "moveDown") {
+        doc.moveDown();
+      } else if (part.method === "list") {
+        const { argument } = part;
+        doc.font(DEFAULT_FONT);
+        doc.list(typeof argument === "string" ? [argument] : argument);
+      } else if (part.method === "table") {
+        const { indent = 0, columnWidths = [] } = part.options;
+        const startX = doc.page.margins.left + indent;
+        const startY = doc.y;
+        const usableWidth =
+          doc.page.width -
+          doc.page.margins.left -
+          doc.page.margins.right -
+          2 * indent;
+        const heights: number[] = [];
+        part.argument.forEach((row, r) => {
+          let maxHeight = 0;
+          row.forEach((cell, c) => {
+            const x =
+              columnWidths.slice(0, c).reduce((prev, cur) => prev + cur, 0) *
+                usableWidth +
+              startX;
+            const y =
+              heights.slice(0, r).reduce((prev, cur) => prev + cur, 0) + startY;
+            let height = 0;
+            cell.forEach((part) => {
+              renderText({
+                ...part,
+                options: {
+                  ...part.options,
+                  x,
+                  y,
+                  width: columnWidths[c] * usableWidth,
+                },
+              });
+              height += doc.heightOfString(part.argument, part.options);
+            });
+            if (height > maxHeight) {
+              maxHeight = height;
+            }
+          });
+          heights.push(maxHeight);
+        });
+        /*
+        const widths = columnWidths.map(c => c*usableWidth); 
+        heights.forEach((h, y) => {
+          widths.forEach((w, x) => {
+            doc.moveTo(startX + x)
+          })
+        })*/
+      }
+    });
     doc.end();
   });
 };
