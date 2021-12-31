@@ -52,6 +52,7 @@ import type { Handler as ContractRefreshHandler } from "../functions/contract-re
 import type { Handler as GetContractHandler } from "../functions/contract/get";
 import type { Handler as DeleteHandler } from "../functions/contract/delete";
 import type { Handler as PostAgreementHandler } from "../functions/agreement/post";
+import type { Handler as ProfileHandler } from "../functions/creator-profile/put";
 import {
   Link as RRLink,
   HashRouter,
@@ -71,6 +72,7 @@ import Skeleton from "@mui/material/Skeleton";
 import FormDialog from "@dvargas92495/ui/dist/components/FormDialog";
 import StringField from "@dvargas92495/ui/dist/components/StringField";
 import NumberField from "@dvargas92495/ui/dist/components/NumberField";
+import QUESTIONAIRES from "./_common/questionaires";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 
@@ -87,13 +89,6 @@ const SOCIAL_PROFILES = [
   { icon: <GitHubIcon /> },
   { icon: <LinkedInIcon /> },
   { icon: <WebIcon /> },
-];
-
-const QUESTIONAIRES = [
-  { q: "Summary of your project or idea (500 char)" },
-  { q: "What do you want to do with the money? (500 char)" },
-  { q: "What's your track record as a creator of company? (500 char)" },
-  { q: "What's your plans of making revenue? (500 char)" },
 ];
 
 const SocialProfile = React.memo(
@@ -144,64 +139,70 @@ const PAYMENT_PREFERENCES = [{ label: "PayPal" }, { label: "Bank Transfer" }];
 
 const ProfileContent = () => {
   const {
+    id,
     update,
     firstName,
     emailAddresses,
     primaryEmailAddressId,
     profileImageUrl,
-    unsafeMetadata: {
-      middle_name,
-      contact_email = emailAddresses.find((e) => e.id === primaryEmailAddressId)
+    publicMetadata: {
+      middleName,
+      contactEmail = emailAddresses.find((e) => e.id === primaryEmailAddressId)
         ?.emailAddress,
-      social_profiles,
+      socialProfiles,
       questionaires,
-      attach_deck,
-      company_name,
-      registered_country,
-      company_registration_number,
-      company_address_street,
-      company_address_number,
-      company_address_city,
-      company_address_zip,
-      payment_preference,
-      ...rest
+      attachDeck,
+      companyName,
+      registeredCountry,
+      companyRegistrationNumber,
+      companyAddressStreet,
+      companyAddressNumber,
+      companyAddressCity,
+      companyAddressZip,
+      paymentPreference,
+      completed = false,
     } = {},
     lastName,
   } = useUser();
+  const profileHandler = useAuthenticatedHandler<ProfileHandler>({
+    path: "creator-profile",
+    method: "PUT",
+  });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [firstNameValue, setFirstNameValue] = useState(firstName || "");
-  const [middleNameValue, setMiddleNameValue] = useState(middle_name || "");
+  const [middleNameValue, setMiddleNameValue] = useState(middleName || "");
   const [lastNameValue, setLastNameValue] = useState(lastName || "");
   const [contactEmailValue, setContactEmailValue] = useState(
-    contact_email || ""
+    contactEmail || ""
   );
   const [socialProfileValues, setSocialProfileValues] = useState(
-    (social_profiles as string[]) || SOCIAL_PROFILES.map(() => "")
+    (socialProfiles as string[]) || SOCIAL_PROFILES.map(() => "")
   );
   const [questionaireValues, setQuestionaireValues] = useState(
     (questionaires as string[]) || QUESTIONAIRES.map(() => "")
   );
-  const [attachDeckValue, setAttachDeckValue] = useState(attach_deck || "");
-  const [companyNameValue, setCompanyNameValue] = useState(company_name || "");
+  const [attachDeckValue, setAttachDeckValue] = useState(attachDeck || "");
+  const [companyNameValue, setCompanyNameValue] = useState(companyName || "");
   const [registeredCountryValue, setRegisteredCountryValue] = useState(
-    registered_country || ""
+    registeredCountry || ""
   );
   const [companyRegistrationNumberValue, setCompanyRegistrationNumberValue] =
-    useState(company_registration_number || "");
+    useState(companyRegistrationNumber || "");
   const [companyAddressStreetValue, setCompanyAddressStreetValue] = useState(
-    company_address_street || ""
+    companyAddressStreet || ""
   );
   const [companyAddressNumberValue, setCompanyAddressNumberValue] = useState(
-    company_address_number || ""
+    companyAddressNumber || ""
   );
   const [companyAddressCityValue, setCompanyAddressCityValue] = useState(
-    company_address_city || ""
+    companyAddressCity || ""
   );
   const [companyAddressZipValue, setCompanyAddressZipValue] = useState(
-    company_address_zip || ""
+    companyAddressZip || ""
   );
   const [paymentPreferenceValue, setPaymentPreferenceValue] = useState(
-    payment_preference || ""
+    paymentPreference || ""
   );
   return (
     <Box sx={{ maxWidth: "600px" }}>
@@ -335,6 +336,7 @@ const ProfileContent = () => {
           onChange={(e) => setCompanyAddressStreetValue(e.target.value)}
           required
         />
+        d
         <TextField
           sx={{ ml: 2 }}
           label={"No"}
@@ -372,38 +374,53 @@ const ProfileContent = () => {
           </Box>
         ))}
       </RadioGroup>
-      <Box sx={{ alignItems: "center", display: "flex" }}>
-        <Button
-          onClick={() => {
-            setLoading(true);
-            update({
-              firstName: firstNameValue,
-              lastName: lastNameValue,
-              unsafeMetadata: {
-                ...rest,
-                middleName: middleNameValue,
-                contactEmail: contactEmailValue,
-                socialProfiles: socialProfileValues,
-                questionaires: questionaireValues,
-                attachDeck: attachDeckValue,
-                companyName: companyNameValue,
-                registeredCountry: registeredCountryValue,
-                companyRegistrationNumber: companyRegistrationNumberValue,
-                companyAddressNumber: companyAddressNumberValue,
-                companyAddressStreet: companyAddressStreetValue,
-                companyAddressCity: companyAddressCityValue,
-                companyAddressZip: companyAddressZipValue,
-                paymentPreference: paymentPreferenceValue,
-                completed: true,
-              },
-            }).finally(() => setLoading(false));
-          }}
-          variant={"contained"}
-          sx={{ mr: 2 }}
-        >
-          Save Edits
-        </Button>
-        {loading && <CircularProgress size={20} />}
+      <Box
+        sx={{
+          alignItems: "center",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box sx={{ alignItems: "center", display: "flex" }}>
+          <Button
+            onClick={() => {
+              setLoading(true);
+              profileHandler({
+                firstName: firstNameValue,
+                lastName: lastNameValue,
+                publicMetadata: {
+                  middleName: middleNameValue,
+                  contactEmail: contactEmailValue,
+                  socialProfiles: socialProfileValues,
+                  questionaires: questionaireValues,
+                  attachDeck: attachDeckValue,
+                  companyName: companyNameValue,
+                  registeredCountry: registeredCountryValue,
+                  companyRegistrationNumber: companyRegistrationNumberValue,
+                  companyAddressNumber: companyAddressNumberValue,
+                  companyAddressStreet: companyAddressStreetValue,
+                  companyAddressCity: companyAddressCityValue,
+                  companyAddressZip: companyAddressZipValue,
+                  paymentPreference: paymentPreferenceValue,
+                },
+              })
+                .then(() => update({}))
+                .catch((e) => setError(e.message))
+                .finally(() => setLoading(false));
+            }}
+            variant={"contained"}
+            sx={{ mr: 2 }}
+          >
+            Save Edits
+          </Button>
+          {loading && <CircularProgress size={20} />}
+          <span color={"darkred"}>{error}</span>
+        </Box>
+        {completed && (
+          <Button href={`/creator/${id}`} variant={"outlined"}>
+            See Public Page
+          </Button>
+        )}
       </Box>
     </Box>
   );
@@ -940,7 +957,7 @@ const FundraiseDetails = () => {
 };
 
 const FundraisePreview = () => {
-  const { id = '' } = useParams();
+  const { id = "" } = useParams();
   const navigate = useNavigate();
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const refreshPreview = useAuthenticatedHandler<ContractRefreshHandler>({
