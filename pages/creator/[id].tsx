@@ -106,7 +106,7 @@ const CreatorProfile = ({
           lineHeight: "20px",
           my: 0,
           color: "#888888",
-          maginBottom: "8px",
+          marginBottom: "8px",
         }}
       >
         Fundraises
