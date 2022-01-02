@@ -1,5 +1,8 @@
 import { users } from "@clerk/clerk-sdk-node";
 import formatError from "@dvargas92495/api/formatError";
+import { PrismaClient } from "@prisma/client";
+
+const prismaClient = new PrismaClient();
 
 export type Props = {
   fullName: string;
@@ -7,6 +10,7 @@ export type Props = {
   profileImageUrl: string;
   socialProfiles: string[];
   questionaires: string[];
+  fundraises: { type: number, uuid: string }[];
 };
 
 const getStaticProps = ({
@@ -16,9 +20,11 @@ const getStaticProps = ({
 }): Promise<{
   props: Props;
 }> => {
-  return users
-    .getUser(id)
-    .then((u) => ({
+  return Promise.all([
+    users.getUser(id),
+    prismaClient.contract.findMany({ where: { userId: id } }),
+  ])
+    .then(([u, fs]) => ({
       props: {
         fullName: `${u.firstName} ${
           typeof u.publicMetadata.middleName === "string"
@@ -31,6 +37,7 @@ const getStaticProps = ({
         profileImageUrl: u.profileImageUrl || "",
         socialProfiles: u.publicMetadata.socialProfiles as string[],
         questionaires: u.publicMetadata.questionaires as string[],
+        fundraises: fs.map((f) => ({ type: f.type, uuid: f.uuid })),
       },
     }))
     .catch((e) => {

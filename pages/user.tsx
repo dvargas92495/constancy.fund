@@ -506,7 +506,7 @@ const FundraiseContentRow = ({
 
 const FundraiseContentTable = () => {
   const {
-    unsafeMetadata: { completed = false },
+    publicMetadata: { completed = false },
   } = useUser();
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Fundraises>([]);
