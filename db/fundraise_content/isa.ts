@@ -44,7 +44,7 @@ export default {
     },
     {
       method: "text",
-      argument: '") is entered into on {date:mmm do, yyyy} ("',
+      argument: '") is entered into on {date:MMMM do, yyyy} ("',
       options: {
         continued: true,
       },
@@ -332,7 +332,7 @@ export default {
     },
     {
       method: "text",
-      argument: "attached hereto.",
+      argument: " attached hereto.",
       options: {
         underline: false,
         paragraphGap: 12,
@@ -443,7 +443,7 @@ export default {
     {
       method: "text",
       argument:
-        " means $20,000, which shall be distributed to Participant in equal monthly increments over a 12 month period (with each such increment being made available by the 10th day of each month). Investor and Participant may, from time to time, agree to increase the funding amount in writing by both parties. For the avoidance of doubt, any increase in the funding amount shall not adversely affect any obligations owing by Participant to Investor, including but not limited to the obligation of Participant to pay the entire Payment Cap (inclusive of any Funding Amount increases) within the Payment Term.",
+        " means ${amount}, which shall be distributed to Participant {conditional:supportType,monthly,in equal monthly increments over a 12 month period (with each such increment being made available by the 10th day of each month)}{conditional:supportType,once,in a single payment on the Effective Date}. Investor and Participant may, from time to time, agree to increase the funding amount in writing by both parties. For the avoidance of doubt, any increase in the funding amount shall not adversely affect any obligations owing by Participant to Investor, including but not limited to the obligation of Participant to pay the entire Payment Cap (inclusive of any Funding Amount increases) within the Payment Term.",
       options: {
         paragraphGap: 12,
       },
@@ -466,7 +466,7 @@ export default {
     },
     {
       method: "text",
-      argument: " means $20,000 annually.",
+      argument: " means ${threshold} annually.",
       options: {
         paragraphGap: 12,
       },
@@ -490,7 +490,7 @@ export default {
     {
       method: "text",
       argument:
-        " means 20%. The Income Share percentage is not an interest rate or annual percentage rate.",
+        " means {share}%. The Income Share percentage is not an interest rate or annual percentage rate.",
       options: {
         paragraphGap: 12,
       },
@@ -599,7 +599,7 @@ export default {
     },
     {
       method: "text",
-      argument: " means 3 times the Funding Amount.",
+      argument: " means {divide:return,amount} times the Funding Amount.",
       options: {
         paragraphGap: 12,
       },
@@ -622,7 +622,7 @@ export default {
     },
     {
       method: "text",
-      argument: " means 60 months.",
+      argument: " means {multiply:cap,12} months.",
       options: {
         paragraphGap: 12,
       },
@@ -2286,6 +2286,94 @@ export default {
       options: {
         paragraphGap: 24,
       },
+    },
+    {
+      method: "table",
+      argument: [
+        [
+          [
+            {
+              method: "text",
+              argument: '"INVESTOR"',
+              options: {
+                font: "Helvetica-Bold",
+              },
+            },
+            {
+              method: "text",
+              argument: "{investor_company}",
+              options: {
+                paragraphGap: 12,
+              },
+            },
+            {
+              method: "text",
+              argument: "By:",
+            },
+            {
+              method: "text",
+              argument: "Name: {investor}",
+            },
+            {
+              method: "text",
+              argument: "Title: Manager",
+            },
+          ],
+          [
+            {
+              method: "text",
+              argument: '"PARTICIPANT"',
+              options: {
+                font: "Helvetica-Bold",
+                paragraphGap: 36,
+              },
+            },
+            {
+              method: "text",
+              argument: "Name: {full_name}",
+            },
+          ],
+        ],
+      ],
+      options: {
+        columnWidths: [0.5, 0.5],
+        hideLines: true,
+      },
+    },
+    { method: "addPage" },
+    { method: "text", argument: "EXHIBIT A", options: { align: "center" } },
+    {
+      method: "text",
+      argument: "JOINDER AGREEMENT",
+      options: { paragraphGap: 36, align: "center" },
+    },
+    {
+      method: "text",
+      argument:
+        "By execution and delivery of this Joinder Agreement, the undersigned hereby (i) agrees and acknowledges that the undersigned is a “Company” as defined in that certain Income Sharing Agreement, dated as of [__________] (the ",
+      options: { continued: true },
+    },
+    {
+      method: "text",
+      argument: "“ISA”",
+      options: { continued: true, font: "Helvetica-BoldOblique" },
+    },
+    {
+      method: "text",
+      argument:
+        "), by and among {full_name} and {investor_company}, a {investor_company_type} (the ",
+      options: { continued: true },
+    },
+    {
+      method: "text",
+      argument: "“Investor”",
+      options: { continued: true, font: "Helvetica-BoldOblique" },
+    },
+    {
+      method: "text",
+      argument:
+        "”) and each of the Companies (as defined in the ISA), as applicable; and (ii) agrees to be bound by the terms, conditions, and obligations subject to the obligations of the ISA.",
+      options: { paragraphGap: 12 },
     },
   ],
 };
