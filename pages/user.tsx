@@ -64,6 +64,7 @@ import {
   useParams,
 } from "react-router-dom";
 import FUNDRAISE_TYPES from "../db/fundraise_types";
+import CONTRACT_STAGES from "../db/contract_stages";
 import InputAdornment from "@mui/material/InputAdornment";
 import Popover from "@mui/material/Popover";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
@@ -1043,13 +1044,26 @@ const FundraisePreview = () => {
 };
 
 type Agreements = Awaited<ReturnType<GetContractHandler>>["agreements"];
+const STAGE_COLORS = ["#C4C4C4", "#D4E862", "#2FEC00", "#FF8B8B", "#8312DD"];
 
 const AgreementRow = (row: Agreements[number]) => {
   return (
     <TableRow>
       <TableCell>{row.name}</TableCell>
       <TableCell>{row.amount}</TableCell>
-      <TableCell>{row.stage}</TableCell>
+      <TableCell>
+        <Box
+          sx={{
+            height: 24,
+            borderRadius: 12,
+            px: "16px",
+            py: "4px",
+            backgroundColor: STAGE_COLORS[row.stage],
+          }}
+        >
+          {CONTRACT_STAGES[row.stage].replace(/_/g, " ").toLowerCase()}
+        </Box>
+      </TableCell>
       <TableCell></TableCell>
     </TableRow>
   );

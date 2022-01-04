@@ -172,6 +172,7 @@ const EnterDetails = ({
       >
         Go Back
       </Button>
+      <H1 sx={{ fontSize: 24 }}>Add your details</H1>
       <TextField
         sx={{ mb: 2 }}
         value={name}
@@ -196,6 +197,7 @@ const EnterDetails = ({
         type={"number"}
         required
         fullWidth
+        disabled={!!state?.amount}
       />
       <Button variant={"contained"} color={"primary"} onClick={onSign}>
         Continue to Signing Term Sheets
