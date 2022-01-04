@@ -336,7 +336,6 @@ const ProfileContent = () => {
           onChange={(e) => setCompanyAddressStreetValue(e.target.value)}
           required
         />
-        d
         <TextField
           sx={{ ml: 2 }}
           label={"No"}
@@ -417,7 +416,12 @@ const ProfileContent = () => {
           <span color={"darkred"}>{error}</span>
         </Box>
         {completed && (
-          <Button href={`/creator/${id}`} variant={"outlined"}>
+          <Button
+            href={`/creator/${id}`}
+            variant={"outlined"}
+            target="_blank"
+            rel="noopener"
+          >
             See Public Page
           </Button>
         )}
