@@ -10,7 +10,7 @@ export type Props = {
   profileImageUrl: string;
   socialProfiles: string[];
   questionaires: string[];
-  fundraises: { type: number, uuid: string }[];
+  fundraises: { type: number; uuid: string }[];
 };
 
 const getStaticProps = ({
@@ -41,7 +41,17 @@ const getStaticProps = ({
       },
     }))
     .catch((e) => {
-      throw new Error(formatError(e));
+      console.error(formatError(e));
+      return {
+        props: {
+          fullName: ``,
+          email: "",
+          profileImageUrl: "",
+          socialProfiles: [],
+          questionaires: [],
+          fundraises: [],
+        },
+      };
     });
 };
 

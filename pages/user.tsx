@@ -1045,8 +1045,27 @@ const FundraisePreview = () => {
 
 type Agreements = Awaited<ReturnType<GetContractHandler>>["agreements"];
 const STAGE_COLORS = ["#C4C4C4", "#D4E862", "#2FEC00", "#FF8B8B", "#8312DD"];
+const STAGE_ACTIONS: ((a: {
+  contractUuid: string;
+  uuid: string;
+}) => React.ReactElement)[] = [
+  () => <span />,
+  (row: { contractUuid: string; uuid: string }) => (
+    <RRLink to={`/fundraises/preview/${row.contractUuid}`}>
+      Sign Contract
+    </RRLink>
+  ),
+  (row) => (
+    <RRLink to={`/fundraises/preview/${row.contractUuid}`}>
+      View Contract
+    </RRLink>
+  ),
+  () => <span />,
+  () => <span />,
+];
 
-const AgreementRow = (row: Agreements[number]) => {
+const AgreementRow = (row: Agreements[number] & {contractUuid: string}) => {
+  const StageAction = STAGE_ACTIONS[row.stage];
   return (
     <TableRow>
       <TableCell>{row.name}</TableCell>
@@ -1064,7 +1083,9 @@ const AgreementRow = (row: Agreements[number]) => {
           {CONTRACT_STAGES[row.stage].replace(/_/g, " ").toLowerCase()}
         </Box>
       </TableCell>
-      <TableCell></TableCell>
+      <TableCell>
+        <StageAction uuid={row.uuid} contractUuid={row.contractUuid} />
+      </TableCell>
     </TableRow>
   );
 };
@@ -1168,7 +1189,7 @@ const FundraiseContract = () => {
           </TableHead>
           <TableBody>
             {rows.map((row) => (
-              <AgreementRow key={row.uuid} {...row} />
+              <AgreementRow key={row.uuid} {...row} contractUuid={id} />
             ))}
           </TableBody>
         </Table>

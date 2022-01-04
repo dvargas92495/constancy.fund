@@ -80,7 +80,8 @@
         ]
       ],
       ".*": [
-        "./db/schema.prisma"
+        "./db/schema.prisma",
+        ".prisma/client/libquery_engine-rhel-openssl-1.0.x.so.node"
       ]
     }
   }
