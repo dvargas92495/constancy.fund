@@ -202,7 +202,7 @@ const ProfileContent = () => {
     companyAddressZip || ""
   );
   const [paymentPreferenceValue, setPaymentPreferenceValue] = useState<string>(
-    paymentPreference as string || ""
+    (paymentPreference as string) || ""
   );
   return (
     <Box sx={{ maxWidth: "600px" }}>
@@ -959,6 +959,19 @@ const FundraisePreview = () => {
     path: "contract-refresh",
   });
   const [loading, setLoading] = useState(false);
+  const onRefresh = useCallback(() => {
+    setLoading(true);
+    refreshPreview({ uuid: id }).then(() => setLoading(false));
+  }, [setLoading, id, refreshPreview]);
+  useEffect(() => {
+    const listener = (e: KeyboardEvent) => {
+      if (e.shiftKey && e.key === "R") {
+        onRefresh();
+      }
+    };
+    document.addEventListener("keydown", listener);
+    return () => document.removeEventListener("keydown", listener);
+  }, [onRefresh]);
   return (
     <>
       <H1>Step 3: Preview Contract</H1>
