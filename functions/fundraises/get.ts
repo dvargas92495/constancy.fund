@@ -4,8 +4,9 @@ import prisma from "../_common/prisma";
 import type { User } from "@clerk/clerk-sdk-node";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
 
-const logic = ({ user: { id } }: { user: User }) =>
-  prisma.contract
+const logic = ({ user: { id } }: { user: User }) => {
+  console.log("before query", new Date());
+  return prisma.contract
     .findMany({
       where: { userId: id || "" },
       select: {
@@ -25,15 +26,19 @@ const logic = ({ user: { id } }: { user: User }) =>
         },
       },
     })
-    .then((fundraises) => ({
-      fundraises: fundraises.map((f) => ({
-        uuid: f.uuid,
-        type: FUNDRAISE_TYPES[f.type].id,
-        investorCount: f.agreements.length,
-        details: f.contractDetails,
-        progress: 0,
-      })),
-    }));
+    .then((fundraises) => {
+      console.log("returned query");
+      return {
+        fundraises: fundraises.map((f) => ({
+          uuid: f.uuid,
+          type: FUNDRAISE_TYPES[f.type].id,
+          investorCount: f.agreements.length,
+          details: f.contractDetails,
+          progress: 0,
+        })),
+      };
+    });
+};
 
 export const handler = clerkAuthenticateLambda(
   createAPIGatewayProxyHandler(logic)

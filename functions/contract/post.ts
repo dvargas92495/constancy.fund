@@ -4,6 +4,7 @@ import prisma from "../_common/prisma";
 import { dbIdByTypeId } from "../../db/fundraise_types";
 import invokeAsync from "@dvargas92495/api/invokeAsync";
 import type { Handler as AsyncHandler } from "../create-contract-pdf";
+import type { Handler as ProfileHandler } from "../build-creator-profile-page";
 
 const logic = ({
   data,
@@ -31,10 +32,16 @@ const logic = ({
           })),
         })
         .then(() =>
-          invokeAsync<Parameters<AsyncHandler>[0]>({
-            path: "create-contract-pdf",
-            data: { uuid: contract.uuid },
-          })
+          Promise.all([
+            invokeAsync<Parameters<AsyncHandler>[0]>({
+              path: "create-contract-pdf",
+              data: { uuid: contract.uuid },
+            }),
+            invokeAsync<Parameters<ProfileHandler>[0]>({
+              path: "build-creator-profile-page",
+              data: { id: userId },
+            }),
+          ])
         )
         .then(() => ({ id: contract.uuid }))
     );
