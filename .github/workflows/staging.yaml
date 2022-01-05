@@ -14,7 +14,6 @@ env:
   DATABASE_URL: mysql://staging_crowdinvestin_me:${{ secrets.STAGING_MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/staging_crowdinvestin_me
   FE_DIR_PREFIX: /tmp
   HOST: https://staging.crowdinvestin.me
-  NODE_ENV: development
   STRIPE_PUBLIC_KEY: ${{ secrets.STAGING_STRIPE_PUBLIC_KEY }}
   STRIPE_SECRET_KEY: ${{ secrets.STAGING_STRIPE_SECRET_KEY }}
   STRIPE_CHECKOUT_SECRET: ${{ secrets.STAGING_STRIPE_CHECKOUT_SECRET }}
@@ -35,6 +34,8 @@ jobs:
         run: npm run migrate
       - name: build api
         run: npm run compile
+        env:
+          NODE_ENV: development
       - name: deploy api
         run: npm run publish -- --name staging.crowdinvestin.me
         env:        
