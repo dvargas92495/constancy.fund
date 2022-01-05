@@ -73,6 +73,7 @@ import Skeleton from "@mui/material/Skeleton";
 import FormDialog from "@dvargas92495/ui/dist/components/FormDialog";
 import StringField from "@dvargas92495/ui/dist/components/StringField";
 import NumberField from "@dvargas92495/ui/dist/components/NumberField";
+import PaymentPreferences from "./_common/PaymentPreferences";
 import QUESTIONAIRES from "./_common/questionaires";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
@@ -135,8 +136,6 @@ const Questionaire = React.memo(
     />
   )
 );
-
-const PAYMENT_PREFERENCES = [{ label: "PayPal" }, { label: "Bank Transfer" }];
 
 const ProfileContent = () => {
   const {
@@ -202,8 +201,8 @@ const ProfileContent = () => {
   const [companyAddressZipValue, setCompanyAddressZipValue] = useState(
     companyAddressZip || ""
   );
-  const [paymentPreferenceValue, setPaymentPreferenceValue] = useState(
-    paymentPreference || ""
+  const [paymentPreferenceValue, setPaymentPreferenceValue] = useState<string>(
+    paymentPreference as string || ""
   );
   return (
     <Box sx={{ maxWidth: "600px" }}>
@@ -360,20 +359,10 @@ const ProfileContent = () => {
           required
         />
       </Box>
-      <H4>Payment Preferences</H4>
-      <Body sx={{ mt: 0, mb: 2 }}>How do you want to be paid?</Body>
-      <RadioGroup
-        sx={{ mb: 2 }}
-        value={paymentPreferenceValue || ""}
-        onChange={(e) => setPaymentPreferenceValue(e.target.value)}
-      >
-        {PAYMENT_PREFERENCES.map(({ label }, key) => (
-          <Box sx={{ display: "flex", alignItems: "center" }} key={key}>
-            <Radio value={label} sx={{ mx: 1 }} />
-            {label}
-          </Box>
-        ))}
-      </RadioGroup>
+      <PaymentPreferences
+        value={paymentPreferenceValue}
+        setValue={setPaymentPreferenceValue}
+      />
       <Box
         sx={{
           alignItems: "center",
@@ -1064,7 +1053,7 @@ const STAGE_ACTIONS: ((a: {
   () => <span />,
 ];
 
-const AgreementRow = (row: Agreements[number] & {contractUuid: string}) => {
+const AgreementRow = (row: Agreements[number] & { contractUuid: string }) => {
   const StageAction = STAGE_ACTIONS[row.stage];
   return (
     <TableRow>

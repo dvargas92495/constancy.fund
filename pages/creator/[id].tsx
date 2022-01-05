@@ -23,6 +23,7 @@ import FUNDRAISE_TYPES from "../../db/fundraise_types";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import useHandler from "@dvargas92495/ui/dist/useHandler";
+import PaymentPreference from "../_common/PaymentPreferences";
 import type { Handler as GetHandler } from "../../functions/agreement/get";
 
 const icons = [
@@ -161,6 +162,7 @@ const EnterDetails = ({
   const [name, setName] = useState(state?.name || "");
   const [email, setEmail] = useState(state?.email || "");
   const [amount, setAmount] = useState(state?.amount || 0);
+  const [paymentPreference, setPaymentPreference] = useState("");
   const onSign = useCallback(() => {
     setMode({ path: "pending" });
   }, [setMode]);
@@ -198,6 +200,10 @@ const EnterDetails = ({
         required
         fullWidth
         disabled={!!state?.amount}
+      />
+      <PaymentPreference 
+        value={paymentPreference}
+        setValue={setPaymentPreference}
       />
       <Button variant={"contained"} color={"primary"} onClick={onSign}>
         Continue to Signing Term Sheets
