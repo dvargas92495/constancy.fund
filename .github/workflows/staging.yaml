@@ -30,8 +30,6 @@ jobs:
         run: npm install
       - name: migrate
         run: npm run migrate
-      - name: setup env
-        run: echo "DATABASE_URL=$DATABASE_URL" > .env
       - name: build api
         run: npm run compile
       - name: deploy api

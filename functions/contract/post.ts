@@ -1,11 +1,9 @@
 import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../_common/prisma";
 import { dbIdByTypeId } from "../../db/fundraise_types";
 import invokeAsync from "@dvargas92495/api/invokeAsync";
 import type { Handler as AsyncHandler } from "../create-contract-pdf";
-
-const prismaClient = new PrismaClient();
 
 const logic = ({
   data,
@@ -16,7 +14,7 @@ const logic = ({
   id: string;
   user: { id: string };
 }) => {
-  return prismaClient.contract
+  return prisma.contract
     .create({
       data: {
         type: dbIdByTypeId[id],
@@ -24,7 +22,7 @@ const logic = ({
       },
     })
     .then((contract) =>
-      prismaClient.contractDetail
+      prisma.contractDetail
         .createMany({
           data: Object.entries(data).map(([label, value]) => ({
             label,

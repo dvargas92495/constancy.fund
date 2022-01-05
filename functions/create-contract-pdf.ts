@@ -1,5 +1,5 @@
 import FUNDRAISE_TYPES from "../db/fundraise_types";
-import { PrismaClient } from "@prisma/client";
+import prisma from "./_common/prisma";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
@@ -16,7 +16,6 @@ const contentByType = {
   safe: {},
 };
 
-const prismaClient = new PrismaClient();
 const DEFAULT_FONT = "Helvetica";
 type NestedString = string | string[] | NestedString[];
 type TextPart = {
@@ -60,7 +59,7 @@ const getFirst = (s: NestedString): string =>
 export const handler = ({ uuid }: { uuid: string }) => {
   const outFile = path.join(FE_OUT_DIR, "_contracts", uuid, "draft.pdf");
   return Promise.all([
-    prismaClient.contract
+    prisma.contract
       .findFirst({
         select: { type: true, userId: true },
         where: { uuid },
@@ -75,7 +74,7 @@ export const handler = ({ uuid }: { uuid: string }) => {
             }))
           : null
       ),
-    prismaClient.contractDetail.findMany({
+    prisma.contractDetail.findMany({
       select: { label: true, value: true },
       where: { contractUuid: uuid },
     }),

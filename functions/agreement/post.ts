@@ -2,12 +2,10 @@ import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import type { User } from "@clerk/clerk-sdk-node";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../_common/prisma";
 import sendEmail from "aws-sdk-plus/dist/sendEmail";
 import React from "react";
 import EmailLayout from "../_common/EmailLayout";
-
-const prismaClient = new PrismaClient();
 
 const logic = ({
   user,
@@ -22,7 +20,7 @@ const logic = ({
   email: string;
   amount: number;
 }) => {
-  return prismaClient.contract
+  return prisma.contract
     .findFirst({ where: { uuid } })
     .then((fundraise) => {
       if (!fundraise)
@@ -31,7 +29,7 @@ const logic = ({
         throw new MethodNotAllowedError(
           `Could not find contract with id ${uuid}`
         );
-      return prismaClient.agreement.create({
+      return prisma.agreement.create({
         data: {
           name,
           email,

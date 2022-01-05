@@ -1,13 +1,11 @@
 import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../_common/prisma";
 import type { User } from "@clerk/clerk-sdk-node";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
 
-const prismaClient = new PrismaClient();
-
 const logic = ({ user: { id } }: { user: User }) =>
-  prismaClient.contract
+  prisma.contract
     .findMany({
       where: { userId: id || "" },
       select: {

@@ -1,8 +1,6 @@
 import { users } from "@clerk/clerk-sdk-node";
 import formatError from "@dvargas92495/api/formatError";
-import { PrismaClient } from "@prisma/client";
-
-const prismaClient = new PrismaClient();
+import prisma from "../../functions/_common/prisma";
 
 export type Props = {
   fullName: string;
@@ -22,7 +20,7 @@ const getStaticProps = ({
 }> => {
   return Promise.all([
     users.getUser(id),
-    prismaClient.contract.findMany({ where: { userId: id } }),
+    prisma.contract.findMany({ where: { userId: id } }),
   ])
     .then(([u, fs]) => ({
       props: {

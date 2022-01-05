@@ -1,13 +1,11 @@
 import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
 import { createAPIGatewayProxyHandler } from "aws-sdk-plus";
 import type { User } from "@clerk/clerk-sdk-node";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../_common/prisma";
 import { NotFoundError, MethodNotAllowedError } from "aws-sdk-plus/dist/errors";
 
-const prismaClient = new PrismaClient();
-
 const logic = ({ uuid, user: { id: userId } }: { uuid: string; user: User }) =>
-  prismaClient.contract
+  prisma.contract
     .findFirst({
       where: { uuid },
       select: { userId: true },
@@ -17,11 +15,11 @@ const logic = ({ uuid, user: { id: userId } }: { uuid: string; user: User }) =>
       if (userId !== contract.userId)
         throw new MethodNotAllowedError(`Not authorized to delete ${uuid}`);
       return Promise.all([
-        prismaClient.contractDetail.deleteMany({
+        prisma.contractDetail.deleteMany({
           where: { contractUuid: uuid },
         }),
-        prismaClient.agreement.deleteMany({ where: { contractUuid: uuid } }),
-      ]).then(() => prismaClient.contract.delete({ where: { uuid } }));
+        prisma.agreement.deleteMany({ where: { contractUuid: uuid } }),
+      ]).then(() => prisma.contract.delete({ where: { uuid } }));
     })
     .then(() => ({ success: true }));
 

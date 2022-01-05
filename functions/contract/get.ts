@@ -1,14 +1,12 @@
 import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../_common/prisma";
 import type { User } from "@clerk/clerk-sdk-node";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
 
-const prismaClient = new PrismaClient();
-
 const logic = ({ uuid, user: { id } }: { uuid: string; user: User }) =>
-  prismaClient.contract
+  prisma.contract
     .findFirst({
       where: { uuid },
       select: {
@@ -29,7 +27,9 @@ const logic = ({ uuid, user: { id } }: { uuid: string; user: User }) =>
       if (!fundraise)
         throw new NotFoundError(`Could not find contract with id ${uuid}`);
       if (id !== fundraise.userId)
-        throw new MethodNotAllowedError(`Could not find contract with id ${uuid}`);
+        throw new MethodNotAllowedError(
+          `Could not find contract with id ${uuid}`
+        );
       return {
         type: FUNDRAISE_TYPES[fundraise.type].id,
         agreements: fundraise.agreements,

@@ -31,8 +31,6 @@ jobs:
           node-version: 14.17.6
       - name: install
         run: npm install
-      - name: setup env
-        run: echo "DATABASE_URL=$DATABASE_URL" > .env
       - name: build
         run: npm run compile
       - name: deploy

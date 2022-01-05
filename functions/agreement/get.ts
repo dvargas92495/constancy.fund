@@ -1,11 +1,9 @@
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import { NotFoundError } from "aws-sdk-plus/dist/errors";
-import { PrismaClient } from "@prisma/client";
-
-const prismaClient = new PrismaClient();
+import prisma from "../_common/prisma";
 
 const logic = ({ uuid }: { uuid: string }) =>
-  prismaClient.agreement
+  prisma.agreement
     .findFirst({
       where: { uuid },
     })
