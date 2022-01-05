@@ -33,9 +33,7 @@ jobs:
       - name: migrate
         run: npm run migrate
       - name: build api
-        run: npm run compile
-        env:
-          NODE_ENV: development
+        run: npm run compile -- --readable
       - name: deploy api
         run: npm run publish -- --name staging.crowdinvestin.me
         env:        

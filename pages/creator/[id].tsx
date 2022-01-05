@@ -25,6 +25,7 @@ import TextField from "@mui/material/TextField";
 import useHandler from "@dvargas92495/ui/dist/useHandler";
 import PaymentPreference from "../_common/PaymentPreferences";
 import type { Handler as GetHandler } from "../../functions/agreement/get";
+import type { Handler as PutHandler } from "../../functions/agreement/put";
 
 const icons = [
   { test: /twitter\.com/, component: TwitterIcon },
@@ -163,8 +164,23 @@ const EnterDetails = ({
   const [email, setEmail] = useState(state?.email || "");
   const [amount, setAmount] = useState(state?.amount || 0);
   const [paymentPreference, setPaymentPreference] = useState("");
+  const [loading, setLoading] = useState(false);
+  const putHandler = useHandler<PutHandler>({
+    path: "agreement",
+    method: "PUT",
+  });
   const onSign = useCallback(() => {
-    setMode({ path: "pending" });
+    setLoading(true);
+    putHandler({
+      name,
+      email,
+      amount,
+      uuid: state?.uuid,
+    })
+      .then(() => setMode({ path: "pending" }))
+      .catch(() => {
+        setLoading(false);
+      });
   }, [setMode]);
   return (
     <>
@@ -201,11 +217,16 @@ const EnterDetails = ({
         fullWidth
         disabled={!!state?.amount}
       />
-      <PaymentPreference 
+      <PaymentPreference
         value={paymentPreference}
         setValue={setPaymentPreference}
       />
-      <Button variant={"contained"} color={"primary"} onClick={onSign}>
+      <Button
+        variant={"contained"}
+        color={"primary"}
+        onClick={onSign}
+        disabled={loading}
+      >
         Continue to Signing Term Sheets
       </Button>
     </>
