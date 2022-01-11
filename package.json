@@ -59,10 +59,7 @@
   "fuego": {
     "functionFileDependencies": {
       "create-contract-pdf": [
-        [
-          "./node_modules/fontkit/indic.trie",
-          "data.trie"
-        ],
+        "./node_modules/unicode-properties/data.trie",
         "./node_modules/fontkit/indic.trie",
         "./node_modules/fontkit/use.trie",
         "./node_modules/linebreak/src/classes.trie",
