@@ -104,7 +104,7 @@ module "aws_static_site_staging" {
 
 module "aws-serverless-backend_staging" {
   source  = "dvargas92495/serverless-backend/aws"
-  version = "2.3.0"
+  version = "2.3.1"
 
   api_name = "staging-crowdinvestin-me"
   sizes = {
