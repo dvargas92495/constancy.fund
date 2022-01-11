@@ -5,7 +5,6 @@ import type { User } from "@clerk/clerk-sdk-node";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
 
 const logic = ({ user: { id } }: { user: User }) => {
-  console.log("before query", new Date());
   return prisma.contract
     .findMany({
       where: { userId: id || "" },
@@ -27,7 +26,6 @@ const logic = ({ user: { id } }: { user: User }) => {
       },
     })
     .then((fundraises) => {
-      console.log("returned query");
       return {
         fundraises: fundraises.map((f) => ({
           uuid: f.uuid,

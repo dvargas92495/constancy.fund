@@ -83,11 +83,12 @@ export const handler = ({ uuid }: { uuid: string }) => {
       const doc = new PDFDocument();
       const dirname = path.dirname(outFile);
       if (!fs.existsSync(dirname)) fs.mkdirSync(dirname, { recursive: true });
-      doc.pipe(fs.createWriteStream(outFile));
       if (!contract) {
         doc.end();
         return;
       }
+      const stream = fs.createWriteStream(outFile)
+      doc.pipe(stream);
       const { data, user } = contract;
       const detailsData: Record<string, string | Date> = {
         date: new Date(),
@@ -233,8 +234,11 @@ export const handler = ({ uuid }: { uuid: string }) => {
           doc.addPage();
         }
       });
-      doc.end();
+      return new Promise((resolve) => {
+        stream.on("finish", resolve);
+        doc.end();
+      })
     })
-    .then(() => targetedDeploy([outFile]));
+    .then(() => targetedDeploy([outFile], true));
 };
 export type Handler = typeof handler;
