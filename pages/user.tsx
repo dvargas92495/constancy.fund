@@ -1080,6 +1080,8 @@ const AgreementRow = (row: Agreements[number] & { contractUuid: string }) => {
             px: "16px",
             py: "4px",
             backgroundColor: STAGE_COLORS[row.stage],
+            maxWidth: 120,
+            textAlign: 'center',
           }}
         >
           {CONTRACT_STAGES[row.stage].replace(/_/g, " ").toLowerCase()}

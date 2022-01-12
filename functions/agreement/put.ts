@@ -1,4 +1,3 @@
-import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import prisma from "../_common/prisma";
 import { v4 } from "uuid";
@@ -48,7 +47,7 @@ const logic = ({
         })
     )
     .then((contract) => {
-      // generate final signatureless draft,
+      // generate final signatureless draft, eversign here
       return contract;
     })
     .then(({ user, type }) => {
@@ -94,7 +93,6 @@ const logic = ({
     .then(() => ({ success: true }));
 };
 
-export const handler = clerkAuthenticateLambda(
-  createAPIGatewayProxyHandler(logic)
-);
+export const handler = createAPIGatewayProxyHandler(logic)
+
 export type Handler = typeof logic;

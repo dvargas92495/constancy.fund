@@ -46,6 +46,10 @@ variable "stripe_secret" {
   type = string
 }
 
+variable "eversign_api_key" {
+  type = string
+}
+
 variable "staging_clerk_api_key" {
     type = string
 }
@@ -182,6 +186,12 @@ resource "github_actions_secret" "stripe_secret" {
   repository       = "crowdinvestin.me"
   secret_name      = "STRIPE_SECRET_KEY"
   plaintext_value  = var.stripe_secret
+}
+
+resource "github_actions_secret" "eversign_api_key" {
+  repository       = "crowdinvestin.me"
+  secret_name      = "EVERSIGN_API_KEY"
+  plaintext_value  = var.eversign_api_key
 }
 
 resource "github_actions_secret" "stagingd_aws_access_key" {

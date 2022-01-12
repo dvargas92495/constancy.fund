@@ -185,7 +185,7 @@ const EnterDetails = ({
   return (
     <>
       <Button
-        sx={{ color: "#888888", marginBottom: "32px" }}
+        sx={{ color: "#888888" }}
         onClick={() => setMode({ path: "profile" })}
       >
         Go Back
@@ -215,7 +215,6 @@ const EnterDetails = ({
         type={"number"}
         required
         fullWidth
-        disabled={!!state?.amount}
       />
       <PaymentPreference
         value={paymentPreference}
