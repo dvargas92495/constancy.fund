@@ -13,6 +13,7 @@ env:
   CLERK_FRONTEND_API: clerk.rjzug.yeali.lcl.dev
   DATABASE_URL: mysql://staging_crowdinvestin_me:${{ secrets.STAGING_MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/staging_crowdinvestin_me
   EVERSIGN_API_KEY: ${{ secrets.EVERSIGN_API_KEY }}
+  EVERSIGN_SANDBOX: 1
   FE_DIR_PREFIX: /tmp
   HOST: https://staging.crowdinvestin.me
   STRIPE_PUBLIC_KEY: ${{ secrets.STAGING_STRIPE_PUBLIC_KEY }}
