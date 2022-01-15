@@ -9,6 +9,7 @@ import Avatar from "@mui/material/Avatar";
 import Subtitle from "@dvargas92495/ui/dist/components/Subtitle";
 import Body from "@dvargas92495/ui/dist/components/Body";
 import ExternalLink from "@dvargas92495/ui/dist/components/ExternalLink";
+import Loading from "@dvargas92495/ui/dist/components/Loading";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
@@ -116,7 +117,7 @@ const CreatorProfile = ({
       {fundraises
         .filter((f) => !agreement || agreement.contractUuid === f.uuid)
         .map((f) => (
-          <Card key={f.uuid} sx={{ padding: "32px" }}>
+          <Card key={f.uuid} sx={{ padding: "32px", marginBottom: "32px" }}>
             <Box
               display={"flex"}
               justifyContent={"space-between"}
@@ -165,12 +166,14 @@ const EnterDetails = ({
   const [amount, setAmount] = useState(state?.amount || 0);
   const [paymentPreference, setPaymentPreference] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const putHandler = useHandler<PutHandler>({
     path: "agreement",
     method: "PUT",
   });
   const onSign = useCallback(() => {
     setLoading(true);
+    setError("");
     putHandler({
       name,
       email,
@@ -178,7 +181,8 @@ const EnterDetails = ({
       uuid: state?.uuid,
     })
       .then(() => setMode({ path: "pending" }))
-      .catch(() => {
+      .catch((e) => {
+        setError(e.message);
         setLoading(false);
       });
   }, [setMode]);
@@ -190,7 +194,7 @@ const EnterDetails = ({
       >
         Go Back
       </Button>
-      <H1 sx={{ fontSize: 24 }}>Add your details</H1>
+      <H1 sx={{ fontSize: 24, marginTop: '24px' }}>Add your details</H1>
       <TextField
         sx={{ mb: 2 }}
         value={name}
@@ -220,14 +224,21 @@ const EnterDetails = ({
         value={paymentPreference}
         setValue={setPaymentPreference}
       />
-      <Button
-        variant={"contained"}
-        color={"primary"}
-        onClick={onSign}
-        disabled={loading}
-      >
-        Continue to Signing Term Sheets
-      </Button>
+      <Box display={"flex"} alignItems={"start"}>
+        <Button
+          variant={"contained"}
+          color={"primary"}
+          onClick={onSign}
+          disabled={loading}
+          sx={{ marginRight: "32px", flexShrink: 0 }}
+        >
+          Continue to Signing Term Sheets
+        </Button>
+        <Loading loading={loading} size={20} />
+        <Body sx={{ color: "darkred" }} color={"error"}>
+          {error}
+        </Body>
+      </Box>
     </>
   );
 };

@@ -1,19 +1,67 @@
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import prisma from "../_common/prisma";
-import { v4 } from "uuid";
+// import { v4 } from "uuid";
 import sendEmail from "aws-sdk-plus/dist/sendEmail";
 import { users } from "@clerk/clerk-sdk-node";
 import {
   MethodNotAllowedError,
   BadRequestError,
+  InternalServorError,
 } from "aws-sdk-plus/dist/errors";
 import React from "react";
 import EmailLayout from "../_common/EmailLayout";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
-import axios from "axios";
-import fs from "fs";
 import { FE_OUT_DIR } from "fuegojs/dist/common";
 import path from "path";
+import axios from "axios";
+import fs from "fs";
+
+/*
+File some issues to eversign
+import { Client, Document, File, Signer } from "eversign";
+const eversign = new Client(process.env.EVERSIGN_API_KEY || "", 398320);
+const file = new File(
+        process.env.NODE_ENV === "development"
+          ? {
+              name: "contract",
+              filePath: path.join(FE_OUT_DIR, filePath),
+            }
+          : {
+              name: "contract",
+              fileUrl: `${process.env.HOST}/${filePath}`,
+            }
+      );
+      const document = new Document({
+        reminders: true,
+        requireAllSigners: true,
+        custom_requester_email: email,
+        custom_requester_name: name,
+        embeddedSigningEnabled: true,
+        files: [file],
+        signers: [
+          new Signer({ id: 1, name, email }),
+          new Signer({
+            id: 2,
+            name: `${contract.user.firstName} ${contract.user.lastName}`,
+            email:
+              contract.user.emailAddresses.find(
+                (e) => e.id === contract.user.primaryEmailAddressId
+              )?.emailAddress || "",
+          }),
+        ],
+        fields: [],
+        meta: {
+          agreementUuid: contract.agreementUuid,
+          userId: contract.user.id || "",
+          type: contract.type,
+        },
+        ...(process.env.EVERSIGN_SANDBOX ? { sandbox: true } : {}),
+      });
+      eversign.createDocument(document).then((r) => {
+            return { ...contract, id: r.getDocumentHash() };
+          })
+            // missing_file_name bug
+*/
 
 const logic = ({
   uuid,
@@ -26,7 +74,7 @@ const logic = ({
   email: string;
   uuid?: string;
 }) => {
-  const draftUuid = v4();
+  // const draftUuid = v4(); in case we need to regenerate the uuid for the version with the investor
   return prisma.agreement
     .update({
       where: { uuid },
@@ -37,25 +85,29 @@ const logic = ({
         // draftUuid,
       },
     })
-    .then(() =>
+    .then((a) =>
       prisma.contract
         .findFirst({
-          where: { agreements: { some: { uuid } } },
+          where: { agreements: { some: { uuid: a.uuid } } },
           select: { userId: true, type: true, uuid: true },
         })
         .then((c) => {
           if (!c)
             throw new MethodNotAllowedError(
-              `Cannot find fundraise tied to agreement ${uuid}`
+              `Cannot find fundraise tied to agreement ${a.uuid}`
             );
           return users.getUser(c.userId).then((user) => ({
             user,
             type: FUNDRAISE_TYPES[c.type].name,
             uuid: c.uuid,
+            agreementUuid: a.uuid,
           }));
         })
     )
     .then((contract) => {
+      const filePath = `_contracts/${contract.uuid}/draft.pdf`;
+      // const filePath = `_contracts/${contract.uuid}/${draftUuid}.pdf`;
+
       return axios
         .post(
           `https://api.eversign.com/api/document?access_key=${process.env.EVERSIGN_API_KEY}&business_id=398320`,
@@ -69,19 +121,15 @@ const logic = ({
               process.env.HOST?.includes("localhost")
                 ? {
                     name: "contract",
-                    file_base64: fs.readFileSync(
-                      path.join(
-                        FE_OUT_DIR,
-                        "_contracts",
-                        contract.uuid,
-                        "draft.pdf"
-                      ),
-                      { encoding: "base64" }
-                    ).toString(),
+                    file_base64: fs
+                      .readFileSync(path.join(FE_OUT_DIR, filePath), {
+                        encoding: "base64",
+                      })
+                      .toString(),
                   }
                 : {
                     name: "contract",
-                    file_url: `${process.env.HOST}/_contracts/${contract.uuid}/draft.pdf`,
+                    file_url: `${process.env.HOST}/${filePath}`,
                   },
             ],
             signers: [
@@ -94,21 +142,26 @@ const logic = ({
                 )?.emailAddress,
               },
             ],
+            meta: {
+              agreementUuid: contract.agreementUuid,
+              userId: contract.user.id || "",
+              type: contract.type,
+            },
             fields: [[]],
             ...(process.env.EVERSIGN_SANDBOX ? { sandbox: 1 } : {}),
           }
         )
         .then((r) => {
-          if (!r.data.success) {
+          if (r.data.success === false) {
+            // success true is not on a good record
             throw new BadRequestError(r.data.error.type);
           }
-          console.log(r.data);
-          return contract;
+          return { ...contract, id: r.data.document_hash };
         });
     })
-    .then(({ user, type }) => {
+    .then(({ user, type, id }) => {
       const fullName = `${user.firstName} ${user.lastName}`;
-      const link = `${process.env.HOST}/contract?uuid=${draftUuid}`;
+      const link = `${process.env.HOST}/contract?id=${id}&signer=${1}`;
       return sendEmail({
         to: email,
         subject: `[ACTION REQUIRED] Sign new agreement with ${fullName}`,
@@ -146,7 +199,11 @@ const logic = ({
             ?.emailAddress || undefined,
       });
     })
-    .then(() => ({ success: true }));
+    .then(() => ({ success: true }))
+    .catch((e) => {
+      console.error(e);
+      throw new InternalServorError(e.type || e.message);
+    });
 };
 
 export const handler = createAPIGatewayProxyHandler(logic);
