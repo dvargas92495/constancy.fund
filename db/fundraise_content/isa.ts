@@ -60,7 +60,7 @@ export default {
     {
       method: "text",
       argument:
-        '"), by and between {full_name}, an individual residing at {address} (the "',
+        '"), by and between {full_name}, {creator_type} residing at {address} (the "',
       options: {
         continued: true,
       },
@@ -246,7 +246,7 @@ export default {
     {
       method: "text",
       argument:
-        " means Monday through Friday, except for federal holidays in the United States.",
+        " means Monday through Friday, except for federal holidays in {country}.",
       options: {
         paragraphGap: 12,
       },
@@ -1523,7 +1523,7 @@ export default {
     {
       method: "text",
       argument:
-        "(a)      The Participant represents and warrants that all information provided in connection with this Agreement is true and accurate and the Participant has not provided any false, misleading or deceptive statements or omissions of fact. Except as disclosed to Investor in the this Agreement, the Participant represents and warrants that: (i) the Participant has never been convicted of a felony or of any crime involving dishonesty or breach of trust under any federal or state statute, rule or regulation; (ii) the Participant is not contemplating bankruptcy and the Participant has not consulted with an attorney regarding bankruptcy in the past six months; (iii) the Participant is at least 18 years of age and the age of majority in the state of current residence; (iv) the Participant is a U.S. citizen or permanent resident; (v) the Participant has filed all federal tax returns and reports as required by law, they are true and correct in all material respects, and the Participant has paid all federal taxes and other assessments due.",
+        "(a)      The Participant represents and warrants that all information provided in connection with this Agreement is true and accurate and the Participant has not provided any false, misleading or deceptive statements or omissions of fact. Except as disclosed to Investor in the this Agreement, the Participant represents and warrants that: (i) the Participant has never been convicted of a felony or of any crime involving dishonesty or breach of trust under any federal or state statute, rule or regulation; (ii) the Participant is not contemplating bankruptcy and the Participant has not consulted with an attorney regarding bankruptcy in the past six months; (iii) the Participant is at least 18 years of age and the age of majority in the state of current residence; (iv) the Participant is a {country} citizen or permanent resident; (v) the Participant has filed all federal tax returns and reports as required by law, they are true and correct in all material respects, and the Participant has paid all federal taxes and other assessments due.",
       options: {
         indent: 72,
         paragraphGap: 12,
@@ -1771,34 +1771,7 @@ export default {
     },
     {
       method: "text",
-      argument: "22.    Equity Grant; Equity Claw Back.",
-      options: {
-        indent: 18,
-        font: "Helvetica-Bold",
-        paragraphGap: 12,
-      },
-    },
-    {
-      method: "text",
-      argument:
-        "(a)      On the effective date of its respective Joinder Agreement, the Company executing such Joinder Agreement will issue Investor a SAFE which will convert into that number of shares sold in a Qualified Financing equaling 6% of the fully diluted capitalization of the Company.",
-      options: {
-        indent: 72,
-        paragraphGap: 12,
-      },
-    },
-    {
-      method: "text",
-      argument:
-        "(b)      The conversion amount of the SAFE shall be reduced ratably in proportion to the amount Founder has paid towards the Repayment Cap, up to a maximum reduction of 2/3rds of the total conversion amount. For example, the repayment of 50% of the Repayment Cap shall result in a 50% reduction, repayment of 70% of the Repayment Cap shall result in a 66.66% reduction.",
-      options: {
-        indent: 72,
-        paragraphGap: 12,
-      },
-    },
-    {
-      method: "text",
-      argument: "23.    Information Rights.",
+      argument: "22.    Information Rights.",
       options: {
         indent: 18,
         font: "Helvetica-Bold",
@@ -1882,7 +1855,7 @@ export default {
     },
     {
       method: "text",
-      argument: "24.    Board Observer.",
+      argument: "23.    Board Observer.",
       options: {
         indent: 18,
         font: "Helvetica-Bold",
@@ -1899,7 +1872,7 @@ export default {
     },
     {
       method: "text",
-      argument: "25.    Participation Right.",
+      argument: "24.    Participation Right.",
       options: {
         indent: 18,
         font: "Helvetica-Bold",
@@ -1932,7 +1905,7 @@ export default {
     },
     {
       method: "text",
-      argument: "26.    Governing Law.",
+      argument: "25.    Governing Law.",
       options: {
         indent: 18,
         font: "Helvetica-Bold",
@@ -1949,7 +1922,7 @@ export default {
     },
     {
       method: "text",
-      argument: "27.    Entire Agreement.",
+      argument: "26.    Entire Agreement.",
       options: {
         indent: 18,
         font: "Helvetica-Bold",
@@ -1966,7 +1939,7 @@ export default {
     },
     {
       method: "text",
-      argument: "28.    Successors and Assigns.",
+      argument: "27.    Successors and Assigns.",
       options: {
         indent: 18,
         font: "Helvetica-Bold",
@@ -1983,7 +1956,7 @@ export default {
     },
     {
       method: "text",
-      argument: "29.    Notices.",
+      argument: "28.    Notices.",
       options: {
         indent: 18,
         font: "Helvetica-Bold",
@@ -2000,7 +1973,7 @@ export default {
     },
     {
       method: "text",
-      argument: "Section 29",
+      argument: "Section 28",
       options: {
         continued: true,
         underline: true,
@@ -2016,7 +1989,7 @@ export default {
     },
     {
       method: "text",
-      argument: "30.    Severability.",
+      argument: "29.    Severability.",
       options: {
         indent: 18,
         font: "Helvetica-Bold",
@@ -2033,7 +2006,7 @@ export default {
     },
     {
       method: "text",
-      argument: "31.    Execution; Electronic Transactions.",
+      argument: "30.    Execution; Electronic Transactions.",
       options: {
         indent: 18,
         font: "Helvetica-Bold",
@@ -2050,7 +2023,7 @@ export default {
     },
     {
       method: "text",
-      argument: "32.    Independent Decision to Enter into this Agreement.",
+      argument: "31.    Independent Decision to Enter into this Agreement.",
       options: {
         indent: 18,
         font: "Helvetica-Bold",
@@ -2067,7 +2040,7 @@ export default {
     },
     {
       method: "text",
-      argument: "33.    Marriage.",
+      argument: "32.    Marriage.",
       options: {
         indent: 18,
         font: "Helvetica-Bold",
@@ -2084,7 +2057,7 @@ export default {
     },
     {
       method: "text",
-      argument: "34.    Arbitration Agreement.",
+      argument: "33.    Arbitration Agreement.",
       options: {
         indent: 18,
         font: "Helvetica-Bold",
@@ -2219,7 +2192,7 @@ export default {
     },
     {
       method: "text",
-      argument: "Section 34",
+      argument: "Section 33",
       options: {
         underline: true,
         continued: true,
@@ -2236,7 +2209,7 @@ export default {
     },
     {
       method: "text",
-      argument: "35.    Attorney's Fees.",
+      argument: "34.    Attorney's Fees.",
       options: {
         indent: 18,
         font: "Helvetica-Bold",
@@ -2253,7 +2226,7 @@ export default {
     },
     {
       method: "text",
-      argument: "36.    Publicity.",
+      argument: "35.    Publicity.",
       options: {
         indent: 18,
         font: "Helvetica-Bold",
@@ -2276,9 +2249,8 @@ export default {
         align: "center",
       },
     },
-    {
-      method: "addPage",
-    },
+    /* Might not need this due to Eversign adding its own Signature page
+    { method: "addPage" },
     {
       method: "text",
       argument:
@@ -2340,6 +2312,7 @@ export default {
         hideLines: true,
       },
     },
+    */
     { method: "addPage" },
     { method: "text", argument: "EXHIBIT A", options: { align: "center" } },
     {
@@ -2375,5 +2348,145 @@ export default {
         "”) and each of the Companies (as defined in the ISA), as applicable; and (ii) agrees to be bound by the terms, conditions, and obligations subject to the obligations of the ISA.",
       options: { paragraphGap: 12 },
     },
+    {
+      method: "text",
+      argument:
+        "This joinder (a) shall be governed by and construed in accordance with the substantive laws of the State of Delaware, excluding the conflict of law rules or principles that could cause the application of the laws of any jurisdiction other than the State of Delaware and (b) may be executed in separate counterparts, including by facsimile, each of which shall be an original and all of which taken together shall constitute one and the same agreement.",
+      options: { paragraphGap: 12 },
+    },
+    {
+      method: "text",
+      argument:
+        "Effective as of the {date:do 'day of' MMMM, yyyy}.",
+      options: { paragraphGap: 24 },
+    },
+    {
+      method: "text",
+      argument:
+        "____________________________",
+    },
+    {
+      method: "text",
+      argument:
+        "(Company)",
+      options: { paragraphGap: 12 },
+    },
+    {
+      method: "text",
+      argument:
+        "____________________________",
+    },
+    {
+      method: "text",
+      argument:
+        "(Signature)",
+      options: { paragraphGap: 12 },
+    },
+    {
+      method: "text",
+      argument:
+        "____________________________",
+    },
+    {
+      method: "text",
+      argument:
+        "(Name)",
+      options: { paragraphGap: 12 },
+    },
+    {
+      method: "text",
+      argument:
+        "____________________________",
+    },
+    {
+      method: "text",
+      argument:
+        "(Title)",
+      options: { paragraphGap: 12 },
+    },
+    {
+      method: "text",
+      argument:
+        "Address:",
+      options: { paragraphGap: 4 },
+    },
+    {
+      method: "text",
+      argument:
+        "____________________________",
+        options: { paragraphGap: 4 },
+    },
+    {
+      method: "text",
+      argument:
+        "____________________________",
+      options: { paragraphGap: 12 },
+    },
+    {
+      method: "text",
+      argument:
+        "ACCEPTED & ACKNOWLEDGED:",
+      options: { paragraphGap: 12 },
+    },
+    {
+      method: "text",
+      argument:
+        "____________________________",
+    },
+    {
+      method: "text",
+      argument:
+        "(Company)",
+      options: { paragraphGap: 12 },
+    },
+    {
+      method: "text",
+      argument:
+        "____________________________",
+    },
+    {
+      method: "text",
+      argument: "(Name)",
+      options: { paragraphGap: 12 },
+    },
+    {
+      method: "text",
+      argument:
+        "____________________________",
+    },
+    {
+      method: "text",
+      argument:
+        "(Title)",
+      options: { paragraphGap: 12 },
+    },
+    { method: "addPage" },
+    { method: "text", argument: "Schedule A", options: { align: "center" } },
+    {
+      method: "text",
+      argument: "Payment Schedule",
+      options: { paragraphGap: 36, align: "center" },
+    },
+    {
+      method: "dynamic",
+      argument: `const cap = {cap};
+return {
+  method: "table",
+  argument: Array(12).fill(null).map((_, i) => 
+    Array(cap).fill(null).map((_, j) => [{
+      method: "text",
+      argument: "{" + "date:MMMM dd, yyyy:" + ((i+1)+(j*12)) + ":addMonths}",
+      options: {
+        fontSize: 10,
+        align: "right",
+      },
+    }])
+  ),
+  options: {
+    columnWidths: Array(cap).fill(1/cap),
+    padding: 2,
+  },
+};`,
+    }
   ],
 };

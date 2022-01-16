@@ -7,7 +7,9 @@ import isa from "../db/fundraise_content/isa";
 import { targetedDeploy } from "fuegojs/dist/deploy";
 import { FE_OUT_DIR } from "fuegojs/dist/common";
 import datefnsFormat from "date-fns/format";
+import addDays from "date-fns/addDays";
 import { users, User } from "@clerk/clerk-sdk-node";
+import addMonths from "date-fns/addMonths";
 
 const contentByType = {
   isa: isa,
@@ -23,6 +25,7 @@ type TextPart = {
   argument: string;
   options: PDFKit.Mixins.TextOptions & {
     font?: string;
+    fontSize?: number;
     x?: number;
     y?: number;
   };
@@ -40,15 +43,21 @@ type TablePart = {
     columnWidths?: number[];
     indent?: number;
     paragraphGap?: number;
-    hideLines?: false;
+    hideLines?: boolean;
+    padding?: number;
   };
+};
+type DynamicPart = {
+  method: "dynamic";
+  argument: string;
 };
 type ContractPart =
   | TextPart
   | MoveDownPart
   | ListPart
   | TablePart
-  | AddPagePart;
+  | AddPagePart
+  | DynamicPart;
 type ContractData = {
   parts?: ContractPart[];
 };
@@ -87,7 +96,8 @@ export const handler = ({ uuid }: { uuid: string }) => {
         doc.end();
         return;
       }
-      const stream = fs.createWriteStream(outFile)
+      if (fs.existsSync(outFile)) fs.rmSync(outFile);
+      const stream = fs.createWriteStream(outFile);
       doc.pipe(stream);
       const { data, user } = contract;
       const detailsData: Record<string, string | Date> = {
@@ -97,12 +107,14 @@ export const handler = ({ uuid }: { uuid: string }) => {
         ...Object.fromEntries(
           details.map(({ label, value }) => [label, value])
         ),
+        creator_type:
+          (user.publicMetadata.creatorType as string) || "an individual",
+        country:
+          (user.publicMetadata.registeredCountry as string) ||
+          "the United States",
       };
-      const renderText = (part: TextPart) => {
-        const { argument = "", options = {} } = part;
-        const { font = DEFAULT_FONT, x = 0, y = 0, ...opts } = options;
-        doc.font(font);
-        const text = argument.replace(
+      const interpolate = (argument: string) =>
+        argument.replace(
           /{([a-z_]+)(?::([^}]+))?}/g,
           (orig, key: string, format: string = "") => {
             if (key === "multiply") {
@@ -131,7 +143,13 @@ export const handler = ({ uuid }: { uuid: string }) => {
             if (!value) {
               return orig;
             } else if (value instanceof Date) {
-              return datefnsFormat(value, format);
+              const [f, offset = "0", interval = "addDays"] = format.split(":");
+              const numericOffset = Number(offset);
+              const newValue =
+                interval === "addMonths"
+                  ? addMonths(value, numericOffset)
+                  : addDays(value, numericOffset);
+              return datefnsFormat(newValue, f);
             } else if (!isNaN(Number(value))) {
               const [predecimal, postdecimal] = value.split(".");
               const order = predecimal.length;
@@ -146,13 +164,26 @@ export const handler = ({ uuid }: { uuid: string }) => {
             }
           }
         );
+      const renderText = (part: TextPart) => {
+        const { argument = "", options = {} } = part;
+        const {
+          font = DEFAULT_FONT,
+          x = 0,
+          y = 0,
+          fontSize = 12,
+          ...opts
+        } = options;
+        doc.font(font);
+        doc.fontSize(fontSize);
+        const text = interpolate(argument);
         if (x > 0 || y > 0) {
           doc.text(text, x, y, opts);
         } else {
           doc.text(text, opts);
         }
+        return text;
       };
-      (data.parts || []).forEach((part) => {
+      const parsePart = (part: ContractPart) => {
         if (part.method === "text") {
           renderText(part);
         } else if (part.method === "moveDown") {
@@ -167,6 +198,7 @@ export const handler = ({ uuid }: { uuid: string }) => {
             columnWidths = [],
             paragraphGap = 0,
             hideLines = false,
+            padding = 8,
           } = part.options;
           const startX = doc.page.margins.left + indent;
           const startY = doc.y;
@@ -176,7 +208,6 @@ export const handler = ({ uuid }: { uuid: string }) => {
             doc.page.margins.right -
             2 * indent;
           const heights: number[] = [];
-          const padding = 8;
           part.argument.forEach((row, r) => {
             let maxHeight = 0;
             const y =
@@ -196,11 +227,11 @@ export const handler = ({ uuid }: { uuid: string }) => {
                   ...(p === 0 ? { x, y } : {}),
                   width: columnWidths[c] * usableWidth - 2 * padding,
                 };
-                renderText({
+                const output = renderText({
                   ...part,
                   options,
                 });
-                height += doc.heightOfString(part.argument, options);
+                height += doc.heightOfString(output, options);
               });
               if (height > maxHeight) {
                 maxHeight = height;
@@ -232,12 +263,18 @@ export const handler = ({ uuid }: { uuid: string }) => {
           doc.y = startY + heights.reduce((p, c) => p + c, 0) + paragraphGap;
         } else if (part.method === "addPage") {
           doc.addPage();
+        } else if (part.method === "dynamic") {
+          const newPart = new Function(
+            interpolate(part.argument)
+          )() as ContractPart;
+          parsePart(newPart);
         }
-      });
+      };
+      (data.parts || []).forEach(parsePart);
       return new Promise((resolve) => {
         stream.on("finish", resolve);
         doc.end();
-      })
+      });
     })
     .then(() => targetedDeploy([outFile], true));
 };
