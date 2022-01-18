@@ -8,7 +8,7 @@ import * as _html from "../pages/_html";
 
 export const handler = ({ id }: { id: string }) =>
   isr({ Page, data, _html, params: { id }, path: "creator/[id].js" }).then(() =>
-    targetedDeploy([path.join(FE_OUT_DIR, "creator", `${id}.html`)])
+    targetedDeploy([path.join(FE_OUT_DIR, "creator", `${id}.html`)], true)
   );
 
 export type Handler = typeof handler;

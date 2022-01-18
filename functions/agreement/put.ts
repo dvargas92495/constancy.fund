@@ -75,103 +75,104 @@ const logic = ({
 }) => {
   // const draftUuid = v4(); in case we need to regenerate the uuid for the version with the investor
   return (
-    uuid
-      ? prisma.agreement.update({
-          where: { uuid },
-          data: {
-            name,
-            email,
-            amount,
-            // draftUuid,
-          },
-        })
-      : prisma.agreement.create({
-          data: {
-            name,
-            email,
-            amount,
-            contractUuid,
-            stage: 0,
-          },
-        })
-  )
-    .then((a) =>
-      prisma.contract
-        .findFirst({
-          where: { agreements: { some: { uuid: a.uuid } } },
-          select: { userId: true, type: true, uuid: true },
-        })
-        .then((c) => {
-          if (!c)
-            throw new MethodNotAllowedError(
-              `Cannot find fundraise tied to agreement ${a.uuid}`
-            );
-          return users.getUser(c.userId).then((user) => ({
-            user,
-            type: FUNDRAISE_TYPES[c.type].name,
-            uuid: c.uuid,
-            agreementUuid: a.uuid,
-          }));
-        })
-    )
-    .then((contract) => {
-      const filePath = `_contracts/${contract.uuid}/draft.pdf`;
-      // const filePath = `_contracts/${contract.uuid}/${draftUuid}.pdf`;
-      const creatorName = `${contract.user.firstName} ${contract.user.lastName}`;
-      const creatorEmail = contract.user.emailAddresses.find(
-        (e) => e.id === contract.user.primaryEmailAddressId
-      )?.emailAddress;
-
-      return axios
-        .post(
-          `https://api.eversign.com/api/document?access_key=${process.env.EVERSIGN_API_KEY}&business_id=398320`,
-          {
-            reminders: 1,
-            require_all_signers: 1,
-            custom_requester_name: name,
-            custom_requester_email: email,
-            embedded_signing_enabled: 1,
-            files: [
-              process.env.HOST?.includes("localhost")
-                ? {
-                    name: "contract",
-                    file_base64: fs
-                      .readFileSync(path.join(FE_OUT_DIR, filePath), {
-                        encoding: "base64",
-                      })
-                      .toString(),
-                  }
-                : {
-                    name: "contract",
-                    file_url: `${process.env.HOST}/${filePath}`,
-                  },
-            ],
-            signers: [
-              { id: 1, name, email },
-              {
-                id: 2,
-                name: creatorName,
-                email: creatorEmail,
-              },
-            ],
-            meta: {
-              agreementUuid: contract.agreementUuid,
-              userId: contract.user.id || "",
-              type: contract.type,
+    (
+      uuid
+        ? prisma.agreement.update({
+            where: { uuid },
+            data: {
+              name,
+              email,
+              amount,
+              // draftUuid,
             },
-            fields: [[]],
-            ...(process.env.EVERSIGN_SANDBOX ? { sandbox: 1 } : {}),
-          }
-        )
-        .then((r) => {
-          if (r.data.success === false) {
-            // success true is not on a good record
-            throw new BadRequestError(r.data.error.type);
-          }
-          return { ...contract, id: r.data.document_hash };
-        });
-    })
-    /*.then(({ user, type, id }) => {
+          })
+        : prisma.agreement.create({
+            data: {
+              name,
+              email,
+              amount,
+              contractUuid,
+              stage: 0,
+            },
+          })
+    )
+      .then((a) =>
+        prisma.contract
+          .findFirst({
+            where: { agreements: { some: { uuid: a.uuid } } },
+            select: { userId: true, type: true, uuid: true },
+          })
+          .then((c) => {
+            if (!c)
+              throw new MethodNotAllowedError(
+                `Cannot find fundraise tied to agreement ${a.uuid}`
+              );
+            return users.getUser(c.userId).then((user) => ({
+              user,
+              type: FUNDRAISE_TYPES[c.type].name,
+              uuid: c.uuid,
+              agreementUuid: a.uuid,
+            }));
+          })
+      )
+      .then((contract) => {
+        const filePath = `_contracts/${contract.uuid}/draft.pdf`;
+        // const filePath = `_contracts/${contract.uuid}/${draftUuid}.pdf`;
+        const creatorName = `${contract.user.firstName} ${contract.user.lastName}`;
+        const creatorEmail = contract.user.emailAddresses.find(
+          (e) => e.id === contract.user.primaryEmailAddressId
+        )?.emailAddress;
+
+        return axios
+          .post(
+            `https://api.eversign.com/api/document?access_key=${process.env.EVERSIGN_API_KEY}&business_id=398320`,
+            {
+              reminders: 1,
+              require_all_signers: 1,
+              custom_requester_name: creatorName,
+              custom_requester_email: creatorEmail,
+              embedded_signing_enabled: 1,
+              files: [
+                process.env.HOST?.includes("localhost")
+                  ? {
+                      name: "contract",
+                      file_base64: fs
+                        .readFileSync(path.join(FE_OUT_DIR, filePath), {
+                          encoding: "base64",
+                        })
+                        .toString(),
+                    }
+                  : {
+                      name: "contract",
+                      file_url: `${process.env.HOST}/${filePath}`,
+                    },
+              ],
+              signers: [
+                { id: 1, name, email },
+                {
+                  id: 2,
+                  name: creatorName,
+                  email: creatorEmail,
+                },
+              ],
+              meta: {
+                agreementUuid: contract.agreementUuid,
+                userId: contract.user.id || "",
+                type: contract.type,
+              },
+              fields: [[]],
+              ...(process.env.EVERSIGN_SANDBOX ? { sandbox: 1 } : {}),
+            }
+          )
+          .then((r) => {
+            if (r.data.success === false) {
+              // success true is not on a good record
+              throw new BadRequestError(r.data.error.type);
+            }
+            return { ...contract, id: r.data.document_hash };
+          });
+      })
+      /*.then(({ user, type, id }) => {
       const fullName = `${user.firstName} ${user.lastName}`;
       const link = `${process.env.HOST}/contract?id=${id}&signer=${1}`;
       return sendEmail({
@@ -211,11 +212,12 @@ const logic = ({
             ?.emailAddress || undefined,
       });
     })*/
-    .then(({id }) => ({ id }))
-    .catch((e) => {
-      console.error(e);
-      throw new InternalServorError(e.type || e.message);
-    });
+      .then(({ id }) => ({ id }))
+      .catch((e) => {
+        console.error(e);
+        throw new InternalServorError(e.type || e.message);
+      })
+  );
 };
 
 export const handler = createAPIGatewayProxyHandler(logic);

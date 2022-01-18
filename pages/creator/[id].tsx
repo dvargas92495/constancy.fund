@@ -197,7 +197,7 @@ const EnterDetails = ({
         setError(e.message);
         setLoading(false);
       });
-  }, [setMode]);
+  }, [setMode, name, email, amount, state, setError, setLoading]);
   return (
     <>
       <Button
