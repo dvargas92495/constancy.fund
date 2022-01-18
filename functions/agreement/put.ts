@@ -1,15 +1,12 @@
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import prisma from "../_common/prisma";
 // import { v4 } from "uuid";
-import sendEmail from "aws-sdk-plus/dist/sendEmail";
 import { users } from "@clerk/clerk-sdk-node";
 import {
   MethodNotAllowedError,
   BadRequestError,
   InternalServorError,
 } from "aws-sdk-plus/dist/errors";
-import React from "react";
-import EmailLayout from "../_common/EmailLayout";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
 import { FE_OUT_DIR } from "fuegojs/dist/common";
 import path from "path";
@@ -68,23 +65,36 @@ const logic = ({
   name,
   email,
   amount,
+  contractUuid,
 }: {
   name: string;
   amount: number;
   email: string;
   uuid?: string;
+  contractUuid: string;
 }) => {
   // const draftUuid = v4(); in case we need to regenerate the uuid for the version with the investor
-  return prisma.agreement
-    .update({
-      where: { uuid },
-      data: {
-        name,
-        email,
-        amount,
-        // draftUuid,
-      },
-    })
+  return (
+    uuid
+      ? prisma.agreement.update({
+          where: { uuid },
+          data: {
+            name,
+            email,
+            amount,
+            // draftUuid,
+          },
+        })
+      : prisma.agreement.create({
+          data: {
+            name,
+            email,
+            amount,
+            contractUuid,
+            stage: 0,
+          },
+        })
+  )
     .then((a) =>
       prisma.contract
         .findFirst({
@@ -107,6 +117,10 @@ const logic = ({
     .then((contract) => {
       const filePath = `_contracts/${contract.uuid}/draft.pdf`;
       // const filePath = `_contracts/${contract.uuid}/${draftUuid}.pdf`;
+      const creatorName = `${contract.user.firstName} ${contract.user.lastName}`;
+      const creatorEmail = contract.user.emailAddresses.find(
+        (e) => e.id === contract.user.primaryEmailAddressId
+      )?.emailAddress;
 
       return axios
         .post(
@@ -136,10 +150,8 @@ const logic = ({
               { id: 1, name, email },
               {
                 id: 2,
-                name: `${contract.user.firstName} ${contract.user.lastName}`,
-                email: contract.user.emailAddresses.find(
-                  (e) => e.id === contract.user.primaryEmailAddressId
-                )?.emailAddress,
+                name: creatorName,
+                email: creatorEmail,
               },
             ],
             meta: {
@@ -159,7 +171,7 @@ const logic = ({
           return { ...contract, id: r.data.document_hash };
         });
     })
-    .then(({ user, type, id }) => {
+    /*.then(({ user, type, id }) => {
       const fullName = `${user.firstName} ${user.lastName}`;
       const link = `${process.env.HOST}/contract?id=${id}&signer=${1}`;
       return sendEmail({
@@ -198,8 +210,8 @@ const logic = ({
           user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId)
             ?.emailAddress || undefined,
       });
-    })
-    .then(() => ({ success: true }))
+    })*/
+    .then(({id }) => ({ id }))
     .catch((e) => {
       console.error(e);
       throw new InternalServorError(e.type || e.message);

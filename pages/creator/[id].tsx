@@ -51,7 +51,10 @@ const CreatorProfile = ({
   fundraises,
   setMode,
 }: Props & {
-  setMode: (m: { path: string; state?: Agreement }) => void;
+  setMode: (m: {
+    path: string;
+    state?: Agreement | { contractUuid: string };
+  }) => void;
 }): React.ReactElement => {
   const [agreement, setAgreement] = useState<Agreement>();
   const getAgreement = useHandler<GetHandler>({
@@ -142,7 +145,12 @@ const CreatorProfile = ({
                 <Button
                   variant={"contained"}
                   color={"primary"}
-                  onClick={() => setMode({ path: "details", state: agreement })}
+                  onClick={() =>
+                    setMode({
+                      path: "details",
+                      state: agreement || { contractUuid: f.uuid },
+                    })
+                  }
                   sx={{ marginLeft: "16px" }}
                 >
                   Invest
@@ -159,11 +167,14 @@ const EnterDetails = ({
   setMode,
   ...state
 }: {
-  setMode: (m: { path: string; state?: Agreement }) => void;
+  setMode: (m: {
+    path: string;
+    state?: Agreement | { contractUuid: string };
+  }) => void;
 } & Partial<Agreement>) => {
-  const [name, setName] = useState(state?.name || "");
-  const [email, setEmail] = useState(state?.email || "");
-  const [amount, setAmount] = useState(state?.amount || 0);
+  const [name, setName] = useState(state.name || "");
+  const [email, setEmail] = useState(state.email || "");
+  const [amount, setAmount] = useState(state.amount || 0);
   const [paymentPreference, setPaymentPreference] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -178,9 +189,10 @@ const EnterDetails = ({
       name,
       email,
       amount,
-      uuid: state?.uuid,
+      uuid: state.uuid,
+      contractUuid: state.contractUuid || "",
     })
-      .then(() => setMode({ path: "pending" }))
+      .then(({ id }) => window.location.assign(`/contract?id=${id}&signer=1`))
       .catch((e) => {
         setError(e.message);
         setLoading(false);
@@ -194,7 +206,7 @@ const EnterDetails = ({
       >
         Go Back
       </Button>
-      <H1 sx={{ fontSize: 24, marginTop: '24px' }}>Add your details</H1>
+      <H1 sx={{ fontSize: 24, marginTop: "24px" }}>Add your details</H1>
       <TextField
         sx={{ mb: 2 }}
         value={name}
@@ -255,7 +267,10 @@ const Pending = () => {
 };
 
 const CreatorLayout = (props: Props): React.ReactElement => {
-  const [mode, setMode] = useState<{ path: string; state?: Agreement }>({
+  const [mode, setMode] = useState<{
+    path: string;
+    state?: Agreement | { contractUuid: string };
+  }>({
     path: "profile",
     state: undefined,
   });
