@@ -13,9 +13,9 @@
     "deploy": "fuego deploy",
     "fe": "fuego fe",
     "migrate": "prisma migrate deploy",
+    "migrate:dev": "prisma migrate dev",
     "publish": "fuego publish",
     "precompile": "prisma generate",
-    "typeorm": "ts-node --transpile-only ./node_modules/typeorm/cli.js",
     "start": "concurrently \"npm:api\" \"npm:fe\""
   },
   "devDependencies": {

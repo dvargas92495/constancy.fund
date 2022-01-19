@@ -4,6 +4,7 @@ import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import prisma from "../_common/prisma";
 import type { User } from "@clerk/clerk-sdk-node";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
+import axios from "axios";
 
 const logic = ({ uuid, user: { id } }: { uuid: string; user: User }) =>
   prisma.contract
@@ -18,7 +19,11 @@ const logic = ({ uuid, user: { id } }: { uuid: string; user: User }) =>
             amount: true,
             name: true,
             email: true,
-            stage: true,
+            eversign: {
+              select: {
+                id: true,
+              },
+            },
           },
         },
       },
@@ -30,10 +35,35 @@ const logic = ({ uuid, user: { id } }: { uuid: string; user: User }) =>
         throw new MethodNotAllowedError(
           `Could not find contract with id ${uuid}`
         );
-      return {
+      return Promise.all(
+        fundraise.agreements.map(({ eversign, ...a }) =>
+          (eversign
+            ? axios
+                .get<{
+                  signers: {
+                    id: number;
+                    signed: 1 | 0;
+                  }[];
+                }>(
+                  `https://api.eversign.com/api/document?access_key=${process.env.EVERSIGN_API_KEY}&business_id=398320&document_hash=${eversign?.id}`
+                )
+                .then((r) =>
+                  r.data.signers[1].signed
+                    ? 2
+                    : r.data.signers[0].signed
+                    ? 1
+                    : 0
+                )
+            : Promise.resolve(0)
+          ).then((status) => ({
+            ...a,
+            status,
+          }))
+        )
+      ).then((agreements) => ({
         type: FUNDRAISE_TYPES[fundraise.type].id,
-        agreements: fundraise.agreements,
-      };
+        agreements,
+      }));
     });
 
 export const handler = clerkAuthenticateLambda(

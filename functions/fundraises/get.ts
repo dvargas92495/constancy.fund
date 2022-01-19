@@ -14,6 +14,11 @@ const logic = ({ user: { id } }: { user: User }) => {
         agreements: {
           select: {
             uuid: true,
+            eversign: {
+              select: {
+                id: true
+              }
+            }
           },
         },
         contractDetails: {

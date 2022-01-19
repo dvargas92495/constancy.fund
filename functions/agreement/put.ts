@@ -132,6 +132,7 @@ const logic = ({
               custom_requester_name: creatorName,
               custom_requester_email: creatorEmail,
               embedded_signing_enabled: 1,
+              use_signer_order: 1,
               files: [
                 process.env.HOST?.includes("localhost")
                   ? {
@@ -148,11 +149,12 @@ const logic = ({
                     },
               ],
               signers: [
-                { id: 1, name, email },
+                { id: 1, name, email, order: 1 },
                 {
                   id: 2,
                   name: creatorName,
                   email: creatorEmail,
+                  order: 2,
                 },
               ],
               meta: {
@@ -169,9 +171,14 @@ const logic = ({
               // success true is not on a good record
               throw new BadRequestError(r.data.error.type);
             }
-            return { ...contract, id: r.data.document_hash };
+            return { ...contract, id: r.data.document_hash as string };
           });
       })
+      .then((r) =>
+        prisma.eversignDocument.create({
+          data: { agreementUuid: r.agreementUuid, id: r.id },
+        }).then(() => r.id)
+      )
       /*.then(({ user, type, id }) => {
       const fullName = `${user.firstName} ${user.lastName}`;
       const link = `${process.env.HOST}/contract?id=${id}&signer=${1}`;
@@ -212,7 +219,7 @@ const logic = ({
             ?.emailAddress || undefined,
       });
     })*/
-      .then(({ id }) => ({ id }))
+      .then((id) => ({ id }))
       .catch((e) => {
         console.error(e);
         throw new InternalServorError(e.type || e.message);

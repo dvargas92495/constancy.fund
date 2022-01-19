@@ -32,4 +32,11 @@ model Agreement {
   contractUuid String
   stage Int
   contract Contract @relation(fields: [contractUuid], references: [uuid])
+  eversign EversignDocument?
+}
+
+model EversignDocument {
+  id String @id
+  agreementUuid String
+  agreement Agreement @relation(fields: [agreementUuid], references: [uuid])
 }

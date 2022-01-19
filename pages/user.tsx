@@ -1067,7 +1067,7 @@ const STAGE_ACTIONS: ((a: {
 ];
 
 const AgreementRow = (row: Agreements[number] & { contractUuid: string }) => {
-  const StageAction = STAGE_ACTIONS[row.stage];
+  const StageAction = STAGE_ACTIONS[row.status];
   return (
     <TableRow>
       <TableCell>{row.name}</TableCell>
@@ -1079,12 +1079,12 @@ const AgreementRow = (row: Agreements[number] & { contractUuid: string }) => {
             borderRadius: 12,
             px: "16px",
             py: "4px",
-            backgroundColor: STAGE_COLORS[row.stage],
+            backgroundColor: STAGE_COLORS[row.status],
             maxWidth: 120,
             textAlign: 'center',
           }}
         >
-          {CONTRACT_STAGES[row.stage].replace(/_/g, " ").toLowerCase()}
+          {CONTRACT_STAGES[row.status].replace(/_/g, " ").toLowerCase()}
         </Box>
       </TableCell>
       <TableCell>
@@ -1175,7 +1175,7 @@ const FundraiseContract = () => {
           buttonText={"Invite Investor"}
           onSave={(body) =>
             postAgreement({ uuid: id, ...body }).then((r) =>
-              setRows([...rows, { ...body, uuid: r.uuid, stage: 0 }])
+              setRows([...rows, { ...body, uuid: r.uuid, status: 0 }])
             )
           }
           defaultIsOpen={defaultIsOpen}

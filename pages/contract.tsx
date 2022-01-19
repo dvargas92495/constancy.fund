@@ -6,6 +6,7 @@ import Body from "@dvargas92495/ui/dist/components/Body";
 import Skeleton from "@mui/material/Skeleton";
 import React, { useEffect, useState } from "react";
 import type { Handler as GetHandler } from "../functions/eversign/get";
+import type { Handler as PostHandler } from "../functions/agreement-sign/post";
 import useHandler from "@dvargas92495/ui/dist/useHandler";
 
 declare global {
@@ -18,7 +19,7 @@ declare global {
         height?: number | string;
         events?: {
           loaded?: () => void;
-          signed?: (a: unknown) => void;
+          signed?: () => void;
           declined?: () => void;
           error?: (a: unknown) => void;
         };
@@ -30,10 +31,10 @@ declare global {
 const CONTAINER_ID = "eversign-embed";
 const EversignEmbed = ({
   url,
-  setSigned,
+  onSign,
 }: {
   url: string;
-  setSigned: (b: boolean) => void;
+  onSign: () => void;
 }) => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -45,9 +46,7 @@ const EversignEmbed = ({
         width: "100%",
         height: "100%",
         events: {
-          signed: (a) => {
-            setSigned(true);
-          },
+          signed: onSign,
           error: (a) => {
             console.log("error", a);
           },
@@ -71,9 +70,14 @@ const ContractPage = (): React.ReactElement => {
   const [agreementUuid, setAgreementUuid] = useState("");
   const [type, setType] = useState("Agreement");
   const [error, setError] = useState("");
+  const [isInvestor, setIsInvestor] = useState(false);
   const getEversign = useHandler<GetHandler>({
     path: "eversign",
     method: "GET",
+  });
+  const signAgreement = useHandler<PostHandler>({
+    path: "agreement-sign",
+    method: "POST",
   });
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -87,6 +91,7 @@ const ContractPage = (): React.ReactElement => {
           setUserId(r.userId);
           setType(r.type);
           setUrl(r.url);
+          setIsInvestor(r.isInvestor);
         })
         .catch((e) => setError(e.message));
     } else {
@@ -131,12 +136,17 @@ const ContractPage = (): React.ReactElement => {
                 <H1 sx={{ fontSize: 24 }}>Sign the {type}</H1>
               </>
             )}
-            <EversignEmbed url={url} setSigned={setSigned} />
+            <EversignEmbed
+              url={url}
+              onSign={() => {
+                signAgreement({ agreementUuid, isInvestor }).then(() => setSigned(true));
+              }}
+            />
             <Box display={"flex"}>
               <Button
                 variant={"contained"}
                 color={"primary"}
-                // onClick={onSubmit}
+                onClick={() => setFinished(true)}
                 disabled={!signed}
                 sx={{ marginRight: "32px" }}
               >
@@ -153,8 +163,8 @@ const ContractPage = (): React.ReactElement => {
               Waiting for the creator to confirm the investment.
             </H1>
             <Body>
-              We are waiting for the creator to confirm this investment and send you an
-              email with next steps when this happened.
+              We are waiting for the creator to confirm this investment and send
+              you an email with next steps when this happened.
             </Body>
           </Box>
         )}

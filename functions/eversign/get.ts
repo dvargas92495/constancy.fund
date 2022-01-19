@@ -17,17 +17,24 @@ import axios from "axios";
 
 const logic = ({ id, signer }: { id: string; signer: string }) =>
   axios
-    .get(
+    .get<{
+      signers: {
+        id: number;
+        embedded_signing_url: string;
+      }[];
+      meta: {
+        userId: string;
+        agreementUuid: string;
+        type: string;
+      };
+    }>(
       `https://api.eversign.com/api/document?access_key=${process.env.EVERSIGN_API_KEY}&business_id=398320&document_hash=${id}`
     )
     .then((r) => ({
       url: r.data.signers.find((s) => s.id === Number(signer))
-        ?.embedded_signing_url as string,
-      ...(r.data.meta as {
-        userId: string;
-        agreementUuid: string;
-        type: string;
-      }),
+        ?.embedded_signing_url || '',
+      ...r.data.meta,
+      isInvestor: Number(signer) === 1,
     }));
 
 export const handler = createAPIGatewayProxyHandler(logic);
