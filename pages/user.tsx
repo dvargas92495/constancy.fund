@@ -70,13 +70,38 @@ import Popover from "@mui/material/Popover";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import Skeleton from "@mui/material/Skeleton";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import FormDialog from "@dvargas92495/ui/dist/components/FormDialog";
 import StringField from "@dvargas92495/ui/dist/components/StringField";
 import NumberField from "@dvargas92495/ui/dist/components/NumberField";
-import PaymentPreferences, { PaymentPreferenceValue } from "./_common/PaymentPreferences";
+import PaymentPreferences, {
+  PaymentPreferenceValue,
+} from "./_common/PaymentPreferences";
 import QUESTIONAIRES from "./_common/questionaires";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+
+const deepEqual = (a: unknown, b: unknown): boolean => {
+  if (a === null || b === null) {
+    return false;
+  } else if (typeof a === "string" && typeof b === "string") {
+    return a === b;
+  } else if (typeof a === "object" && typeof b === "object") {
+    const aentries = Object.entries(a).sort((k1, k2) =>
+      k1[0].localeCompare(k2[0])
+    );
+    const bentries = Object.entries(b).sort((k1, k2) =>
+      k1[0].localeCompare(k2[0])
+    );
+    return (
+      aentries.length === bentries.length &&
+      aentries.every(([, v], i) => deepEqual(v, bentries[i][1]))
+    );
+  } else {
+    return false;
+  }
+};
 
 const H1 = (props: Parameters<typeof _H1>[0]) => (
   <_H1 sx={{ fontSize: 30, ...props.sx }} {...props} />
@@ -142,28 +167,28 @@ const ProfileContent = () => {
     id,
     update,
     firstName,
+    lastName,
     emailAddresses,
     primaryEmailAddressId,
     profileImageUrl,
-    publicMetadata: {
-      middleName,
-      contactEmail = emailAddresses.find((e) => e.id === primaryEmailAddressId)
-        ?.emailAddress,
-      socialProfiles,
-      questionaires,
-      attachDeck,
-      companyName,
-      registeredCountry,
-      companyRegistrationNumber,
-      companyAddressStreet,
-      companyAddressNumber,
-      companyAddressCity,
-      companyAddressZip,
-      paymentPreference,
-      completed = false,
-    } = {},
-    lastName,
+    publicMetadata: { completed = false, ...publicMetadata } = {},
   } = useUser();
+  const {
+    middleName,
+    contactEmail = emailAddresses.find((e) => e.id === primaryEmailAddressId)
+      ?.emailAddress,
+    socialProfiles,
+    questionaires,
+    attachDeck,
+    companyName,
+    registeredCountry,
+    companyRegistrationNumber,
+    companyAddressStreet,
+    companyAddressNumber,
+    companyAddressCity,
+    companyAddressZip,
+    paymentPreference,
+  } = publicMetadata;
   const profileHandler = useAuthenticatedHandler<ProfileHandler>({
     path: "creator-profile",
     method: "PUT",
@@ -201,11 +226,37 @@ const ProfileContent = () => {
   const [companyAddressZipValue, setCompanyAddressZipValue] = useState(
     companyAddressZip || ""
   );
-  const [paymentPreferenceValue, setPaymentPreferenceValue] = useState<PaymentPreferenceValue>(
-    typeof paymentPreference === "object" && paymentPreference
-      ? paymentPreference as PaymentPreferenceValue
-      : { type: "" }
-  );
+  const [paymentPreferenceValue, setPaymentPreferenceValue] =
+    useState<PaymentPreferenceValue>(
+      typeof paymentPreference === "object" && paymentPreference
+        ? (paymentPreference as PaymentPreferenceValue)
+        : { type: "" }
+    );
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const profileBody = {
+    firstName: firstNameValue,
+    lastName: lastNameValue,
+    publicMetadata: {
+      middleName: middleNameValue,
+      contactEmail: contactEmailValue,
+      socialProfiles: socialProfileValues,
+      questionaires: questionaireValues,
+      attachDeck: attachDeckValue,
+      companyName: companyNameValue,
+      registeredCountry: registeredCountryValue,
+      companyRegistrationNumber: companyRegistrationNumberValue,
+      companyAddressNumber: companyAddressNumberValue,
+      companyAddressStreet: companyAddressStreetValue,
+      companyAddressCity: companyAddressCityValue,
+      companyAddressZip: companyAddressZipValue,
+      paymentPreference: paymentPreferenceValue,
+    },
+  };
+  const isChanges = !deepEqual(profileBody, {
+    firstName,
+    lastName,
+    publicMetadata,
+  });
   return (
     <Box sx={{ maxWidth: "600px" }}>
       <H1>Setup your fundraising profile</H1>
@@ -376,34 +427,30 @@ const ProfileContent = () => {
           <Button
             onClick={() => {
               setLoading(true);
-              profileHandler({
-                firstName: firstNameValue,
-                lastName: lastNameValue,
-                publicMetadata: {
-                  middleName: middleNameValue,
-                  contactEmail: contactEmailValue,
-                  socialProfiles: socialProfileValues,
-                  questionaires: questionaireValues,
-                  attachDeck: attachDeckValue,
-                  companyName: companyNameValue,
-                  registeredCountry: registeredCountryValue,
-                  companyRegistrationNumber: companyRegistrationNumberValue,
-                  companyAddressNumber: companyAddressNumberValue,
-                  companyAddressStreet: companyAddressStreetValue,
-                  companyAddressCity: companyAddressCityValue,
-                  companyAddressZip: companyAddressZipValue,
-                  paymentPreference: paymentPreferenceValue,
-                },
-              })
-                .then(() => update({}))
+              profileHandler(profileBody)
+                .then(() => {
+                  setSnackbarOpen(true);
+                  return update({});
+                })
                 .catch((e) => setError(e.message))
                 .finally(() => setLoading(false));
             }}
             variant={"contained"}
             sx={{ mr: 2 }}
+            disabled={loading || !isChanges}
           >
             Save Edits
           </Button>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={5000}
+            onClose={() => setSnackbarOpen(false)}
+            color="success"
+          >
+            <Alert severity="success" sx={{ width: "100%" }}>
+              Successfully Saved Profile!
+            </Alert>
+          </Snackbar>
           {loading && <CircularProgress size={20} />}
           <span color={"darkred"}>{error}</span>
         </Box>
