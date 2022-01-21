@@ -73,7 +73,7 @@ import Skeleton from "@mui/material/Skeleton";
 import FormDialog from "@dvargas92495/ui/dist/components/FormDialog";
 import StringField from "@dvargas92495/ui/dist/components/StringField";
 import NumberField from "@dvargas92495/ui/dist/components/NumberField";
-import PaymentPreferences from "./_common/PaymentPreferences";
+import PaymentPreferences, { PaymentPreferenceValue } from "./_common/PaymentPreferences";
 import QUESTIONAIRES from "./_common/questionaires";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
@@ -201,8 +201,10 @@ const ProfileContent = () => {
   const [companyAddressZipValue, setCompanyAddressZipValue] = useState(
     companyAddressZip || ""
   );
-  const [paymentPreferenceValue, setPaymentPreferenceValue] = useState<string>(
-    (paymentPreference as string) || ""
+  const [paymentPreferenceValue, setPaymentPreferenceValue] = useState<PaymentPreferenceValue>(
+    typeof paymentPreference === "object" && paymentPreference
+      ? paymentPreference as PaymentPreferenceValue
+      : { type: "" }
   );
   return (
     <Box sx={{ maxWidth: "600px" }}>
@@ -1081,7 +1083,7 @@ const AgreementRow = (row: Agreements[number] & { contractUuid: string }) => {
             py: "4px",
             backgroundColor: STAGE_COLORS[row.status],
             maxWidth: 120,
-            textAlign: 'center',
+            textAlign: "center",
           }}
         >
           {CONTRACT_STAGES[row.status].replace(/_/g, " ").toLowerCase()}

@@ -105,6 +105,7 @@ const ContractPage = (): React.ReactElement => {
     setError,
     setUrl,
     getEversign,
+    setIsInvestor
   ]);
   return (
     <Layout>
