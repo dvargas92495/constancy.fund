@@ -33,7 +33,9 @@ const getStaticProps = ({
           u.emailAddresses.find((e) => e.id === u.primaryEmailAddressId)
             ?.emailAddress || "",
         profileImageUrl: u.profileImageUrl || "",
-        socialProfiles: u.publicMetadata.socialProfiles as string[],
+        socialProfiles: (
+          (u.publicMetadata.socialProfiles as string[]) || []
+        ).filter((s) => !!s),
         questionaires: u.publicMetadata.questionaires as string[],
         fundraises: fs.map((f) => ({ type: f.type, uuid: f.uuid })),
       },
