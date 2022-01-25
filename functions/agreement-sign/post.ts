@@ -61,7 +61,7 @@ const logic = ({
                 React.createElement(
                   "a",
                   {
-                    href: `${process.env.HOST}/contract?id=${r.documentId}&signer=1`,
+                    href: `${process.env.HOST}/contract?id=${r.documentId}&signer=2`,
                   },
                   "Click here"
                 ),

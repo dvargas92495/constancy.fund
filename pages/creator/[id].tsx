@@ -175,6 +175,9 @@ const EnterDetails = ({
   const [name, setName] = useState(state.name || "");
   const [email, setEmail] = useState(state.email || "");
   const [amount, setAmount] = useState(state.amount || 0);
+  const [company, setCompany] = useState("");
+  const [companyType, setCompanyType] = useState("");
+  const [address, setAddress] = useState("");
   const [paymentPreference, setPaymentPreference] = useState({ type: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -191,13 +194,29 @@ const EnterDetails = ({
       amount,
       uuid: state.uuid,
       contractUuid: state.contractUuid || "",
+      investorAddress: address,
+      investorCompany: company,
+      investorCompanyType: companyType,
     })
-      .then(({ id }) => window.location.assign(`/contract?id=${id}&signer=1`))
+      .then(({ uuid }) =>
+        window.location.assign(`/contract?uuid=${uuid}&signer=1`)
+      )
       .catch((e) => {
         setError(e.message);
         setLoading(false);
       });
-  }, [setMode, name, email, amount, state, setError, setLoading]);
+  }, [
+    setMode,
+    name,
+    email,
+    amount,
+    state,
+    setError,
+    setLoading,
+    address,
+    company,
+    companyType,
+  ]);
   return (
     <>
       <Button
@@ -229,6 +248,30 @@ const EnterDetails = ({
         onChange={(e) => setAmount(Number(e.target.value))}
         label={"Investment Amount"}
         type={"number"}
+        required
+        fullWidth
+      />
+      <TextField
+        sx={{ mb: 2 }}
+        value={company}
+        onChange={(e) => setCompany(e.target.value)}
+        label={"Company"}
+        required
+        fullWidth
+      />
+      <TextField
+        sx={{ mb: 2 }}
+        value={companyType}
+        onChange={(e) => setCompanyType(e.target.value)}
+        label={"Company Type"}
+        required
+        fullWidth
+      />
+      <TextField
+        sx={{ mb: 2 }}
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
+        label={"Address"}
         required
         fullWidth
       />

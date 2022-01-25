@@ -65,8 +65,16 @@ type ContractData = {
 const getFirst = (s: NestedString): string =>
   typeof s === "string" ? s : getFirst(s[0]);
 
-export const handler = ({ uuid }: { uuid: string }) => {
-  const outFile = path.join(FE_OUT_DIR, "_contracts", uuid, "draft.pdf");
+export const handler = ({
+  uuid,
+  outfile = "draft",
+  inputData = {},
+}: {
+  uuid: string;
+  outfile?: string;
+  inputData?: Record<string, string>;
+}) => {
+  const outFile = path.join(FE_OUT_DIR, "_contracts", uuid, `${outfile}.pdf`);
   return Promise.all([
     prisma.contract
       .findFirst({
@@ -112,6 +120,7 @@ export const handler = ({ uuid }: { uuid: string }) => {
         country:
           (user.publicMetadata.registeredCountry as string) ||
           "the United States",
+        ...inputData,
       };
       const interpolate = (argument: string) =>
         argument.replace(

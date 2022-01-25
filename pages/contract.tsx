@@ -81,10 +81,10 @@ const ContractPage = (): React.ReactElement => {
   });
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
+    const uuid = params.get("uuid");
     const signer = params.get("signer");
-    if (id && signer) {
-      getEversign({ id, signer })
+    if (uuid && signer) {
+      getEversign({ uuid, signer })
         .then((r) => {
           setLoading(false);
           setAgreementUuid(r.agreementUuid);
