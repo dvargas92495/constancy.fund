@@ -107,7 +107,7 @@ export default {
     {
       method: "text",
       argument:
-        '"), and {investor}, a company registered and organized under the laws of {investor_location}, and its successors and assigns (the "',
+        '"), and {investor_company}, a company registered and organized under the laws of {investor_location}, and its successors and assigns (the "',
       options: {
         continued: true,
       },

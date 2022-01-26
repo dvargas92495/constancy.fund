@@ -4,17 +4,17 @@ import { users } from "@clerk/clerk-sdk-node";
 import {
   MethodNotAllowedError,
   InternalServorError,
-  BadRequestError,
+  // BadRequestError,
 } from "aws-sdk-plus/dist/errors";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
 import { FE_OUT_DIR } from "fuegojs/dist/common";
 import path from "path";
 import invokeDirect from "@dvargas92495/api/invokeDirect";
 import type { Handler as ContractHandler } from "../create-contract-pdf";
-// import { Client, Document, File, Signer } from "eversign";
-// const eversign = new Client(process.env.EVERSIGN_API_KEY || "", 398320);
-import axios from "axios";
-import fs from "fs";
+import { Client, Document, File, Signer } from "@dvargas92495/eversign";
+const eversign = new Client(process.env.EVERSIGN_API_KEY || "", 398320);
+// import axios from "axios";
+// import fs from "fs";
 
 const logic = ({
   uuid,
@@ -95,7 +95,7 @@ const logic = ({
           (e) => e.id === contract.user.primaryEmailAddressId
         )?.emailAddress || "";
 
-      /*const file = new File(
+      const file = new File(
         process.env.NODE_ENV === "development"
           ? {
               name: "contract",
@@ -134,8 +134,8 @@ const logic = ({
 
       return eversign.createDocument(document).then((r) => {
         return { ...contract, id: r.getDocumentHash() };
-      });*/
-      return axios
+      })
+      /*return axios
         .post(
           `https://api.eversign.com/api/document?access_key=${process.env.EVERSIGN_API_KEY}&business_id=398320`,
           {
@@ -184,7 +184,7 @@ const logic = ({
             throw new BadRequestError(r.data.error.type);
           }
           return { ...contract, id: r.data.document_hash as string };
-        });
+        });*/
     })
     .then((r) =>
       prisma.eversignDocument
