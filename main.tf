@@ -71,7 +71,7 @@ provider "github" {
 
 module "aws_static_site" {
   source  = "dvargas92495/static-site/aws"
-  version = "3.2.0"
+  version = "3.2.5"
 
   domain = "crowdinvestin.me"
   secret = var.secret
@@ -228,4 +228,16 @@ resource "github_actions_secret" "staging_mysql_password" {
   repository       = "crowdinvestin.me"
   secret_name      = "STAGING_MYSQL_PASSWORD"
   plaintext_value  = var.staging_mysql_password
+}
+
+resource "github_actions_secret" "cloudfront_distribution_id" {
+  repository       = "crowdinvestin.me"
+  secret_name      = "CLOUDFRONT_DISTRIBUTION_ID"
+  plaintext_value  = module.aws_static_site.cloudfront_distribution_id
+}
+
+resource "github_actions_secret" "cloudfront_distribution_id" {
+  repository       = "crowdinvestin.me"
+  secret_name      = "STAGING_CLOUDFRONT_DISTRIBUTION_ID"
+  plaintext_value  = module.aws_static_site_staging.cloudfront_distribution_id
 }
