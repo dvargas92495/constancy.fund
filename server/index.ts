@@ -1,4 +1,5 @@
 import { createRequestHandler } from "@dvargas92495/remix-lambda-at-edge";
+import sendEmail from "aws-sdk-plus/dist/sendEmail";
 
 export const handler = createRequestHandler({
   build: require("./build"),
@@ -8,4 +9,10 @@ export const handler = createRequestHandler({
     /^\/payment-options\/.*/,
     /^\/_contracts\/.*/,
   ],
+  onError: (e) =>
+    sendEmail({
+      to: "support@crowdinvestin.me",
+      subject: "Remix Origin Error",
+      body: e.message,
+    }),
 });
