@@ -93,7 +93,7 @@ module "aws-serverless-backend" {
 
 module "aws_static_site_staging" {
   source  = "dvargas92495/static-site/aws"
-  version = "3.2.0"
+  version = "3.2.5"
 
   domain = "staging.crowdinvestin.me"
   secret = var.secret
