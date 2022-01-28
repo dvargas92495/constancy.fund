@@ -44,5 +44,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGINGL_AWS_ACCESS_SECRET }}
       - name: build fe
         run: npm run build
+      - name: ls
+        run: ls -al public
       - name: deploy fe
         run: npm run deploy -- --domain staging.crowdinvestin.me

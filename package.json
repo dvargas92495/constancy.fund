@@ -16,7 +16,7 @@
     "migrate:dev": "prisma migrate dev",
     "publish": "fuego publish",
     "precompile": "prisma generate",
-    "start": "concurrently \"npm:api\" \"npm:fe\"",
+    "start": "concurrently \"npm:api\" \"npm:dev\"",
     "postinstall": "fuego postinstall \"@mui/material\" \"pdfjs-dist\""
   },
   "devDependencies": {
@@ -30,7 +30,7 @@
     "@typescript-eslint/parser": "^5.5.0",
     "concurrently": "^6.4.0",
     "eslint": "^8.4.0",
-    "fuegojs": "^0.22.4",
+    "fuegojs": "^0.22.5",
     "prettier": "^2.5.1",
     "prisma": "^3.6.0",
     "ts-node": "^10.4.0",
