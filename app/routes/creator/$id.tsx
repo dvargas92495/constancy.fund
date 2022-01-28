@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Layout, { getMeta } from "~/_common/Layout";
-import type { Props } from "./[id].data";
+import getStaticProps, { Props } from "~/creator.server";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import H1 from "@dvargas92495/ui/dist/components/H1";
@@ -27,6 +27,7 @@ import useHandler from "@dvargas92495/ui/dist/useHandler";
 import PaymentPreference from "~/_common/PaymentPreferences";
 import type { Handler as GetHandler } from "../../../functions/agreement/get";
 import type { Handler as PutHandler } from "../../../functions/agreement/put";
+import { LoaderFunction, useLoaderData } from "remix";
 
 const icons = [
   { test: /twitter\.com/, component: TwitterIcon },
@@ -335,15 +336,24 @@ const CreatorLayout = (props: Props): React.ReactElement => {
   );
 };
 
-const CreatorPage = (props: Props): React.ReactElement => (
-  <Layout>
-    <CreatorLayout {...props} />
-  </Layout>
-);
+const CreatorPage = (): React.ReactElement => {
+  const props = useLoaderData<Props>();
+  return (
+    <Layout>
+      <CreatorLayout {...props} />
+    </Layout>
+  );
+};
 
-export const meta = getMeta({ 
+export const loader: LoaderFunction = ({ params }) => {
+  return getStaticProps({ params: { id: params["id"] || "" } }).then(
+    ({ props }) => props
+  );
+};
+
+export const meta = getMeta({
   // how could I get fullName in here?
-  title: "Creator" 
+  title: "Creator",
 });
 
 export default CreatorPage;

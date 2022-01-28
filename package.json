@@ -11,13 +11,13 @@
     "build": "fuego build --remix",
     "compile": "fuego compile",
     "deploy": "fuego deploy --remix",
-    "fe": "fuego fe --remix",
+    "dev": "fuego dev --remix",
     "migrate": "prisma migrate deploy",
     "migrate:dev": "prisma migrate dev",
     "publish": "fuego publish",
     "precompile": "prisma generate",
     "start": "concurrently \"npm:api\" \"npm:fe\"",
-    "postinstall": "remix setup node"
+    "postinstall": "fuego postinstall \"@mui/material\" \"pdfjs-dist\""
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.85",
@@ -30,7 +30,7 @@
     "@typescript-eslint/parser": "^5.5.0",
     "concurrently": "^6.4.0",
     "eslint": "^8.4.0",
-    "fuegojs": "^0.21.2",
+    "fuegojs": "^0.22.1",
     "prettier": "^2.5.1",
     "prisma": "^3.6.0",
     "ts-node": "^10.4.0",
@@ -39,7 +39,7 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
-    "@dvargas92495/api": "^0.5.4",
+    "@dvargas92495/api": "^0.5.5",
     "@dvargas92495/eversign": "^1.9.3",
     "@dvargas92495/remix-lambda-at-edge": "^0.1.4",
     "@dvargas92495/ui": "^0.45.4",

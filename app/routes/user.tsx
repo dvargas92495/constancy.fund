@@ -1438,10 +1438,6 @@ const UserPage = (): React.ReactElement => (
 export const meta = getMeta({ title: "User" });
 export const links: LinksFunction = () => {
   return [
-    {
-      rel: "stylesheet",
-      href: "/user.css", // what is this?
-    },
     { rel: "stylesheet", href: pdfViewerCore },
     { rel: "stylesheet", href: pdfViewerLayout },
   ];

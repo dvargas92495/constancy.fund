@@ -5,7 +5,7 @@ import fs from "fs";
 import path from "path";
 import isa from "../db/fundraise_content/isa";
 import { targetedDeploy } from "fuegojs/dist/deploy";
-import { FE_OUT_DIR } from "fuegojs/dist/common";
+import { FE_PUBLIC_DIR } from "fuegojs/dist/common";
 import datefnsFormat from "date-fns/format";
 import addDays from "date-fns/addDays";
 import { users, User } from "@clerk/clerk-sdk-node";
@@ -74,7 +74,7 @@ export const handler = ({
   outfile?: string;
   inputData?: Record<string, string>;
 }) => {
-  const outFile = path.join(FE_OUT_DIR, "_contracts", uuid, `${outfile}.pdf`);
+  const outFile = path.join(FE_PUBLIC_DIR, "_contracts", uuid, `${outfile}.pdf`);
   return Promise.all([
     prisma.contract
       .findFirst({
