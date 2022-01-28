@@ -1,6 +1,6 @@
 import React from "react";
 import { SignIn } from "@clerk/clerk-react";
-import Layout, { LayoutHead } from "./_common/Layout";
+import Layout, { getMeta } from "~/_common/Layout";
 
 const LoginPage: React.FC = () => (
   <Layout>
@@ -8,5 +8,5 @@ const LoginPage: React.FC = () => (
   </Layout>
 );
 
-export const Head = (): React.ReactElement => <LayoutHead title={"Log In"} />;
+export const meta = getMeta({ title: "Log in" });
 export default LoginPage;

@@ -1,5 +1,5 @@
 import React from "react";
-import Layout, { LayoutHead } from "./_common/Layout";
+import Layout, { getMeta } from "~/_common/Layout";
 import TermsOfUse from "@dvargas92495/ui/dist/components/TermsOfUse";
 
 const TermsOfUsePage: React.FC = () => (
@@ -8,7 +8,6 @@ const TermsOfUsePage: React.FC = () => (
   </Layout>
 );
 
-export const Head = (): React.ReactElement => (
-  <LayoutHead title={"Terms of Use"} />
-);
+export const Head = getMeta({ title: "Terms of Use" });
+
 export default TermsOfUsePage;

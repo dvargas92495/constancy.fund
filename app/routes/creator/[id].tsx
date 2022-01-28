@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Layout, { LayoutHead } from "../_common/Layout";
+import Layout, { getMeta } from "~/_common/Layout";
 import type { Props } from "./[id].data";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -19,14 +19,14 @@ import RedditIcon from "@mui/icons-material/Reddit";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import EmailIcon from "@mui/icons-material/Email";
 import WebIcon from "@mui/icons-material/Public";
-import QUESTIONAIRES from "../_common/questionaires";
-import FUNDRAISE_TYPES from "../../db/fundraise_types";
+import QUESTIONAIRES from "~/_common/questionaires";
+import FUNDRAISE_TYPES from "../../../db/fundraise_types";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import useHandler from "@dvargas92495/ui/dist/useHandler";
-import PaymentPreference from "../_common/PaymentPreferences";
-import type { Handler as GetHandler } from "../../functions/agreement/get";
-import type { Handler as PutHandler } from "../../functions/agreement/put";
+import PaymentPreference from "~/_common/PaymentPreferences";
+import type { Handler as GetHandler } from "../../../functions/agreement/get";
+import type { Handler as PutHandler } from "../../../functions/agreement/put";
 
 const icons = [
   { test: /twitter\.com/, component: TwitterIcon },
@@ -341,8 +341,9 @@ const CreatorPage = (props: Props): React.ReactElement => (
   </Layout>
 );
 
-export const Head = ({ fullName }: { fullName: string }) => (
-  <LayoutHead title={fullName} />
-);
+export const meta = getMeta({ 
+  // how could I get fullName in here?
+  title: "Creator" 
+});
 
 export default CreatorPage;

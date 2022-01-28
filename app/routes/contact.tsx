@@ -1,5 +1,5 @@
 import React from "react";
-import Layout, { LayoutHead } from "./_common/Layout";
+import Layout, { getMeta } from "../_common/Layout";
 import Contact from "@dvargas92495/ui/dist/components/Contact";
 
 const ContactPage: React.FunctionComponent = () => (
@@ -8,5 +8,6 @@ const ContactPage: React.FunctionComponent = () => (
   </Layout>
 );
 
-export const Head = (): React.ReactElement => <LayoutHead title={"Contact Us"} />;
+export const meta = getMeta({ title: "Contact Us" });
+
 export default ContactPage;

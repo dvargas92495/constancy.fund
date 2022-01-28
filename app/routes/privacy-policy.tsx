@@ -1,5 +1,5 @@
 import React from "react";
-import Layout, { LayoutHead } from "./_common/Layout";
+import Layout, { getMeta } from "~/_common/Layout";
 import PrivacyPolicy from "@dvargas92495/ui/dist/components/PrivacyPolicy";
 
 const PrivacyPolicyPage: React.FunctionComponent = () => (
@@ -8,7 +8,6 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
   </Layout>
 );
 
-export const Head = (): React.ReactElement => (
-  <LayoutHead title={"Privacy Policy"} />
-);
+export const Head = getMeta({ title: "Privacy Policy" });
+
 export default PrivacyPolicyPage;

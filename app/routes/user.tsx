@@ -1,4 +1,4 @@
-import { LayoutHead, themeProps } from "./_common/Layout";
+import { getMeta, themeProps } from "~/_common/Layout";
 import Document from "@dvargas92495/ui/dist/components/Document";
 import RedirectToLogin from "@dvargas92495/ui/dist/components/RedirectToLogin";
 import clerkUserProfileCss from "@dvargas92495/ui/dist/clerkUserProfileCss";
@@ -46,13 +46,13 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Card from "@mui/material/Card";
-import type { Handler as GetHandler } from "../functions/fundraises/get";
-import type { Handler as ContractHandler } from "../functions/contract/post";
-import type { Handler as ContractRefreshHandler } from "../functions/contract-refresh/put";
-import type { Handler as GetContractHandler } from "../functions/contract/get";
-import type { Handler as DeleteHandler } from "../functions/contract/delete";
-import type { Handler as PostAgreementHandler } from "../functions/agreement/post";
-import type { Handler as ProfileHandler } from "../functions/creator-profile/put";
+import type { Handler as GetHandler } from "../../functions/fundraises/get";
+import type { Handler as ContractHandler } from "../../functions/contract/post";
+import type { Handler as ContractRefreshHandler } from "../../functions/contract-refresh/put";
+import type { Handler as GetContractHandler } from "../../functions/contract/get";
+import type { Handler as DeleteHandler } from "../../functions/contract/delete";
+import type { Handler as PostAgreementHandler } from "../../functions/agreement/post";
+import type { Handler as ProfileHandler } from "../../functions/creator-profile/put";
 import {
   Link as RRLink,
   HashRouter,
@@ -63,8 +63,8 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import FUNDRAISE_TYPES from "../db/fundraise_types";
-import CONTRACT_STAGES from "../db/contract_stages";
+import FUNDRAISE_TYPES from "../../db/fundraise_types";
+import CONTRACT_STAGES from "../../db/contract_stages";
 import InputAdornment from "@mui/material/InputAdornment";
 import Popover from "@mui/material/Popover";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
@@ -77,10 +77,11 @@ import StringField from "@dvargas92495/ui/dist/components/StringField";
 import NumberField from "@dvargas92495/ui/dist/components/NumberField";
 import PaymentPreferences, {
   PaymentPreferenceValue,
-} from "./_common/PaymentPreferences";
-import QUESTIONAIRES from "./_common/questionaires";
+} from "~/_common/PaymentPreferences";
+import QUESTIONAIRES from "~/_common/questionaires";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+import { LinksFunction } from "remix";
 
 const deepEqual = (a: unknown, b: unknown): boolean => {
   if (a === null || b === null) {
@@ -1407,6 +1408,7 @@ const globalStyles = (
 const UserPage = (): React.ReactElement => (
   <Document themeProps={themeProps}>
     {globalStyles}
+    <style>{clerkUserProfileCss}</style>
     <SignedIn>
       <HashRouter>
         <Routes>
@@ -1433,11 +1435,12 @@ const UserPage = (): React.ReactElement => (
     <RedirectToLogin />
   </Document>
 );
+export const meta = getMeta({ title: "User" });
+export const links: LinksFunction = () => {
+  return [{ 
+    rel: "stylesheet", 
+    href: "/user.css" // what is this?
+  }];
+};
 
-export const Head = (): React.ReactElement => (
-  <>
-    <LayoutHead title={"User"} styles={clerkUserProfileCss} />
-    <link rel="stylesheet" href="/user.css" />
-  </>
-);
 export default UserPage;

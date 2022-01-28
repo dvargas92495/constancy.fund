@@ -1,13 +1,14 @@
-import Layout, { LayoutHead } from "./_common/Layout";
+import Layout, { getMeta } from "~/_common/Layout";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import H1 from "@dvargas92495/ui/dist/components/H1";
 import Body from "@dvargas92495/ui/dist/components/Body";
 import Skeleton from "@mui/material/Skeleton";
 import React, { useEffect, useState } from "react";
-import type { Handler as GetHandler } from "../functions/eversign/get";
-import type { Handler as PostHandler } from "../functions/agreement-sign/post";
+import type { Handler as GetHandler } from "../../functions/eversign/get";
+import type { Handler as PostHandler } from "../../functions/agreement-sign/post";
 import useHandler from "@dvargas92495/ui/dist/useHandler";
+import type { ExternalScriptsFunction } from "remix-utils";
 
 declare global {
   interface Window {
@@ -105,7 +106,7 @@ const ContractPage = (): React.ReactElement => {
     setError,
     setUrl,
     getEversign,
-    setIsInvestor
+    setIsInvestor,
   ]);
   return (
     <Layout>
@@ -140,7 +141,9 @@ const ContractPage = (): React.ReactElement => {
             <EversignEmbed
               url={url}
               onSign={() => {
-                signAgreement({ agreementUuid, isInvestor }).then(() => setSigned(true));
+                signAgreement({ agreementUuid, isInvestor }).then(() =>
+                  setSigned(true)
+                );
               }}
             />
             <Box display={"flex"}>
@@ -174,14 +177,18 @@ const ContractPage = (): React.ReactElement => {
   );
 };
 
-export const Head = ({ fullName }: { fullName: string }) => (
-  <>
-    <LayoutHead title={fullName} />
-    <script
-      type="text/javascript"
-      src="https://static.eversign.com/js/embedded-signing.js"
-    />
-  </>
-);
+export const meta = getMeta({
+  title: "Contract",
+});
+
+const scripts: ExternalScriptsFunction = () => {
+  return [
+    {
+      src: "https://static.eversign.com/js/embedded-signing.js",
+    },
+  ];
+};
+
+export const handle = { scripts };
 
 export default ContractPage;
