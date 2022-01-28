@@ -79,8 +79,8 @@ import PaymentPreferences, {
   PaymentPreferenceValue,
 } from "~/_common/PaymentPreferences";
 import QUESTIONAIRES from "~/_common/questionaires";
-import "@react-pdf-viewer/core/lib/styles/index.css";
-import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+import pdfViewerCore from "@react-pdf-viewer/core/lib/styles/index.css";
+import pdfViewerLayout from "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { LinksFunction } from "remix";
 
 const deepEqual = (a: unknown, b: unknown): boolean => {
@@ -1437,10 +1437,14 @@ const UserPage = (): React.ReactElement => (
 );
 export const meta = getMeta({ title: "User" });
 export const links: LinksFunction = () => {
-  return [{ 
-    rel: "stylesheet", 
-    href: "/user.css" // what is this?
-  }];
+  return [
+    {
+      rel: "stylesheet",
+      href: "/user.css", // what is this?
+    },
+    { rel: "stylesheet", href: pdfViewerCore },
+    { rel: "stylesheet", href: pdfViewerLayout },
+  ];
 };
 
 export default UserPage;

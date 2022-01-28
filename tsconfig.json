@@ -26,6 +26,5 @@
       "~/*": ["./app/*"]
     }
   },
-  "include": ["app", "functions", "db", "remix.env.d.ts"],
-  "exclude": ["node_modules", "**/__tests__/*"]
+  "include": ["app", "functions", "db", "remix.env.d.ts"]
 }

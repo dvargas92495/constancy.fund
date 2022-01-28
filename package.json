@@ -42,7 +42,7 @@
     "@dvargas92495/api": "^0.5.4",
     "@dvargas92495/eversign": "^1.9.3",
     "@dvargas92495/remix-lambda-at-edge": "^0.1.4",
-    "@dvargas92495/ui": "^0.45.2",
+    "@dvargas92495/ui": "^0.45.4",
     "@prisma/client": "^3.6.0",
     "@react-pdf-viewer/core": "^3.0.0",
     "@react-pdf-viewer/default-layout": "^3.0.0",

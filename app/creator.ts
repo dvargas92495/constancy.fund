@@ -1,6 +1,6 @@
 import { users } from "@clerk/clerk-sdk-node";
 import formatError from "@dvargas92495/api/formatError";
-import prisma from "../../functions/_common/prisma";
+import prisma from "../functions/_common/prisma";
 
 export type Props = {
   fullName: string;
