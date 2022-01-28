@@ -236,7 +236,7 @@ resource "github_actions_secret" "cloudfront_distribution_id" {
   plaintext_value  = module.aws_static_site.cloudfront_distribution_id
 }
 
-resource "github_actions_secret" "cloudfront_distribution_id" {
+resource "github_actions_secret" "staging_cloudfront_distribution_id" {
   repository       = "crowdinvestin.me"
   secret_name      = "STAGING_CLOUDFRONT_DISTRIBUTION_ID"
   plaintext_value  = module.aws_static_site_staging.cloudfront_distribution_id
