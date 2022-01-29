@@ -9,8 +9,8 @@ export const handler = createRequestHandler({
     /^\/payment-options\/.*/,
     /^\/_contracts\/.*/,
   ],
- /* onError: (e) =>
-    sendEmail({
+  onError: (e) => console.log("Send email to me", e),
+  /*sendEmail({
       to: "support@crowdinvestin.me",
       subject: "Remix Origin Error",
       body: e.message,
