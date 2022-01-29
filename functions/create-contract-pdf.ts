@@ -1,5 +1,5 @@
 import FUNDRAISE_TYPES from "../db/fundraise_types";
-import prisma from "./_common/prisma";
+import { execute } from "./_common/mysql";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
@@ -74,27 +74,34 @@ export const handler = ({
   outfile?: string;
   inputData?: Record<string, string>;
 }) => {
-  const outFile = path.join(FE_PUBLIC_DIR, "_contracts", uuid, `${outfile}.pdf`);
+  const outFile = path.join(
+    FE_PUBLIC_DIR,
+    "_contracts",
+    uuid,
+    `${outfile}.pdf`
+  );
   return Promise.all([
-    prisma.contract
-      .findFirst({
-        select: { type: true, userId: true },
-        where: { uuid },
-      })
-      .then((contract): Promise<{ data: ContractData; user: User }> | null =>
-        contract
-          ? users.getUser(contract?.userId).then((user) => ({
-              data: contentByType[
-                FUNDRAISE_TYPES[contract.type].id
-              ] as ContractData,
-              user,
-            }))
-          : null
-      ),
-    prisma.contractDetail.findMany({
-      select: { label: true, value: true },
-      where: { contractUuid: uuid },
+    execute(
+      `SELECT type, userId
+       FROM contract
+       WHERE uuid = ?`,
+      [uuid]
+    ).then((results): Promise<{ data: ContractData; user: User }> | null => {
+      const [contract] = results as { type: number; userId: string }[];
+      if (!contract) {
+        return null;
+      }
+      return users.getUser(contract?.userId).then((user) => ({
+        data: contentByType[FUNDRAISE_TYPES[contract.type].id] as ContractData,
+        user,
+      }));
     }),
+    execute(
+      `SELECT label, value
+       FROM contractdetail
+       WHERE contractUuid = ?`,
+      [uuid]
+    ).then((res) => res as { label: string; value: string }[]),
   ])
     .then(([contract, details]) => {
       const doc = new PDFDocument();
