@@ -40,7 +40,6 @@ export const getMeta =
     const title = `${pageTitle} | CrowdInvestInMe`;
     return {
       title,
-      viewport: "initial-scale=1.0, width=device-width",
       description,
       "og:title": title,
       "og:description": description,

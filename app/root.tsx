@@ -4,7 +4,7 @@ import {
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration,
+  // ScrollRestoration,
   useLoaderData,
 } from "remix";
 import { ExternalScripts } from "remix-utils";
@@ -36,7 +36,9 @@ export default function App() {
       </head>
       <body>
         <Outlet />
+        {/* blocked on https://github.com/remix-run/remix/pull/936
         <ScrollRestoration />
+        */}
         <script
           dangerouslySetInnerHTML={{
             __html: `window.process = {
