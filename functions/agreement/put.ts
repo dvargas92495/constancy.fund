@@ -56,7 +56,7 @@ const logic = ({
       return execute(
         `SELECT c.userId, c.type, c.uuid
           FROM contract c
-          INNER JOIN agreements a ON a.contractUuid = c.uuid
+          INNER JOIN agreement a ON a.contractUuid = c.uuid
           WHERE a.uuid = ?`,
         [agreementUuid]
       ).then(async (_c) => {
