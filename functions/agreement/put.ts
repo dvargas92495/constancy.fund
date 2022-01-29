@@ -42,15 +42,13 @@ const logic = ({
            WHERE uuid=?`,
           [name, email, amount, uuid]
         ).then(() => uuid)
-      : Promise.resolve(v4())
-          .then((u) =>
-            execute(
-              `INSERT INTO agreement (uuid, name, email, amount, contractUuid, stage)
+      : Promise.resolve(v4()).then((u) =>
+          execute(
+            `INSERT INTO agreement (uuid, name, email, amount, contractUuid, stage)
            VALUES (?, ?, ?, ?, ?, 0)`,
-              [u, name, email, amount, contractUuid]
-            ) .then(() => u)
-          )
-         
+            [u, name, email, amount, contractUuid]
+          ).then(() => u)
+        )
   )
     .then((agreementUuid) => {
       return execute(
@@ -59,9 +57,8 @@ const logic = ({
           INNER JOIN agreement a ON a.contractUuid = c.uuid
           WHERE a.uuid = ?`,
         [agreementUuid]
-      ).then(async (_c) => {
-        const c = _c as { uuid: string; type: number; userId: string };
-        console.log(c);
+      ).then(async (results) => {
+        const [c] = results as { uuid: string; type: number; userId: string }[];
         if (!c)
           throw new MethodNotAllowedError(
             `Cannot find fundraise tied to agreement ${agreementUuid}`
