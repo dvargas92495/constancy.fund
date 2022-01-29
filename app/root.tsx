@@ -14,11 +14,13 @@ export const meta: MetaFunction = () => {
   return { title: "CrowdInvestInMe" };
 };
 
-const ENVS = ["API_URL", "CLERK_FRONTEND_API", "STRIPE_PUBLIC_KEY"];
-
 export function loader() {
   return {
-    ENV: Object.fromEntries(ENVS.map((s) => [s, process.env[s]])),
+    ENV: {
+      API_URL: process.env.API_URL,
+      CLERK_FRONTEND_API: process.env.CLERK_FRONTEND_API,
+      STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+    },
   };
 }
 
