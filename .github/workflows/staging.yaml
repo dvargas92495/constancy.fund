@@ -1,4 +1,4 @@
-name: Publish staging
+name: Publish staging (v0)
 on:
   workflow_dispatch:
   push:

@@ -9,7 +9,7 @@ const logic = ({ user: { id } }: { user: User }) => {
     `SELECT c.type, c.uuid, a.uuid as agreementUuid, cd.label, cd.value, cd.uuid as cdUuid
      FROM contract c
      INNER JOIN agreement a ON a.contractUuid = c.uuid
-     INNER JOIN contractdetail cd ON a.contractUuid = c.uuid
+     INNER JOIN contractdetail cd ON cd.contractUuid = c.uuid
      WHERE c.userId = ?`,
     [id || ""]
   ).then((results) => {
