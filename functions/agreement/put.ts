@@ -1,5 +1,5 @@
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
-import { execute } from "../_common/mysql";
+import mysql, { execute } from "../_common/mysql";
 import { users } from "@clerk/clerk-sdk-node";
 import {
   MethodNotAllowedError,
@@ -63,20 +63,22 @@ const logic = ({
           throw new MethodNotAllowedError(
             `Cannot find fundraise tied to agreement ${agreementUuid}`
           );
-        await invokeDirect<Parameters<ContractHandler>[0]>({
-          path: "create-contract-pdf",
-          data: {
-            uuid: c.uuid,
-            outfile: agreementUuid,
-            inputData: {
-              investor: name,
-              investor_location: investorAddress,
-              investor_company: investorCompany,
-              investor_company_type: investorCompanyType,
+        return Promise.all([
+          users.getUser(c.userId),
+          invokeDirect<Parameters<ContractHandler>[0]>({
+            path: "create-contract-pdf",
+            data: {
+              uuid: c.uuid,
+              outfile: agreementUuid,
+              inputData: {
+                investor: name,
+                investor_location: investorAddress,
+                investor_company: investorCompany,
+                investor_company_type: investorCompanyType,
+              },
             },
-          },
-        });
-        return users.getUser(c.userId).then((user) => ({
+          }),
+        ]).then(([user]) => ({
           user,
           type: FUNDRAISE_TYPES[c.type].name,
           uuid: c.uuid,
@@ -85,6 +87,7 @@ const logic = ({
       });
     })
     .then((contract) => {
+      console.log('contract generated');
       const filePath = `_contracts/${contract.uuid}/${contract.agreementUuid}.pdf`;
       const creatorName = `${contract.user.firstName} ${contract.user.lastName}`;
       const creatorEmail =
@@ -130,6 +133,7 @@ const logic = ({
       document.appendSigner(creatorSigner);
 
       return eversign.createDocument(document).then((r) => {
+        console.log('eversign generated');
         return { ...contract, id: r.getDocumentHash() };
       });
     })
@@ -138,7 +142,11 @@ const logic = ({
         `INSERT INTO eversigndocument (id, agreementUuid)
         VALUES (?,?)`,
         [r.id, r.agreementUuid]
-      ).then(() => r.agreementUuid)
+      ).then(() => {
+        console.log('all done');
+        mysql.destroy();
+        return r.agreementUuid;
+      })
     )
     .then((uuid) => ({ uuid }))
     .catch((e) => {
