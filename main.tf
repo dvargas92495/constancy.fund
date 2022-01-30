@@ -86,7 +86,7 @@ module "aws_static_site" {
 
 module "aws-serverless-backend" {
   source  = "dvargas92495/serverless-backend/aws"
-  version = "2.4.0"
+  version = "2.4.1"
 
   api_name = "crowdinvestin-me"
   sizes = {
@@ -114,7 +114,7 @@ module "aws_static_site_staging" {
 
 module "aws-serverless-backend_staging" {
   source  = "dvargas92495/serverless-backend/aws"
-  version = "2.4.0"
+  version = "2.4.1"
 
   api_name = "staging-crowdinvestin-me"
   sizes = {
