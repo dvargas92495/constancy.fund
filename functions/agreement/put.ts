@@ -120,11 +120,6 @@ const logic = ({
         custom_requester_email: creatorEmail,
         custom_requester_name: creatorName,
         embeddedSigningEnabled: true,
-        meta: {
-          agreementUuid: contract.agreementUuid,
-          userId: contract.user.id || "",
-          type: contract.type,
-        },
         ...(process.env.EVERSIGN_SANDBOX ? { sandbox: true } : {}),
       });
 
@@ -132,6 +127,7 @@ const logic = ({
       document.appendSigner(investorSigner);
       document.appendSigner(creatorSigner);
 
+      console.log('eversign prepared');
       return eversign.createDocument(document).then((r) => {
         console.log('eversign generated');
         return { ...contract, id: r.getDocumentHash() };

@@ -1,5 +1,5 @@
 import FUNDRAISE_TYPES from "../db/fundraise_types";
-import mysql, { execute } from "./_common/mysql";
+import { execute } from "./_common/mysql";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
@@ -104,7 +104,6 @@ export const handler = ({
     ).then((res) => res as { label: string; value: string }[]),
   ])
     .then(([contract, details]) => {
-      mysql.destroy();
       const doc = new PDFDocument();
       const dirname = path.dirname(outFile);
       if (!fs.existsSync(dirname)) fs.mkdirSync(dirname, { recursive: true });
