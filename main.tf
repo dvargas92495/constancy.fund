@@ -86,9 +86,15 @@ module "aws_static_site" {
 
 module "aws-serverless-backend" {
   source  = "dvargas92495/serverless-backend/aws"
-  version = "2.2.0"
+  version = "2.4.0"
 
   api_name = "crowdinvestin-me"
+  sizes = {
+    "create-contract-pdf": 5120
+  }
+  timeouts = {
+    "agreement/put": 20
+  }
 }
 
 module "aws_static_site_staging" {
@@ -108,11 +114,14 @@ module "aws_static_site_staging" {
 
 module "aws-serverless-backend_staging" {
   source  = "dvargas92495/serverless-backend/aws"
-  version = "2.3.1"
+  version = "2.4.0"
 
   api_name = "staging-crowdinvestin-me"
   sizes = {
     "create-contract-pdf": 5120
+  }
+  timeouts = {
+    "agreement/put": 20
   }
 }
 
