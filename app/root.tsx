@@ -19,6 +19,7 @@ export function loader() {
     ENV: {
       API_URL: process.env.API_URL,
       CLERK_FRONTEND_API: process.env.CLERK_FRONTEND_API,
+      NODE_ENV: process.env.NODE_ENV,
       STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
     },
   };

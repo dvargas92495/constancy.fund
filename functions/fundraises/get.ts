@@ -41,7 +41,7 @@ const logic = ({ user: { id } }: { user: User }) => {
       } else {
         fundraises[r.uuid] = {
           type: r.type,
-          agreements: new Set(r.agreementUuid),
+          agreements: new Set([r.agreementUuid]),
           details: { [r.cdUuid]: { label: r.label, value: r.value } },
         };
       }

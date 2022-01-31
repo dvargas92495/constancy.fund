@@ -29,9 +29,12 @@ import TextField from "@mui/material/TextField";
 import FormLabel from "@mui/material/FormLabel";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import MoreIcon from "@mui/icons-material/MoreRounded";
+import MoreIcon from "@mui/icons-material/MoreVert";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import WebIcon from "@mui/icons-material/Public";
+import InfoIcon from "@mui/icons-material/Info";
+import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Avatar from "@mui/material/Avatar";
 import CircularProgress from "@mui/material/CircularProgress";
 import Select from "@mui/material/Select";
@@ -472,6 +475,75 @@ const ProfileContent = () => {
 
 type Fundraises = Awaited<ReturnType<GetHandler>>["fundraises"];
 
+const DetailComponentById: Record<
+  string,
+  (props: Record<string, string>) => React.ReactElement
+> = {
+  isa: (props) => {
+    const {
+      amount,
+      cap,
+      return: financialReturn,
+      share,
+      supportType,
+      threshold,
+      clauses,
+    } = props;
+    const [showMore, setShowMore] = useState(false);
+    return (
+      <Box
+        display={"flex"}
+        sx={{
+          "& p": {
+            marginTop: 0,
+          },
+        }}
+      >
+        <Box sx={{ minWidth: "40px" }}>
+          {showMore ? (
+            <IconButton onClick={() => setShowMore(false)}>
+              <ArrowDropDownIcon />
+            </IconButton>
+          ) : (
+            <IconButton onClick={() => setShowMore(true)}>
+              <ArrowRightIcon />
+            </IconButton>
+          )}
+        </Box>
+        <Box>
+          <p>
+            {" "}
+            Looking to raise <b>{amount}</b> paid out <b>{supportType}</b>.
+          </p>
+          {showMore && (
+            <>
+              <p>
+                Investor will receive {share}% of revenue above $
+                {Number(threshold) / 12} per month
+              </p>
+              <p>Total will be capped at either</p>
+              <ul>
+                <li>
+                  {(100 * Number(financialReturn)) / Number(amount)}% of initial
+                  investment or
+                </li>
+                <li>{cap} years</li>
+              </ul>
+              <p>Additional clauses:</p>
+              <ul>
+                <li>{clauses}</li>
+              </ul>
+            </>
+          )}
+        </Box>
+      </Box>
+    );
+  },
+  loan: () => <div>Coming Soon!</div>,
+  safe: () => <div>Coming Soon!</div>,
+  saft: () => <div>Coming Soon!</div>,
+};
+
 const FundraiseContentRow = ({
   onDeleteSuccess,
   ...row
@@ -490,35 +562,34 @@ const FundraiseContentRow = ({
   const onPreview = useCallback(() => {
     navigate(`/fundraises/preview/${row.uuid}`);
   }, [navigate, row.uuid]);
+  const DetailComponent = DetailComponentById[row.type];
   return (
     <TableRow>
       <TableCell>{row.type}</TableCell>
-      <TableCell>
-        {row.details
-          .sort(({ label: a }, { label: b }) => a.localeCompare(b))
-          .map((detail) => (
-            <p key={detail.uuid}>
-              <b>{detail.label}:</b> {detail.value}
-            </p>
-          ))}
+      <TableCell sx={{ width: "320px" }}>
+        <DetailComponent
+          {...Object.fromEntries(row.details.map((d) => [d.label, d.value]))}
+        />
       </TableCell>
       <TableCell>{row.progress}</TableCell>
       <TableCell>{row.investorCount}</TableCell>
-      <TableCell>
-        <Button
-          variant="outlined"
-          sx={{ marginRight: 1 }}
-          onClick={() => {
-            navigate(`/fundraises/contract/${row.uuid}`, {
-              state: { isOpen: true },
-            });
-          }}
-        >
-          Invite Investor
-        </Button>
-        <IconButton onClick={(e) => setIsOpen(e.target as HTMLButtonElement)}>
-          <MoreIcon />
-        </IconButton>
+      <TableCell sx={{ minWidth: "240px" }}>
+        <Box flex={"display"} alignItems={"center"}>
+          <Button
+            variant="outlined"
+            sx={{ marginRight: 1 }}
+            onClick={() => {
+              navigate(`/fundraises/contract/${row.uuid}`, {
+                state: { isOpen: true },
+              });
+            }}
+          >
+            Invite Investor
+          </Button>
+          <IconButton onClick={(e) => setIsOpen(e.target as HTMLButtonElement)}>
+            <MoreIcon />
+          </IconButton>
+        </Box>
         <Popover
           open={!!isOpen}
           anchorEl={isOpen}
@@ -529,17 +600,29 @@ const FundraiseContentRow = ({
           }}
         >
           <List>
-            <ListItem button onClick={onDelete} sx={{ display: "flex" }}>
+            <ListItem
+              button
+              onClick={() => {
+                navigate(`/fundraises/contract/${row.uuid}`);
+              }}
+              sx={{ display: "flex" }}
+            >
               <ListItemIcon>
-                <DeleteIcon />
+                <InfoIcon />
               </ListItemIcon>
-              <ListItemText primary={"Delete"} />
+              <ListItemText primary={"See Investors"} />
             </ListItem>
             <ListItem button onClick={onPreview} sx={{ display: "flex" }}>
               <ListItemIcon>
                 <PreviewIcon />
               </ListItemIcon>
               <ListItemText primary={"Preview"} />
+            </ListItem>
+            <ListItem button onClick={onDelete} sx={{ display: "flex" }}>
+              <ListItemIcon>
+                <DeleteIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Delete"} />
             </ListItem>
           </List>
         </Popover>
@@ -609,7 +692,7 @@ const FundraiseContentTable = () => {
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Fundraising Type</TableCell>
+                <TableCell>Type</TableCell>
                 <TableCell>Details</TableCell>
                 <TableCell>Progress</TableCell>
                 <TableCell># Investors</TableCell>
@@ -1127,10 +1210,10 @@ const AgreementRow = (row: Agreements[number] & { contractUuid: string }) => {
           sx={{
             height: 24,
             borderRadius: 12,
-            px: "16px",
+            px: "40px",
             py: "4px",
             backgroundColor: STAGE_COLORS[row.status],
-            maxWidth: 120,
+            width: "fit-content",
             textAlign: "center",
           }}
         >
@@ -1147,7 +1230,6 @@ const AgreementRow = (row: Agreements[number] & { contractUuid: string }) => {
 const FundraiseContract = () => {
   const { id = "" } = useParams();
   const location = useLocation();
-  // const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const getFundraise = useAuthenticatedHandler<GetContractHandler>({
     path: "contract",
@@ -1176,7 +1258,7 @@ const FundraiseContract = () => {
         </Skeleton>
       )
     : Box;
-  const defaultIsOpen = useMemo(() => location.state.isOpen, [location]);
+  const defaultIsOpen = useMemo(() => location.state?.isOpen, [location]);
   return (
     <>
       <H1
