@@ -5,6 +5,7 @@ const DATABASE_URL_REGEX =
 const matches = DATABASE_URL_REGEX.exec(process.env.DATABASE_URL || "");
 
 if (!matches) throw new Error(`Error parsing Database URL`);
+console.log(matches[1],matches[1],matches[1],matches[1])
 
 const connection = mysql.createConnection({
   host: matches[3],

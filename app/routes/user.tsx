@@ -2,6 +2,7 @@ import { getMeta, themeProps } from "~/_common/Layout";
 import Document from "@dvargas92495/ui/dist/components/Document";
 import RedirectToLogin from "@dvargas92495/ui/dist/components/RedirectToLogin";
 import clerkUserProfileCss from "@dvargas92495/ui/dist/clerkUserProfileCss";
+import Loading from "@dvargas92495/ui/dist/components/Loading";
 import React, { useMemo, useEffect, useState, useCallback } from "react";
 import { SignedIn, UserButton, useUser } from "@clerk/clerk-react";
 import Drawer from "@mui/material/Drawer";
@@ -1184,31 +1185,57 @@ const STAGE_COLORS = ["#C4C4C4", "#D4E862", "#2FEC00", "#FF8B8B", "#8312DD"];
 const STAGE_ACTIONS: ((a: {
   contractUuid: string;
   uuid: string;
+  onDelete: (uuid: string) => void;
 }) => React.ReactElement)[] = [
   (row) => {
     const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
       path: "agreement",
       method: "DELETE",
     });
+    const [loading, setLoading] = useState(false);
     return (
-      <a onClick={() => deleteHandler({ uuid: row.uuid })}>Remove Invitation</a>
+      <Box
+        component={"span"}
+        sx={{
+          color: "#0000EE",
+          textDecoration: "underline",
+          "&:hover": {
+            textDecoration: "none",
+            cursor: "pointer",
+          },
+        }}
+        onClick={() => {
+          setLoading(true);
+          deleteHandler({ uuid: row.uuid })
+            .then(() => row.onDelete(row.uuid))
+            .finally(() => setLoading(false));
+        }}
+      >
+        <Box component={"span"} sx={{ marginRight: 16 }}>
+          Remove Invitation
+        </Box>{" "}
+        <Loading loading={loading} size={16} />
+      </Box>
     );
   },
   (row) => (
-    <RRLink to={`/fundraises/preview/${row.contractUuid}`}>
-      Sign Contract
-    </RRLink>
+    <RRLink to={`/contract?uuid=${row.uuid}&signer=2`}>Sign Contract</RRLink>
   ),
   (row) => (
-    <RRLink to={`/fundraises/preview/${row.contractUuid}`}>
+    <ExternalLink href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
       View Contract
-    </RRLink>
+    </ExternalLink>
   ),
   () => <span />,
   () => <span />,
 ];
 
-const AgreementRow = (row: Agreements[number] & { contractUuid: string }) => {
+const AgreementRow = (
+  row: Agreements[number] & {
+    contractUuid: string;
+    onDelete: (uuid: string) => void;
+  }
+) => {
   const StageAction = STAGE_ACTIONS[row.status];
   return (
     <TableRow>
@@ -1230,7 +1257,11 @@ const AgreementRow = (row: Agreements[number] & { contractUuid: string }) => {
         </Box>
       </TableCell>
       <TableCell>
-        <StageAction uuid={row.uuid} contractUuid={row.contractUuid} />
+        <StageAction
+          uuid={row.uuid}
+          contractUuid={row.contractUuid}
+          onDelete={row.onDelete}
+        />
       </TableCell>
     </TableRow>
   );
@@ -1249,6 +1280,10 @@ const FundraiseContract = () => {
     method: "POST",
   });
   const [rows, setRows] = useState<Agreements>([]);
+  const onDelete = useCallback(
+    (uuid: string) => setRows(rows.filter((r) => r.uuid !== uuid)),
+    [setRows, rows]
+  );
   const { type: defaultType = FUNDRAISE_TYPES[0].id } = location.state || {};
   const [type, setType] = useState(defaultType);
   useEffect(() => {
@@ -1334,7 +1369,12 @@ const FundraiseContract = () => {
           </TableHead>
           <TableBody>
             {rows.map((row) => (
-              <AgreementRow key={row.uuid} {...row} contractUuid={id} />
+              <AgreementRow
+                key={row.uuid}
+                {...row}
+                contractUuid={id}
+                onDelete={onDelete}
+              />
             ))}
           </TableBody>
         </Table>
