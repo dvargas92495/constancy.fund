@@ -55,6 +55,7 @@ import type { Handler as ContractRefreshHandler } from "../../functions/contract
 import type { Handler as GetContractHandler } from "../../functions/contract/get";
 import type { Handler as DeleteHandler } from "../../functions/contract/delete";
 import type { Handler as PostAgreementHandler } from "../../functions/agreement/post";
+import type { Handler as DeleteAgreementHandler } from "../../functions/agreement/delete";
 import type { Handler as ProfileHandler } from "../../functions/creator-profile/put";
 import {
   Link as RRLink,
@@ -1184,8 +1185,16 @@ const STAGE_ACTIONS: ((a: {
   contractUuid: string;
   uuid: string;
 }) => React.ReactElement)[] = [
-  () => <span />,
-  (row: { contractUuid: string; uuid: string }) => (
+  (row) => {
+    const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
+      path: "agreement",
+      method: "DELETE",
+    });
+    return (
+      <a onClick={() => deleteHandler({ uuid: row.uuid })}>Remove Invitation</a>
+    );
+  },
+  (row) => (
     <RRLink to={`/fundraises/preview/${row.contractUuid}`}>
       Sign Contract
     </RRLink>

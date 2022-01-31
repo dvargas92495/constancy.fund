@@ -14,9 +14,19 @@ const connection = mysql.createConnection({
   password: matches[2],
 });
 
-export const execute = (s: string, args: (string | number)[]) =>
+export const execute = <
+  T extends
+    | mysql.RowDataPacket[][]
+    | mysql.RowDataPacket[]
+    | mysql.OkPacket
+    | mysql.OkPacket[]
+    | mysql.ResultSetHeader
+>(
+  s: string,
+  args: (string | number)[]
+): Promise<T> =>
   new Promise((resolve, reject) =>
-    connection.execute(s, args, (err, res) => {
+    connection.execute<T>(s, args, (err, res) => {
       if (err) reject(err);
       else resolve(res);
     })
