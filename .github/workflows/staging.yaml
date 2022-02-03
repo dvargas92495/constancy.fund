@@ -4,6 +4,10 @@ on:
   push:
     branches: main
     paths:
+      - "app/**"
+      - "db/**"
+      - "functions/**"
+      - "package.json"
       - ".github/workflows/staging.yaml"
 
 env:
