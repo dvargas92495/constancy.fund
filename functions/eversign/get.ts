@@ -2,9 +2,7 @@ import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProx
 import prisma from "../_common/prisma";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
-import { Client } from "@dvargas92495/eversign";
-const eversign = new Client(process.env.EVERSIGN_API_KEY || "", 398320);
-// import axios from "axios";
+import eversign from "../_common/eversign";
 
 const logic = ({ uuid, signer }: { uuid: string; signer: string }) =>
   prisma.eversignDocument
@@ -26,20 +24,6 @@ const logic = ({ uuid, signer }: { uuid: string; signer: string }) =>
               .find((s) => s.getId() === Number(signer))
               ?.getEmbeddedSigningUrl() || ""
         )
-      /*return axios
-        .get<{
-          signers: {
-            id: number;
-            embedded_signing_url: string;
-          }[];
-        }>(
-          `https://api.eversign.com/api/document?access_key=${process.env.EVERSIGN_API_KEY}&business_id=398320&document_hash=${d.id}`
-        )
-        .then(
-          (r) =>
-            r.data.signers.find(({ id }) => id === Number(signer))
-              ?.embedded_signing_url || ""
-        )*/
         .then((url) =>
           prisma.contract
             .findFirst({

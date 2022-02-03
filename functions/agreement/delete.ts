@@ -5,21 +5,34 @@ import { execute } from "../_common/mysql";
 import { NotFoundError, MethodNotAllowedError } from "aws-sdk-plus/dist/errors";
 
 const logic = ({ uuid, user: { id: userId } }: { uuid: string; user: User }) =>
-  execute(
-    `SELECT c.userId 
+  Promise.all([
+    execute(
+      `SELECT c.userId 
      FROM agreement a
      INNER JOIN contract c ON c.uuid = a.contractUuid
      WHERE a.uuid = ?`,
-    [uuid]
-  )
-    .then((results) => {
-      const [contract] = results as { userId: string }[];
+      [uuid]
+    ),
+    execute(
+      `SELECT e.id 
+     FROM eversigndocument e
+     WHERE e.agreementUuid = ?`,
+      [uuid]
+    ),
+  ])
+    .then(([agreements, eversigns]) => {
+      const [contract] = agreements as { userId: string }[];
       if (!contract)
         throw new NotFoundError(
           `Could not find contract based on agreement ${uuid}`
         );
       if (userId !== contract.userId)
         throw new MethodNotAllowedError(`Not authorized to delete ${uuid}`);
+      const eversignRecords = eversigns as { id: string }[];
+      if (eversignRecords.length)
+        throw new MethodNotAllowedError(
+          `Not allowed to delete an agreement with a generated contract ${eversignRecords[0].id}`
+        );
       return execute(
         `DELETE FROM agreement
         WHERE uuid = ?`,

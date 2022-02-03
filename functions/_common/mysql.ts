@@ -5,15 +5,28 @@ const DATABASE_URL_REGEX =
 const matches = DATABASE_URL_REGEX.exec(process.env.DATABASE_URL || "");
 
 if (!matches) throw new Error(`Error parsing Database URL`);
-console.log(matches[1],matches[1],matches[1],matches[1])
 
-const connection = mysql.createConnection({
-  host: matches[3],
-  user: matches[1],
-  port: Number(matches[4]),
-  database: matches[5],
-  password: matches[2],
-});
+let connection: null | mysql.Connection = null;
+const createConnection = () => {
+  const conn = mysql.createConnection({
+    host: matches[3],
+    user: matches[1],
+    port: Number(matches[4]),
+    database: matches[5],
+    password: matches[2],
+  });
+  conn.on("close", () => {
+    connection = null;
+  });
+  return conn;
+};
+
+const getConnection = () => {
+  if (!connection) {
+    connection = createConnection();
+  }
+  return connection;
+};
 
 export const execute = <
   T extends
@@ -26,11 +39,11 @@ export const execute = <
   s: string,
   args: (string | number)[]
 ): Promise<T> =>
-  new Promise((resolve, reject) =>
-    connection.execute<T>(s, args, (err, res) => {
+  new Promise((resolve, reject) => {
+    return getConnection().execute<T>(s, args, (err, res) => {
       if (err) reject(err);
       else resolve(res);
-    })
-  );
+    });
+  });
 
 export default connection;

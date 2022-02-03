@@ -1,12 +1,12 @@
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
-import mysql, { execute } from "../_common/mysql";
+import { execute } from "../_common/mysql";
 import { users } from "@clerk/clerk-sdk-node";
 import {
   MethodNotAllowedError,
   InternalServorError,
 } from "aws-sdk-plus/dist/errors";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
-import { FE_OUT_DIR } from "fuegojs/dist/common";
+import { FE_PUBLIC_DIR } from "fuegojs/dist/common";
 import path from "path";
 import invokeDirect from "@dvargas92495/api/invokeDirect";
 import type { Handler as ContractHandler } from "../create-contract-pdf";
@@ -99,7 +99,7 @@ const logic = ({
         process.env.NODE_ENV === "development"
           ? {
               name: "contract",
-              filePath: path.join(FE_OUT_DIR, filePath),
+              filePath: path.join(FE_PUBLIC_DIR, filePath),
             }
           : {
               name: "contract",
@@ -139,8 +139,6 @@ const logic = ({
         VALUES (?,?)`,
         [r.id, r.agreementUuid]
       ).then(() => {
-        console.log('all done');
-        mysql.destroy();
         return r.agreementUuid;
       })
     )
