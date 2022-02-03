@@ -1255,7 +1255,7 @@ const AgreementRow = (
   return (
     <TableRow>
       <TableCell>{row.name}</TableCell>
-      <TableCell>{row.amount}</TableCell>
+      <TableCell>${formatAmount(row.amount)}</TableCell>
       <TableCell>
         <Box
           sx={{

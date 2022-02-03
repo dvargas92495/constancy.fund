@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@dvargas92495/api": "^0.5.5",
-    "@dvargas92495/eversign": "^1.9.3",
+    "@dvargas92495/eversign": "^1.9.5",
     "@dvargas92495/remix-lambda-at-edge": "^0.2.0",
     "@dvargas92495/ui": "^0.45.4",
     "@prisma/client": "^3.6.0",

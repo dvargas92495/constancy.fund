@@ -87,7 +87,7 @@ const logic = ({
       });
     })
     .then((contract) => {
-      console.log('contract generated');
+      console.log("contract generated");
       const filePath = `_contracts/${contract.uuid}/${contract.agreementUuid}.pdf`;
       const creatorName = `${contract.user.firstName} ${contract.user.lastName}`;
       const creatorEmail =
@@ -107,11 +107,17 @@ const logic = ({
             }
       );
 
-      const investorSigner = new Signer({ id: 1, name, email });
+      const investorSigner = new Signer({
+        id: 1,
+        name,
+        email,
+        deliverEmail: false,
+      });
       const creatorSigner = new Signer({
         id: 2,
         name: creatorName,
         email: creatorEmail,
+        deliverEmail: false,
       });
 
       const document = new Document({
@@ -127,9 +133,9 @@ const logic = ({
       document.appendSigner(investorSigner);
       document.appendSigner(creatorSigner);
 
-      console.log('eversign prepared');
+      console.log("eversign prepared");
       return eversign.createDocument(document).then((r) => {
-        console.log('eversign generated');
+        console.log("eversign generated");
         return { ...contract, id: r.getDocumentHash() };
       });
     })
