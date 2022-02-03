@@ -71,7 +71,6 @@ const ContractPage = (): React.ReactElement => {
   const [agreementUuid, setAgreementUuid] = useState("");
   const [type, setType] = useState("Agreement");
   const [error, setError] = useState("");
-  const [isInvestor, setIsInvestor] = useState(false);
   const getEversign = useHandler<GetHandler>({
     path: "eversign",
     method: "GET",
@@ -92,7 +91,6 @@ const ContractPage = (): React.ReactElement => {
           setUserId(r.userId);
           setType(r.type);
           setUrl(r.url);
-          setIsInvestor(r.isInvestor);
         })
         .catch((e) => setError(e.message));
     } else {
@@ -106,7 +104,6 @@ const ContractPage = (): React.ReactElement => {
     setError,
     setUrl,
     getEversign,
-    setIsInvestor,
   ]);
   return (
     <Layout>
@@ -141,7 +138,7 @@ const ContractPage = (): React.ReactElement => {
             <EversignEmbed
               url={url}
               onSign={() => {
-                signAgreement({ agreementUuid, isInvestor }).then(() =>
+                signAgreement({ agreementUuid }).then(() =>
                   setSigned(true)
                 );
               }}

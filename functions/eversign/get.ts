@@ -43,11 +43,7 @@ const logic = ({ uuid, signer }: { uuid: string; signer: string }) =>
               };
             })
         );
-    })
-    .then((r) => ({
-      ...r,
-      isInvestor: Number(signer) === 1,
-    }));
+    });
 
 export const handler = createAPIGatewayProxyHandler(logic);
 export type Handler = typeof logic;

@@ -1232,7 +1232,9 @@ const STAGE_ACTIONS: ((a: {
     );
   },
   (row) => (
-    <RRLink to={`/contract?uuid=${row.uuid}&signer=2`}>Sign Contract</RRLink>
+    <ExternalLink href={`/contract?uuid=${row.uuid}&signer=2`}>
+      Sign Contract
+    </ExternalLink>
   ),
   (row) => (
     <ExternalLink href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
