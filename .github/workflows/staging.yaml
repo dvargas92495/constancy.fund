@@ -1,4 +1,4 @@
-name: Publish staging (2021-01-31-17-39)
+name: Publish staging
 on:
   workflow_dispatch:
   push:
