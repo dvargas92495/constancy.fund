@@ -53,6 +53,7 @@ import Card from "@mui/material/Card";
 import type { Handler as GetHandler } from "../../functions/fundraises/get";
 import type { Handler as ContractHandler } from "../../functions/contract/post";
 import type { Handler as ContractRefreshHandler } from "../../functions/contract-refresh/put";
+import type { Handler as GetRefreshHandler } from "../../functions/contract-refresh/get";
 import type { Handler as GetContractHandler } from "../../functions/contract/get";
 import type { Handler as DeleteHandler } from "../../functions/contract/delete";
 import type { Handler as PostAgreementHandler } from "../../functions/agreement/post";
@@ -87,6 +88,7 @@ import QUESTIONAIRES from "~/_common/questionaires";
 import pdfViewerCore from "@react-pdf-viewer/core/lib/styles/index.css";
 import pdfViewerLayout from "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { LinksFunction } from "remix";
+import formatAmount from "../../db/util/formatAmount";
 
 const deepEqual = (a: unknown, b: unknown): boolean => {
   if (a === null || b === null) {
@@ -897,7 +899,9 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
             <Body sx={{ fontWeight: 600 }}>Total Funding Request</Body>
             <Body>
               $
-              {(Number(data["amount"]) || 0) * (Number(data["frequency"]) || 1)}
+              {formatAmount(
+                (Number(data["amount"]) || 0) * (Number(data["frequency"]) || 1)
+              )}
               .00
             </Body>
           </Box>
@@ -939,8 +943,10 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
         />{" "}
         <span>
           ={" "}
-          {(100 * (Number(data["return"]) || 0)) /
-            ((Number(data["amount"]) || 0) * (Number(data["frequency"]) || 1))}
+          {formatAmount(
+            (100 * (Number(data["return"]) || 0)) /
+              ((Number(data["amount"]) || 1) * (Number(data["frequency"]) || 1))
+          )}
           % return
         </span>
       </Box>
@@ -961,7 +967,10 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
             "The yearly income (before taxes) after which you start paying back"
           }
         />{" "}
-        <span>= average {(Number(data["threshold"]) || 0) / 12} / month</span>
+        <span>
+          = average ${formatAmount((Number(data["threshold"]) || 0) / 12)} /
+          month
+        </span>
       </Box>
       <TextField
         sx={{ mb: 2 }}
@@ -1050,7 +1059,7 @@ const FundraiseDetails = () => {
       <H1>Step 2: {FUNDRAISE_NAMES_BY_IDS[id]} Contract Details</H1>
       <form
         onSubmit={(e) => {
-          /* In case performance is too bad
+          /* In case performance is too bad... REMIX
           const formElement = e.target as HTMLFormElement;
           const data = Object.fromEntries(
             Object.keys(formElement.elements)
@@ -1064,7 +1073,11 @@ const FundraiseDetails = () => {
           */
           setLoading(true);
           contractHandler({ data, id })
-            .then((state) => navigate(`/fundraises/preview/${state.id}`))
+            .then((state) =>
+              navigate(`/fundraises/preview/${state.id}`, {
+                state: { initialCreate: true },
+              })
+            )
             .catch((e) => {
               setError(e.message);
               setLoading(false);
@@ -1073,8 +1086,12 @@ const FundraiseDetails = () => {
         }}
       >
         <DetailForm data={data} setData={setData} />
-        <Box>
-          <Button variant={"contained"} type={"submit"}>
+        <Box display={"flex"} alignItems={"center"}>
+          <Button
+            variant={"contained"}
+            type={"submit"}
+            sx={{ marginRight: "16px" }}
+          >
             Save {"&"} Preview Contract
           </Button>
           {loading && <CircularProgress size={20} />}
@@ -1088,40 +1105,36 @@ const FundraiseDetails = () => {
 const FundraisePreview = () => {
   const { id = "" } = useParams();
   const navigate = useNavigate();
+  const state = useLocation().state;
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const refreshPreview = useAuthenticatedHandler<ContractRefreshHandler>({
     method: "PUT",
     path: "contract-refresh",
   });
-  const [loading, setLoading] = useState(false);
+  const getRefresh = useAuthenticatedHandler<GetRefreshHandler>({
+    method: "GET",
+    path: "contract-refresh",
+  });
+  const [loading, setLoading] = useState(state?.initialCreate);
   const onRefresh = useCallback(() => {
     setLoading(true);
     refreshPreview({ uuid: id }).then(() => setLoading(false));
   }, [setLoading, id, refreshPreview]);
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
-      if (e.shiftKey && e.key === "R") {
+      if (e.shiftKey && e.ctrlKey && e.metaKey && e.altKey && e.key === "R") {
         onRefresh();
       }
     };
+    if (state?.initialCreate)
+      getRefresh({ uuid: id }).then(() => setLoading(false));
     document.addEventListener("keydown", listener);
     return () => document.removeEventListener("keydown", listener);
-  }, [onRefresh]);
+  }, [onRefresh, state?.initialCreate, getRefresh, id, setLoading]);
   return (
     <>
       <H1>Step 3: Preview Contract</H1>
       <Box sx={{ height: "600px", marginBottom: "144px" }}>
-        {/*<Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "column",
-            height: "50%",
-          }}
-        >
-          <b>"explain me like I am 5" summary of the contract</b>
-        </Box>*/}
         <Box
           sx={{
             display: "flex",

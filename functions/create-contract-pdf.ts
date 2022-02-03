@@ -10,6 +10,7 @@ import datefnsFormat from "date-fns/format";
 import addDays from "date-fns/addDays";
 import { users, User } from "@clerk/clerk-sdk-node";
 import addMonths from "date-fns/addMonths";
+import formatAmount from "../db/util/formatAmount";
 
 const contentByType = {
   isa: isa,
@@ -167,14 +168,7 @@ export const handler = ({
                   : addDays(value, numericOffset);
               return datefnsFormat(newValue, f);
             } else if (!isNaN(Number(value))) {
-              const [predecimal, postdecimal] = value.split(".");
-              const order = predecimal.length;
-              return `${predecimal
-                .split("")
-                .reverse()
-                .map((d, i) => (i % 3 === 2 && i !== order ? `,${d}` : d))
-                .reverse()
-                .join("")}${postdecimal ? `.${postdecimal.slice(0, 2)}` : ""}`;
+              return formatAmount(Number(value));
             } else {
               return value;
             }
