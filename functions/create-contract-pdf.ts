@@ -142,11 +142,11 @@ export const handler = ({
                 .reduce((p, c) => p * c, 1)
                 .toString();
             } else if (key === "divide") {
-              const [a, b = 1] = format
+              const [a, ...b] = format
                 .split(",")
                 .map((s) => detailsData[s] || s)
                 .map((s) => Number(s) || 1);
-              return `${(a / b).toFixed(0)}`;
+              return b.reduce((p,c) => p / c, a).toFixed(2);
             } else if (key === "conditional") {
               const [actualKey, toCompare = "", ifTrue = "", ifFalse = ""] =
                 format.split(",");

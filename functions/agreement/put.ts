@@ -4,6 +4,7 @@ import { users } from "@clerk/clerk-sdk-node";
 import {
   MethodNotAllowedError,
   InternalServorError,
+  BadRequestError,
 } from "aws-sdk-plus/dist/errors";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
 import { FE_PUBLIC_DIR } from "fuegojs/dist/common";
@@ -34,6 +35,9 @@ const logic = ({
   investorCompanyType: string;
   investorAddress: string;
 }) => {
+  if (amount < 100) {
+    throw new BadRequestError(`Minimum investment required is $100`);
+  }
   return (
     uuid
       ? execute(
@@ -52,17 +56,33 @@ const logic = ({
   )
     .then((agreementUuid) => {
       return execute(
-        `SELECT c.userId, c.type, c.uuid
+        `SELECT c.userId, c.type, c.uuid, d.label, d.value
           FROM contract c
           INNER JOIN agreement a ON a.contractUuid = c.uuid
+          INNER JOIN contractdetail d ON d.contractUuid = c.uuid
           WHERE a.uuid = ?`,
         [agreementUuid]
       ).then(async (results) => {
-        const [c] = results as { uuid: string; type: number; userId: string }[];
+        const details = results as {
+          uuid: string;
+          type: number;
+          userId: string;
+          label: string;
+          value: string;
+        }[];
+        const [c] = details;
         if (!c)
           throw new MethodNotAllowedError(
             `Cannot find fundraise tied to agreement ${agreementUuid}`
           );
+        const detailData = Object.fromEntries(
+          details.map(({ label, value }) => [label, value])
+        );
+        const capSpace = Number(detailData.amount) * Number(detailData.frequency);
+        const investorShare = amount / capSpace;
+        if (investorShare > 1) {
+          throw new BadRequestError(`Cannot request to invest more than the available cap space ${capSpace}`);
+        }
         return Promise.all([
           users.getUser(c.userId),
           invokeDirect<Parameters<ContractHandler>[0]>({
@@ -75,6 +95,9 @@ const logic = ({
                 investor_location: investorAddress,
                 investor_company: investorCompany,
                 investor_company_type: investorCompanyType,
+                amount: (Number(detailData.amount) * investorShare).toString(),
+                share: (Number(detailData.share) * investorShare).toString(),
+                return: (Number(detailData.return) * investorShare).toString(),
               },
             },
           }),

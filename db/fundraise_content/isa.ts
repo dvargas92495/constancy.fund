@@ -443,7 +443,7 @@ export default {
     {
       method: "text",
       argument:
-        " means ${amount}, which shall be distributed to Participant {conditional:supportType,monthly,in equal monthly increments over a 12 month period (with each such increment being made available by the 10th day of each month)}{conditional:supportType,once,in a single payment on the Effective Date}. Investor and Participant may, from time to time, agree to increase the funding amount in writing by both parties. For the avoidance of doubt, any increase in the funding amount shall not adversely affect any obligations owing by Participant to Investor, including but not limited to the obligation of Participant to pay the entire Payment Cap (inclusive of any Funding Amount increases) within the Payment Term.",
+        " means ${amount}, which shall be distributed to Participant {conditional:supportType,monthly,in equal monthly increments over a {cap} month period (with each such increment being made available by the 10th day of each month)}{conditional:supportType,once,in a single payment on the Effective Date}. Investor and Participant may, from time to time, agree to increase the funding amount in writing by both parties. For the avoidance of doubt, any increase in the funding amount shall not adversely affect any obligations owing by Participant to Investor, including but not limited to the obligation of Participant to pay the entire Payment Cap (inclusive of any Funding Amount increases) within the Payment Term.",
       options: {
         paragraphGap: 12,
       },
@@ -599,7 +599,7 @@ export default {
     },
     {
       method: "text",
-      argument: " means {divide:return,amount} times the Funding Amount.",
+      argument: " means {divide:return,amount,frequency} times the Funding Amount.",
       options: {
         paragraphGap: 12,
       },

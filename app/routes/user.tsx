@@ -487,6 +487,7 @@ const DetailComponentById: Record<
     const {
       amount,
       cap,
+      frequency = 1,
       return: financialReturn,
       share,
       supportType,
@@ -517,7 +518,9 @@ const DetailComponentById: Record<
         <Box>
           <p>
             {" "}
-            Looking to raise <b>{amount}</b> paid out <b>{supportType}</b>.
+            Looking to raise <b>${formatAmount(Number(amount))}</b> paid out{" "}
+            <b>{supportType}</b>
+            {supportType === "once" ? "" : `, ${frequency} times.`}
           </p>
           {showMore && (
             <>
@@ -528,8 +531,9 @@ const DetailComponentById: Record<
               <p>Total will be capped at either</p>
               <ul>
                 <li>
-                  {(100 * Number(financialReturn)) / Number(amount)}% of initial
-                  investment or
+                  {(100 * Number(financialReturn)) /
+                    (Number(amount) * Number(frequency))}
+                  % of initial investment or
                 </li>
                 <li>{cap} years</li>
               </ul>
@@ -1286,6 +1290,7 @@ const FundraiseContract = () => {
   const { id = "" } = useParams();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
+  const [capSpace, setCapSpace] = useState(0);
   const getFundraise = useAuthenticatedHandler<GetContractHandler>({
     path: "contract",
     method: "GET",
@@ -1307,9 +1312,13 @@ const FundraiseContract = () => {
       .then((r) => {
         setType(r.type);
         setRows(r.agreements);
+        setCapSpace(
+          Number(r.details.amount) * Number(r.details.frequency) -
+            r.agreements.reduce((p, c) => p + c.amount, 0)
+        );
       })
       .finally(() => setLoading(false));
-  }, [id, setType, setRows, setLoading]);
+  }, [id, setType, setRows, setLoading, setCapSpace]);
   const Container: React.FC = loading
     ? ({ children }) => (
         <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
@@ -1359,7 +1368,17 @@ const FundraiseContract = () => {
               defaultValue: 0,
               order: 2,
               component: NumberField,
-              validate: (n) => (n < 0 ? "Amount must be greater than 0" : ""),
+              validate: (n) => {
+                if (n < 100) {
+                  return "Amount must be greater than $100";
+                }
+                if (capSpace < n) {
+                  return `Requested more than available cap space: $${formatAmount(
+                    capSpace
+                  )}`;
+                }
+                return "";
+              },
             },
           }}
           title={"Invite New Investor"}
