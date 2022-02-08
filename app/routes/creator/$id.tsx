@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Layout, { getMeta } from "~/_common/Layout";
-import getStaticProps, { Props } from "~/creator.server";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import H1 from "@dvargas92495/ui/dist/components/H1";
@@ -27,7 +26,11 @@ import useHandler from "@dvargas92495/ui/dist/useHandler";
 import PaymentPreference from "~/_common/PaymentPreferences";
 import type { Handler as GetHandler } from "../../../functions/agreement/get";
 import type { Handler as PutHandler } from "../../../functions/agreement/put";
-import { LoaderFunction, useLoaderData } from "remix";
+import { LoaderFunction, MetaFunction, useLoaderData } from "remix";
+import type { Handler as GetPropsHandler } from "../../../functions/creator-profile/get";
+import axios from "axios";
+
+export type Props = Awaited<ReturnType<GetPropsHandler>>;
 
 const icons = [
   { test: /twitter\.com/, component: TwitterIcon },
@@ -47,9 +50,9 @@ const CreatorProfile = ({
   fullName,
   profileImageUrl,
   email,
-  socialProfiles,
-  questionaires,
-  fundraises,
+  socialProfiles = [],
+  questionaires = [],
+  fundraises = [],
   setMode,
 }: Props & {
   setMode: (m: {
@@ -346,14 +349,14 @@ const CreatorPage = (): React.ReactElement => {
 };
 
 export const loader: LoaderFunction = ({ params }) => {
-  return getStaticProps({ params: { id: params["id"] || "" } }).then(
-    ({ props }) => props
-  );
+  return axios
+    .get<Props>(`${process.env.API_URL}/creator-profile?id=${params["id"]}`)
+    .then((r) => r.data);
 };
 
-export const meta = getMeta({
-  // how could I get fullName in here?
-  title: "Creator",
-});
+export const meta: MetaFunction = (args) =>
+  getMeta({
+    title: args.data.fullName,
+  })(args);
 
 export default CreatorPage;
