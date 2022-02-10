@@ -531,8 +531,7 @@ const DetailComponentById: Record<
               <p>Total will be capped at either</p>
               <ul>
                 <li>
-                  {(100 * Number(financialReturn)) /
-                    (Number(amount) * Number(frequency))}
+                  {(Number(financialReturn))}
                   % of initial investment or
                 </li>
                 <li>{cap} years</li>
@@ -935,23 +934,21 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
           sx={{ mr: 2 }}
           type={"number"}
           InputProps={{
-            startAdornment: (
-              <InputAdornment position={"start"}>$</InputAdornment>
-            ),
+            endAdornment: <InputAdornment position={"end"}>%</InputAdornment>,
           }}
           name={"return"}
           value={data["return"]}
           onChange={onChange}
-          label={"How much will your investors get back?"}
+          label={"What will be the investor's maximum return on investment?"}
           helperText={<a>Get help on how to determine a fair return</a>}
         />{" "}
         <span>
-          ={" "}
+          ={" max $"}
           {formatAmount(
-            (100 * (Number(data["return"]) || 0)) /
-              ((Number(data["amount"]) || 1) * (Number(data["frequency"]) || 1))
+            ((Number(data["return"]) || 0) / 100) *
+              (Number(data["amount"]) || 0) *
+              (Number(data["frequency"]) || 0)
           )}
-          % return
         </span>
       </Box>
       <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
