@@ -1195,7 +1195,7 @@ const FundraisePreview = () => {
 };
 
 type Agreements = Awaited<ReturnType<GetContractHandler>>["agreements"];
-const STAGE_COLORS = ["#C4C4C4", "#D4E862", "#2FEC00", "#FF8B8B", "#8312DD"];
+const STAGE_COLORS = ["#C4C4C4", "#A2F159", "#D4E862", "#2FEC00", "#FF8B8B", "#8312DD"];
 const STAGE_ACTIONS: ((a: {
   contractUuid: string;
   uuid: string;
@@ -1232,6 +1232,11 @@ const STAGE_ACTIONS: ((a: {
       </Box>
     );
   },
+  (row) => (
+    <ExternalLink href={`/contract?uuid=${row.uuid}&signer=1`}>
+      Send Link To Investor
+    </ExternalLink>
+  ),
   (row) => (
     <ExternalLink href={`/contract?uuid=${row.uuid}&signer=2`}>
       Sign Contract

@@ -40,6 +40,7 @@ const logic = ({ uuid, signer }: { uuid: string; signer: string }) =>
                 type: FUNDRAISE_TYPES[c.type].name,
                 agreementUuid: uuid,
                 url,
+                contractUuid: c.uuid
               };
             })
         );

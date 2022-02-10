@@ -43,10 +43,10 @@ const logic = ({ uuid, user: { id } }: { uuid: string; user: User }) =>
             .getDocumentByHash(id!)
             .then((r) =>
               r.getSigners().every((s) => s.getSigned())
-                ? 2
+                ? 3
                 : r.getSigners()[0].getSigned()
-                ? 1
-                : 0
+                ? 2
+                : 1
             )
             .catch(() => 0)
             .then((status) => [id, status])

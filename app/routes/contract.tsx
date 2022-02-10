@@ -67,7 +67,9 @@ const EversignEmbed = ({
 const ContractPage = (): React.ReactElement => {
   const [loading, setLoading] = useState(true);
   const [signed, setSigned] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [userId, setUserId] = useState("");
+  const [contracUuid, setContractUuid] = useState("");
   const [isInvestor, setIsInvestor] = useState(false);
   const [url, setUrl] = useState("");
   const [agreementUuid, setAgreementUuid] = useState("");
@@ -94,6 +96,7 @@ const ContractPage = (): React.ReactElement => {
           setType(r.type);
           setUrl(r.url);
           setIsInvestor(Number(signer) === 1);
+          setContractUuid(r.contractUuid);
         })
         .catch((e) => setError(e.message));
     } else {
@@ -108,6 +111,7 @@ const ContractPage = (): React.ReactElement => {
     setUrl,
     getEversign,
     setIsInvestor,
+    setContractUuid,
   ]);
   return (
     <Layout>
@@ -138,17 +142,32 @@ const ContractPage = (): React.ReactElement => {
         <EversignEmbed
           url={url}
           onSign={() => {
-            signAgreement({ agreementUuid }).then(() => setSigned(true));
-            // We are waiting for the creator to confirm this investment and send you an email with next steps when this happened.
+            signAgreement({ agreementUuid }).then(() => {
+              setSigned(true);
+              setSnackbarOpen(true);
+            });
           }}
         />
         <Body sx={{ color: "darkred" }} color={"error"}>
           {error}
+          {signed && !isInvestor && (
+            <Button
+              color={"primary"}
+              variant={"contained"}
+              onClick={() =>
+                window.location.assign(
+                  `/user#/fundraises/contract/${contracUuid}`
+                )
+              }
+            >
+              Back to Dashboard
+            </Button>
+          )}
         </Body>
         <Snackbar
-          open={signed}
+          open={snackbarOpen}
           autoHideDuration={5000}
-          onClose={() => setSigned(false)}
+          onClose={() => setSnackbarOpen(false)}
           color="success"
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
