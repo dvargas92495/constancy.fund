@@ -14,11 +14,6 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Link from "@mui/material/Link";
-import HomeIcon from "@mui/icons-material/Home";
-import ContractIcon from "@mui/icons-material/Note";
-import SettingsIcon from "@mui/icons-material/Settings";
-import DeleteIcon from "@mui/icons-material/Delete";
-import PreviewIcon from "@mui/icons-material/Preview";
 import Body from "@dvargas92495/ui/dist/components/Body";
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
@@ -28,14 +23,6 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import FormLabel from "@mui/material/FormLabel";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import MoreIcon from "@mui/icons-material/MoreVert";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import WebIcon from "@mui/icons-material/Public";
-import InfoIcon from "@mui/icons-material/Info";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Avatar from "@mui/material/Avatar";
 import CircularProgress from "@mui/material/CircularProgress";
 import Select from "@mui/material/Select";
@@ -89,6 +76,7 @@ import pdfViewerCore from "@react-pdf-viewer/core/lib/styles/index.css";
 import pdfViewerLayout from "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { LinksFunction } from "remix";
 import formatAmount from "../../db/util/formatAmount";
+import Icon from "../_common/Icon";
 
 const deepEqual = (a: unknown, b: unknown): boolean => {
   if (a === null || b === null) {
@@ -120,24 +108,26 @@ const H4 = (props: Parameters<typeof _H4>[0]) => (
 );
 
 const SOCIAL_PROFILES = [
-  { icon: <TwitterIcon /> },
-  { icon: <GitHubIcon /> },
-  { icon: <LinkedInIcon /> },
-  { icon: <WebIcon /> },
-];
+  { iconName: "twitter" },
+  { iconName: "github" },
+  { iconName: "linkedin" },
+  { iconName: "public" },
+] as const;
 
 const SocialProfile = React.memo(
   ({
-    icon,
+    iconName,
     val = "",
     setVal,
   }: {
-    icon: React.ReactNode;
+    iconName: typeof SOCIAL_PROFILES[number]["iconName"];
     val?: string;
     setVal: (s: string) => void;
   }) => (
     <Box sx={{ display: "flex", mb: 2, alignItems: "center", width: "100%" }}>
-      <Avatar sx={{ mx: 2 }}>{icon}</Avatar>
+      <Avatar sx={{ mx: 2 }}>
+        <Icon name={iconName} />
+      </Avatar>
       <TextField
         placeholder="https://"
         value={val}
@@ -314,10 +304,10 @@ const ProfileContent = () => {
         />
       </Box>
       <FormLabel sx={{ mt: 2, mb: 1 }}>Social Profiles</FormLabel>
-      {SOCIAL_PROFILES.map(({ icon }, i) => (
+      {SOCIAL_PROFILES.map(({ iconName }, i) => (
         <SocialProfile
           key={i}
-          icon={icon}
+          iconName={iconName}
           val={socialProfileValues[i]}
           setVal={(newValue) =>
             setSocialProfileValues(
@@ -507,11 +497,11 @@ const DetailComponentById: Record<
         <Box sx={{ minWidth: "40px" }}>
           {showMore ? (
             <IconButton onClick={() => setShowMore(false)}>
-              <ArrowDropDownIcon />
+              <Icon name={"arrow-drop-down"} />
             </IconButton>
           ) : (
             <IconButton onClick={() => setShowMore(true)}>
-              <ArrowRightIcon />
+              <Icon name={"arrow-right"} />
             </IconButton>
           )}
         </Box>
@@ -530,10 +520,7 @@ const DetailComponentById: Record<
               </p>
               <p>Total will be capped at either</p>
               <ul>
-                <li>
-                  {(Number(financialReturn))}
-                  % of initial investment or
-                </li>
+                <li>{Number(financialReturn)}% of initial investment or</li>
                 <li>{cap} years</li>
               </ul>
               <p>Additional clauses:</p>
@@ -594,7 +581,7 @@ const FundraiseContentRow = ({
             Invite Investor
           </Button>
           <IconButton onClick={(e) => setIsOpen(e.target as HTMLButtonElement)}>
-            <MoreIcon />
+            <Icon name={"more-vert"} />
           </IconButton>
         </Box>
         <Popover
@@ -615,19 +602,19 @@ const FundraiseContentRow = ({
               sx={{ display: "flex" }}
             >
               <ListItemIcon>
-                <InfoIcon />
+                <Icon name={"preview"} />
               </ListItemIcon>
               <ListItemText primary={"See Investors"} />
             </ListItem>
             <ListItem button onClick={onPreview} sx={{ display: "flex" }}>
               <ListItemIcon>
-                <PreviewIcon />
+                <Icon name={"preview"} />
               </ListItemIcon>
               <ListItemText primary={"Preview"} />
             </ListItem>
             <ListItem button onClick={onDelete} sx={{ display: "flex" }}>
               <ListItemIcon>
-                <DeleteIcon />
+                <Icon name={"delete"} />
               </ListItemIcon>
               <ListItemText primary={"Delete"} />
             </ListItem>
@@ -947,7 +934,7 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
           {formatAmount(
             ((Number(data["return"]) || 0) / 100) *
               (Number(data["amount"]) || 0) *
-              (Number(data["frequency"]) || 0)
+              (Number(data["frequency"]) || 1)
           )}
         </span>
       </Box>
@@ -1195,7 +1182,14 @@ const FundraisePreview = () => {
 };
 
 type Agreements = Awaited<ReturnType<GetContractHandler>>["agreements"];
-const STAGE_COLORS = ["#C4C4C4", "#A2F159", "#D4E862", "#2FEC00", "#FF8B8B", "#8312DD"];
+const STAGE_COLORS = [
+  "#C4C4C4",
+  "#A2F159",
+  "#D4E862",
+  "#2FEC00",
+  "#FF8B8B",
+  "#8312DD",
+];
 const STAGE_ACTIONS: ((a: {
   contractUuid: string;
   uuid: string;
@@ -1315,7 +1309,7 @@ const FundraiseContract = () => {
         setType(r.type);
         setRows(r.agreements);
         setCapSpace(
-          Number(r.details.amount) * Number(r.details.frequency) -
+          Number(r.details.amount) * (Number(r.details.frequency) || 1) -
             r.agreements.reduce((p, c) => p + c.amount, 0)
         );
       })
@@ -1440,14 +1434,14 @@ const DRAWER_WIDTH = 255;
 const TABS = [
   {
     text: "My Profile",
-    Icon: HomeIcon,
+    iconName: "home",
     content: ProfileContent,
     path: "",
     nested: [],
   },
   {
     text: "My Fundraises",
-    Icon: ContractIcon,
+    iconName: "note",
     content: FundraiseContent,
     path: "fundraises",
     nested: [
@@ -1461,14 +1455,14 @@ const TABS = [
   },
   {
     text: "Settings",
-    Icon: SettingsIcon,
+    iconName: "settings",
     content: () => <div>Coming Soon!</div>,
     path: "settings",
     nested: [],
   },
 ] as const;
 
-const DashboardTab = ({ path, Icon, text }: typeof TABS[number]) => {
+const DashboardTab = ({ path, iconName, text }: typeof TABS[number]) => {
   const location = useLocation();
   const isMatch = path
     ? location.pathname.startsWith(`/${path}`)
@@ -1489,7 +1483,7 @@ const DashboardTab = ({ path, Icon, text }: typeof TABS[number]) => {
         }}
       >
         <ListItemIcon sx={{ color: "inherit" }}>
-          <Icon />
+          <Icon name={iconName} />
         </ListItemIcon>
         <ListItemText primary={text} />
       </ListItem>
