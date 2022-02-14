@@ -1,4 +1,4 @@
-import type { SvgIconProps } from "@mui/material/SvgIcon";
+import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
@@ -59,6 +59,8 @@ const Icon = ({
       return <SettingsIcon {...props} />;
     case "twitter":
       return <TwitterIcon {...props} />;
+    default:
+      return <SvgIcon {...props} />;
   }
 };
 

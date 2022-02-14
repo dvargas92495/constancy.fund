@@ -257,7 +257,8 @@ const ProfileContent = () => {
   });
   return (
     <Box sx={{ maxWidth: "600px" }}>
-      <H1>Setup your fundraising profile</H1>
+      <H1 sx={{color: 'color.grey'}}>Setup your fundraising profile</H1>
+      <H1 sx={{color: 'text.secondary'}}>Setup your fundraising profile</H1>
       <H4>Contact Details</H4>
       <TextField
         sx={{ mb: 2 }}
@@ -1499,7 +1500,7 @@ const Dashboard = () => {
         sx={{
           width: `calc(100% - ${DRAWER_WIDTH}px)`,
           ml: `${DRAWER_WIDTH}px`,
-          backgroundColor: themeProps.background,
+          backgroundColor: themeProps.palette.background.default,
         }}
         elevation={0}
       >
