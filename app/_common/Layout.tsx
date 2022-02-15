@@ -50,6 +50,47 @@ export const themeProps = {
       blue: "2563EB",
     },
   },
+  typography: {
+    fontFamily: ["Avenir Light", "sans-serif"].join(","),
+    h1: {
+      fontFamily: ["Century Gothic", "sans-serif"].join(","),
+      fontSize: "3rem",
+      fontWeight: 600,
+      margin: "3rem 0",
+    },
+    h2: {
+      fontFamily: ["Century Gothic", "sans-serif"].join(","),
+      fontWeight: 600,
+      fontSize: "2.5rem",
+      margin: "2.5rem 0",
+    },
+    h3: {
+      fontFamily: ["Century Gothic", "sans-serif"].join(","),
+      fontWeight: 600,
+      fontSize: "2rem",
+      margin: "2rem 0",
+    },
+    h4: {
+      fontFamily: ["Century Gothic", "sans-serif"].join(","),
+      fontWeight: 600,
+      fontSize: "1.75rem",
+      margin: "1.75rem 0",
+    },
+    h5: {
+      fontFamily: ["Century Gothic", "sans-serif"].join(","),
+      fontWeight: 600,
+      margin: "1.5rem 0",
+    },
+    h6: {
+      fontFamily: ["Century Gothic", "sans-serif"].join(","),
+      fontWeight: 600,
+      margin: "1.25rem 0",
+    },
+    subtitle1: {
+      fontSize: "1.25rem",
+      fontFamily: ["Century Gothic", "sans-serif"].join(","),
+    },
+  },
 };
 
 const Layout: React.FC = ({ children }) => {
