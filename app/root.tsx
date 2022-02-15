@@ -35,6 +35,7 @@ export default function App() {
         <Meta />
         <Links />
         {typeof document === "undefined" ? "__STYLES__" : null}
+        {typeof document === "undefined" ? "__STYLES2__" : null}
       </head>
       <body>
         <Outlet />

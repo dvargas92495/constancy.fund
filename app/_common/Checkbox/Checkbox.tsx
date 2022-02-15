@@ -3,8 +3,7 @@ import cx from 'classnames'
 import styled from 'styled-components'
 
 const styles = require('./Checkbox.css')
-import Icon from '@worldbrain/memex-common/lib/common-ui/components/icon'
-import * as icons from 'src/common-ui/components/design-library/icons'
+import Icon from '../Icon';
 
 export type CheckboxToggle = (
     event: React.SyntheticEvent<HTMLInputElement>,
@@ -57,10 +56,10 @@ class Checkbox extends React.PureComponent<Props> {
                             isChecked={this.props.isChecked}
                         >
                             <Icon
-                                filePath={icons.check}
-                                color="white"
-                                heightAndWidth={'14px'}
-                                hoverOff
+                                name={'check'}
+                                // color='white'
+                                // heightAndWidth={'14px'}
+                                // hoverOff
                             />
                         </LabelCheck>
                         <ChildrenBox mode={this.props.mode}>
@@ -77,7 +76,7 @@ const Container = styled.div`
     cursor: pointer;
 `
 
-const ChildrenBox = styled.span<{ mode }>`
+const ChildrenBox = styled.span<Pick<Props, 'mode'>>`
     color: ${(props) => props.theme.colors.darkerText};
     border-radius: ${(props) => (props.mode === 'radio' ? '20px' : '3px')};
     display: flex;
@@ -117,7 +116,7 @@ const LabelText = styled.span`
     }
 `
 
-const LabelCheck = styled.span<{ isChecked; mode; size }>`
+const LabelCheck = styled.span<Pick<Props, 'isChecked' | 'mode' | 'size'>>`
     border-radius: ${(props) => (props.mode === 'radio' ? '20px' : '3px')};
     border: 2px solid ${(props) => props.theme.colors.purple}70;
     background: ${(props) =>

@@ -1,9 +1,12 @@
 import React from "react";
 import DefaultLayout from "@dvargas92495/ui/dist/components/Layout";
-import { Head as DefaultHead } from "@dvargas92495/ui/dist/components/Document";
 import type { MetaFunction } from "remix";
+import Document from "@dvargas92495/ui/dist/components/Document";
+import RedirectToLogin from "@dvargas92495/ui/dist/components/RedirectToLogin";
+import { SignedIn } from "@clerk/clerk-react";
+import { ThemeProvider } from "styled-components";
 
-export const themeProps = {
+const themeProps = {
   palette: {
     // default MUI palette fields
     primary: {
@@ -93,21 +96,24 @@ export const themeProps = {
   },
 };
 
-const Layout: React.FC = ({ children }) => {
+const Layout: React.FC<{ privatePage?: boolean }> = ({
+  children,
+  privatePage,
+}) => {
   return (
-    <DefaultLayout homeIcon={"Home"} themeProps={themeProps}>
-      {children}
-    </DefaultLayout>
+    <ThemeProvider theme={themeProps}>
+      {privatePage ? (
+        <Document themeProps={themeProps}>
+          <SignedIn>{children}</SignedIn>
+          <RedirectToLogin />
+        </Document>
+      ) : (
+        <DefaultLayout homeIcon={"Home"} themeProps={themeProps}>
+          {children}
+        </DefaultLayout>
+      )}
+    </ThemeProvider>
   );
-};
-
-type HeadProps = Omit<Parameters<typeof DefaultHead>[0], "title">;
-
-export const LayoutHead = ({
-  title = "Welcome",
-  ...rest
-}: HeadProps & { title?: string }): React.ReactElement => {
-  return <DefaultHead title={`${title} | CrowdInvestInMe`} {...rest} />;
 };
 
 export const getMeta =

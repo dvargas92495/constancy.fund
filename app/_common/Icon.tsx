@@ -1,7 +1,8 @@
 import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
-import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import CheckIcon from "@mui/icons-material/Check";
+import DeleteIcon from "@mui/icons-material/Delete";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
@@ -20,6 +21,7 @@ const Icon = ({
   name:
     | "arrow-drop-down"
     | "arrow-right"
+    | "check"
     | "delete"
     | "github"
     | "home"
@@ -37,6 +39,8 @@ const Icon = ({
       return <ArrowDropDownIcon {...props} />;
     case "arrow-right":
       return <ArrowRightIcon {...props} />;
+    case "check":
+      return <CheckIcon {...props} />;
     case "delete":
       return <DeleteIcon {...props} />;
     case "github":

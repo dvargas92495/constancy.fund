@@ -2,6 +2,7 @@ import { renderToString } from "react-dom/server";
 import { RemixServer } from "remix";
 import type { EntryContext } from "remix";
 import { generateCss } from "@dvargas92495/ui/dist/components/FuegoRoot";
+import { ServerStyleSheet } from "styled-components";
 
 export default function handleRequest(
   request: Request,
@@ -10,11 +11,15 @@ export default function handleRequest(
   remixContext: EntryContext
 ) {
   console.log("entered request");
+  const sheet = new ServerStyleSheet();
   const markup = renderToString(
-    <RemixServer context={remixContext} url={request.url} />
+    sheet.collectStyles(
+      <RemixServer context={remixContext} url={request.url} />
+    )
   );
   console.log("created markup");
-  const finalMarkup = generateCss(markup);
+  const styleTags = sheet.getStyleTags();
+  const finalMarkup = generateCss(markup.replace("__STYLES2__", styleTags));
 
   responseHeaders.set("Content-Type", "text/html");
   console.log("headers set");
