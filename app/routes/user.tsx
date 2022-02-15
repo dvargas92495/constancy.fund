@@ -1850,7 +1850,7 @@ const Dashboard = () => {
         sx={{
           width: `calc(100% - ${DRAWER_WIDTH}px)`,
           ml: `${DRAWER_WIDTH}px`,
-          backgroundColor: themeProps.background,
+          backgroundColor: themeProps.palette.background.default,
         }}
         elevation={0}
       >
