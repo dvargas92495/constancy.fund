@@ -9,13 +9,14 @@ const StyledSecondaryActionLinkText = styled.div<{
     color: ${props => props.theme.palette.color.purple};
 `
 
-const StyledSecondaryAction = styled.div<{height?: number | string, width?: number | string, disabled?: boolean, autoFocus: boolean}>`
+const StyledSecondaryAction = styled.div<{ height?: number | string, width?: number | string, disabled?: boolean, autoFocus: boolean }>`
     padding: 8px 20px;
     height: ${(props) => props.height ? props.height : '35px'};
     font-weight: normal;
     overflow: visible;
     white-space: nowrap;
     display: flex;
+    min-width: fit-content;
     width: ${(props) => props.width ? props.width : '80px'};
     justify-content: center;
     align-items: center;

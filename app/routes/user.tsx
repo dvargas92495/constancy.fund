@@ -21,6 +21,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
+import CheckBox from "@mui/material/CheckBox";
 import ExternalLink from "@dvargas92495/ui/dist/components/ExternalLink";
 import CountryRegionData from "country-region-data";
 import Table from "@mui/material/Table";
@@ -118,7 +119,7 @@ const InfoArea = styled.div`
 
 const PageTitle = styled.div`
   font-weight: 900;
-  font-size: 30px;
+  font-size: 28px;
 `;
 
 const Section = styled.div`
@@ -142,7 +143,7 @@ const SectionCircle = styled.div<{ width?: string, height?: string, margin?: str
 
 const SectionTitle = styled.div`
   color: ${(props) => props.theme.palette.text.primary};
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 800;
   margin-bottom: 5px;
 `;
@@ -485,6 +486,57 @@ const ContainerWithInfo = styled.div`
   justify-content: flex-start;
   grid-gap: 20px;
 `
+
+const ExplainTitle = styled.div`
+  font-size: 18px;
+  font-weight: bold;
+  color: ${(props) => props.theme.palette.color.primary};
+`
+
+const ExplainContent = styled.div`
+  grid-gap: 5px;
+  display: flex;
+  flex-direction: column;
+`
+
+const ExplainText = styled.div`
+   font-size: 14px;
+  font-weight: 300;
+  color: ${(props) => props.theme.palette.color.tertiary};
+`
+
+const ExplainMeLikeIamFiveContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid ${(props) => props.theme.palette.color.lightgrey};
+  border-radius: 8px;
+  padding: 20px;
+  grid-gap: 30px;
+`
+
+const ExplainContainer = styled.div`
+  display: flex;
+justify-content: center;
+align-items: flex-start;
+flex-direction: column;
+grid-gap: 10px;
+margin-bottom: 40px;
+
+& > div {
+  width: fill-available;
+}
+`
+
+const LoadingBox = styled.div`
+  width: 100%;
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
 
 
 const deepEqual = (a: unknown, b: unknown): boolean => {
@@ -1230,10 +1282,6 @@ const FundraiseContentTable = () => {
           {rows.length ? (
             <Container>
               <FundraisingContainer>
-
-
-
-
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
                     <TableRow>
@@ -1263,10 +1311,10 @@ const FundraiseContentTable = () => {
               </FundraisingContainer>
             </Container>
           ) : (
-            <>
+            <LoadingBox>
               <LoadingIndicator />
               <FundraisingContainer onClick={navigate(`/fundraises/setup`)} />
-            </>
+            </LoadingBox>
 
             // <Body>
             //   <RRLink to={TABS[0].path}>Setup your profile</RRLink> in order to
@@ -1350,8 +1398,6 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
       [target.name]: target.value,
     });
   };
-
-  console.log(data["supportType"])
 
   return (
     <>
@@ -1749,7 +1795,7 @@ const FundraiseDetails = () => {
   );
 };
 
-const FundraisePreview = () => {
+const FundraisePreview = (data: DetailProps) => {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const state = useLocation().state;
@@ -1778,64 +1824,179 @@ const FundraisePreview = () => {
     document.addEventListener("keydown", listener);
     return () => document.removeEventListener("keydown", listener);
   }, [onRefresh, state?.initialCreate, getRefresh, id, setLoading]);
+  console.log('data', data)
   return (
     <>
-      <H1>Step 3: Preview Contract</H1>
-      <Box sx={{ height: "600px", marginBottom: "144px" }}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "column",
-            background: "#C4C4C4",
-            height: "100%",
-          }}
-        >
-          {loading ? (
-            <Skeleton
-              variant={"rectangular"}
-              sx={{ width: "100%", height: "100%" }}
-            />
-          ) : (
-            <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.11.338/build/pdf.worker.min.js">
-              <Viewer
-                fileUrl={`/_contracts/${id}/draft.pdf`}
-                plugins={[defaultLayoutPluginInstance]}
-              />
-            </Worker>
-          )}
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Button
-          variant={"contained"}
-          color={"primary"}
-          onClick={() =>
-            navigate(`/fundraises/contract/${id}`, { state: { isOpen: true } })
-          }
-        >
-          Invite Investors
-        </Button>
-        {process.env.NODE_ENV === "development" && (
-          <Button
-            variant={"outlined"}
-            color={"primary"}
-            onClick={() => {
-              setLoading(true);
-              refreshPreview({ uuid: id }).then(() => setLoading(false));
+      <TopBar>
+        <InfoArea>
+          <PageTitle>Preview Contract & Confirm Terms</PageTitle>
+          <PrimaryAction
+            onClick={() =>
+              navigate(`/fundraises/contract/${id}`, { state: { isOpen: true } })
+            }
+            label={'Confirm Terms'}
+          />
+        </InfoArea>
+      </TopBar>
+      <ContentContainer>
+        <Section>
+          <SectionTitle>
+            Confirm Key Agreements
+          </SectionTitle>
+          <InfoText>
+            We summarised the key points of the below contract for you to confirm.
+            <br />
+            It is strongly advised to still read the contract in full.
+          </InfoText>
+          <SubSectionTitle>Agreements</SubSectionTitle>
+          <ExplainContainer>
+            <ExplainMeLikeIamFiveContainer>
+              <ExplainContent>
+                <ExplainTitle>
+                  How much you raise
+                </ExplainTitle>
+                <ExplainText>
+                  I agree to request a total of <b>{(Number(data["amount"]) || 0) * (Number(data["frequency"]))}</b> paid out as a monthly stipend of 3000€ per month for 12 months.
+                </ExplainText>
+              </ExplainContent>
+              <CheckBox />
+            </ExplainMeLikeIamFiveContainer>
+            <ExplainMeLikeIamFiveContainer>
+              <ExplainContent>
+                <ExplainTitle>
+                  How much you pay back
+                </ExplainTitle>
+                <ExplainText>
+                  I agree to pay back a total or 72.000€ to my investors
+                </ExplainText>
+              </ExplainContent>
+              <CheckBox />
+            </ExplainMeLikeIamFiveContainer>
+            <ExplainMeLikeIamFiveContainer>
+              <ExplainContent>
+                <ExplainTitle>
+                  What you pay back
+                </ExplainTitle>
+                <ExplainText>
+                  I agree to take 12% of all my revenue once I hit 3000€ per month or €30.000 per year in the next 8 years in order to pay back my investors. Includes revenue from preexisting assets.
+                </ExplainText>
+              </ExplainContent>
+              <CheckBox />
+            </ExplainMeLikeIamFiveContainer>
+            <ExplainMeLikeIamFiveContainer>
+              <ExplainContent>
+                <ExplainTitle>
+                  How you inform
+                </ExplainTitle>
+                <ExplainText>
+                  I agree to update my investors on a monthly basis about my income and to provide my tax returns yearly.
+                </ExplainText>
+              </ExplainContent>
+              <CheckBox />
+            </ExplainMeLikeIamFiveContainer>
+            <ExplainMeLikeIamFiveContainer>
+              <ExplainContent>
+                <ExplainTitle>
+                  How to pay back
+                </ExplainTitle>
+                <ExplainText>
+                  I agree to start paying back my investors latest 3 months after I hit my revenue treshold.
+                </ExplainText>
+              </ExplainContent>
+              <CheckBox />
+            </ExplainMeLikeIamFiveContainer>
+
+            <ExplainMeLikeIamFiveContainer>
+              <ExplainContent>
+                <ExplainTitle>
+                  When you pay back
+                </ExplainTitle>
+                <ExplainText>
+                  I acknowledge that I only have to pay my investors when I reach
+                  $36.000/year or on average $3000/month. My dividends are then paid from my total income, including from pre-existing assets.
+                </ExplainText>
+              </ExplainContent>
+              <CheckBox />
+            </ExplainMeLikeIamFiveContainer>
+          </ExplainContainer>
+
+
+
+          <ExplainContainer>
+            <SubSectionTitle margin={'10px 0 5px 0'}>Acknowledgements</SubSectionTitle>
+            <ExplainMeLikeIamFiveContainer>
+              <ExplainContent>
+                <ExplainTitle>
+                  Getting out early
+                </ExplainTitle>
+                <ExplainText>
+                  I am aware that I can stop accepting monthly contributions of investors anytime and do not have to pay dividends on not paid contributions.
+                </ExplainText>
+              </ExplainContent>
+              <CheckBox />
+            </ExplainMeLikeIamFiveContainer>
+            <ExplainMeLikeIamFiveContainer>
+              <ExplainContent>
+                <ExplainTitle>
+                  Reading the full legal agreement
+                </ExplainTitle>
+                <ExplainText>
+                  I acknowledge that the above checkboxes are summaries of key terms and I have read the full legal agreement below (and if not are still liable according to its terms)                </ExplainText>
+              </ExplainContent>
+              <CheckBox />
+            </ExplainMeLikeIamFiveContainer>
+
+          </ExplainContainer>
+        </Section>
+        <Section>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
-            Refresh PDF Preview
-          </Button>
-        )}
-      </Box>
+            <SectionTitle>
+              Full Legal Agreement
+            </SectionTitle>
+            {process.env.NODE_ENV === "development" && (
+              <SecondaryAction
+                onClick={() => {
+                  setLoading(true);
+                  refreshPreview({ uuid: id }).then(() => setLoading(false));
+                }}
+                label={'Refresh PDF Preview'}
+                height={'40px'}
+              />
+            )}
+          </Box>
+          <SubSectionTitle></SubSectionTitle>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+              background: "#C4C4C4",
+              height: "100%",
+            }}
+          >
+            {loading ? (
+              <Skeleton
+                variant={"rectangular"}
+                sx={{ width: "100%", height: "100%" }}
+              />
+            ) : (
+              <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.11.338/build/pdf.worker.min.js">
+                <Viewer
+                  fileUrl={`/_contracts/${id}/draft.pdf`}
+                  plugins={[defaultLayoutPluginInstance]}
+                />
+              </Worker>
+            )}
+          </Box>
+        </Section>
+      </ContentContainer>
     </>
   );
 };
