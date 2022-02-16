@@ -17,7 +17,7 @@
     "publish": "fuego publish",
     "precompile": "prisma generate",
     "start": "concurrently \"npm:api\" \"npm:dev\"",
-    "postinstall": "fuego postinstall \"@mui/material\" \"pdfjs-dist\" \"@mui\""
+    "postinstall": "fuego postinstall \"@mui/material\" \"pdfjs-dist\""
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.85",
@@ -44,7 +44,6 @@
     "@dvargas92495/eversign": "^1.9.5",
     "@dvargas92495/remix-lambda-at-edge": "^0.2.0",
     "@dvargas92495/ui": "^0.46.2",
-    "@material-ui/styles": "^4.11.4",
     "@prisma/client": "^3.6.0",
     "@react-pdf-viewer/core": "^3.0.0",
     "@react-pdf-viewer/default-layout": "^3.0.0",

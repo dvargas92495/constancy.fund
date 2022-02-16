@@ -14,9 +14,7 @@ import useAuthenticatedHandler from "@dvargas92495/ui/dist/useAuthenticatedHandl
 import GlobalStyles from "@mui/material/GlobalStyles";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import TextField from "@mui/material/TextField";
 import FormLabel from "@mui/material/FormLabel";
-import CircularProgress from "@mui/material/CircularProgress";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import RadioGroup from "@mui/material/RadioGroup";
@@ -29,7 +27,6 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Card from "@mui/material/Card";
 import type { Handler as GetHandler } from "../../functions/fundraises/get";
 import type { Handler as ContractHandler } from "../../functions/contract/post";
 import type { Handler as ContractRefreshHandler } from "../../functions/contract-refresh/put";
@@ -51,7 +48,6 @@ import {
 } from "react-router-dom";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
 import CONTRACT_STAGES from "../../db/contract_stages";
-import InputAdornment from "@mui/material/InputAdornment";
 import Popover from "@mui/material/Popover";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
@@ -67,15 +63,14 @@ import PaymentPreferences, {
 import QUESTIONAIRES from "~/_common/questionaires";
 import pdfViewerCore from "@react-pdf-viewer/core/lib/styles/index.css";
 import pdfViewerLayout from "@react-pdf-viewer/default-layout/lib/styles/index.css";
-import { LinksFunction } from "remix";
+import { LinksFunction, useLoaderData } from "remix";
 import formatAmount from "../../db/util/formatAmount";
-import Icon from "../_common/Icon";
+import Icon from "~/_common/Icon";
 import styled from "styled-components";
-import { PrimaryAction } from "../_common/PrimaryAction";
-import { SecondaryAction } from "../_common/SecondaryAction";
-import CompanyLogo from "../_common/Images/memexlogo.png";
+import { PrimaryAction } from "~/_common/PrimaryAction";
+import { SecondaryAction } from "~/_common/SecondaryAction";
+import CompanyLogo from "~/_common/Images/memexlogo.png";
 import { LoadingIndicator } from "~/_common/LoadingIndicator";
-import { makeStyles } from "@material-ui/styles";
 
 const TopBar = styled.div`
   height: 100px;
@@ -108,7 +103,7 @@ const SubSectionTitle = styled.div<{ margin?: string }>`
   font-weight: bold;
   font-size: 20px;
   color: ${(props) => props.theme.palette.color.darkerText};
-  margin: ${(props) => props.margin ? props.margin : '0 0 20px 0'};
+  margin: ${(props) => (props.margin ? props.margin : "0 0 20px 0")};
 `;
 
 const InfoArea = styled.div`
@@ -130,12 +125,27 @@ const Section = styled.div`
   margin-bottom: 30px;
 `;
 
-const SectionCircle = styled.div<{ width?: string, height?: string, margin?: string }>`
-  background: ${(props) => props.theme.palette.color.backgroundColorDarkerDarker};
+const SectionCircle = styled.div<{
+  width?: string;
+  height?: string;
+  margin?: string;
+}>`
+  background: ${(props) =>
+    props.theme.palette.color.backgroundColorDarkerDarker};
   border-radius: 100px;
-  height: ${(props) => props.width ? (props.height ? props.height : props.width) : '80px'} !important;
-  width: ${(props) => props.width ? (props.width ? props.width : props.width) : '80px'} !important;
-  margin: ${(props) => props.margin ? props.margin : '0 0 30px 0'};
+  height: ${(props) =>
+    props.width
+      ? props.height
+        ? props.height
+        : props.width
+      : "80px"} !important;
+  width: ${(props) =>
+    props.width
+      ? props.width
+        ? props.width
+        : props.width
+      : "80px"} !important;
+  margin: ${(props) => (props.margin ? props.margin : "0 0 30px 0")};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -164,7 +174,7 @@ const TextFieldBox = styled.div`
   grid-gap: 5px;
 `;
 
-const TextFieldDescription = styled(FormLabel) <{
+const TextFieldDescription = styled(FormLabel)<{
   small?: boolean;
   required?: boolean;
 }>`
@@ -353,26 +363,23 @@ const NotCompletedMessageContainer = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-`
+`;
 
-const FundraisingContainer = styled.div`
-  
-`
-
+const FundraisingContainer = styled.div``;
 
 const FundraisingTypeTopRow = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
-`
+`;
 const FundraisingTypeTitleSubTitleContainer = styled.div`
-   display: flex;
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
   grid-gap: 5px;
-`
+`;
 
 const FundraisingTypeCard = styled.div`
   display: flex;
@@ -380,7 +387,7 @@ const FundraisingTypeCard = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   grid-gap: 20px;
-`
+`;
 
 const FundraisingTypeHelpBox = styled.div`
   display: flex;
@@ -388,18 +395,21 @@ const FundraisingTypeHelpBox = styled.div`
   align-items: center;
   grid-gap: 10px;
   color: ${(props) => props.theme.palette.color.purple};
-`
+`;
 
-const SupportTypeCard = styled.div <{ active?: boolean }>`
+const SupportTypeCard = styled.div<{ active?: boolean }>`
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   flex-direction: row !important;
-  border: ${(props) => props.active ? '1px solid' + props.theme.palette.color.purple : '1px solid' + props.theme.palette.color.lightgrey};
+  border: ${(props) =>
+    props.active
+      ? "1px solid" + props.theme.palette.color.purple
+      : "1px solid" + props.theme.palette.color.lightgrey};
   border-radius: 8px;
   padding: 15px 20px;
   grid-gap: 15px;
-`
+`;
 
 const SupportTypeContentBox = styled.div`
   display: flex;
@@ -408,21 +418,21 @@ const SupportTypeContentBox = styled.div`
   flex-direction: column;
   grid-gap: 5px;
   flex: 1;
-`
+`;
 
 const SupportTypeTitle = styled.div`
   display: flex;
   color: ${(props) => props.theme.palette.text.primary};
   font-weight: bold;
   font-size: 16px;
-`
+`;
 
 const SupportTypeDescription = styled.div`
   display: flex;
   color: ${(props) => props.theme.palette.text.secondary};
   font-weight: 300;
   font-size: 14px;
-`
+`;
 
 const InputMetrix = styled.span`
   white-space: nowrap;
@@ -431,23 +441,22 @@ const InputMetrix = styled.span`
   font-size: 14px;
   text-align: center;
   padding: 0 10px;
-`
+`;
 
 const HowMuchSubSection = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  
-  & > div{
+
+  & > div {
     grid-gap: 10px;
     flex-wrap: nowrap;
   }
-
-`
+`;
 
 const HowMuchSetValuesSection = styled.div`
   margin: 40px 0px;
-`
+`;
 
 const InfoPillTitle = styled.div`
   display: flex;
@@ -457,7 +466,7 @@ const InfoPillTitle = styled.div`
   font-size: 14px;
   white-space: nowrap;
   color: ${(props) => props.theme.palette.color.primary};
-`
+`;
 
 const InfoPillInfo = styled.div`
   display: flex;
@@ -466,44 +475,45 @@ const InfoPillInfo = styled.div`
   font-size: 14px;
   font-weight: 700;
   color: ${(props) => props.theme.palette.color.purple};
-`
+`;
 
 const InfoPill = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: ${(props) => props.theme.palette.color.backgroundColorDarkerDarker};
+  background: ${(props) =>
+    props.theme.palette.color.backgroundColorDarkerDarker};
   padding: 0px 20px;
   height: 40px;
   width: fit-content;
   border-radius: 50px;
   grid-gap: 5px;
-`
+`;
 
 const ContainerWithInfo = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
   grid-gap: 20px;
-`
+`;
 
 const ExplainTitle = styled.div`
   font-size: 18px;
   font-weight: bold;
   color: ${(props) => props.theme.palette.color.primary};
-`
+`;
 
 const ExplainContent = styled.div`
   grid-gap: 5px;
   display: flex;
   flex-direction: column;
-`
+`;
 
 const ExplainText = styled.div`
-   font-size: 14px;
+  font-size: 14px;
   font-weight: 300;
   color: ${(props) => props.theme.palette.color.tertiary};
-`
+`;
 
 const ExplainMeLikeIamFiveContainer = styled.div`
   display: flex;
@@ -514,20 +524,20 @@ const ExplainMeLikeIamFiveContainer = styled.div`
   border-radius: 8px;
   padding: 20px;
   grid-gap: 30px;
-`
+`;
 
 const ExplainContainer = styled.div`
   display: flex;
-justify-content: center;
-align-items: flex-start;
-flex-direction: column;
-grid-gap: 10px;
-margin-bottom: 40px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  grid-gap: 10px;
+  margin-bottom: 40px;
 
-& > div {
-  width: fill-available;
-}
-`
+  & > div {
+    width: fill-available;
+  }
+`;
 
 const LoadingBox = styled.div`
   width: 100%;
@@ -535,9 +545,7 @@ const LoadingBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`
-
-
+`;
 
 const deepEqual = (a: unknown, b: unknown): boolean => {
   if (a === null || b === null) {
@@ -606,7 +614,6 @@ const ProfileContent = () => {
     lastName,
     emailAddresses,
     primaryEmailAddressId,
-    profileImageUrl,
     publicMetadata: { completed = false, ...publicMetadata } = {},
   } = useUser();
   const {
@@ -632,10 +639,12 @@ const ProfileContent = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [firstNameValue, setFirstNameValue] = useState(firstName || "");
-  const [middleNameValue, setMiddleNameValue] = useState(middleName as string || "");
+  const [middleNameValue, setMiddleNameValue] = useState(
+    (middleName as string) || ""
+  );
   const [lastNameValue, setLastNameValue] = useState(lastName || "");
   const [contactEmailValue, setContactEmailValue] = useState(
-    contactEmail as string || ""
+    (contactEmail as string) || ""
   );
   const [socialProfileValues, setSocialProfileValues] = useState(
     (socialProfiles as string[]) || SOCIAL_PROFILES.map(() => "")
@@ -643,24 +652,28 @@ const ProfileContent = () => {
   const [questionaireValues, setQuestionaireValues] = useState(
     (questionaires as string[]) || QUESTIONAIRES.map(() => "")
   );
-  const [attachDeckValue, setAttachDeckValue] = useState(attachDeck as string || "");
-  const [companyNameValue, setCompanyNameValue] = useState(companyName as string || "");
+  const [attachDeckValue, setAttachDeckValue] = useState(
+    (attachDeck as string) || ""
+  );
+  const [companyNameValue, setCompanyNameValue] = useState(
+    (companyName as string) || ""
+  );
   const [registeredCountryValue, setRegisteredCountryValue] = useState(
-    registeredCountry as string || ""
+    (registeredCountry as string) || ""
   );
   const [companyRegistrationNumberValue, setCompanyRegistrationNumberValue] =
-    useState(companyRegistrationNumber as string || "");
+    useState((companyRegistrationNumber as string) || "");
   const [companyAddressStreetValue, setCompanyAddressStreetValue] = useState(
-    companyAddressStreet as string || ""
+    (companyAddressStreet as string) || ""
   );
   const [companyAddressNumberValue, setCompanyAddressNumberValue] = useState(
-    companyAddressNumber as string || ""
+    (companyAddressNumber as string) || ""
   );
   const [companyAddressCityValue, setCompanyAddressCityValue] = useState(
-    companyAddressCity as string || ""
+    (companyAddressCity as string) || ""
   );
   const [companyAddressZipValue, setCompanyAddressZipValue] = useState(
-    companyAddressZip as string || ""
+    (companyAddressZip as string) || ""
   );
   const [paymentPreferenceValue, setPaymentPreferenceValue] =
     useState<PaymentPreferenceValue>(
@@ -765,14 +778,11 @@ const ProfileContent = () => {
                 </TextInputContainer>
               </TextFieldBox>
               <TextFieldBox>
-                <TextFieldDescription required>
-                  Last Name
-                </TextFieldDescription>
+                <TextFieldDescription required>Last Name</TextFieldDescription>
                 <TextInputContainer width={"350px"}>
                   <TextInputOneLine
                     value={lastNameValue}
                     onChange={(e) => setLastNameValue(e.target.value)}
-                    required
                   />
                 </TextInputContainer>
               </TextFieldBox>
@@ -784,7 +794,6 @@ const ProfileContent = () => {
                   <TextInputOneLine
                     value={middleNameValue}
                     onChange={(e) => setMiddleNameValue(e.target.value)}
-                    required
                   />
                 </TextInputContainer>
               </TextFieldBox>
@@ -804,7 +813,7 @@ const ProfileContent = () => {
             <ProfileImageContainer>
               <ProfileImageBox>
                 <img
-                  src={CompanyLogo} // profileImageUrl || 
+                  src={CompanyLogo}
                   alt={"Profile Image"}
                   style={{ borderRadius: "150px" }}
                 />
@@ -1210,10 +1219,10 @@ const FundraiseContentTable = () => {
   );
   const Container: React.FC = loading
     ? ({ children }) => (
-      <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
-        {children}
-      </Skeleton>
-    )
+        <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
+          {children}
+        </Skeleton>
+      )
     : Box;
   return (
     <>
@@ -1251,15 +1260,18 @@ const FundraiseContentTable = () => {
             <NotCompletedMessageContainer>
               <SectionCircle>
                 <Icon
-                  name={'personFine'}
+                  name={"personFine"}
                   heightAndWidth="24px"
-                  color='purple'
+                  color="purple"
                 />
               </SectionCircle>
-              <SubSectionTitle
-                margin={'0 0 0 0'}
-              >Fill out your profile to get started</SubSectionTitle>
-              <InfoText>We need some details about your endeavour before we can start the fundraise</InfoText>
+              <SubSectionTitle margin={"0 0 0 0"}>
+                Fill out your profile to get started
+              </SubSectionTitle>
+              <InfoText>
+                We need some details about your endeavour before we can start
+                the fundraise
+              </InfoText>
               <PrimaryAction
                 onClick={() => navigate(`/`)}
                 isLoading={loading}
@@ -1313,15 +1325,12 @@ const FundraiseContentTable = () => {
           ) : (
             <LoadingBox>
               <LoadingIndicator />
-              <FundraisingContainer onClick={navigate(`/fundraises/setup`)} />
+              <FundraisingContainer
+                onClick={() => navigate(`/fundraises/setup`)}
+              />
             </LoadingBox>
-
-            // <Body>
-            //   <RRLink to={TABS[0].path}>Setup your profile</RRLink> in order to
-            //   start fundraising.
-            // </Body>
           )}
-        </Section >
+        </Section>
       </ContentContainer>
     </>
   );
@@ -1342,7 +1351,7 @@ const ChooseFundraiseType = () => {
             <FundraisingTypeCard>
               <FundraisingTypeTopRow>
                 <FundraisingTypeTitleSubTitleContainer>
-                  <SubSectionTitle margin={'0 0 5px 0'}>{name}</SubSectionTitle>
+                  <SubSectionTitle margin={"0 0 5px 0"}>{name}</SubSectionTitle>
                   <InfoText>{description}</InfoText>
                 </FundraisingTypeTitleSubTitleContainer>
                 <PrimaryAction
@@ -1357,16 +1366,15 @@ const ChooseFundraiseType = () => {
               </FundraisingTypeTopRow>
               <FundraisingTypeHelpBox>
                 <Icon
-                  name={'thumbsUp'}
-                  color={'purple'}
-                  heightAndWidth={'20px'}
+                  name={"thumbsUp"}
+                  color={"purple"}
+                  heightAndWidth={"20px"}
                 />
                 {help}
               </FundraisingTypeHelpBox>
             </FundraisingTypeCard>
           </Section>
-        ))
-        }
+        ))}
       </ContentContainer>
     </>
   );
@@ -1391,7 +1399,9 @@ const ISA_SUPPORT_TYPES = [
 ];
 
 const ISADetailForm = ({ data, setData }: DetailProps) => {
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const target = e.target;
     setData({
       ...data,
@@ -1402,15 +1412,12 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
   return (
     <>
       <Section>
-        <SubSectionTitle>
-          How do you want to raise?
-        </SubSectionTitle>
+        <SubSectionTitle>How do you want to raise?</SubSectionTitle>
         <HowMuchSubSection>
           <RadioGroup
             sx={{
-              display: "flex", flexDirection: "row",
-
-
+              display: "flex",
+              flexDirection: "row",
             }}
             name="supportType"
             value={data["supportType"]}
@@ -1418,67 +1425,62 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
           >
             {ISA_SUPPORT_TYPES.map(({ label, value, description }) => (
               <Radio
+                key={value}
                 value={value}
                 disableRipple
                 sx={{
-                  '&:hover': {
-                    background: 'none'
+                  "&:hover": {
+                    background: "none",
                   },
-                  '& .MuiTouchRipple': {
-                    display: 'none'
+                  "& .MuiTouchRipple": {
+                    display: "none",
                   },
-                  '& .Mui-checked': {
-                    borderStyle: 'solid',
-                    borderWidth: '1px',
-                    borderColor: 'black'
+                  "& .Mui-checked": {
+                    borderStyle: "solid",
+                    borderWidth: "1px",
+                    borderColor: "black",
                   },
-                  width: '50%',
+                  width: "50%",
                   padding: 0,
                 }}
-                checkedIcon={(<>
-                  <SupportTypeCard
-                    key={value}
-                    value={value}
-                    active={true}
-                  >
-                    <SectionCircle margin={'0'} width={'40px'} height={'40px'}>
+                checkedIcon={
+                  <SupportTypeCard active={true}>
+                    <SectionCircle margin={"0"} width={"40px"} height={"40px"}>
                       <Icon
-                        name={'home'}
+                        name={"home"}
                         heightAndWidth="18px"
-                        color='purple'
+                        color="purple"
                       />
                     </SectionCircle>
                     <SupportTypeContentBox>
                       <SupportTypeTitle>{label}</SupportTypeTitle>
-                      <SupportTypeDescription>{description}</SupportTypeDescription>
+                      <SupportTypeDescription>
+                        {description}
+                      </SupportTypeDescription>
                     </SupportTypeContentBox>
                   </SupportTypeCard>
-                </>
-
-                )}
-                icon={(<>
-                  <SupportTypeCard
-                    key={value}
-                    value={value}
-                  >
-                    <SectionCircle margin={'0'} width={'40px'}>
+                }
+                icon={
+                  <SupportTypeCard>
+                    <SectionCircle margin={"0"} width={"40px"}>
                       <Icon
-                        name={'home'}
+                        name={"home"}
                         heightAndWidth="18px"
-                        color='darkerText'
+                        color="darkerText"
                       />
                     </SectionCircle>
                     <SupportTypeContentBox>
                       <SupportTypeTitle>{label}</SupportTypeTitle>
-                      <SupportTypeDescription>{description}</SupportTypeDescription>
+                      <SupportTypeDescription>
+                        {description}
+                      </SupportTypeDescription>
                     </SupportTypeContentBox>
                   </SupportTypeCard>
-                </>
-                )} />
+                }
+              />
             ))}
           </RadioGroup>
         </HowMuchSubSection>
-
 
         <HowMuchSetValuesSection>
           {data["supportType"] !== undefined && (
@@ -1489,35 +1491,35 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
               <TextInputContainer>
                 <TextInputOneLine
                   type={"number"}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position={"start"}>$</InputAdornment>
-                    ),
-                  }}
                   name={"amount"}
                   value={data["amount"]}
                   onChange={onChange}
                 />
-                {data["supportType"] === 'monthly' ? (<InputMetrix>$ per month</InputMetrix>) : (<InputMetrix>$</InputMetrix>)}
-              </TextInputContainer>
-            </TextFieldBox>)}
-          {data["supportType"] === "monthly" && (<>
-            <TextFieldBox>
-              <TextFieldDescription required>
-                For how many months?
-              </TextFieldDescription>
-              <TextInputContainer>
-                <TextInputOneLine
-                  type={"number"}
-                  name={"frequency"}
-                  value={data["frequency"]}
-                  onChange={onChange}
-                  label={"For how many months?"}
-                  sx={{ mb: 2 }}
-                />
+                {data["supportType"] === "monthly" ? (
+                  <InputMetrix>$ per month</InputMetrix>
+                ) : (
+                  <InputMetrix>$</InputMetrix>
+                )}
               </TextInputContainer>
             </TextFieldBox>
-          </>)}
+          )}
+          {data["supportType"] === "monthly" && (
+            <>
+              <TextFieldBox>
+                <TextFieldDescription required>
+                  For how many months?
+                </TextFieldDescription>
+                <TextInputContainer>
+                  <TextInputOneLine
+                    type={"number"}
+                    name={"frequency"}
+                    value={data["frequency"]}
+                    onChange={onChange}
+                  />
+                </TextInputContainer>
+              </TextFieldBox>
+            </>
+          )}
         </HowMuchSetValuesSection>
         {Number(data["amount"]) > 0 && (
           <TextFieldBox>
@@ -1526,7 +1528,8 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
               <InfoPillInfo>
                 $
                 {formatAmount(
-                  (Number(data["amount"]) || 0) * (Number(data["frequency"]) || 1)
+                  (Number(data["amount"]) || 0) *
+                    (Number(data["frequency"]) || 1)
                 )}
                 .00
               </InfoPillInfo>
@@ -1534,33 +1537,19 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
           </TextFieldBox>
         )}
       </Section>
-
-
-
-
-
-
       <Section>
-        <SubSectionTitle>
-          How do you want to raise?
-        </SubSectionTitle>
+        <SubSectionTitle>How do you want to raise?</SubSectionTitle>
         <TextFieldBox>
           <TextFieldDescription required>
             Maximum return for investors
           </TextFieldDescription>
           <ContainerWithInfo>
-            <TextInputContainer
-              width={'350px'}
-            >
+            <TextInputContainer width={"350px"}>
               <TextInputOneLine
                 type={"number"}
-                InputProps={{
-                  endAdornment: <InputAdornment position={"end"}>%</InputAdornment>,
-                }}
                 name={"return"}
                 value={data["return"]}
                 onChange={onChange}
-                label={"What will be the investor's maximum return on investment?"}
               />
               {<InputMetrix>%</InputMetrix>}
             </TextInputContainer>
@@ -1570,8 +1559,8 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
                 $
                 {formatAmount(
                   ((Number(data["return"]) || 0) / 100) *
-                  (Number(data["amount"]) || 0) *
-                  (Number(data["frequency"]) || 1)
+                    (Number(data["amount"]) || 0) *
+                    (Number(data["frequency"]) || 1)
                 )}
               </InfoPillInfo>
             </InfoPill>
@@ -1582,31 +1571,19 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
             Income/Revenue Payback Threshold
           </TextFieldDescription>
           <ContainerWithInfo>
-            <TextInputContainer
-              width={'350px'}
-            >
+            <TextInputContainer width={"350px"}>
               <TextInputOneLine
                 type={"number"}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position={"start"}>$</InputAdornment>
-                  ),
-                }}
                 name={"threshold"}
                 value={data["threshold"]}
                 onChange={onChange}
-                label={"Your abundance threshold"}
-                helperText={
-                  "The yearly income (before taxes) after which you start paying back"
-                }
               />
               {<InputMetrix>$</InputMetrix>}
             </TextInputContainer>
             <InfoPill>
               <InfoPillTitle>ø per month</InfoPillTitle>
               <InfoPillInfo>
-                ${formatAmount((Number(data["threshold"]) || 0) / 12)} /
-                month
+                ${formatAmount((Number(data["threshold"]) || 0) / 12)} / month
               </InfoPillInfo>
             </InfoPill>
           </ContainerWithInfo>
@@ -1618,38 +1595,21 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
           <TextInputContainer>
             <TextInputOneLine
               type={"number"}
-              InputProps={{
-                startAdornment: <InputAdornment position={"start"}>%</InputAdornment>,
-              }}
               name={"share"}
               value={data["share"]}
               onChange={onChange}
-              label={"Share of revenue used for payback"}
-              helperText={
-                "% of your income you want to use for the payback once you hit the abundance threshold"
-              }
             />
             {<InputMetrix>%</InputMetrix>}
           </TextInputContainer>
         </TextFieldBox>
         <TextFieldBox>
-          <TextFieldDescription required>
-            Time Cap
-          </TextFieldDescription>
+          <TextFieldDescription required>Time Cap</TextFieldDescription>
           <TextInputContainer>
             <TextInputOneLine
-              sx={{ mb: 2 }}
               type={"number"}
-              InputProps={{
-                startAdornment: <InputAdornment position={"start"}>Y</InputAdornment>,
-              }}
               name={"cap"}
               value={data["cap"]}
               onChange={onChange}
-              label={"Time Cap"}
-              helperText={
-                "Number of years before this agreement runs out, whether you paid everything back or not."
-              }
             />
             {<InputMetrix>years</InputMetrix>}
           </TextInputContainer>
@@ -1657,18 +1617,16 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
       </Section>
       <Section>
         <SubSectionTitle>Additional Contract Clauses</SubSectionTitle>
-        <InfoText> Do you have any special requirements in this contract that you'd
-          like to add? It is <b>strongly</b> advised to cross-check these
-          terms with a legal professional.</InfoText>
-        <TextInputContainer width={'600px'}>
+        <InfoText>
+          Do you have any special requirements in this contract that you'd like
+          to add? It is <b>strongly</b> advised to cross-check these terms with
+          a legal professional.
+        </InfoText>
+        <TextInputContainer width={"600px"}>
           <TextInputMultiLine
-            sx={{ mb: 2 }}
             name={"clauses"}
             value={data["clauses"]}
             onChange={onChange}
-            label={"Additional Contract Clauses"}
-            multiline
-            minRows={5}
           />
         </TextInputContainer>
       </Section>
@@ -1717,18 +1675,6 @@ const FundraiseDetails = () => {
           <PageTitle>Define Contract Terms</PageTitle>
           <PrimaryAction
             onClick={(e) => {
-              /* In case performance is too bad... REMIX
-              const formElement = e.target as HTMLFormElement;
-              const data = Object.fromEntries(
-                Object.keys(formElement.elements)
-                  .filter((k) => isNaN(Number(k)))
-                  .map((k) => [
-                    k,
-                    (formElement.elements.namedItem(k) as { value: string | null })
-                      ?.value || "",
-                  ])
-              );
-              */
               setLoading(true);
               contractHandler({ data, id })
                 .then((state) =>
@@ -1743,60 +1689,21 @@ const FundraiseDetails = () => {
               e.preventDefault();
             }}
             isLoading={loading}
-            label={'Save & Preview Contract'}
-          >
-          </PrimaryAction>
-          {/* <Box display={"flex"} alignItems={"center"}>
-            <Button
-              variant={"contained"}
-              type={"submit"}
-              sx={{ marginRight: "16px" }}
-            >
-              Save {"&"} Preview Contract
-            </Button>
-            {loading && <CircularProgress size={20} />}
-          </Box> */}
+            label={"Save & Preview Contract"}
+          />
         </InfoArea>
       </TopBar>
       <ContentContainer>
-        {/* <form
-          onSubmit={(e) => {
-            /* In case performance is too bad... REMIX
-            const formElement = e.target as HTMLFormElement;
-            const data = Object.fromEntries(
-              Object.keys(formElement.elements)
-                .filter((k) => isNaN(Number(k)))
-                .map((k) => [
-                  k,
-                  (formElement.elements.namedItem(k) as { value: string | null })
-                    ?.value || "",
-                ])
-            );
-            setLoading(true);
-            contractHandler({ data, id })
-              .then((state) =>
-                navigate(`/fundraises/preview/${state.id}`, {
-                  state: { initialCreate: true },
-                })
-              )
-              .catch((e) => {
-                setError(e.message);
-                setLoading(false);
-              });
-            e.preventDefault();
-          }}
-        > 
-        */}
         <DetailForm data={data} setData={setData} />
         <Body sx={{ color: "error" }}>{error}</Body>
-        {/* </form> */}
       </ContentContainer>
     </>
   );
 };
 
-const FundraisePreview = (data: DetailProps) => {
+const FundraisePreview = () => {
   const { id = "" } = useParams();
+  const totalAmount = useLoaderData<{totalAmount: number}>().totalAmount || 0;
   const navigate = useNavigate();
   const state = useLocation().state;
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
@@ -1824,27 +1731,27 @@ const FundraisePreview = (data: DetailProps) => {
     document.addEventListener("keydown", listener);
     return () => document.removeEventListener("keydown", listener);
   }, [onRefresh, state?.initialCreate, getRefresh, id, setLoading]);
-  console.log('data', data)
   return (
     <>
       <TopBar>
         <InfoArea>
-          <PageTitle>Preview Contract & Confirm Terms</PageTitle>
+          <PageTitle>Preview Contract {"&"} Confirm Terms</PageTitle>
           <PrimaryAction
             onClick={() =>
-              navigate(`/fundraises/contract/${id}`, { state: { isOpen: true } })
+              navigate(`/fundraises/contract/${id}`, {
+                state: { isOpen: true },
+              })
             }
-            label={'Confirm Terms'}
+            label={"Confirm Terms"}
           />
         </InfoArea>
       </TopBar>
       <ContentContainer>
         <Section>
-          <SectionTitle>
-            Confirm Key Agreements
-          </SectionTitle>
+          <SectionTitle>Confirm Key Agreements</SectionTitle>
           <InfoText>
-            We summarised the key points of the below contract for you to confirm.
+            We summarised the key points of the below contract for you to
+            confirm.
             <br />
             It is strongly advised to still read the contract in full.
           </InfoText>
@@ -1852,20 +1759,18 @@ const FundraisePreview = (data: DetailProps) => {
           <ExplainContainer>
             <ExplainMeLikeIamFiveContainer>
               <ExplainContent>
-                <ExplainTitle>
-                  How much you raise
-                </ExplainTitle>
+                <ExplainTitle>How much you raise</ExplainTitle>
                 <ExplainText>
-                  I agree to request a total of <b>{(Number(data["amount"]) || 0) * (Number(data["frequency"]))}</b> paid out as a monthly stipend of 3000€ per month for 12 months.
+                  I agree to request a total of{" "}
+                  <b>${formatAmount(totalAmount)}</b> paid out as a monthly
+                  stipend of 3000€ per month for 12 months.
                 </ExplainText>
               </ExplainContent>
               <CheckBox />
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
               <ExplainContent>
-                <ExplainTitle>
-                  How much you pay back
-                </ExplainTitle>
+                <ExplainTitle>How much you pay back</ExplainTitle>
                 <ExplainText>
                   I agree to pay back a total or 72.000€ to my investors
                 </ExplainText>
@@ -1874,33 +1779,31 @@ const FundraisePreview = (data: DetailProps) => {
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
               <ExplainContent>
-                <ExplainTitle>
-                  What you pay back
-                </ExplainTitle>
+                <ExplainTitle>What you pay back</ExplainTitle>
                 <ExplainText>
-                  I agree to take 12% of all my revenue once I hit 3000€ per month or €30.000 per year in the next 8 years in order to pay back my investors. Includes revenue from preexisting assets.
+                  I agree to take 12% of all my revenue once I hit 3000€ per
+                  month or €30.000 per year in the next 8 years in order to pay
+                  back my investors. Includes revenue from preexisting assets.
                 </ExplainText>
               </ExplainContent>
               <CheckBox />
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
               <ExplainContent>
-                <ExplainTitle>
-                  How you inform
-                </ExplainTitle>
+                <ExplainTitle>How you inform</ExplainTitle>
                 <ExplainText>
-                  I agree to update my investors on a monthly basis about my income and to provide my tax returns yearly.
+                  I agree to update my investors on a monthly basis about my
+                  income and to provide my tax returns yearly.
                 </ExplainText>
               </ExplainContent>
               <CheckBox />
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
               <ExplainContent>
-                <ExplainTitle>
-                  How to pay back
-                </ExplainTitle>
+                <ExplainTitle>How to pay back</ExplainTitle>
                 <ExplainText>
-                  I agree to start paying back my investors latest 3 months after I hit my revenue treshold.
+                  I agree to start paying back my investors latest 3 months
+                  after I hit my revenue treshold.
                 </ExplainText>
               </ExplainContent>
               <CheckBox />
@@ -1908,44 +1811,44 @@ const FundraisePreview = (data: DetailProps) => {
 
             <ExplainMeLikeIamFiveContainer>
               <ExplainContent>
-                <ExplainTitle>
-                  When you pay back
-                </ExplainTitle>
+                <ExplainTitle>When you pay back</ExplainTitle>
                 <ExplainText>
-                  I acknowledge that I only have to pay my investors when I reach
-                  $36.000/year or on average $3000/month. My dividends are then paid from my total income, including from pre-existing assets.
+                  I acknowledge that I only have to pay my investors when I
+                  reach $36.000/year or on average $3000/month. My dividends are
+                  then paid from my total income, including from pre-existing
+                  assets.
                 </ExplainText>
               </ExplainContent>
               <CheckBox />
             </ExplainMeLikeIamFiveContainer>
           </ExplainContainer>
 
-
-
           <ExplainContainer>
-            <SubSectionTitle margin={'10px 0 5px 0'}>Acknowledgements</SubSectionTitle>
+            <SubSectionTitle margin={"10px 0 5px 0"}>
+              Acknowledgements
+            </SubSectionTitle>
             <ExplainMeLikeIamFiveContainer>
               <ExplainContent>
-                <ExplainTitle>
-                  Getting out early
-                </ExplainTitle>
+                <ExplainTitle>Getting out early</ExplainTitle>
                 <ExplainText>
-                  I am aware that I can stop accepting monthly contributions of investors anytime and do not have to pay dividends on not paid contributions.
+                  I am aware that I can stop accepting monthly contributions of
+                  investors anytime and do not have to pay dividends on not paid
+                  contributions.
                 </ExplainText>
               </ExplainContent>
               <CheckBox />
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
               <ExplainContent>
-                <ExplainTitle>
-                  Reading the full legal agreement
-                </ExplainTitle>
+                <ExplainTitle>Reading the full legal agreement</ExplainTitle>
                 <ExplainText>
-                  I acknowledge that the above checkboxes are summaries of key terms and I have read the full legal agreement below (and if not are still liable according to its terms)                </ExplainText>
+                  I acknowledge that the above checkboxes are summaries of key
+                  terms and I have read the full legal agreement below (and if
+                  not are still liable according to its terms){" "}
+                </ExplainText>
               </ExplainContent>
               <CheckBox />
             </ExplainMeLikeIamFiveContainer>
-
           </ExplainContainer>
         </Section>
         <Section>
@@ -1956,17 +1859,15 @@ const FundraisePreview = (data: DetailProps) => {
               alignItems: "center",
             }}
           >
-            <SectionTitle>
-              Full Legal Agreement
-            </SectionTitle>
+            <SectionTitle>Full Legal Agreement</SectionTitle>
             {process.env.NODE_ENV === "development" && (
               <SecondaryAction
                 onClick={() => {
                   setLoading(true);
                   refreshPreview({ uuid: id }).then(() => setLoading(false));
                 }}
-                label={'Refresh PDF Preview'}
-                height={'40px'}
+                label={"Refresh PDF Preview"}
+                height={"40px"}
               />
             )}
           </Box>
@@ -2015,55 +1916,55 @@ const STAGE_ACTIONS: ((a: {
   uuid: string;
   onDelete: (uuid: string) => void;
 }) => React.ReactElement)[] = [
-    (row) => {
-      const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
-        path: "agreement",
-        method: "DELETE",
-      });
-      const [loading, setLoading] = useState(false);
-      return (
-        <Box
-          component={"span"}
-          sx={{
-            color: "#0000EE",
-            textDecoration: "underline",
-            "&:hover": {
-              textDecoration: "none",
-              cursor: "pointer",
-            },
-          }}
-          onClick={() => {
-            setLoading(true);
-            deleteHandler({ uuid: row.uuid })
-              .then(() => row.onDelete(row.uuid))
-              .finally(() => setLoading(false));
-          }}
-        >
-          <Box component={"span"} sx={{ marginRight: 16 }}>
-            Remove Invitation
-          </Box>{" "}
-          <Loading loading={loading} size={16} />
-        </Box>
-      );
-    },
-    (row) => (
-      <ExternalLink href={`/contract?uuid=${row.uuid}&signer=1`}>
-        Send Link To Investor
-      </ExternalLink>
-    ),
-    (row) => (
-      <ExternalLink href={`/contract?uuid=${row.uuid}&signer=2`}>
-        Sign Contract
-      </ExternalLink>
-    ),
-    (row) => (
-      <ExternalLink href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
-        View Contract
-      </ExternalLink>
-    ),
-    () => <span />,
-    () => <span />,
-  ];
+  (row) => {
+    const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
+      path: "agreement",
+      method: "DELETE",
+    });
+    const [loading, setLoading] = useState(false);
+    return (
+      <Box
+        component={"span"}
+        sx={{
+          color: "#0000EE",
+          textDecoration: "underline",
+          "&:hover": {
+            textDecoration: "none",
+            cursor: "pointer",
+          },
+        }}
+        onClick={() => {
+          setLoading(true);
+          deleteHandler({ uuid: row.uuid })
+            .then(() => row.onDelete(row.uuid))
+            .finally(() => setLoading(false));
+        }}
+      >
+        <Box component={"span"} sx={{ marginRight: 16 }}>
+          Remove Invitation
+        </Box>{" "}
+        <Loading loading={loading} size={16} />
+      </Box>
+    );
+  },
+  (row) => (
+    <ExternalLink href={`/contract?uuid=${row.uuid}&signer=1`}>
+      Send Link To Investor
+    </ExternalLink>
+  ),
+  (row) => (
+    <ExternalLink href={`/contract?uuid=${row.uuid}&signer=2`}>
+      Sign Contract
+    </ExternalLink>
+  ),
+  (row) => (
+    <ExternalLink href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
+      View Contract
+    </ExternalLink>
+  ),
+  () => <span />,
+  () => <span />,
+];
 
 const AgreementRow = (
   row: Agreements[number] & {
@@ -2130,17 +2031,17 @@ const FundraiseContract = () => {
         setRows(r.agreements);
         setCapSpace(
           Number(r.details.amount) * (Number(r.details.frequency) || 1) -
-          r.agreements.reduce((p, c) => p + c.amount, 0)
+            r.agreements.reduce((p, c) => p + c.amount, 0)
         );
       })
       .finally(() => setLoading(false));
   }, [id, setType, setRows, setLoading, setCapSpace]);
   const Container: React.FC = loading
     ? ({ children }) => (
-      <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
-        {children}
-      </Skeleton>
-    )
+        <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
+          {children}
+        </Skeleton>
+      )
     : Box;
   const defaultIsOpen = useMemo(() => location.state?.isOpen, [location]);
   return (
@@ -2305,7 +2206,7 @@ const Dashboard = () => {
           "& .MuiDrawer-paper": {
             width: DRAWER_WIDTH,
             boxSizing: "border-box",
-            backgroundColor: 'palette.color.white',
+            backgroundColor: "palette.color.white",
             borderRight: "1px solid #f0f0f0",
           },
         }}
