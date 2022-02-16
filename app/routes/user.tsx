@@ -9,8 +9,6 @@ import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Link from "@mui/material/Link";
@@ -78,12 +76,14 @@ import { LinksFunction } from "remix";
 import formatAmount from "../../db/util/formatAmount";
 import Icon from "../_common/Icon";
 import styled from 'styled-components'
+import { PrimaryAction } from '../_common/PrimaryAction'
+import { SecondaryAction } from '../_common/SecondaryAction'
 
 
 const TopBar = styled.div`
   height: 100px;
-  background: ${themeProps.white};
-  border-bottom: solid 1px ${themeProps.lightgrey};
+  background: ${themeProps.palette.color.white};
+  border-bottom: solid 1px ${themeProps.palette.color.lightgrey};
   width: 100vw;
   display: flex;
   justify-content: space-between;
@@ -111,8 +111,8 @@ const SubSection = styled.div`
 const SubSectionTitle = styled.div`
   font-weight: bold;
   font-size: 20px;
-  color: ${themeProps.darkerText};
-  margin-bottom: 5px;
+  color: ${themeProps.palette.color.darkerText};
+  margin-bottom: 20px;
 `
 
 const InfoArea = styled.div`
@@ -124,10 +124,10 @@ const InfoArea = styled.div`
 const PageTitle = styled.div`
     font-weight: 900;
     font-size: 30px;
-` 
+`
 
 const Section = styled.div`
-    background: ${themeProps.white};
+    background: ${themeProps.palette.color.white};
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
     border-radius: 12px;
     padding: 50px;
@@ -135,7 +135,7 @@ const Section = styled.div`
 `
 
 const SectionCircle = styled.div`
-    background: ${themeProps.backgroundColor};
+    background: ${themeProps.palette.color.backgroundColorDarker};
     border-radius: 100px;
     height: 80px;
     width: 80px;
@@ -146,52 +146,65 @@ const SectionCircle = styled.div`
 `
 
 const SectionTitle = styled.div`
-    color: ${themeProps.darkerText};
+    color: ${themeProps.palette.text.primary};
     font-size: 26px;
-    font-weight: bold;
+    font-weight: 800;
+    margin-bottom: 5px;
 `
 
 const InfoText = styled.div`
-    color: ${themeProps.normalText};
+    color: ${themeProps.palette.text.secondary};
     font-size: 16px;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     font-weight: 500;
 `
 
 const TextFieldBox = styled.div`
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  grid-gap: 5px;
+
 `
 
-const TextFieldDescription = styled.div`
-color: ${themeProps.lighterText};
-font-size: 16px;
-font-weight: 400;
-
+const TextFieldDescription = styled(FormLabel) <{ small: boolean }>`
+  color: ${themeProps.palette.text.tertiary};
+  font-size: ${(props) => props.small ? '14px !important' : '16px !important'};
+  font-weight: 400;
 `
 
 
-const TextInputContainer = styled.div`
+const TextInputContainer = styled.div<{ width?: string }>`
     display: flex;
     grid-auto-flow: column;
     grid-gap: 10px;
     align-items: center;
     justify-content: flex-start;
-    border: 1px solid #f0f0f0};
+    border: 1px solid ${themeProps.palette.color.lightgrey};
     height: 50px;
     border-radius: 8px;
-    width: 350px;
+    max-width: ${props => props.width ? props.width : '350px'};
+    width: ${(props) => props.width ? props.width : 'fill-available'};
     height: fit-content;
+
+
+    & > div {
+      font-size: 14px;
+    }
 `
 
 const TextInputOneLine = styled.input`
     outline: none;
     height: fill-available;
     width: fill-available;
-    color: #96A0B5;
     font-size: 14px;
     border: none;
     background: transparent;
     padding: 15px 10px;
     min-height: 30px;
+    color: ${themeProps.palette.text.primary}
 
     &::placeholder {
         color: #96A0B5;
@@ -206,11 +219,26 @@ const TextInputMultiLine = styled.textarea`
     font-size: 14px;
     border: none;
     padding: 15px 15px;
-    min-height: 50px;
+    min-height: 150px;
     background: transparent;
     &::placeholder {
         color: #96A0B5;
     }
+`
+
+const AddressBox = styled.div`
+
+`
+
+const NameAreaBox = styled.div`
+
+`
+
+const AddressArea = styled.div`
+  display: flex;
+  align-items: flex-end;
+  grid-gap: 5px;
+  width: fill-available;
 `
 
 const QuestionaireBox = styled.div`
@@ -226,6 +254,112 @@ const SocialProfileRow = styled.div`
     align-items: center;
     justify-content: flex-start;
 `
+
+const MenuListItem = styled.div`
+    height: 60px;
+    padding: 0 40px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 0 10px;
+    border-radius: 8px;
+    grid-gap: 10px;
+    width: fill-available;
+    color: ${themeProps.palette.color.lighterText};
+
+    &:hover {
+      background: ${themeProps.palette.color.backgroundColorDarker};
+    }
+
+    & * {
+      width: fill-available;
+    }
+
+    > a {
+      width: fill-available;
+    }
+`
+
+const NameandProfileImageSection = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  grid-gap: 30px;
+`
+
+const ListItemIcon = styled.div`
+    height: 20px;
+    width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`
+
+const MenuSidebarContainer = styled.div`
+    display: flex;
+    padding: 100px 0;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+`
+
+const ListItemText = styled.div`
+  font-size: 14px;
+`
+
+const ProfileImageContainer = styled.div`
+  width: 150px;
+  height: 150px;
+  position: relative;
+  margin: 30px;
+`
+
+const ProfileImageChangeOverlay = styled.div`
+    background: white;
+    border-radius: 60px;
+    height: 50px;
+    width: 50px;
+    z-index: 9;
+    margin: 30px;
+    background: red;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+
+    &:hover {
+      background: red;
+      display: flex;
+    }
+`
+
+const ProfileImageBox = styled.div`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 2px solid #347ae2;
+  border-radius: 300px;
+  margin: 1px;
+  cursor: pointer;
+
+
+  &:hover {
+      ${ProfileImageChangeOverlay} {
+        display: flex;
+    }
+  }
+
+  & * {
+    height: fill-available;
+    width: fill-available;
+  }
+`
+
+
+
+const CompanyLogo = require('../_common/Images/memexlogo.png')
 
 const deepEqual = (a: unknown, b: unknown): boolean => {
   if (a === null || b === null) {
@@ -274,13 +408,13 @@ const SocialProfile = React.memo(
     setVal: (s: string) => void;
   }) => (
     <SocialProfileRow>
-        <Icon name={iconName} />
+      <Icon name={iconName} />
       <TextInputContainer>
-      <TextInputOneLine
-        placeholder="https://"
-        value={val}
-        onChange={(e) => setVal(e.target.value)}
-      />
+        <TextInputOneLine
+          placeholder="https://"
+          value={val}
+          onChange={(e) => setVal(e.target.value)}
+        />
       </TextInputContainer>
     </SocialProfileRow>
   )
@@ -404,417 +538,342 @@ const ProfileContent = () => {
     publicMetadata,
   });
   return (
-      <Box sx={{ maxWidth: "800px" }}>
-        <TopBar>
-            <InfoArea>
-              <PageTitle>
-                Your Profile
-              </PageTitle>
-              <ActionButton>
-              {completed && (
-                    <Button
-                      href={`/creator/${id}`}
-                      variant={"outlined"}
-                      target="_blank"
-                      rel="noopener"
-                    >
-                      See Public Page
-                    </Button>
-                  )}
-                  {isChanges &&
-                    <Button
-                    onClick={() => {
-                      setLoading(true);
-                      profileHandler(profileBody)
-                        .then(() => {
-                          setSnackbarOpen(true);
-                          return update({});
-                        })
-                        .catch((e) => setError(e.message))
-                        .finally(() => setLoading(false));
-                    }}
-                    variant={"contained"}
-                    sx={{ mr: 2 }}
-                    disabled={loading || !isChanges}
+    <Box sx={{ maxWidth: "800px" }}>
+      <TopBar>
+        <InfoArea>
+          <PageTitle>
+            Your Profile
+          </PageTitle>
+          <ActionButton>
+            {completed && (
+              <SecondaryAction
+                onClick={() => window.open(`/creator/${id}`)}
+                // variant={"outlined"}
+                target="_blank"
+                rel="noopener"
+                label={'View Public Profile'}
+                height={'40px'}
+                width={'180px'}
+                fontSize={'16px'}
+              />
+            )}
+            {isChanges &&
+              <PrimaryAction
+                onClick={() => {
+                  setLoading(true);
+                  profileHandler(profileBody)
+                    .then(() => {
+                      setSnackbarOpen(true);
+                      return update({});
+                    })
+                    .catch((e) => setError(e.message))
+                    .finally(() => setLoading(false));
+                }}
+                // variant={"contained"}
+                isLoading={loading}
+                disabled={!isChanges}
+                label={'Save Edits'}
+                height={'40px'}
+                width={'130px'}
+                fontSize={'16px'}
+              />
+            }
+          </ActionButton>
+        </InfoArea>
+        <UserButton />
+      </TopBar>
+      <ContentContainer>
+        <Section>
+          <SectionCircle>
+            <Icon
+              name={'personFine'}
+              heightAndWidth="24px"
+              color='purple'
+            />
+          </SectionCircle>
+          <SectionTitle>
+            Your fundraising Profile
+          </SectionTitle>
+          <InfoText>
+            This is what investors will see first
+          </InfoText>
+          <NameandProfileImageSection>
+            <NameAreaBox>
+              <TextFieldBox>
+                <TextFieldDescription required>
+                  Name of you, your company or research project.
+                </TextFieldDescription>
+                <TextInputContainer
+                  width={'350px'}
+                >
+                  <TextInputOneLine
+                    value={firstNameValue}
+                    onChange={(e) => setFirstNameValue(e.target.value)}
+                    label={"First Name"}
+                    required
+                    fullWidth
+                  />
+                </TextInputContainer>
+              </TextFieldBox>
+              <TextFieldBox>
+                <TextFieldDescription required>
+                  Contact Email
+                </TextFieldDescription>
+                <TextInputContainer
+                  width={'350px'}
+                >
+                  <TextInputOneLine
+                    value={contactEmailValue}
+                    helperText={"visible to investors"}
+                    onChange={(e) => setContactEmailValue(e.target.value)}
+                    required
+                    label={"Contact Email"}
+                    fullWidth
+                  />
+                </TextInputContainer>
+              </TextFieldBox>
+            </NameAreaBox>
+            <ProfileImageContainer>
+              {/* <img
+                src={profileImageUrl}
+                alt={"Profile Image"}
+                style={{ borderRadius: "150px" }}
+                width={200}
+                height={200}
+
+              /> */}
+              <ProfileImageBox>
+                <img
+                  src={CompanyLogo}
+                  alt={"Profile Image"}
+                  style={{ borderRadius: "150px" }}
+
+                />
+              </ProfileImageBox>
+              <ProfileImageChangeOverlay>
+                <Icon
+                  name={'dollar'}
+                  heightAndWidth="24px"
+                  color='purple'
+                />
+              </ProfileImageChangeOverlay>
+            </ProfileImageContainer>
+
+          </NameandProfileImageSection>
+          <SubSection>
+            <SubSectionTitle>
+              Why should people invest in you?
+            </SubSectionTitle>
+            <QuestionaireBox>
+              {QUESTIONAIRES.map(({ q }, i) => (<>
+                <TextFieldBox>
+                  <TextFieldDescription>
+                    {q}
+                  </TextFieldDescription>
+                  <TextInputContainer width={'600px'}>
+                    <Questionaire
+                      key={i}
+                      q={q}
+                      val={questionaireValues[i]}
+                      setVal={(newValue) =>
+                        setQuestionaireValues(
+                          questionaireValues.map((oldValue, j) =>
+                            i === j ? newValue : oldValue
+                          )
+                        )
+                      }
+                    />
+                  </TextInputContainer>
+                </TextFieldBox>
+              </>))}
+            </QuestionaireBox>
+          </SubSection>
+          <SubSection>
+            <SubSectionTitle>
+              How can people find you?
+            </SubSectionTitle>
+            <QuestionaireBox>
+              {SOCIAL_PROFILES.map(({ iconName }, i) => (
+                <SocialProfile
+                  key={i}
+                  iconName={iconName}
+                  val={socialProfileValues[i]}
+                  setVal={(newValue) =>
+                    setSocialProfileValues(
+                      socialProfileValues.map((oldValue, j) =>
+                        i === j ? newValue : oldValue
+                      )
+                    )
+                  }
+                />
+              ))}
+            </QuestionaireBox>
+          </SubSection>
+          <SubSection>
+            <SubSectionTitle>
+              Attach a deck or demo video
+            </SubSectionTitle>
+            <TextInputContainer
+              width={'350px'}
+            >
+              <TextInputOneLine
+                value={attachDeckValue}
+                onChange={(e) => setAttachDeckValue(e.target.value)}
+                placeholder="https://"
+                label={"Attach Deck"}
+                sx={{ mb: 2 }}
+                fullWidth
+              />
+            </TextInputContainer>
+          </SubSection>
+        </Section>
+
+
+        <Section>
+          <SectionCircle>
+            <Icon
+              name={'dollar'}
+              heightAndWidth="24px"
+              color='purple'
+            />
+          </SectionCircle>
+          <SectionTitle>
+            Payment Preferences
+          </SectionTitle>
+          <InfoText>
+            Which payment channels do yo support for receiving and sending funds?
+          </InfoText>
+          <TextFieldBox>
+            <PaymentPreferences
+              value={paymentPreferenceValue}
+              setValue={setPaymentPreferenceValue}
+            />
+          </TextFieldBox>
+
+        </Section>
+
+
+        <Section>
+          <SectionCircle>
+            <Icon
+              name={'book'}
+              heightAndWidth="24px"
+              color='purple'
+            />
+          </SectionCircle>
+          <SectionTitle>
+            Legal Information
+          </SectionTitle>
+          <InfoText>
+            You must have a registered company to be able to use this service. If
+            you do not, there are fast ways to open up a company.{" "}
+            <ExternalLink href={"https://stripe.com/atlas"}>
+              Learn More.
+            </ExternalLink>
+          </InfoText>
+          <Box>
+            <TextFieldBox>
+              <TextFieldDescription>Company Name</TextFieldDescription>
+              <TextInputContainer>
+                <TextInputOneLine
+                  label={"Company Name"}
+                  value={companyNameValue}
+                  onChange={(e) => setCompanyNameValue(e.target.value)}
+                  required
+                  fullWidth
+                />
+              </TextInputContainer>
+            </TextFieldBox>
+            <TextFieldBox>
+              <TextFieldDescription required>Registered Country</TextFieldDescription>
+              <TextInputContainer>
+                <Select
+                  value={registeredCountryValue}
+                  maxRows={10}
+                  MenuProps={{ sx: { maxHeight: 200 } }}
+                  onChange={(e) => setRegisteredCountryValue(e.target.value)}
+                  fullWidth
+                  required
+                >
+                  {CountryRegionData.map((c) => (
+                    <MenuItem value={c.countryName} key={c.countryShortCode}>
+                      {c.countryName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </TextInputContainer>
+            </TextFieldBox>
+            <TextFieldBox>
+              <TextFieldDescription required>Registration Number</TextFieldDescription>
+              <TextInputContainer>
+                <TextInputOneLine
+                  label={"Company Registration Number"}
+                  value={companyRegistrationNumberValue}
+                  onChange={(e) => setCompanyRegistrationNumberValue(e.target.value)}
+                  required
+                  sx={{ mb: 2 }}
+                  fullWidth
+                />
+              </TextInputContainer>
+            </TextFieldBox>
+            <TextFieldDescription required>Address</TextFieldDescription>
+            <AddressArea>
+              <AddressBox>
+                <TextFieldBox>
+                  <TextFieldDescription small required>Street</TextFieldDescription>
+                  <TextInputContainer
+                    width={'300px'}
                   >
-                    Save Edits
-                  </Button>}
-              </ActionButton>
-            </InfoArea>
-            <UserButton />
-          </TopBar>
-        <ContentContainer>
-          <Section>
-            <SectionTitle>
-                Your fundraising Profile
-            </SectionTitle>
-            <InfoText>
-               This is what investors will see first
-            </InfoText>
-            <TextFieldBox>
-              <TextFieldDescription>
-                  Name of you or your company
-              </TextFieldDescription>
-              <TextInputContainer>
-                <TextInputOneLine
-                  value={firstNameValue}
-                  onChange={(e) => setFirstNameValue(e.target.value)}
-                  label={"First Name"}
-                  required
-                  fullWidth
-                />
-              </TextInputContainer>
-            </TextFieldBox>
-            <SubSection>
-              <SubSectionTitle>
-                    Why should people invest in you?
-              </SubSectionTitle>
-                  <QuestionaireBox>
-                      {QUESTIONAIRES.map(({ q }, i) => (<>
-                        <TextFieldBox>
-                          <TextFieldDescription>
-                            {q}
-                          </TextFieldDescription>
-                          <TextInputContainer>
-                            <Questionaire
-                              key={i}
-                              q={q}
-                              val={questionaireValues[i]}
-                              setVal={(newValue) =>
-                                setQuestionaireValues(
-                                  questionaireValues.map((oldValue, j) =>
-                                    i === j ? newValue : oldValue
-                                  )
-                                )
-                              }
-                            />
-                          </TextInputContainer>
-                        </TextFieldBox>
-                  </>))}
-              </QuestionaireBox>
-            </SubSection>
-            <SubSection>
-              <SubSectionTitle>
-                    How can people find you?
-              </SubSectionTitle>
-                  <QuestionaireBox>
-                  {SOCIAL_PROFILES.map(({ icon }, i) => (
-                      <SocialProfile
-                        key={i}
-                        icon={icon}
-                        val={socialProfileValues[i]}
-                        setVal={(newValue) =>
-                          setSocialProfileValues(
-                            socialProfileValues.map((oldValue, j) =>
-                              i === j ? newValue : oldValue
-                            )
-                          )
-                        }
-                      />
-                    ))}
-              </QuestionaireBox>
-            </SubSection>
-          </Section>
-          
-
-          <Section>
-            <SectionTitle>
-                Payment Preferences
-            </SectionTitle>
-            <InfoText>
-               Which payment channels do yo support for receiving and sending funds.
-            </InfoText>
-            <TextFieldBox>
-              <TextFieldDescription>
-                  Name of you or your company
-              </TextFieldDescription>
-              <TextInputContainer>
-                <TextInputOneLine
-                  value={firstNameValue}
-                  onChange={(e) => setFirstNameValue(e.target.value)}
-                  label={"First Name"}
-                  required
-                  fullWidth
-                />
-              </TextInputContainer>
-            </TextFieldBox>
-            <SubSection>
-              <SubSectionTitle>
-                    Why should people invest in you?
-              </SubSectionTitle>
-                  <QuestionaireBox>
-                      {QUESTIONAIRES.map(({ q }, i) => (<>
-                        <TextFieldBox>
-                          <TextFieldDescription>
-                            {q}
-                          </TextFieldDescription>
-                          <TextInputContainer>
-                            <Questionaire
-                              key={i}
-                              q={q}
-                              val={questionaireValues[i]}
-                              setVal={(newValue) =>
-                                setQuestionaireValues(
-                                  questionaireValues.map((oldValue, j) =>
-                                    i === j ? newValue : oldValue
-                                  )
-                                )
-                              }
-                            />
-                          </TextInputContainer>
-                        </TextFieldBox>
-                  </>))}
-              </QuestionaireBox>
-            </SubSection>
-            <SubSection>
-              <SubSectionTitle>
-                    How can people find you?
-              </SubSectionTitle>
-                  <QuestionaireBox>
-                  {SOCIAL_PROFILES.map(({ icon }, i) => (
-                      <SocialProfile
-                        key={i}
-                        icon={icon}
-                        val={socialProfileValues[i]}
-                        setVal={(newValue) =>
-                          setSocialProfileValues(
-                            socialProfileValues.map((oldValue, j) =>
-                              i === j ? newValue : oldValue
-                            )
-                          )
-                        }
-                      />
-                    ))}
-              </QuestionaireBox>
-            </SubSection>
-          </Section>
-
-
-
-
-        <H4>Contact Details</H4>
-        <TextInputContainer>
-          <TextInputOneLine
-            value={firstNameValue}
-            onChange={(e) => setFirstNameValue(e.target.value)}
-            label={"First Name"}
-            required
-            fullWidth
-          />
-        </TextInputContainer>
-        <Box sx={{ width: "100%" }}>
-          <TextField
-            sx={{ mb: 2 }}
-            value={lastNameValue}
-            onChange={(e) => setLastNameValue(e.target.value)}
-            label={"Last Name"}
-            required
-          />
-          <TextField
-            sx={{ ml: 2 }}
-            value={middleNameValue}
-            onChange={(e) => setMiddleNameValue(e.target.value)}
-            label={"Middle Name"}
-          />
-        </Box>
-        <TextField
-          sx={{ mb: 2 }}
-          value={contactEmailValue}
-          helperText={"visible to investors"}
-          onChange={(e) => setContactEmailValue(e.target.value)}
-          required
-          label={"Contact Email"}
-          fullWidth
-        />
-        <TextField
-          sx={{ ml: 2 }}
-          value={middleNameValue}
-          onChange={(e) => setMiddleNameValue(e.target.value)}
-          label={"Middle Name"}
-        />
-      </Box>
-      <TextField
-        sx={{ mb: 2 }}
-        value={contactEmailValue}
-        helperText={"visible to investors"}
-        onChange={(e) => setContactEmailValue(e.target.value)}
-        required
-        label={"Contact Email"}
-        fullWidth
-      />
-      <Box>
-        <FormLabel required>Profile Picture</FormLabel>
-      </Box>
-      <Box sx={{ mb: 2 }}>
-        <img
-          src={profileImageUrl}
-          alt={"Profile Image"}
-          style={{ borderRadius: "4px" }}
-          width={129}
-          height={129}
-        />
-      </Box>
-      <FormLabel sx={{ mt: 2, mb: 1 }}>Social Profiles</FormLabel>
-      {SOCIAL_PROFILES.map(({ iconName }, i) => (
-        <SocialProfile
-          key={i}
-          iconName={iconName}
-          val={socialProfileValues[i]}
-          setVal={(newValue) =>
-            setSocialProfileValues(
-              socialProfileValues.map((oldValue, j) =>
-                i === j ? newValue : oldValue
-              )
-            }
-          />
-        ))}
-        <H4>Why should people invest in you?</H4>
-        {QUESTIONAIRES.map(({ q }, i) => (
-          <Questionaire
-            key={i}
-            q={q}
-            val={questionaireValues[i]}
-            setVal={(newValue) =>
-              setQuestionaireValues(
-                questionaireValues.map((oldValue, j) =>
-                  i === j ? newValue : oldValue
-                )
-              )
-            }
-          />
-        ))}
-        <TextField
-          value={attachDeckValue}
-          onChange={(e) => setAttachDeckValue(e.target.value)}
-          placeholder="https://"
-          label={"Attach Deck"}
-          sx={{ mb: 2 }}
-          fullWidth
-        />
-        <H4>Legal Information</H4>
-        <Body sx={{ mt: 0, mb: 2 }}>
-          You must have a registered company to be able to use this service. If
-          you do not, there are fast ways to open up a company.{" "}
-          <ExternalLink href={"https://stripe.com/atlas"}>
-            Learn More.
-          </ExternalLink>
-        </Body>
-        <TextField
-          label={"Company Name"}
-          value={companyNameValue}
-          onChange={(e) => setCompanyNameValue(e.target.value)}
-          required
-          fullWidth
-          sx={{ mb: 2 }}
-        />
-        <FormLabel required>Registered Country</FormLabel>
-        <Select
-          value={registeredCountryValue}
-          maxRows={10}
-          sx={{ mb: 2 }}
-          MenuProps={{ sx: { maxHeight: 200 } }}
-          onChange={(e) => setRegisteredCountryValue(e.target.value)}
-          fullWidth
-        >
-          {CountryRegionData.map((c) => (
-            <MenuItem value={c.countryName} key={c.countryShortCode}>
-              {c.countryName}
-            </MenuItem>
-          ))}
-        </Select>
-        <TextField
-          label={"Company Registration Number"}
-          value={companyRegistrationNumberValue}
-          onChange={(e) => setCompanyRegistrationNumberValue(e.target.value)}
-          required
-          sx={{ mb: 2 }}
-          fullWidth
-        />
-        <Box sx={{ mb: 2 }}>
-          <TextField
-            label={"Street"}
-            value={companyAddressStreetValue}
-            onChange={(e) => setCompanyAddressStreetValue(e.target.value)}
-            required
-          />
-          <TextField
-            sx={{ ml: 2 }}
-            label={"No"}
-            value={companyAddressNumberValue}
-            onChange={(e) => setCompanyAddressNumberValue(e.target.value)}
-            required
-          />
-        </Box>
-        <Box sx={{ mb: 2 }}>
-          <TextField
-            label={"City"}
-            value={companyAddressCityValue}
-            onChange={(e) => setCompanyAddressCityValue(e.target.value)}
-            required
-          />
-          <TextField
-            sx={{ ml: 2 }}
-            label={"Zip"}
-            value={companyAddressZipValue}
-            onChange={(e) => setCompanyAddressZipValue(e.target.value)}
-            required
-          />
-        </Box>
-        <PaymentPreferences
-          value={paymentPreferenceValue}
-          setValue={setPaymentPreferenceValue}
-        />
-        <Box
-          sx={{
-            alignItems: "center",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <Box sx={{ alignItems: "center", display: "flex" }}>
-            <Button
-              onClick={() => {
-                setLoading(true);
-                profileHandler(profileBody)
-                  .then(() => {
-                    setSnackbarOpen(true);
-                    return update({});
-                  })
-                  .catch((e) => setError(e.message))
-                  .finally(() => setLoading(false));
-              }}
-              variant={"contained"}
-              sx={{ mr: 2 }}
-              disabled={loading || !isChanges}
-            >
-              Save Edits
-            </Button>
-            <Snackbar
-              open={snackbarOpen}
-              autoHideDuration={5000}
-              onClose={() => setSnackbarOpen(false)}
-              color="success"
-            >
-              <Alert severity="success" sx={{ width: "100%" }}>
-                Successfully Saved Profile!
-              </Alert>
-            </Snackbar>
-            {loading && <CircularProgress size={20} />}
-            <span color={"darkred"}>{error}</span>
+                    <TextInputOneLine
+                      label={"Street"}
+                      value={companyAddressStreetValue}
+                      onChange={(e) => setCompanyAddressStreetValue(e.target.value)}
+                      required
+                    />
+                  </TextInputContainer>
+                </TextFieldBox>
+                <TextFieldBox>
+                  <TextFieldDescription small required>City</TextFieldDescription>
+                  <TextInputContainer>
+                    <TextInputOneLine
+                      label={"City"}
+                      value={companyAddressCityValue}
+                      onChange={(e) => setCompanyAddressCityValue(e.target.value)}
+                      required
+                    />
+                  </TextInputContainer>
+                </TextFieldBox>
+              </AddressBox>
+              <AddressBox>
+                <TextFieldBox>
+                  <TextFieldDescription small required>Nr.</TextFieldDescription>
+                  <TextInputContainer>
+                    <TextInputOneLine
+                      sx={{ ml: 2 }}
+                      label={"No"}
+                      value={companyAddressNumberValue}
+                      onChange={(e) => setCompanyAddressNumberValue(e.target.value)}
+                      required
+                    />
+                  </TextInputContainer>
+                </TextFieldBox>
+                <TextFieldBox>
+                  <TextFieldDescription small required>ZIP</TextFieldDescription>
+                  <TextInputContainer>
+                    <TextInputOneLine
+                      label={"Zip"}
+                      value={companyAddressZipValue}
+                      onChange={(e) => setCompanyAddressZipValue(e.target.value)}
+                      required
+                    />
+                  </TextInputContainer>
+                </TextFieldBox>
+              </AddressBox>
+            </AddressArea>
           </Box>
-          {completed && (
-            <Button
-              href={`/creator/${id}`}
-              variant={"outlined"}
-              target="_blank"
-              rel="noopener"
-            >
-              See Public Page
-            </Button>
-          )}
-        </Box>
-        </ContentContainer>
-      </Box>
+        </Section>
+      </ContentContainer >
+    </Box >
   );
 };
 
@@ -1014,10 +1073,10 @@ const FundraiseContentTable = () => {
   );
   const Container: React.FC = loading
     ? ({ children }) => (
-        <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
-          {children}
-        </Skeleton>
-      )
+      <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
+        {children}
+      </Skeleton>
+    )
     : Box;
   return (
     <>
@@ -1029,7 +1088,7 @@ const FundraiseContentTable = () => {
           alignItems: "center",
         }}
       >
-        Your Fundraises
+        My Fundraises
         {!!rows.length && startFundraiseButton}
       </H1>
       {completed ? (
@@ -1195,7 +1254,7 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
               borderRadius: "4px",
               padding: "16px",
               width: "240px",
-              background: "#ffffff",
+              background: "red",
             }}
             key={value}
           >
@@ -1284,8 +1343,8 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
           ={" max $"}
           {formatAmount(
             ((Number(data["return"]) || 0) / 100) *
-              (Number(data["amount"]) || 0) *
-              (Number(data["frequency"]) || 1)
+            (Number(data["amount"]) || 0) *
+            (Number(data["frequency"]) || 1)
           )}
         </span>
       </Box>
@@ -1546,55 +1605,55 @@ const STAGE_ACTIONS: ((a: {
   uuid: string;
   onDelete: (uuid: string) => void;
 }) => React.ReactElement)[] = [
-  (row) => {
-    const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
-      path: "agreement",
-      method: "DELETE",
-    });
-    const [loading, setLoading] = useState(false);
-    return (
-      <Box
-        component={"span"}
-        sx={{
-          color: "#0000EE",
-          textDecoration: "underline",
-          "&:hover": {
-            textDecoration: "none",
-            cursor: "pointer",
-          },
-        }}
-        onClick={() => {
-          setLoading(true);
-          deleteHandler({ uuid: row.uuid })
-            .then(() => row.onDelete(row.uuid))
-            .finally(() => setLoading(false));
-        }}
-      >
-        <Box component={"span"} sx={{ marginRight: 16 }}>
-          Remove Invitation
-        </Box>{" "}
-        <Loading loading={loading} size={16} />
-      </Box>
-    );
-  },
-  (row) => (
-    <ExternalLink href={`/contract?uuid=${row.uuid}&signer=1`}>
-      Send Link To Investor
-    </ExternalLink>
-  ),
-  (row) => (
-    <ExternalLink href={`/contract?uuid=${row.uuid}&signer=2`}>
-      Sign Contract
-    </ExternalLink>
-  ),
-  (row) => (
-    <ExternalLink href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
-      View Contract
-    </ExternalLink>
-  ),
-  () => <span />,
-  () => <span />,
-];
+    (row) => {
+      const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
+        path: "agreement",
+        method: "DELETE",
+      });
+      const [loading, setLoading] = useState(false);
+      return (
+        <Box
+          component={"span"}
+          sx={{
+            color: "#0000EE",
+            textDecoration: "underline",
+            "&:hover": {
+              textDecoration: "none",
+              cursor: "pointer",
+            },
+          }}
+          onClick={() => {
+            setLoading(true);
+            deleteHandler({ uuid: row.uuid })
+              .then(() => row.onDelete(row.uuid))
+              .finally(() => setLoading(false));
+          }}
+        >
+          <Box component={"span"} sx={{ marginRight: 16 }}>
+            Remove Invitation
+          </Box>{" "}
+          <Loading loading={loading} size={16} />
+        </Box>
+      );
+    },
+    (row) => (
+      <ExternalLink href={`/contract?uuid=${row.uuid}&signer=1`}>
+        Send Link To Investor
+      </ExternalLink>
+    ),
+    (row) => (
+      <ExternalLink href={`/contract?uuid=${row.uuid}&signer=2`}>
+        Sign Contract
+      </ExternalLink>
+    ),
+    (row) => (
+      <ExternalLink href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
+        View Contract
+      </ExternalLink>
+    ),
+    () => <span />,
+    () => <span />,
+  ];
 
 const AgreementRow = (
   row: Agreements[number] & {
@@ -1661,17 +1720,17 @@ const FundraiseContract = () => {
         setRows(r.agreements);
         setCapSpace(
           Number(r.details.amount) * (Number(r.details.frequency) || 1) -
-            r.agreements.reduce((p, c) => p + c.amount, 0)
+          r.agreements.reduce((p, c) => p + c.amount, 0)
         );
       })
       .finally(() => setLoading(false));
   }, [id, setType, setRows, setLoading, setCapSpace]);
   const Container: React.FC = loading
     ? ({ children }) => (
-        <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
-          {children}
-        </Skeleton>
-      )
+      <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
+        {children}
+      </Skeleton>
+    )
     : Box;
   const defaultIsOpen = useMemo(() => location.state?.isOpen, [location]);
   return (
@@ -1792,7 +1851,7 @@ const TABS = [
   },
   {
     text: "My Fundraises",
-    iconName: "note",
+    iconName: "fundraise",
     content: FundraiseContent,
     path: "fundraises",
     nested: [
@@ -1818,26 +1877,17 @@ const DashboardTab = ({ path, iconName, text }: typeof TABS[number]) => {
   const isMatch = path
     ? location.pathname.startsWith(`/${path}`)
     : location.pathname === "/";
+
+  console.log(iconName)
   return (
     <RRLink to={path}>
-      <ListItem
-        button
-        key={path}
-        sx={{
-          display: "flex",
-          background: isMatch ? "#0000000a" : "unset",
-          borderLeft: isMatch ? "2px solid #DDE2FF" : "unset",
-          paddingLeft: "32px",
-          py: "20px",
-          fontSize: 14,
-          color: "#A4A6B3",
-        }}
+      <MenuListItem
       >
-        <ListItemIcon sx={{ color: "inherit" }}>
-          <Icon name={iconName} />
+        <ListItemIcon>
+          <Icon heightAndWidth="20px" name={iconName} />
         </ListItemIcon>
-        <ListItemText primary={text} />
-      </ListItem>
+        <ListItemText>{text}</ListItemText>
+      </MenuListItem>
     </RRLink>
   );
 };
@@ -1850,7 +1900,7 @@ const Dashboard = () => {
         sx={{
           width: `calc(100% - ${DRAWER_WIDTH}px)`,
           ml: `${DRAWER_WIDTH}px`,
-          backgroundColor: themeProps.background,
+          backgroundColor: themeProps.palette.background.default,
         }}
         elevation={0}
       >
@@ -1862,7 +1912,8 @@ const Dashboard = () => {
           "& .MuiDrawer-paper": {
             width: DRAWER_WIDTH,
             boxSizing: "border-box",
-            backgroundColor: "#363740",
+            backgroundColor: themeProps.palette.color.white,
+            borderRight: '1px solid #f0f0f0'
           },
         }}
         variant="permanent"
@@ -1875,12 +1926,15 @@ const Dashboard = () => {
           sx={{
             a: {
               textDecoration: "none",
+              width: '100%',
             },
           }}
         >
-          {TABS.map((t) => (
-            <DashboardTab {...t} key={t.path} />
-          ))}
+          <MenuSidebarContainer>
+            {TABS.map((t) => (
+              <DashboardTab {...t} key={t.path} />
+            ))}
+          </MenuSidebarContainer>
         </List>
       </Drawer>
       <Box
