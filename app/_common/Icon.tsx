@@ -69,7 +69,7 @@ const Icon = ({
     case "github":
       return <GitHubIcon {...muiProps} />;
     case "home":
-      return <StyledIcon icon={PersonFineSvg} />;
+      return <StyledIcon {...props} icon={PersonFineSvg} />;
     case "info":
       return <InfoIcon {...muiProps} />;
     case "linkedin":
@@ -87,7 +87,7 @@ const Icon = ({
     case "public":
       return <PublicIcon {...muiProps} />;
     case "settings":
-      return <StyledIcon icon={SettingsSvg} />;
+      return <StyledIcon {...props} icon={SettingsSvg} />;
     case "twitter":
       return <TwitterIcon {...muiProps} />;
     default:

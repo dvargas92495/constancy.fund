@@ -508,9 +508,6 @@ const ProfileContent = () => {
             {completed && (
               <SecondaryAction
                 onClick={() => window.open(`/creator/${id}`)}
-                // variant={"outlined"}
-                // target="_blank"
-                // rel="noopener"
                 label={"View Public Profile"}
                 height={"40px"}
                 width={"180px"}
