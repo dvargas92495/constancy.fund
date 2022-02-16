@@ -156,7 +156,7 @@ const ContractPage = (): React.ReactElement => {
               variant={"contained"}
               onClick={() =>
                 window.location.assign(
-                  `/user#/fundraises/contract/${contracUuid}`
+                  `/user/fundraises/contract/${contracUuid}`
                 )
               }
             >
