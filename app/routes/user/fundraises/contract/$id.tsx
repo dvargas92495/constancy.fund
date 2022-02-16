@@ -1,5 +1,5 @@
 import Loading from "@dvargas92495/ui/dist/components/Loading";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import Box from "@mui/material/Box";
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
@@ -15,12 +15,19 @@ import type { Handler as PostAgreementHandler } from "../../../../../functions/a
 import type { Handler as DeleteAgreementHandler } from "../../../../../functions/agreement/delete";
 import FUNDRAISE_TYPES from "../../../../../db/fundraise_types";
 import CONTRACT_STAGES from "../../../../../db/contract_stages";
-import Skeleton from "@mui/material/Skeleton";
 import FormDialog from "@dvargas92495/ui/dist/components/FormDialog";
 import StringField from "@dvargas92495/ui/dist/components/StringField";
 import NumberField from "@dvargas92495/ui/dist/components/NumberField";
-import { Link as RemixLink, useLocation, useParams } from "remix";
+import {
+  Link as RemixLink,
+  LoaderFunction,
+  useLoaderData,
+  useLocation,
+  useParams,
+} from "remix";
 import formatAmount from "../../../../../db/util/formatAmount";
+import cookie from "cookie";
+import axios from "axios";
 
 const H1 = (props: Parameters<typeof _H1>[0]) => (
   <_H1 sx={{ fontSize: 30, ...props.sx }} {...props} />
@@ -131,52 +138,66 @@ const AgreementRow = (
   );
 };
 
+type FundraiseData = Awaited<ReturnType<GetContractHandler>>;
+
 const UserFundraisesContract = () => {
   const { id = "" } = useParams();
   const location = useLocation();
-  const [loading, setLoading] = useState(true);
-  const [capSpace, setCapSpace] = useState(0);
-  const getFundraise = useAuthenticatedHandler<GetContractHandler>({
-    path: "contract",
-    method: "GET",
-  });
+  const fundraiseData = useLoaderData<FundraiseData>();
+  const type = fundraiseData.type;
+  const [rows, setRows] = useState<Agreements>(fundraiseData.agreements);
+  const total = useMemo(
+    () =>
+      Number(fundraiseData.details.amount) *
+      (Number(fundraiseData.details.frequency) || 1),
+    [fundraiseData]
+  );
+  const progress = useMemo(
+    () => rows.reduce((p, c) => p + c.amount, 0),
+    [rows]
+  );
+  const capSpace = useMemo(() => total - progress, [total, progress]);
   const postAgreement = useAuthenticatedHandler<PostAgreementHandler>({
     path: "agreement",
     method: "POST",
   });
-  const [rows, setRows] = useState<Agreements>([]);
   const onDelete = useCallback(
     (uuid: string) => setRows(rows.filter((r) => r.uuid !== uuid)),
     [setRows, rows]
   );
-  const { type: defaultType = FUNDRAISE_TYPES[0].id, isOpen: defaultIsOpen } =
-    (location.state || {}) as {
-      type?: typeof FUNDRAISE_TYPES[number]["id"];
-      isOpen?: boolean;
-    };
-  const [type, setType] = useState(defaultType);
-  useEffect(() => {
-    setLoading(true);
-    getFundraise({ uuid: id })
-      .then((r) => {
-        setType(r.type);
-        setRows(r.agreements);
-        setCapSpace(
-          Number(r.details.amount) * (Number(r.details.frequency) || 1) -
-            r.agreements.reduce((p, c) => p + c.amount, 0)
-        );
-      })
-      .finally(() => setLoading(false));
-  }, [id, setType, setRows, setLoading, setCapSpace]);
-  const Container: React.FC = loading
-    ? ({ children }) => (
-        <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
-          {children}
-        </Skeleton>
-      )
-    : Box;
+  const { isOpen: defaultIsOpen } = (location.state || {}) as {
+    isOpen?: boolean;
+  };
   return (
     <>
+      <Box>
+        <p>
+          <b>Wants to raise: </b>${formatAmount(total)}
+        </p>
+        <p>
+          <b>Pays Back: </b>$
+          {formatAmount((total * Number(fundraiseData.details.return)) / 100)}
+        </p>
+        <p>
+          <b>Shares Revenue: </b>
+          {Number(fundraiseData.details.share)}%
+        </p>
+        <p>
+          <b>Income Threshold: </b>$
+          {formatAmount(Number(fundraiseData.details.threshold))} / year
+        </p>
+        <p>
+          <b>Progress: </b>${formatAmount(progress)} / {formatAmount(total)}
+        </p>
+        <p>
+          <b>Progress Investors: </b>
+          {rows.length}
+        </p>
+        <p>
+          <b>Progress New: </b>
+          {rows.filter((row) => row.status === 2).length}
+        </p>
+      </Box>
       <H1
         sx={{
           fontSize: 30,
@@ -239,7 +260,7 @@ const UserFundraisesContract = () => {
           defaultIsOpen={defaultIsOpen}
         />
       </H1>
-      <Container>
+      <Box>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
@@ -260,9 +281,26 @@ const UserFundraisesContract = () => {
             ))}
           </TableBody>
         </Table>
-      </Container>
+      </Box>
     </>
   );
+};
+
+export const loader: LoaderFunction = async ({ request, params }) => {
+  const cookieHeader = request.headers.get("cookie") || "";
+  const cookieObj = cookie.parse(cookieHeader);
+  const token = cookieObj.__session;
+  return axios
+    .get<FundraiseData>(`${process.env.API_URL}/contract?uuid=${params.id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((r) => r.data)
+    .catch((e) => {
+      console.error(e);
+      return {};
+    });
 };
 
 export default UserFundraisesContract;

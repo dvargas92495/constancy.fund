@@ -8,10 +8,7 @@ import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
 import type { Handler as ContractHandler } from "../../../../functions/contract/post";
 import FUNDRAISE_TYPES from "../../../../db/fundraise_types";
-import {
-  useLocation,
-  useNavigate,
-} from "remix";
+import { useLocation, useNavigate } from "remix";
 import formatAmount from "../../../../db/util/formatAmount";
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
@@ -170,7 +167,7 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
               flexDirection: "row",
             }}
             name="supportType"
-            value={data["supportType"]}
+            value={data["supportType"] || ""}
             onChange={onChange}
           >
             {ISA_SUPPORT_TYPES.map(({ label, value, description }) => (
@@ -233,7 +230,7 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
         </HowMuchSubSection>
 
         <HowMuchSetValuesSection>
-          {data["supportType"] !== undefined && (
+          {data["supportType"] && (
             <TextFieldBox>
               <TextFieldDescription required>
                 Amount you'd like to raise
@@ -242,7 +239,7 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
                 <TextInputOneLine
                   type={"number"}
                   name={"amount"}
-                  value={data["amount"]}
+                  value={data["amount"] || ''}
                   onChange={onChange}
                 />
                 {data["supportType"] === "monthly" ? (
@@ -263,7 +260,7 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
                   <TextInputOneLine
                     type={"number"}
                     name={"frequency"}
-                    value={data["frequency"]}
+                    value={data["frequency"] || ''}
                     onChange={onChange}
                   />
                 </TextInputContainer>
@@ -298,7 +295,7 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
               <TextInputOneLine
                 type={"number"}
                 name={"return"}
-                value={data["return"]}
+                value={data["return"] || ''}
                 onChange={onChange}
               />
               {<InputMetrix>%</InputMetrix>}
@@ -325,7 +322,7 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
               <TextInputOneLine
                 type={"number"}
                 name={"threshold"}
-                value={data["threshold"]}
+                value={data["threshold"] || ''}
                 onChange={onChange}
               />
               {<InputMetrix>$</InputMetrix>}
@@ -346,7 +343,7 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
             <TextInputOneLine
               type={"number"}
               name={"share"}
-              value={data["share"]}
+              value={data["share"] || ''}
               onChange={onChange}
             />
             {<InputMetrix>%</InputMetrix>}
@@ -358,7 +355,7 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
             <TextInputOneLine
               type={"number"}
               name={"cap"}
-              value={data["cap"]}
+              value={data["cap"] || ''}
               onChange={onChange}
             />
             {<InputMetrix>years</InputMetrix>}
@@ -375,7 +372,7 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
         <TextInputContainer width={"600px"}>
           <TextInputMultiLine
             name={"clauses"}
-            value={data["clauses"]}
+            value={data["clauses"] || ''}
             onChange={onChange}
           />
         </TextInputContainer>

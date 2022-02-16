@@ -11,7 +11,7 @@ const logic = ({ uuid, user: { id } }: { uuid: string; user: User }) =>
   execute(
     `SELECT c.type, c.userId, a.uuid, a.amount, a.name, a.email, e.id, cd.label, cd.value
    FROM contract c
-   INNER JOIN agreement a ON a.contractUuid = c.uuid
+   LEFT JOIN agreement a ON a.contractUuid = c.uuid
    INNER JOIN contractdetail cd ON c.uuid = cd.contractUuid
    LEFT JOIN eversigndocument e ON e.agreementUuid = a.uuid
    WHERE c.uuid = ?
@@ -63,12 +63,14 @@ const logic = ({ uuid, user: { id } }: { uuid: string; user: User }) =>
     > = {};
     const details: Record<string, string> = {};
     fundraise.forEach((f) => {
-      agreements[f.uuid] = {
-        amount: f.amount,
-        name: f.name,
-        email: f.email,
-        status: statuses[f.id || ""] || 0,
-      };
+      if (f.uuid) {
+        agreements[f.uuid] = {
+          amount: f.amount,
+          name: f.name,
+          email: f.email,
+          status: statuses[f.id || ""] || 0,
+        };
+      }
       details[f.label] = f.value;
     });
     return {

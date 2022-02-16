@@ -353,7 +353,7 @@ const UserProfile = () => {
                 </TextInputContainer>
               </TextFieldBox>
               <TextFieldBox>
-                <TextFieldDescription required>
+                <TextFieldDescription>
                   Middle Name
                 </TextFieldDescription>
                 <TextInputContainer width={"350px"}>
@@ -364,7 +364,7 @@ const UserProfile = () => {
                 </TextInputContainer>
               </TextFieldBox>
               <TextFieldBox>
-                <TextFieldDescription required>
+                <TextFieldDescription>
                   Contact Email
                 </TextFieldDescription>
                 <TextInputContainer width={"350px"}>

@@ -8,7 +8,7 @@ const logic = ({ user: { id } }: { user: User }) => {
   return execute(
     `SELECT c.type, c.uuid, a.uuid as agreementUuid, cd.label, cd.value, cd.uuid as cdUuid
      FROM contract c
-     INNER JOIN agreement a ON a.contractUuid = c.uuid
+     LEFT JOIN agreement a ON a.contractUuid = c.uuid
      INNER JOIN contractdetail cd ON cd.contractUuid = c.uuid
      WHERE c.userId = ?`,
     [id || ""]
@@ -33,15 +33,15 @@ const logic = ({ user: { id } }: { user: User }) => {
     ).forEach((r) => {
       if (fundraises[r.uuid]) {
         fundraises[r.uuid].type = r.type;
-        fundraises[r.uuid].agreements.add(r.agreementUuid);
         fundraises[r.uuid].details[r.cdUuid] = {
           label: r.label,
           value: r.value,
         };
+        if (r.agreementUuid) fundraises[r.uuid].agreements.add(r.agreementUuid);
       } else {
         fundraises[r.uuid] = {
           type: r.type,
-          agreements: new Set([r.agreementUuid]),
+          agreements: r.agreementUuid ? new Set([r.agreementUuid]) : new Set(),
           details: { [r.cdUuid]: { label: r.label, value: r.value } },
         };
       }
