@@ -57,7 +57,7 @@ export function LoadingIndicator(props: CircularProgressProps) {
 export default function LoadingIndicatorBar() {
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <CircularProgressContainer />
+            <LoadingIndicator />
             <br />
             <BorderLinearProgress variant="determinate" value={50} />
         </Box>

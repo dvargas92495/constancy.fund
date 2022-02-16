@@ -73,6 +73,8 @@ import styled from "styled-components";
 import { PrimaryAction } from "../_common/PrimaryAction";
 import { SecondaryAction } from "../_common/SecondaryAction";
 import CompanyLogo from "../_common/Images/memexlogo.png";
+import { LoadingIndicator } from "~/_common/LoadingIndicator";
+import { makeStyles } from "@material-ui/styles";
 
 const TopBar = styled.div`
   height: 100px;
@@ -101,11 +103,11 @@ const ActionButton = styled.div`
 const SubSection = styled.div`
   margin-top: 60px;
 `;
-const SubSectionTitle = styled.div`
+const SubSectionTitle = styled.div<{ margin?: string }>`
   font-weight: bold;
   font-size: 20px;
   color: ${(props) => props.theme.palette.color.darkerText};
-  margin-bottom: 20px;
+  margin: ${(props) => props.margin ? props.margin : '0 0 20px 0'};
 `;
 
 const InfoArea = styled.div`
@@ -127,12 +129,12 @@ const Section = styled.div`
   margin-bottom: 30px;
 `;
 
-const SectionCircle = styled.div`
-  background: ${(props) => props.theme.palette.color.backgroundColorDarker};
+const SectionCircle = styled.div<{ width?: string, height?: string, margin?: string }>`
+  background: ${(props) => props.theme.palette.color.backgroundColorDarkerDarker};
   border-radius: 100px;
-  height: 80px;
-  width: 80px;
-  margin-bottom: 30px;
+  height: ${(props) => props.width ? (props.height ? props.height : props.width) : '80px'} !important;
+  width: ${(props) => props.width ? (props.width ? props.width : props.width) : '80px'} !important;
+  margin: ${(props) => props.margin ? props.margin : '0 0 30px 0'};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -161,7 +163,7 @@ const TextFieldBox = styled.div`
   grid-gap: 5px;
 `;
 
-const TextFieldDescription = styled(FormLabel)<{
+const TextFieldDescription = styled(FormLabel) <{
   small?: boolean;
   required?: boolean;
 }>`
@@ -344,6 +346,146 @@ const ProfileImageBox = styled.div`
     width: fill-available;
   }
 `;
+
+const NotCompletedMessageContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+`
+
+const FundraisingContainer = styled.div`
+  
+`
+
+
+const FundraisingTypeTopRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+`
+const FundraisingTypeTitleSubTitleContainer = styled.div`
+   display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  grid-gap: 5px;
+`
+
+const FundraisingTypeCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  grid-gap: 20px;
+`
+
+const FundraisingTypeHelpBox = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  grid-gap: 10px;
+  color: ${(props) => props.theme.palette.color.purple};
+`
+
+const SupportTypeCard = styled.div <{ active?: boolean }>`
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: row !important;
+  border: ${(props) => props.active ? '1px solid' + props.theme.palette.color.purple : '1px solid' + props.theme.palette.color.lightgrey};
+  border-radius: 8px;
+  padding: 15px 20px;
+  grid-gap: 15px;
+`
+
+const SupportTypeContentBox = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  grid-gap: 5px;
+  flex: 1;
+`
+
+const SupportTypeTitle = styled.div`
+  display: flex;
+  color: ${(props) => props.theme.palette.text.primary};
+  font-weight: bold;
+  font-size: 16px;
+`
+
+const SupportTypeDescription = styled.div`
+  display: flex;
+  color: ${(props) => props.theme.palette.text.secondary};
+  font-weight: 300;
+  font-size: 14px;
+`
+
+const InputMetrix = styled.span`
+  white-space: nowrap;
+  width: 100px;
+  color: ${(props) => props.theme.palette.text.tertiary};
+  font-size: 14px;
+  text-align: center;
+  padding: 0 10px;
+`
+
+const HowMuchSubSection = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  & > div{
+    grid-gap: 10px;
+    flex-wrap: nowrap;
+  }
+
+`
+
+const HowMuchSetValuesSection = styled.div`
+  margin: 40px 0px;
+`
+
+const InfoPillTitle = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  color: ${(props) => props.theme.palette.color.primary};
+`
+
+const InfoPillInfo = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: ${(props) => props.theme.palette.color.purple};
+`
+
+const InfoPill = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: ${(props) => props.theme.palette.color.backgroundColorDarkerDarker};
+  padding: 0px 20px;
+  height: 40px;
+  width: fit-content;
+  border-radius: 50px;
+  grid-gap: 5px;
+`
+
+const ContainerWithInfo = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  grid-gap: 20px;
+`
+
 
 const deepEqual = (a: unknown, b: unknown): boolean => {
   if (a === null || b === null) {
@@ -610,7 +752,7 @@ const ProfileContent = () => {
             <ProfileImageContainer>
               <ProfileImageBox>
                 <img
-                  src={profileImageUrl || CompanyLogo}
+                  src={CompanyLogo} // profileImageUrl || 
                   alt={"Profile Image"}
                   style={{ borderRadius: "150px" }}
                 />
@@ -981,6 +1123,7 @@ const FundraiseContentTable = () => {
   const {
     publicMetadata: { completed = false },
   } = useUser();
+  const [error] = useState("");
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Fundraises>([]);
   const getFundraises = useAuthenticatedHandler<GetHandler>({
@@ -1015,59 +1158,123 @@ const FundraiseContentTable = () => {
   );
   const Container: React.FC = loading
     ? ({ children }) => (
-        <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
-          {children}
-        </Skeleton>
-      )
+      <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
+        {children}
+      </Skeleton>
+    )
     : Box;
   return (
     <>
-      <H1
-        sx={{
-          fontSize: 30,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        My Fundraises
-        {!!rows.length && startFundraiseButton}
-      </H1>
-      {completed ? (
-        <Container>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Type</TableCell>
-                <TableCell>Details</TableCell>
-                <TableCell>Progress</TableCell>
-                <TableCell># Investors</TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map((row) => (
-                <FundraiseContentRow
-                  key={row.uuid}
-                  {...row}
-                  onDeleteSuccess={onDeleteSuccess}
+      <TopBar>
+        <InfoArea>
+          <PageTitle>My Fundraise</PageTitle>
+          <ActionButton>
+            {!completed && (
+              <PrimaryAction
+                onClick={() => navigate(`/`)}
+                isLoading={loading}
+                label={"Fill Profile"}
+                height={"40px"}
+                width={"130px"}
+                fontSize={"16px"}
+              />
+              // ) : (
+              //   <PrimaryAction
+              //   onClick={() => navigate(`/fundraises/setup`)}
+              //   isLoading={loading}
+              //   label={"Start Fundraise"}
+              //   height={"40px"}
+              //   width={"150px"}
+              //   fontSize={"16px"}
+              // />
+            )}
+            <span color={"darkred"}>{error}</span>
+          </ActionButton>
+        </InfoArea>
+        <UserButton />
+      </TopBar>
+      <ContentContainer>
+        <Section>
+          {!completed && (
+            <NotCompletedMessageContainer>
+              <SectionCircle>
+                <Icon
+                  name={'personFine'}
+                  heightAndWidth="24px"
+                  color='purple'
                 />
-              ))}
-            </TableBody>
-          </Table>
-          {!rows.length && (
-            <Box sx={{ mt: 4 }} textAlign={"center"}>
-              <H4>Set up your first fundraise</H4>
-              {startFundraiseButton}
-            </Box>
+              </SectionCircle>
+              <SubSectionTitle
+                margin={'0 0 0 0'}
+              >Fill out your profile to get started</SubSectionTitle>
+              <InfoText>We need some details about your endeavour before we can start the fundraise</InfoText>
+              <PrimaryAction
+                onClick={() => navigate(`/`)}
+                isLoading={loading}
+                label={"Get Started"}
+                height={"40px"}
+                width={"130px"}
+                fontSize={"16px"}
+              />
+            </NotCompletedMessageContainer>
+            // ) : (
+            //   <PrimaryAction
+            //     onClick={() => navigate(`./`)}
+            //     isLoading={loading}
+            //     label={"Fill Profile"}
+            //     height={"40px"}
+            //     width={"130px"}
+            //     fontSize={"16px"}
+            //   />
           )}
-        </Container>
-      ) : (
-        <Body>
-          <RRLink to={TABS[0].path}>Setup your profile</RRLink> in order to
-          start fundraising.
-        </Body>
-      )}
+          {rows.length ? (
+            <Container>
+              <FundraisingContainer>
+
+
+
+
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Type</TableCell>
+                      <TableCell>Details</TableCell>
+                      <TableCell>Progress</TableCell>
+                      <TableCell># Investors</TableCell>
+                      <TableCell></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows.map((row) => (
+                      <FundraiseContentRow
+                        key={row.uuid}
+                        {...row}
+                        onDeleteSuccess={onDeleteSuccess}
+                      />
+                    ))}
+                  </TableBody>
+                </Table>
+                {!rows.length && (
+                  <Box sx={{ mt: 4 }} textAlign={"center"}>
+                    <H4>Set up your first fundraise</H4>
+                    {startFundraiseButton}
+                  </Box>
+                )}
+              </FundraisingContainer>
+            </Container>
+          ) : (
+            <>
+              <LoadingIndicator />
+              <FundraisingContainer onClick={navigate(`/fundraises/setup`)} />
+            </>
+
+            // <Body>
+            //   <RRLink to={TABS[0].path}>Setup your profile</RRLink> in order to
+            //   start fundraising.
+            // </Body>
+          )}
+        </Section >
+      </ContentContainer>
     </>
   );
 };
@@ -1076,76 +1283,43 @@ const ChooseFundraiseType = () => {
   const navigate = useNavigate();
   return (
     <>
-      <H1>Step 1: Choose your fundraise type</H1>
-      {FUNDRAISE_TYPES.map(({ name, description, help, enabled, id }) => (
-        <Card
-          sx={{ display: "flex", height: 160, borderRadius: 2, py: 2, mb: 2 }}
-          key={id}
-        >
-          <Box
-            sx={{
-              flexGrow: 1,
-              display: "flex",
-              flexDirection: "column",
-              pl: 5,
-            }}
-          >
-            <Box sx={{ flexGrow: 1 }}>
-              <H4 sx={{ my: 1, fontSize: "16px", lineHeight: "20px" }}>
-                {name}
-              </H4>
-              <Body
-                sx={{
-                  color: "#3F3F3F",
-                  fontSize: "12px",
-                  lineHeight: "18px",
-                  opacity: 0.7,
-                }}
-              >
-                {description}
-              </Body>
-            </Box>
-            <Box>
-              <Body
-                sx={{
-                  color: "#3F3F3F",
-                  fontSize: "12px",
-                  lineHeight: "18px",
-                  fontWeight: 600,
-                  opacity: 0.7,
-                }}
-              >
+      <TopBar>
+        <InfoArea>
+          <PageTitle>Choose your fundraising type</PageTitle>
+        </InfoArea>
+      </TopBar>
+      <ContentContainer>
+        {FUNDRAISE_TYPES.map(({ name, description, help, enabled, id }) => (
+          <Section>
+            <FundraisingTypeCard>
+              <FundraisingTypeTopRow>
+                <FundraisingTypeTitleSubTitleContainer>
+                  <SubSectionTitle margin={'0 0 5px 0'}>{name}</SubSectionTitle>
+                  <InfoText>{description}</InfoText>
+                </FundraisingTypeTitleSubTitleContainer>
+                <PrimaryAction
+                  label={enabled ? "Select" : "Coming Soon"}
+                  disabled={enabled ? false : true}
+                  onClick={() =>
+                    navigate("/fundraises/details", {
+                      state: { id },
+                    })
+                  }
+                />
+              </FundraisingTypeTopRow>
+              <FundraisingTypeHelpBox>
+                <Icon
+                  name={'thumbsUp'}
+                  color={'purple'}
+                  heightAndWidth={'20px'}
+                />
                 {help}
-              </Body>
-            </Box>
-          </Box>
-          <Box
-            sx={{
-              px: 5,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
-            {enabled ? (
-              <Button
-                variant={"contained"}
-                onClick={() =>
-                  navigate("/fundraises/details", {
-                    state: { id },
-                  })
-                }
-              >
-                Select
-              </Button>
-            ) : (
-              <Button disabled variant={"outlined"}>
-                Coming Soon
-              </Button>
-            )}
-          </Box>
-        </Card>
-      ))}
+              </FundraisingTypeHelpBox>
+            </FundraisingTypeCard>
+          </Section>
+        ))
+        }
+      </ContentContainer>
     </>
   );
 };
@@ -1176,186 +1350,282 @@ const ISADetailForm = ({ data, setData }: DetailProps) => {
       [target.name]: target.value,
     });
   };
+
+  console.log(data["supportType"])
+
   return (
     <>
-      <FormLabel sx={{ mt: 0, mb: 2, display: "inline-block" }}>
-        How do you want to receive your support?
-      </FormLabel>
-      <RadioGroup
-        sx={{ mb: 6, display: "flex", flexDirection: "row" }}
-        name="supportType"
-        value={data["supportType"]}
-        onChange={onChange}
-      >
-        {ISA_SUPPORT_TYPES.map(({ label, value, description }) => (
-          <Box
+      <Section>
+        <SubSectionTitle>
+          How do you want to raise?
+        </SubSectionTitle>
+        <HowMuchSubSection>
+          <RadioGroup
             sx={{
-              display: "flex",
-              alignItems: "center",
-              marginRight: "24px",
-              borderRadius: "4px",
-              padding: "16px",
-              width: "240px",
-              background: "red",
+              display: "flex", flexDirection: "row",
+
+
             }}
-            key={value}
+            name="supportType"
+            value={data["supportType"]}
+            onChange={onChange}
           >
-            <Box sx={{ minWidth: "48px" }}>
-              <Radio value={value} />
-            </Box>
-            <Box>
-              <H4 sx={{ fontSize: 14 }}>{label}</H4>
-              <Body sx={{ fontSize: 14 }}>{description}</Body>
-            </Box>
-          </Box>
-        ))}
-      </RadioGroup>
-      {data["supportType"] === "monthly" ? (
-        <Box>
-          <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
-            <TextField
-              sx={{ mr: 2 }}
+            {ISA_SUPPORT_TYPES.map(({ label, value, description }) => (
+              <Radio
+                value={value}
+                disableRipple
+                sx={{
+                  '&:hover': {
+                    background: 'none'
+                  },
+                  '& .MuiTouchRipple': {
+                    display: 'none'
+                  },
+                  '& .Mui-checked': {
+                    borderStyle: 'solid',
+                    borderWidth: '1px',
+                    borderColor: 'black'
+                  },
+                  width: '50%',
+                  padding: 0,
+                }}
+                checkedIcon={(<>
+                  <SupportTypeCard
+                    key={value}
+                    value={value}
+                    active={true}
+                  >
+                    <SectionCircle margin={'0'} width={'40px'} height={'40px'}>
+                      <Icon
+                        name={'home'}
+                        heightAndWidth="18px"
+                        color='purple'
+                      />
+                    </SectionCircle>
+                    <SupportTypeContentBox>
+                      <SupportTypeTitle>{label}</SupportTypeTitle>
+                      <SupportTypeDescription>{description}</SupportTypeDescription>
+                    </SupportTypeContentBox>
+                  </SupportTypeCard>
+                </>
+
+                )}
+                icon={(<>
+                  <SupportTypeCard
+                    key={value}
+                    value={value}
+                  >
+                    <SectionCircle margin={'0'} width={'40px'}>
+                      <Icon
+                        name={'home'}
+                        heightAndWidth="18px"
+                        color='darkerText'
+                      />
+                    </SectionCircle>
+                    <SupportTypeContentBox>
+                      <SupportTypeTitle>{label}</SupportTypeTitle>
+                      <SupportTypeDescription>{description}</SupportTypeDescription>
+                    </SupportTypeContentBox>
+                  </SupportTypeCard>
+                </>
+                )} />
+            ))}
+          </RadioGroup>
+        </HowMuchSubSection>
+
+
+        <HowMuchSetValuesSection>
+          {data["supportType"] !== undefined && (
+            <TextFieldBox>
+              <TextFieldDescription required>
+                Amount you'd like to raise
+              </TextFieldDescription>
+              <TextInputContainer>
+                <TextInputOneLine
+                  type={"number"}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position={"start"}>$</InputAdornment>
+                    ),
+                  }}
+                  name={"amount"}
+                  value={data["amount"]}
+                  onChange={onChange}
+                />
+                {data["supportType"] === 'monthly' ? (<InputMetrix>$ per month</InputMetrix>) : (<InputMetrix>$</InputMetrix>)}
+              </TextInputContainer>
+            </TextFieldBox>)}
+          {data["supportType"] === "monthly" && (<>
+            <TextFieldBox>
+              <TextFieldDescription required>
+                For how many months?
+              </TextFieldDescription>
+              <TextInputContainer>
+                <TextInputOneLine
+                  type={"number"}
+                  name={"frequency"}
+                  value={data["frequency"]}
+                  onChange={onChange}
+                  label={"For how many months?"}
+                  sx={{ mb: 2 }}
+                />
+              </TextInputContainer>
+            </TextFieldBox>
+          </>)}
+        </HowMuchSetValuesSection>
+        {Number(data["amount"]) > 0 && (
+          <TextFieldBox>
+            <InfoPill>
+              <InfoPillTitle>Total Funding Request</InfoPillTitle>
+              <InfoPillInfo>
+                $
+                {formatAmount(
+                  (Number(data["amount"]) || 0) * (Number(data["frequency"]) || 1)
+                )}
+                .00
+              </InfoPillInfo>
+            </InfoPill>
+          </TextFieldBox>
+        )}
+      </Section>
+
+
+
+
+
+
+      <Section>
+        <SubSectionTitle>
+          How do you want to raise?
+        </SubSectionTitle>
+        <TextFieldBox>
+          <TextFieldDescription required>
+            Maximum return for investors
+          </TextFieldDescription>
+          <ContainerWithInfo>
+            <TextInputContainer
+              width={'350px'}
+            >
+              <TextInputOneLine
+                type={"number"}
+                InputProps={{
+                  endAdornment: <InputAdornment position={"end"}>%</InputAdornment>,
+                }}
+                name={"return"}
+                value={data["return"]}
+                onChange={onChange}
+                label={"What will be the investor's maximum return on investment?"}
+              />
+              {<InputMetrix>%</InputMetrix>}
+            </TextInputContainer>
+            <InfoPill>
+              <InfoPillTitle>Maximum Return</InfoPillTitle>
+              <InfoPillInfo>
+                $
+                {formatAmount(
+                  ((Number(data["return"]) || 0) / 100) *
+                  (Number(data["amount"]) || 0) *
+                  (Number(data["frequency"]) || 1)
+                )}
+              </InfoPillInfo>
+            </InfoPill>
+          </ContainerWithInfo>
+        </TextFieldBox>
+        <TextFieldBox>
+          <TextFieldDescription required>
+            Income/Revenue Payback Threshold
+          </TextFieldDescription>
+          <ContainerWithInfo>
+            <TextInputContainer
+              width={'350px'}
+            >
+              <TextInputOneLine
+                type={"number"}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position={"start"}>$</InputAdornment>
+                  ),
+                }}
+                name={"threshold"}
+                value={data["threshold"]}
+                onChange={onChange}
+                label={"Your abundance threshold"}
+                helperText={
+                  "The yearly income (before taxes) after which you start paying back"
+                }
+              />
+              {<InputMetrix>$</InputMetrix>}
+            </TextInputContainer>
+            <InfoPill>
+              <InfoPillTitle>ø per month</InfoPillTitle>
+              <InfoPillInfo>
+                ${formatAmount((Number(data["threshold"]) || 0) / 12)} /
+                month
+              </InfoPillInfo>
+            </InfoPill>
+          </ContainerWithInfo>
+        </TextFieldBox>
+        <TextFieldBox>
+          <TextFieldDescription required>
+            Share of revenue used for payback
+          </TextFieldDescription>
+          <TextInputContainer>
+            <TextInputOneLine
               type={"number"}
               InputProps={{
-                startAdornment: (
-                  <InputAdornment position={"start"}>$</InputAdornment>
-                ),
+                startAdornment: <InputAdornment position={"start"}>%</InputAdornment>,
               }}
-              name={"amount"}
-              value={data["amount"]}
+              name={"share"}
+              value={data["share"]}
               onChange={onChange}
-              label={"How much do you want to raise?"}
+              label={"Share of revenue used for payback"}
+              helperText={
+                "% of your income you want to use for the payback once you hit the abundance threshold"
+              }
             />
-            <span>per month</span>
-          </Box>
-          <TextField
-            type={"number"}
-            name={"frequency"}
-            value={data["frequency"]}
-            onChange={onChange}
-            label={"For how many months?"}
+            {<InputMetrix>%</InputMetrix>}
+          </TextInputContainer>
+        </TextFieldBox>
+        <TextFieldBox>
+          <TextFieldDescription required>
+            Time Cap
+          </TextFieldDescription>
+          <TextInputContainer>
+            <TextInputOneLine
+              sx={{ mb: 2 }}
+              type={"number"}
+              InputProps={{
+                startAdornment: <InputAdornment position={"start"}>Y</InputAdornment>,
+              }}
+              name={"cap"}
+              value={data["cap"]}
+              onChange={onChange}
+              label={"Time Cap"}
+              helperText={
+                "Number of years before this agreement runs out, whether you paid everything back or not."
+              }
+            />
+            {<InputMetrix>years</InputMetrix>}
+          </TextInputContainer>
+        </TextFieldBox>
+      </Section>
+      <Section>
+        <SubSectionTitle>Additional Contract Clauses</SubSectionTitle>
+        <InfoText> Do you have any special requirements in this contract that you'd
+          like to add? It is <b>strongly</b> advised to cross-check these
+          terms with a legal professional.</InfoText>
+        <TextInputContainer width={'600px'}>
+          <TextInputMultiLine
             sx={{ mb: 2 }}
-          />
-          <hr />
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Body sx={{ fontWeight: 600 }}>Total Funding Request</Body>
-            <Body>
-              $
-              {formatAmount(
-                (Number(data["amount"]) || 0) * (Number(data["frequency"]) || 1)
-              )}
-              .00
-            </Body>
-          </Box>
-        </Box>
-      ) : data["supportType"] === "once" ? (
-        <Box>
-          <TextField
-            type={"number"}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position={"start"}>$</InputAdornment>
-              ),
-            }}
-            name={"amount"}
-            value={data["amount"]}
+            name={"clauses"}
+            value={data["clauses"]}
             onChange={onChange}
-            label={"How much do you want to raise?"}
+            label={"Additional Contract Clauses"}
+            multiline
+            minRows={5}
           />
-        </Box>
-      ) : (
-        <Box />
-      )}
-      <Box sx={{ mb: "144px" }} />
-      <H4>Return Conditions</H4>
-      <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
-        <TextField
-          sx={{ mr: 2 }}
-          type={"number"}
-          InputProps={{
-            endAdornment: <InputAdornment position={"end"}>%</InputAdornment>,
-          }}
-          name={"return"}
-          value={data["return"]}
-          onChange={onChange}
-          label={"What will be the investor's maximum return on investment?"}
-          helperText={<a>Get help on how to determine a fair return</a>}
-        />{" "}
-        <span>
-          ={" max $"}
-          {formatAmount(
-            ((Number(data["return"]) || 0) / 100) *
-              (Number(data["amount"]) || 0) *
-              (Number(data["frequency"]) || 1)
-          )}
-        </span>
-      </Box>
-      <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
-        <TextField
-          sx={{ mr: 2 }}
-          type={"number"}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position={"start"}>$</InputAdornment>
-            ),
-          }}
-          name={"threshold"}
-          value={data["threshold"]}
-          onChange={onChange}
-          label={"Your abundance threshold"}
-          helperText={
-            "The yearly income (before taxes) after which you start paying back"
-          }
-        />{" "}
-        <span>
-          = average ${formatAmount((Number(data["threshold"]) || 0) / 12)} /
-          month
-        </span>
-      </Box>
-      <TextField
-        sx={{ mb: 2 }}
-        type={"number"}
-        InputProps={{
-          startAdornment: <InputAdornment position={"start"}>%</InputAdornment>,
-        }}
-        name={"share"}
-        value={data["share"]}
-        onChange={onChange}
-        label={"Share of revenue used for payback"}
-        helperText={
-          "% of your income you want to use for the payback once you hit the abundance threshold"
-        }
-      />
-      <TextField
-        sx={{ mb: 2 }}
-        type={"number"}
-        InputProps={{
-          startAdornment: <InputAdornment position={"start"}>Y</InputAdornment>,
-        }}
-        name={"cap"}
-        value={data["cap"]}
-        onChange={onChange}
-        label={"Time Cap"}
-        helperText={
-          "Number of years before this agreement runs out, whether you paid everything back or not."
-        }
-      />
-      <TextField
-        sx={{ mb: 2 }}
-        name={"clauses"}
-        value={data["clauses"]}
-        onChange={onChange}
-        label={"Additional Contract Clauses"}
-        multiline
-        minRows={5}
-        helperText={
-          <span>
-            Do you have any special requirements in this contract that you'd
-            like to add? It is <b>strongly</b> advised to cross-check these
-            terms with a legal professional.
-          </span>
-        }
-      />
+        </TextInputContainer>
+      </Section>
     </>
   );
 };
@@ -1396,48 +1666,85 @@ const FundraiseDetails = () => {
   const DetailForm = useMemo(() => FUNDRAISE_DETAIL_FORMS[id], [id]);
   return (
     <>
-      <H1>Step 2: {FUNDRAISE_NAMES_BY_IDS[id]} Contract Details</H1>
-      <form
-        onSubmit={(e) => {
-          /* In case performance is too bad... REMIX
-          const formElement = e.target as HTMLFormElement;
-          const data = Object.fromEntries(
-            Object.keys(formElement.elements)
-              .filter((k) => isNaN(Number(k)))
-              .map((k) => [
-                k,
-                (formElement.elements.namedItem(k) as { value: string | null })
-                  ?.value || "",
-              ])
-          );
-          */
-          setLoading(true);
-          contractHandler({ data, id })
-            .then((state) =>
-              navigate(`/fundraises/preview/${state.id}`, {
-                state: { initialCreate: true },
-              })
-            )
-            .catch((e) => {
-              setError(e.message);
-              setLoading(false);
-            });
-          e.preventDefault();
-        }}
-      >
-        <DetailForm data={data} setData={setData} />
-        <Box display={"flex"} alignItems={"center"}>
-          <Button
-            variant={"contained"}
-            type={"submit"}
-            sx={{ marginRight: "16px" }}
+      <TopBar>
+        <InfoArea>
+          <PageTitle>Define Contract Terms</PageTitle>
+          <PrimaryAction
+            onClick={(e) => {
+              /* In case performance is too bad... REMIX
+              const formElement = e.target as HTMLFormElement;
+              const data = Object.fromEntries(
+                Object.keys(formElement.elements)
+                  .filter((k) => isNaN(Number(k)))
+                  .map((k) => [
+                    k,
+                    (formElement.elements.namedItem(k) as { value: string | null })
+                      ?.value || "",
+                  ])
+              );
+              */
+              setLoading(true);
+              contractHandler({ data, id })
+                .then((state) =>
+                  navigate(`/fundraises/preview/${state.id}`, {
+                    state: { initialCreate: true },
+                  })
+                )
+                .catch((e) => {
+                  setError(e.message);
+                  setLoading(false);
+                });
+              e.preventDefault();
+            }}
+            isLoading={loading}
+            label={'Save & Preview Contract'}
           >
-            Save {"&"} Preview Contract
-          </Button>
-          {loading && <CircularProgress size={20} />}
-        </Box>
+          </PrimaryAction>
+          {/* <Box display={"flex"} alignItems={"center"}>
+            <Button
+              variant={"contained"}
+              type={"submit"}
+              sx={{ marginRight: "16px" }}
+            >
+              Save {"&"} Preview Contract
+            </Button>
+            {loading && <CircularProgress size={20} />}
+          </Box> */}
+        </InfoArea>
+      </TopBar>
+      <ContentContainer>
+        {/* <form
+          onSubmit={(e) => {
+            /* In case performance is too bad... REMIX
+            const formElement = e.target as HTMLFormElement;
+            const data = Object.fromEntries(
+              Object.keys(formElement.elements)
+                .filter((k) => isNaN(Number(k)))
+                .map((k) => [
+                  k,
+                  (formElement.elements.namedItem(k) as { value: string | null })
+                    ?.value || "",
+                ])
+            );
+            setLoading(true);
+            contractHandler({ data, id })
+              .then((state) =>
+                navigate(`/fundraises/preview/${state.id}`, {
+                  state: { initialCreate: true },
+                })
+              )
+              .catch((e) => {
+                setError(e.message);
+                setLoading(false);
+              });
+            e.preventDefault();
+          }}
+        > 
+        */}
+        <DetailForm data={data} setData={setData} />
         <Body sx={{ color: "error" }}>{error}</Body>
-      </form>
+        {/* </form> */}
+      </ContentContainer>
     </>
   );
 };
@@ -1547,55 +1854,55 @@ const STAGE_ACTIONS: ((a: {
   uuid: string;
   onDelete: (uuid: string) => void;
 }) => React.ReactElement)[] = [
-  (row) => {
-    const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
-      path: "agreement",
-      method: "DELETE",
-    });
-    const [loading, setLoading] = useState(false);
-    return (
-      <Box
-        component={"span"}
-        sx={{
-          color: "#0000EE",
-          textDecoration: "underline",
-          "&:hover": {
-            textDecoration: "none",
-            cursor: "pointer",
-          },
-        }}
-        onClick={() => {
-          setLoading(true);
-          deleteHandler({ uuid: row.uuid })
-            .then(() => row.onDelete(row.uuid))
-            .finally(() => setLoading(false));
-        }}
-      >
-        <Box component={"span"} sx={{ marginRight: 16 }}>
-          Remove Invitation
-        </Box>{" "}
-        <Loading loading={loading} size={16} />
-      </Box>
-    );
-  },
-  (row) => (
-    <ExternalLink href={`/contract?uuid=${row.uuid}&signer=1`}>
-      Send Link To Investor
-    </ExternalLink>
-  ),
-  (row) => (
-    <ExternalLink href={`/contract?uuid=${row.uuid}&signer=2`}>
-      Sign Contract
-    </ExternalLink>
-  ),
-  (row) => (
-    <ExternalLink href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
-      View Contract
-    </ExternalLink>
-  ),
-  () => <span />,
-  () => <span />,
-];
+    (row) => {
+      const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
+        path: "agreement",
+        method: "DELETE",
+      });
+      const [loading, setLoading] = useState(false);
+      return (
+        <Box
+          component={"span"}
+          sx={{
+            color: "#0000EE",
+            textDecoration: "underline",
+            "&:hover": {
+              textDecoration: "none",
+              cursor: "pointer",
+            },
+          }}
+          onClick={() => {
+            setLoading(true);
+            deleteHandler({ uuid: row.uuid })
+              .then(() => row.onDelete(row.uuid))
+              .finally(() => setLoading(false));
+          }}
+        >
+          <Box component={"span"} sx={{ marginRight: 16 }}>
+            Remove Invitation
+          </Box>{" "}
+          <Loading loading={loading} size={16} />
+        </Box>
+      );
+    },
+    (row) => (
+      <ExternalLink href={`/contract?uuid=${row.uuid}&signer=1`}>
+        Send Link To Investor
+      </ExternalLink>
+    ),
+    (row) => (
+      <ExternalLink href={`/contract?uuid=${row.uuid}&signer=2`}>
+        Sign Contract
+      </ExternalLink>
+    ),
+    (row) => (
+      <ExternalLink href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
+        View Contract
+      </ExternalLink>
+    ),
+    () => <span />,
+    () => <span />,
+  ];
 
 const AgreementRow = (
   row: Agreements[number] & {
@@ -1662,17 +1969,17 @@ const FundraiseContract = () => {
         setRows(r.agreements);
         setCapSpace(
           Number(r.details.amount) * (Number(r.details.frequency) || 1) -
-            r.agreements.reduce((p, c) => p + c.amount, 0)
+          r.agreements.reduce((p, c) => p + c.amount, 0)
         );
       })
       .finally(() => setLoading(false));
   }, [id, setType, setRows, setLoading, setCapSpace]);
   const Container: React.FC = loading
     ? ({ children }) => (
-        <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
-          {children}
-        </Skeleton>
-      )
+      <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
+        {children}
+      </Skeleton>
+    )
     : Box;
   const defaultIsOpen = useMemo(() => location.state?.isOpen, [location]);
   return (

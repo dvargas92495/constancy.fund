@@ -50,12 +50,17 @@ const themeProps = {
       lighterText: "#96A0B5",
       backgroundColor: "#F8FBFF",
       backgroundColorDarker: "#e5f0ff70",
+      backgroundColorDarkerDarker: "#E5F0FF",
       darkerBlue: "#5E6278",
       blue: "2563EB",
     },
   },
   typography: {
     fontFamily: ["Inter", 'sans-serif'].join(","),
+    title: {
+      fontSize: "30px",
+      fontWeight: 800,
+    },
     h1: {
       fontSize: "3rem",
       fontWeight: 600,
@@ -90,7 +95,7 @@ const themeProps = {
   },
 };
 
-const GlobalStyle = createGlobalStyle<{theme: typeof themeProps}>`
+const GlobalStyle = createGlobalStyle<{ theme: typeof themeProps }>`
 
   * {
       font-family: "Inter" !important;
@@ -141,7 +146,7 @@ const Layout: React.FC<{ privatePage?: boolean }> = ({
 }) => {
   return (
     <ThemeProvider theme={themeProps}>
-    <GlobalStyle />
+      <GlobalStyle />
       {privatePage ? (
         <Document themeProps={themeProps}>
           <SignedIn>{children}</SignedIn>

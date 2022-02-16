@@ -19,6 +19,7 @@ import PersonFineSvg from "./Icons/personFine.svg";
 import MailSvg from "./Icons/mail.svg";
 import RocketSvg from "./Icons/rocket.svg";
 import SettingsSvg from "./Icons/settings.svg";
+import ThumbsUp from "./Icons/thumbsUp.svg";
 
 const Icon = ({
   name,
@@ -46,6 +47,7 @@ const Icon = ({
   | "public"
   | "settings"
   | "twitter"
+  | "thumbsUp"
 } & Pick<SvgIconProps, "height" | "width">) => {
   const muiProps = {
     ...props,
@@ -90,6 +92,8 @@ const Icon = ({
       return <StyledIcon {...props} icon={SettingsSvg} />;
     case "twitter":
       return <TwitterIcon {...muiProps} />;
+    case "thumbsUp":
+      return <StyledIcon {...props} icon={ThumbsUp} />;
     default:
       return <SvgIcon {...muiProps} />;
   }
