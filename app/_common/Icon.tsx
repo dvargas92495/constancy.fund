@@ -1,71 +1,120 @@
 import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
+import styled from "styled-components";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import NoteIcon from "@mui/icons-material/Note";
 import PreviewIcon from "@mui/icons-material/Preview";
 import PublicIcon from "@mui/icons-material/Public";
-import SettingsIcon from "@mui/icons-material/Settings";
 import TwitterIcon from "@mui/icons-material/Twitter";
+
+import BookSvg from "./Icons/book.svg";
+import DollarSvg from "./Icons/dollar.svg";
+import PersonFineSvg from "./Icons/personFine.svg";
+import MailSvg from "./Icons/mail.svg";
+import RocketSvg from "./Icons/rocket.svg";
+import SettingsSvg from "./Icons/settings.svg";
 
 const Icon = ({
   name,
   ...props
 }: {
+  heightAndWidth?: string,
+  color?: string,
   name:
-    | "arrow-drop-down"
-    | "arrow-right"
-    | "check"
-    | "delete"
-    | "github"
-    | "home"
-    | "info"
-    | "linkedin"
-    | "more-vert"
-    | "note"
-    | "preview"
-    | "public"
-    | "settings"
-    | "twitter";
-} & SvgIconProps) => {
+  | "arrow-drop-down"
+  | "arrow-right"
+  | "book"
+  | "check"
+  | "delete"
+  | "dollar"
+  | "fundraise"
+  | "github"
+  | "home"
+  | "info"
+  | "linkedin"
+  | "mail"
+  | "more-vert"
+  | "note"
+  | "personFine"
+  | "preview"
+  | "public"
+  | "settings"
+  | "twitter"
+} & Pick<SvgIconProps, "height" | "width">) => {
+  const muiProps = {
+    ...props,
+    color: props.color as SvgIconProps['color'],
+  }
   switch (name) {
     case "arrow-drop-down":
-      return <ArrowDropDownIcon {...props} />;
+      return <ArrowDropDownIcon {...muiProps} />;
     case "arrow-right":
-      return <ArrowRightIcon {...props} />;
+      return <ArrowRightIcon {...muiProps} />;
+    case "book":
+      return <StyledIcon {...props} icon={BookSvg} />;
     case "check":
-      return <CheckIcon {...props} />;
+      return <CheckIcon {...muiProps} />;
     case "delete":
-      return <DeleteIcon {...props} />;
+      return <DeleteIcon {...muiProps} />;
+    case "dollar":
+      return <StyledIcon {...props} icon={DollarSvg} />;
+    case "fundraise":
+      return <StyledIcon {...props} icon={RocketSvg} />;
     case "github":
-      return <GitHubIcon {...props} />;
+      return <GitHubIcon {...muiProps} />;
     case "home":
-      return <HomeIcon {...props} />;
+      return <StyledIcon icon={PersonFineSvg} />;
     case "info":
-      return <InfoIcon {...props} />;
+      return <InfoIcon {...muiProps} />;
     case "linkedin":
-      return <LinkedInIcon {...props} />;
+      return <LinkedInIcon {...muiProps} />;
+    case "mail":
+      return <StyledIcon {...props} icon={MailSvg} />;
     case "more-vert":
-      return <MoreVertIcon {...props} />;
+      return <MoreVertIcon {...muiProps} />;
     case "note":
-      return <NoteIcon {...props} />;
+      return <NoteIcon {...muiProps} />;
+    case "personFine":
+      return <StyledIcon {...props} icon={PersonFineSvg} />;
     case "preview":
-      return <PreviewIcon {...props} />;
+      return <PreviewIcon {...muiProps} />;
     case "public":
-      return <PublicIcon {...props} />;
+      return <PublicIcon {...muiProps} />;
     case "settings":
-      return <SettingsIcon {...props} />;
+      return <StyledIcon icon={SettingsSvg} />;
     case "twitter":
-      return <TwitterIcon {...props} />;
+      return <TwitterIcon {...muiProps} />;
     default:
-      return <SvgIcon {...props} />;
+      return <SvgIcon {...muiProps} />;
   }
 };
+
+const StyledIcon = styled.div<{
+  icon?: any,
+  height?: string | number,
+  width?: string | number,
+  color?: string,
+  hoverOff?: boolean,
+  heightAndWidth?: string,
+  rotation?: number,
+}>`
+  cursor: ${(props) => (props.hoverOff ? 'default' : 'pointer')};
+  height: ${(props) => props.heightAndWidth ? props.heightAndWidth : props.height};
+  width: ${(props) => props.heightAndWidth ? props.heightAndWidth : props.width};
+  background-color: ${(props) =>
+    props.color
+      ? props.theme.palette.color[props.color]
+      : props.theme.palette.color['iconColor']};
+  mask-position: center;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-image: url(${(props) => props.icon ?? props.icon});
+`
 
 export default Icon;

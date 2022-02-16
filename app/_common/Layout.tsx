@@ -4,13 +4,13 @@ import type { MetaFunction } from "remix";
 import Document from "@dvargas92495/ui/dist/components/Document";
 import RedirectToLogin from "@dvargas92495/ui/dist/components/RedirectToLogin";
 import { SignedIn } from "@clerk/clerk-react";
-import { ThemeProvider } from "styled-components";
+import { ThemeProvider, createGlobalStyle } from "styled-components";
 
 const themeProps = {
   palette: {
     // default MUI palette fields
     primary: {
-      main: "#316BFF",
+      main: "#347AE2",
     },
     secondary: {
       main: "#ff00ff",
@@ -22,8 +22,9 @@ const themeProps = {
       main: "#ff9090",
     },
     text: {
-      primary: "#73778B",
-      secondary: "#aeaeae",
+      primary: "#292C38",
+      secondary: "#73778B",
+      tertiary: '#96A0B5',
     },
     // All custom fields
     color: {
@@ -54,47 +55,85 @@ const themeProps = {
     },
   },
   typography: {
-    fontFamily: ["Avenir Light", "sans-serif"].join(","),
+    fontFamily: ["Inter", 'sans-serif'].join(","),
     h1: {
-      fontFamily: ["Century Gothic", "sans-serif"].join(","),
       fontSize: "3rem",
       fontWeight: 600,
       margin: "3rem 0",
     },
     h2: {
-      fontFamily: ["Century Gothic", "sans-serif"].join(","),
       fontWeight: 600,
       fontSize: "2.5rem",
       margin: "2.5rem 0",
     },
     h3: {
-      fontFamily: ["Century Gothic", "sans-serif"].join(","),
       fontWeight: 600,
       fontSize: "2rem",
       margin: "2rem 0",
     },
     h4: {
-      fontFamily: ["Century Gothic", "sans-serif"].join(","),
       fontWeight: 600,
       fontSize: "1.75rem",
       margin: "1.75rem 0",
     },
     h5: {
-      fontFamily: ["Century Gothic", "sans-serif"].join(","),
       fontWeight: 600,
       margin: "1.5rem 0",
     },
     h6: {
-      fontFamily: ["Century Gothic", "sans-serif"].join(","),
       fontWeight: 600,
       margin: "1.25rem 0",
     },
     subtitle1: {
       fontSize: "1.25rem",
-      fontFamily: ["Century Gothic", "sans-serif"].join(","),
     },
   },
 };
+
+const GlobalStyle = createGlobalStyle<{theme: typeof themeProps}>`
+
+  * {
+      font-family: "Inter" !important;
+    } 
+
+    html { font-family: "Inter", "system-ui" !important; }
+
+    @supports (font-variation-settings: normal) {
+      html { font-family: "Inter", "system-ui" !important; }
+    }
+
+    & .MuiPopover-paper {
+      box-shadow: 0px 22px 26px 18px rgba(0, 0, 0, 0.03) !important;
+      width: 300px !important;
+    }
+
+    & .MuiMenuItem-root {
+        font-size: 14px !important;
+        border-radius: 8px !important;
+        margin: 0 10px !important;
+        padding: 0 10px !important;
+        display: flex !important;
+        height: 60px !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        color: ${props => props.theme.palette.color.darkerText};
+
+        &:hover {
+          background: ${props => props.theme.palette.color.backgroundColorDarker} !important;
+        }
+      }
+    }
+
+    & .Mui-selected {
+        background: ${props => props.theme.palette.color.backgroundHighlight} !important;
+      }
+    }
+
+    & .Mui-focusVisible {
+        background: ${props => props.theme.palette.color.backgroundColorDarker} !important;
+      }
+    }
+`
 
 const Layout: React.FC<{ privatePage?: boolean }> = ({
   children,
@@ -102,6 +141,7 @@ const Layout: React.FC<{ privatePage?: boolean }> = ({
 }) => {
   return (
     <ThemeProvider theme={themeProps}>
+    <GlobalStyle />
       {privatePage ? (
         <Document themeProps={themeProps}>
           <SignedIn>{children}</SignedIn>
@@ -126,21 +166,21 @@ export const getMeta =
     description?: string;
     img?: string;
   }): MetaFunction =>
-  () => {
-    const title = `${pageTitle} | CrowdInvestInMe`;
-    return {
-      title,
-      description,
-      "og:title": title,
-      "og:description": description,
-      "og:type": "website",
-      "twitter:card": "summary",
-      "twitter:creator": "@dvargas92495",
-      "twitter:title": title,
-      "twitter:description": description,
-      "og:image": img,
-      "twitter:image": img,
+    () => {
+      const title = `${pageTitle} | CrowdInvestInMe`;
+      return {
+        title,
+        description,
+        "og:title": title,
+        "og:description": description,
+        "og:type": "website",
+        "twitter:card": "summary",
+        "twitter:creator": "@dvargas92495",
+        "twitter:title": title,
+        "twitter:description": description,
+        "og:image": img,
+        "twitter:image": img,
+      };
     };
-  };
 
 export default Layout;

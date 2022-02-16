@@ -27,7 +27,7 @@ const paymentFieldsById = Object.fromEntries(
   PAYMENT_PREFERENCES.map(({ id, fields }) => [id, fields])
 );
 
-export type PaymentPreferenceValue = { type: string; [f: string]: string };
+export type PaymentPreferenceValue = { type: string;[f: string]: string };
 
 const PaymentPreferences = ({
   value,
@@ -38,8 +38,6 @@ const PaymentPreferences = ({
 }) => {
   return (
     <Box sx={{ marginTop: "16px" }}>
-      <H4>Payment Preferences</H4>
-      <Body sx={{ mt: 0, mb: 2 }}>How do you want to be paid?</Body>
       <Box display={"flex"} sx={{ minHeight: "160px" }}>
         <RadioGroup
           sx={{ mb: 2, width: "50%" }}
