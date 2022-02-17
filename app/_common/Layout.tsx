@@ -1,5 +1,4 @@
 import React from "react";
-import DefaultLayout from "@dvargas92495/ui/dist/components/Layout";
 import type { MetaFunction } from "remix";
 import Document from "@dvargas92495/ui/dist/components/Document";
 import RedirectToLogin from "@dvargas92495/ui/dist/components/RedirectToLogin";
@@ -25,7 +24,7 @@ const themeProps = {
     text: {
       primary: "#292C38",
       secondary: "#73778B",
-      tertiary: '#96A0B5',
+      tertiary: "#96A0B5",
     },
     // All custom fields
     color: {
@@ -58,7 +57,7 @@ const themeProps = {
     },
   },
   typography: {
-    fontFamily: ["Inter", 'sans-serif'].join(","),
+    fontFamily: ["Inter", "sans-serif"].join(","),
     title: {
       fontSize: "30px",
       fontWeight: 800,
@@ -123,24 +122,35 @@ const GlobalStyle = createGlobalStyle<{ theme: typeof themeProps }>`
         height: 60px !important;
         align-items: center !important;
         justify-content: flex-start !important;
-        color: ${props => props.theme.palette.color.darkerText};
+        color: ${(props) => props.theme.palette.color.darkerText};
 
         &:hover {
-          background: ${props => props.theme.palette.color.backgroundColorDarker} !important;
+          background: ${(props) =>
+            props.theme.palette.color.backgroundColorDarker} !important;
         }
       }
     }
 
     & .Mui-selected {
-        background: ${props => props.theme.palette.color.backgroundHighlight} !important;
+        background: ${(props) =>
+          props.theme.palette.color.backgroundHighlight} !important;
       }
     }
 
     & .Mui-focusVisible {
-        background: ${props => props.theme.palette.color.backgroundColorDarker} !important;
+        background: ${(props) =>
+          props.theme.palette.color.backgroundColorDarker} !important;
       }
     }
-`
+`;
+
+const PublicContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: fit-content;
+`;
 
 const Layout: React.FC<{ privatePage?: boolean }> = ({
   children,
@@ -155,9 +165,9 @@ const Layout: React.FC<{ privatePage?: boolean }> = ({
           <RedirectToLogin />
         </Document>
       ) : (
-        <PublicContainer homeIcon={"Home"} themeProps={themeProps}>
-          {children}
-        </PublicContainer>
+        <Document themeProps={themeProps}>
+          <PublicContainer>{children}</PublicContainer>
+        </Document>
       )}
     </ThemeProvider>
   );
@@ -173,29 +183,21 @@ export const getMeta =
     description?: string;
     img?: string;
   }): MetaFunction =>
-    () => {
-      const title = `${pageTitle} | CrowdInvestInMe`;
-      return {
-        title,
-        description,
-        "og:title": title,
-        "og:description": description,
-        "og:type": "website",
-        "twitter:card": "summary",
-        "twitter:creator": "@dvargas92495",
-        "twitter:title": title,
-        "twitter:description": description,
-        "og:image": img,
-        "twitter:image": img,
-      };
+  () => {
+    const title = `${pageTitle} | CrowdInvestInMe`;
+    return {
+      title,
+      description,
+      "og:title": title,
+      "og:description": description,
+      "og:type": "website",
+      "twitter:card": "summary",
+      "twitter:creator": "@dvargas92495",
+      "twitter:title": title,
+      "twitter:description": description,
+      "og:image": img,
+      "twitter:image": img,
     };
+  };
 
 export default Layout;
-
-const PublicContainer = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: fit-content;
-`
