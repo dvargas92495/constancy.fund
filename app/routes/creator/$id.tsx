@@ -30,9 +30,12 @@ import { LoaderFunction, MetaFunction, useLoaderData } from "remix";
 import type { Handler as GetPropsHandler } from "../../../functions/creator-profile/get";
 import axios from "axios";
 
+
 import Icon from "~/_common/Icon";
-import styled from 'styled-components'
+import styled, { keyframes, css } from 'styled-components'
 import { PrimaryAction } from "~/_common/PrimaryAction";
+import SectionCircle from "~/_common/SectionCircle";
+import Spacer from "~/_common/Spacer";
 
 import InfoArea from "~/_common/InfoArea";
 import PageTitle from "~/_common/PageTitle";
@@ -53,60 +56,88 @@ const TopBarProfile = styled.div`
   z-index: 10;
 `
 
-const TopBarContainerMinified = styled.div<{ scroll: number }>`
+const TopBarMoving = keyframes`0% { top: '-100px' } 100% { top: '100px'}`
+
+const TopBarContainerMinified = styled.div<{ scroll?: number }>`
   display: ${(props) => props.scroll > 200 ? 'flex' : 'none'};
   position: ${(props) => props.scroll > 200 ? 'fixed' : 'none'};
   border: 1px solid ${props => props.theme.palette.color.lightgrey};
   width: 100%;
-  height: 200px;
+  height: 150px;
   justify-content: center;
   top: 0;
   background: white;
   z-index: 20;
+  animation: 4s ease-in-out ${TopBarMoving} 1s; 
+  align-items: center;
 `
 
-const TopBarMainBox = styled.div`
+
+
+const TopBarMainBox = styled.div<{ scroll?: number }>`
   width: fill-available;
   display: flex;
   align-items: center;
   grid-gap: 40px;
-  padding: 0 40px;
-  margin: auto;
   max-width: 800px;
-  margin-top: 100px;
+  margin-top: 200px;
   padding: 0 50px;
+
+  ${(props => props.scroll > 200 &&
+    css`
+        padding: 0 20px;
+        margin-top: 0px;
+        align-items: center;
+        grid-gap: 20px;
+      `
+  )}
 `
 
-const ProfileImage = styled.div`
+const ProfileImage = styled.div<{ scroll?: number }>`
   height: 200px;
   width: 200px;
   border: 1px solid ${props => props.theme.palette.color.backgroundDarkerDarker};
   border-radius: 300px;
   position: sticky;
   top: 200px;
+
+  ${(props => props.scroll > 200 &&
+    css`
+        height: 100px;
+        width: 100px;
+      `
+  )}
 `
 
-const ProfileContentBox = styled.div`
+const ProfileContentBox = styled.div<{ scroll?: number }>`
   display: flex;
   flex-direction: column;
   grid-gap: 30px;
   width: fill-available;
   align-items: space-between;
+
+  ${(props => props.scroll > 200 &&
+    css`  
+      grid-gap: 10px;
+      `
+  )}
 `
 
-const ProfileTitle = styled.div`
+const ProfileTitle = styled.div<{ scroll?: number }>`
     color: ${props => props.theme.palette.color.darkerText};
     font-size: 30px;
     font-weight: 800;
 `
 
-const ProfileLowerBar = styled.div`
+const ProfileLowerBar = styled.div<{ scroll?: number }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
 `
 
-const ProfileSocialBar = styled.div`
+const ProfileSocialBar = styled.div<{ scroll?: number }>`
+  display: flex;
+  grid-gap: 10px;
 
 `
 
@@ -117,7 +148,7 @@ const ProfileContainer = styled.div`
   align-items: center;
   flex-direction: column;
   margin: auto;
-  background: ${props => props.theme.palette.color.backgroundHighlight};
+  background: ${props => props.theme.palette.color.backgroundColorDarker};
 `
 
 const ProfileBottomContainer = styled.div`
@@ -140,9 +171,97 @@ const IconContent = styled.div`
 `
 
 const SectionInnerContent = styled.div`
-    position: sticky;
-    top: 350px;
 `
+
+const ConditionsContainer = styled.div`
+  display: flex;
+  grid-gap: 15px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+`
+
+const SmallConditionsText = styled.span`
+  color: ${(props) => props.theme.palette.text.tertiary};
+  font-size: 12px;
+  font-weight: 400;
+
+`
+
+const ConditionsBox = styled.div`
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+    height: 50px;
+    flex: 1;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    grid-gap: 10px;
+    display: flex;
+`
+
+const ConditionsContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  grid-gap: 5px;
+`
+
+const ConditionsTitle = styled.div`
+  color: ${(props) => props.theme.palette.text.primary};
+  font-weight: bold;
+  font-size: 16px;
+`
+
+const ConditionsSubTitle = styled.div`
+  color: ${(props) => props.theme.palette.text.tertiary};
+  font-weight: normal;
+  font-size: 12px;
+`
+
+const ContractExplainerContainer = styled.div`
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  background: white;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  grid-gap: 10px;
+`
+
+const ContractExplainerTitle = styled.div`
+  color: ${(props) => props.theme.palette.text.primary};
+  font-size: 18px;
+  font-weight: 800;
+`
+
+const ContractExplainerInfo = styled.div`
+  color: ${(props) => props.theme.palette.text.secondary};
+  font-size: 14px;
+  line-height: 21px;
+
+`
+
+const QuestionAireBox = styled.div`
+  display: flex;
+  grid-gap: 5px;
+  flex-direction: column;
+  margin-bottom: 50px;
+`
+
+const VideoEmbed = styled.iframe`
+  width: fill-available;
+  height: 400px;
+  border: none;
+  border-radius: 8px;
+`
+
 
 export function getScroll() {
   const [scrollPosition, setScrollPosition] = useState(
@@ -170,15 +289,15 @@ export function getScroll() {
 export type Props = Awaited<ReturnType<GetPropsHandler>>;
 
 const icons = [
-  { test: /twitter\.com/, component: TwitterIcon },
-  { test: /github\.com/, component: GitHubIcon },
-  { test: /linkedin\.com/, component: LinkedInIcon },
-  { test: /instagram\.com/, component: InstagramIcon },
-  { test: /facebook\.com/, component: FacebookIcon },
-  { test: /reddit\.com/, component: RedditIcon },
-  { test: /youtube\.com/, component: YouTubeIcon },
-  { test: /^mailto:/, component: EmailIcon },
-  { test: /.*/, component: WebIcon },
+  { test: /twitter\.com/, component: TwitterIcon, name: 'twitter' },
+  { test: /github\.com/, component: GitHubIcon, name: 'github' },
+  { test: /linkedin\.com/, component: LinkedInIcon, name: 'linkedIn' },
+  { test: /instagram\.com/, component: InstagramIcon, name: 'Instagram' },
+  { test: /facebook\.com/, component: FacebookIcon, name: 'facebook' },
+  { test: /reddit\.com/, component: RedditIcon, name: 'reddit' },
+  { test: /youtube\.com/, component: YouTubeIcon, name: 'youtube' },
+  { test: /^mailto:/, component: EmailIcon, name: 'email' },
+  { test: /.*/, component: WebIcon, name: 'webIcon' },
 ];
 
 type Agreement = Awaited<ReturnType<GetHandler>>;
@@ -214,37 +333,46 @@ const CreatorProfile = ({
 
   const scrollPosition = getScroll();
 
-  console.log(scrollPosition)
 
   return (
     <ProfileContainer>
       <TopBarContainerMinified
         scroll={scrollPosition}
       >
-        <TopBarMainBox>
-          <ProfileContentBox>
-            <ProfileTitle>
+        <TopBarMainBox
+          scroll={scrollPosition}
+        >
+          <Avatar src={profileImageUrl} sx={{ width: 100, height: 100 }} />
+          <ProfileContentBox
+            scroll={scrollPosition}
+          >
+            <ProfileTitle
+              scroll={scrollPosition}
+            >
               {fullName} adsf
             </ProfileTitle>
-            <ProfileLowerBar>
-              <ProfileSocialBar>
-                <Box>
-                  {socialProfiles.map((s, i) => {
-                    const SocialIcon =
-                      icons.find(({ test }) => test.test(s))?.component || WebIcon;
-                    return (
-                      <ExternalLink href={s} key={i}>
-                        <SocialIcon
-                          sx={{ opacity: 0.5, marginRight: "16px" }}
-                          fontSize={"small"}
-                        />
-                      </ExternalLink>
-                    );
-                  })}
-                </Box>
+            <ProfileLowerBar
+              scroll={scrollPosition}
+            >
+              <ProfileSocialBar
+                scroll={scrollPosition}
+              >
+                {socialProfiles.map((s, i) => {
+                  const SocialIcon =
+                    icons.find(({ test }) => test.test(s))
+                  return (
+                    <ExternalLink href={s} key={i}>
+                      <Icon
+                        heightAndWidth="16px"
+                        color='purple'
+                        name={SocialIcon.name}
+                      />
+                    </ExternalLink>
+                  );
+                })}
               </ProfileSocialBar>
               <PrimaryAction
-                label={<IconContent><Icon heightAndWidth={'20px'} name={'dollar'} color={'white'} /> <span>Support</span></IconContent>}
+                label={<IconContent><Icon heightAndWidth={'20px'} name={'dollar'} color={'white'} /> <span>Invest</span></IconContent>}
                 onClick={() =>
                   setMode({
                     path: "details",
@@ -257,8 +385,8 @@ const CreatorProfile = ({
             </ProfileLowerBar>
           </ProfileContentBox>
         </TopBarMainBox>
-
       </TopBarContainerMinified>
+
       <TopBarProfile>
         <TopBarMainBox>
           <ProfileImage>
@@ -270,23 +398,22 @@ const CreatorProfile = ({
             </ProfileTitle>
             <ProfileLowerBar>
               <ProfileSocialBar>
-                <Box>
-                  {socialProfiles.map((s, i) => {
-                    const SocialIcon =
-                      icons.find(({ test }) => test.test(s))?.component || WebIcon;
-                    return (
-                      <ExternalLink href={s} key={i}>
-                        <SocialIcon
-                          sx={{ opacity: 0.5, marginRight: "16px" }}
-                          fontSize={"small"}
-                        />
-                      </ExternalLink>
-                    );
-                  })}
-                </Box>
+                {socialProfiles.map((s, i) => {
+                  const SocialIcon =
+                    icons.find(({ test }) => test.test(s))
+                  return (
+                    <ExternalLink href={s} key={i}>
+                      <Icon
+                        heightAndWidth="16px"
+                        color='purple'
+                        name={SocialIcon.name}
+                      />
+                    </ExternalLink>
+                  );
+                })}
               </ProfileSocialBar>
               <PrimaryAction
-                label={<IconContent><Icon heightAndWidth={'20px'} name={'dollar'} color={'white'} /> <span>Support</span></IconContent>}
+                label={<IconContent><Icon heightAndWidth={'20px'} name={'dollar'} color={'white'} /> <span>Invest</span></IconContent>}
                 onClick={() =>
                   setMode({
                     path: "details",
@@ -301,100 +428,112 @@ const CreatorProfile = ({
         </TopBarMainBox>
       </TopBarProfile>
       <ProfileBottomContainer>
+        <ConditionsContainer>
+          <ConditionsBox>
+            <SectionCircle width={'30px'} margin={'0'}>
+              <Icon
+                name={'dollar'}
+                color={'purple'}
+                heightAndWidth={'15px'}
+              />
+            </SectionCircle>
+            <ConditionsContent>
+
+              <ConditionsSubTitle>
+                Wants to raise
+              </ConditionsSubTitle>
+              <ConditionsTitle>
+                30.000
+              </ConditionsTitle>
+            </ConditionsContent>
+          </ConditionsBox>
+          <ConditionsBox>
+            <SectionCircle width={'30px'} margin={'0'}>
+              <Icon
+                name={'repeat'}
+                color={'purple'}
+                heightAndWidth={'15px'}
+              />
+            </SectionCircle>
+            <ConditionsContent>
+              <ConditionsSubTitle>
+                Pays Back
+              </ConditionsSubTitle>
+              <ConditionsTitle>
+                60.000
+              </ConditionsTitle>
+            </ConditionsContent>
+          </ConditionsBox>
+          <ConditionsBox>
+            <SectionCircle width={'30px'} margin={'0'}>
+              <Icon
+                name={'split'}
+                color={'purple'}
+                heightAndWidth={'15px'}
+              />
+            </SectionCircle>
+            <ConditionsContent>
+
+              <ConditionsSubTitle>
+                Shares Revenue
+              </ConditionsSubTitle>
+              <ConditionsTitle>
+                12%
+              </ConditionsTitle>
+            </ConditionsContent>
+          </ConditionsBox>
+          <ConditionsBox>
+            <SectionCircle width={'30px'} margin={'0'}>
+              <Icon
+                name={'trendingUp'}
+                color={'purple'}
+                heightAndWidth={'15px'}
+              />
+            </SectionCircle>
+            <ConditionsContent>
+
+              <ConditionsSubTitle>
+                Income Threshold
+              </ConditionsSubTitle>
+              <ConditionsTitle>
+                30.000<SmallConditionsText>/year</SmallConditionsText>
+              </ConditionsTitle>
+            </ConditionsContent>
+          </ConditionsBox>
+
+        </ConditionsContainer>
+        <ContractExplainerContainer>
+          <ContractExplainerTitle>
+            Income Sharing Agreement
+          </ContractExplainerTitle>
+          <ContractExplainerInfo>
+            The creator will start paying back a loan with interests once they reach their income threshold of $30.000 yearly. Then, 12% of their income is used to pay back investors.
+          </ContractExplainerInfo>
+        </ContractExplainerContainer>
+        <Spacer height={'40px'} />
+        <SectionTitle>
+          About the Project
+        </SectionTitle>
+        <Spacer height={'20px'} />
+        <Section>
+          <VideoEmbed
+            src="https://www.youtube.com/embed/PBNXY1Ud_Is" title="YouTube video player" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen />
+        </Section>
         <Section>
           <SectionInnerContent>
-            <H1 sx={{ fontSize: 24 }}>You've been invited to invest in {fullName}</H1>
-            <Box display={"flex"} sx={{ marginBottom: "24px" }}>
-              <Box sx={{ paddingLeft: "16px", paddingTop: "4px" }}>
-                <H4 sx={{ fontSize: 14, lineHeight: "20px", my: 0 }}>{fullName}</H4>
-                <Subtitle sx={{ fontSize: 12, lineHeight: "20px", my: 0 }}>
-                  {email}
-                </Subtitle>
-                <Box>
-                  {socialProfiles.map((s, i) => {
-                    const SocialIcon =
-                      icons.find(({ test }) => test.test(s))?.component || WebIcon;
-                    return (
-                      <ExternalLink href={s} key={i}>
-                        <SocialIcon
-                          sx={{ opacity: 0.5, marginRight: "16px" }}
-                          fontSize={"small"}
-                        />
-                      </ExternalLink>
-                    );
-                  })}
-                </Box>
-              </Box>
-            </Box>
             {QUESTIONAIRES.map(({ q }, i) => (
-              <Section>
-                <Box key={i} sx={{ mb: "48px" }}>
-                  <Subtitle
-                    sx={{ fontSize: 12, lineHeight: "20px", my: 0, color: "#888888" }}
-                  >
-                    {q}
-                  </Subtitle>
-                  <Body sx={{ my: "4px" }}>{questionaires[i]}</Body>
-                </Box>
-              </Section>
+              <QuestionAireBox>
+                <ContractExplainerTitle
+                >
+                  {q}
+                </ContractExplainerTitle>
+                <ContractExplainerInfo>{questionaires[i]}</ContractExplainerInfo>
+              </QuestionAireBox>
             ))}
-            <Subtitle
-              sx={{
-                fontSize: 12,
-                lineHeight: "20px",
-                my: 0,
-                color: "#888888",
-                marginBottom: "8px",
-              }}
-            >
-              Fundraises
-            </Subtitle>
-            {fundraises
-              .filter((f) => !agreement || agreement.contractUuid === f.uuid)
-              .map((f) => (
-                <Card key={f.uuid} sx={{ padding: "32px", marginBottom: "32px" }}>
-                  <Box
-                    display={"flex"}
-                    justifyContent={"space-between"}
-                    alignItems={"center"}
-                  >
-                    <Box>
-                      <H1 sx={{ fontSize: 24, my: 0 }}>
-                        {FUNDRAISE_TYPES[f.type].name}
-                      </H1>
-                      <Subtitle
-                        sx={{
-                          fontSize: 12,
-                          lineHeight: "20px",
-                          my: 0,
-                          color: "#888888",
-                        }}
-                      >
-                        {FUNDRAISE_TYPES[f.type].description}
-                      </Subtitle>
-                    </Box>
-                    <Box>
-                      <Button
-                        variant={"contained"}
-                        color={"primary"}
-                        onClick={() =>
-                          setMode({
-                            path: "details",
-                            state: agreement || { contractUuid: f.uuid },
-                          })
-                        }
-                        sx={{ marginLeft: "16px" }}
-                      >
-                        Invest
-                      </Button>
-                    </Box>
-                  </Box>
-                </Card>
-              ))}
           </SectionInnerContent>
         </Section>
       </ProfileBottomContainer>
-    </ProfileContainer>
+    </ProfileContainer >
   );
 };
 

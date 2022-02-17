@@ -20,6 +20,9 @@ import MailSvg from "./Icons/mail.svg";
 import RocketSvg from "./Icons/rocket.svg";
 import SettingsSvg from "./Icons/settings.svg";
 import ThumbsUp from "./Icons/thumbsUp.svg";
+import Repeat from "./Icons/repeat.svg";
+import Split from "./Icons/split.svg";
+import TrendingUp from "./Icons/trendingUp.svg";
 
 const Icon = ({
   name,
@@ -38,7 +41,6 @@ const Icon = ({
   | "github"
   | "home"
   | "info"
-  | "linkedin"
   | "mail"
   | "more-vert"
   | "note"
@@ -48,6 +50,16 @@ const Icon = ({
   | "settings"
   | "twitter"
   | "thumbsUp"
+  | "repeat"
+  | "split"
+  | "trendingUp"
+  | "linkedIn"
+  | "Instagram"
+  | "facebook"
+  | "reddit"
+  | "youtube"
+  | "email"
+  | "webIcon"
 } & Pick<SvgIconProps, "height" | "width">) => {
   const muiProps = {
     ...props,
@@ -94,6 +106,12 @@ const Icon = ({
       return <TwitterIcon {...muiProps} />;
     case "thumbsUp":
       return <StyledIcon {...props} icon={ThumbsUp} />;
+    case "repeat":
+      return <StyledIcon {...props} icon={Repeat} />;
+    case "split":
+      return <StyledIcon {...props} icon={Split} />;
+    case "trendingUp":
+      return <StyledIcon {...props} icon={TrendingUp} />;
     default:
       return <SvgIcon {...muiProps} />;
   }
