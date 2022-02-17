@@ -96,7 +96,7 @@ const TopBarMainBox = styled.div<{ scroll?: number }>`
 const ProfileImage = styled.div<{ scroll?: number }>`
   height: 200px;
   width: 200px;
-  border: 1px solid ${props => props.theme.palette.color.backgroundDarkerDarker};
+  border: 1px solid ${props => props.theme.palette.color.backgroundColorDarkerDarker};
   border-radius: 300px;
   position: sticky;
   top: 200px;
@@ -118,7 +118,7 @@ const ProfileContentBox = styled.div<{ scroll?: number }>`
 
   ${(props => props.scroll > 200 &&
     css`  
-      grid-gap: 10px;
+      grid-gap: 5px;
       `
   )}
 `
