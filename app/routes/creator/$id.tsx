@@ -46,7 +46,7 @@ import SubSectionTitle from "~/_common/SubSectionTitle";
 import SectionTitle from "~/_common/SectionTitle";
 
 const TopBarProfile = styled.div`
-  border: 1px solid ${props => props.theme.palette.color.lightgrey};
+  border-bottom: 1px solid ${props => props.theme.palette.color.lightgrey};
   width: 100%;
   height: 200px;
   display: flex;
@@ -61,7 +61,7 @@ const TopBarMoving = keyframes`0% { top: '-100px' } 100% { top: '100px'}`
 const TopBarContainerMinified = styled.div<{ scroll?: number }>`
   display: ${(props) => props.scroll > 200 ? 'flex' : 'none'};
   position: ${(props) => props.scroll > 200 ? 'fixed' : 'none'};
-  border: 1px solid ${props => props.theme.palette.color.lightgrey};
+  border-bottom: 1px solid ${props => props.theme.palette.color.lightgrey};
   width: 100%;
   height: 150px;
   justify-content: center;
@@ -334,7 +334,8 @@ const CreatorProfile = ({
 
 
   return (
-    <ProfileContainer>
+    <ProfileContainer
+    >
       <TopBarContainerMinified
         scroll={scrollPosition}
       >
@@ -348,7 +349,7 @@ const CreatorProfile = ({
             <ProfileTitle
               scroll={scrollPosition}
             >
-              {fullName} adsf
+              {fullName}
             </ProfileTitle>
             <ProfileLowerBar
               scroll={scrollPosition}
@@ -372,11 +373,12 @@ const CreatorProfile = ({
               </ProfileSocialBar>
               <PrimaryAction
                 label={<IconContent><Icon heightAndWidth={'20px'} name={'dollar'} color={'white'} /> <span>Invest</span></IconContent>}
-                onClick={() =>
+                onClick={() => {
                   setMode({
                     path: "details",
-                    state: agreement || { contractUuid: f.uuid },
+                    state: agreement || { contractUuid: fundraises[0].uuid },
                   })
+                }
                 }
                 height={'44px'}
                 fontSize={'16px'}
@@ -393,7 +395,7 @@ const CreatorProfile = ({
           </ProfileImage>
           <ProfileContentBox>
             <ProfileTitle>
-              {fullName} adsf
+              {fullName}
             </ProfileTitle>
             <ProfileLowerBar>
               <ProfileSocialBar>
@@ -416,7 +418,7 @@ const CreatorProfile = ({
                 onClick={() =>
                   setMode({
                     path: "details",
-                    state: agreement || { contractUuid: f.uuid },
+                    state: agreement || { contractUuid: fundraises[0].uuid },
                   })
                 }
                 height={'44px'}
