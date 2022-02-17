@@ -23,6 +23,7 @@ import ThumbsUp from "./Icons/thumbsUp.svg";
 import Repeat from "./Icons/repeat.svg";
 import Split from "./Icons/split.svg";
 import TrendingUp from "./Icons/trendingUp.svg";
+import Globe from "./Icons/globe.svg";
 
 const Icon = ({
   name,
@@ -112,6 +113,8 @@ const Icon = ({
       return <StyledIcon {...props} icon={Split} />;
     case "trendingUp":
       return <StyledIcon {...props} icon={TrendingUp} />;
+    case "webIcon":
+      return <PublicIcon {...muiProps} />;
     default:
       return <SvgIcon {...muiProps} />;
   }

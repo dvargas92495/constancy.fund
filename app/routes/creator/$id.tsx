@@ -137,7 +137,7 @@ const ProfileLowerBar = styled.div<{ scroll?: number }>`
 
 const ProfileSocialBar = styled.div<{ scroll?: number }>`
   display: flex;
-  grid-gap: 10px;
+  grid-gap: 20px;
 
 `
 
@@ -155,8 +155,7 @@ const ProfileBottomContainer = styled.div`
   width: 800px;
   padding-top: 150px;
   height: fit-content;
-  padding-bottom: 500px;
-  height: 4000px;
+  padding-bottom: 100px;
 `
 
 const CreatorPublicContainer = styled.div`
