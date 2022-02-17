@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import getStaticProps from "~/creator.server";
 import { LoadingIndicator } from "./LoadingIndicator";
 
 const StyledPrimaryAction = styled.div<{
@@ -7,6 +8,7 @@ const StyledPrimaryAction = styled.div<{
     width?: string | number;
     disabled?: boolean;
     autoFocus?: boolean;
+    bgColor?: string
 }>`
   padding: 8px 20px;
   height: ${(props) => (props.height ? props.height : "35px")};
@@ -21,8 +23,8 @@ const StyledPrimaryAction = styled.div<{
   vertical-align: middle;
   background: ${(props) =>
         props.disabled
-            ? props.theme.palette.color.backgroundColorDarker
-            : props.theme.palette.color.purple};
+            ? props.theme.palette.color.backgroundColorDarker : (props.bgColor ? props.theme.palette.color[props.bgColor]
+                : props.theme.palette.color.purple)};
   box-sizing: border-box;
   border-radius: 5px;
   cursor: pointer;
@@ -43,9 +45,10 @@ const StyledPrimaryAction = styled.div<{
 const StyledPrimaryActionLinkText = styled.div<{
     fontSize?: string,
     disabled?: boolean
+    textColor?: string
 }>`
   font-size: ${(props) => (props.fontSize ? props.fontSize : "14px")};
-  color: ${(props) => (props.disabled ? props.theme.palette.color.lighterText : "white")};
+  color: ${(props) => (props.disabled ? props.theme.palette.color.lighterText : (props.textColor ? props.textColor : "white"))};
 `;
 export const PrimaryAction = ({
     label,
@@ -56,6 +59,8 @@ export const PrimaryAction = ({
     isLoading,
     height,
     width,
+    bgColor,
+    textColor,
 }: {
     label: React.ReactNode;
     onClick: React.EventHandler<React.KeyboardEvent | React.MouseEvent>;
@@ -65,6 +70,8 @@ export const PrimaryAction = ({
     isLoading?: boolean;
     height?: string;
     width?: string;
+    bgColor?: string;
+    textColor?: string;
 }) => (
     <StyledPrimaryAction
         autoFocus
@@ -75,11 +82,12 @@ export const PrimaryAction = ({
         onKeyPress={(e) => (e.key === "Enter" ? onClick(e) : false)}
         height={height}
         width={width}
+        bgColor={bgColor}
     >
         {isLoading ? (
             <LoadingIndicator size="20px" thickness={3} />
         ) : (
-            <StyledPrimaryActionLinkText disabled={disabled} fontSize={fontSize}>
+            <StyledPrimaryActionLinkText textColor={textColor} disabled={disabled} fontSize={fontSize}>
                 {label}
             </StyledPrimaryActionLinkText>
         )}

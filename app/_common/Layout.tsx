@@ -35,6 +35,7 @@ const themeProps = {
       lightgrey: "#f0f0f0",
       darkgrey: "#545454",
       black: "#000",
+      warning: "#ff9090",
       overlay: {
         background: "rgba(0, 0, 0, 0.1)",
         dialog: "white",
