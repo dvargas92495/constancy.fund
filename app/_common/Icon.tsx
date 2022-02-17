@@ -4,17 +4,23 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EmailIcon from "@mui/icons-material/Email";
+import FacebookIcon from "@mui/icons-material/Facebook";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import InfoIcon from "@mui/icons-material/Info";
+import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import NoteIcon from "@mui/icons-material/Note";
 import PreviewIcon from "@mui/icons-material/Preview";
 import PublicIcon from "@mui/icons-material/Public";
+import RedditIcon from "@mui/icons-material/Reddit";
 import TwitterIcon from "@mui/icons-material/Twitter";
+import YoutubeIcon from "@mui/icons-material/YouTube";
 
 import BookSvg from "./Icons/book.svg";
 import DollarSvg from "./Icons/dollar.svg";
+import Globe from "./Icons/globe.svg";
 import PersonFineSvg from "./Icons/personFine.svg";
 import MailSvg from "./Icons/mail.svg";
 import RocketSvg from "./Icons/rocket.svg";
@@ -23,49 +29,49 @@ import ThumbsUp from "./Icons/thumbsUp.svg";
 import Repeat from "./Icons/repeat.svg";
 import Split from "./Icons/split.svg";
 import TrendingUp from "./Icons/trendingUp.svg";
-import Globe from "./Icons/globe.svg";
 
 const Icon = ({
   name,
   ...props
 }: {
-  heightAndWidth?: string,
-  color?: string,
+  heightAndWidth?: string;
+  color?: string;
   name:
-  | "arrow-drop-down"
-  | "arrow-right"
-  | "book"
-  | "check"
-  | "delete"
-  | "dollar"
-  | "fundraise"
-  | "github"
-  | "home"
-  | "info"
-  | "mail"
-  | "more-vert"
-  | "note"
-  | "personFine"
-  | "preview"
-  | "public"
-  | "settings"
-  | "twitter"
-  | "thumbsUp"
-  | "repeat"
-  | "split"
-  | "trendingUp"
-  | "linkedIn"
-  | "Instagram"
-  | "facebook"
-  | "reddit"
-  | "youtube"
-  | "email"
-  | "webIcon"
+    | "arrow-drop-down"
+    | "arrow-right"
+    | "book"
+    | "check"
+    | "delete"
+    | "dollar"
+    | "email"
+    | "facebook"
+    | "fundraise"
+    | "github"
+    | "globe"
+    | "home"
+    | "info"
+    | "Instagram"
+    | "linkedIn"
+    | "mail"
+    | "more-vert"
+    | "note"
+    | "personFine"
+    | "preview"
+    | "public"
+    | "reddit"
+    | "repeat"
+    | "settings"
+    | "split"
+    | "thumbsUp"
+    | "trendingUp"
+    | "twitter"
+    | "webIcon"
+    | "youtube";
 } & Pick<SvgIconProps, "height" | "width">) => {
   const muiProps = {
     ...props,
-    color: props.color as SvgIconProps['color'],
-  }
+    color: props.color as SvgIconProps["color"],
+  };
   switch (name) {
     case "arrow-drop-down":
       return <ArrowDropDownIcon {...muiProps} />;
@@ -79,15 +85,23 @@ const Icon = ({
       return <DeleteIcon {...muiProps} />;
     case "dollar":
       return <StyledIcon {...props} icon={DollarSvg} />;
+    case "email":
+      return <EmailIcon {...muiProps} />;
+    case "facebook":
+      return <FacebookIcon {...muiProps} />;
     case "fundraise":
       return <StyledIcon {...props} icon={RocketSvg} />;
     case "github":
       return <GitHubIcon {...muiProps} />;
+    case "globe":
+      return <StyledIcon {...props} icon={Globe} />;
     case "home":
       return <StyledIcon {...props} icon={PersonFineSvg} />;
     case "info":
       return <InfoIcon {...muiProps} />;
-    case "linkedin":
+    case "Instagram":
+      return <InstagramIcon {...muiProps} />;
+    case "linkedIn":
       return <LinkedInIcon {...muiProps} />;
     case "mail":
       return <StyledIcon {...props} icon={MailSvg} />;
@@ -101,45 +115,51 @@ const Icon = ({
       return <PreviewIcon {...muiProps} />;
     case "public":
       return <PublicIcon {...muiProps} />;
-    case "settings":
-      return <StyledIcon {...props} icon={SettingsSvg} />;
-    case "twitter":
-      return <TwitterIcon {...muiProps} />;
-    case "thumbsUp":
-      return <StyledIcon {...props} icon={ThumbsUp} />;
+    case "reddit":
+      return <RedditIcon {...muiProps} />;
     case "repeat":
       return <StyledIcon {...props} icon={Repeat} />;
+    case "settings":
+      return <StyledIcon {...props} icon={SettingsSvg} />;
     case "split":
       return <StyledIcon {...props} icon={Split} />;
+    case "thumbsUp":
+      return <StyledIcon {...props} icon={ThumbsUp} />;
     case "trendingUp":
       return <StyledIcon {...props} icon={TrendingUp} />;
+    case "twitter":
+      return <TwitterIcon {...muiProps} />;
     case "webIcon":
       return <PublicIcon {...muiProps} />;
+    case "youtube":
+      return <YoutubeIcon {...muiProps} />;
     default:
       return <SvgIcon {...muiProps} />;
   }
 };
 
 const StyledIcon = styled.div<{
-  icon?: any,
-  height?: string | number,
-  width?: string | number,
-  color?: string,
-  hoverOff?: boolean,
-  heightAndWidth?: string,
-  rotation?: number,
+  icon?: any;
+  height?: string | number;
+  width?: string | number;
+  color?: string;
+  hoverOff?: boolean;
+  heightAndWidth?: string;
+  rotation?: number;
 }>`
-  cursor: ${(props) => (props.hoverOff ? 'default' : 'pointer')};
-  height: ${(props) => props.heightAndWidth ? props.heightAndWidth : props.height};
-  width: ${(props) => props.heightAndWidth ? props.heightAndWidth : props.width};
+  cursor: ${(props) => (props.hoverOff ? "default" : "pointer")};
+  height: ${(props) =>
+    props.heightAndWidth ? props.heightAndWidth : props.height};
+  width: ${(props) =>
+    props.heightAndWidth ? props.heightAndWidth : props.width};
   background-color: ${(props) =>
     props.color
       ? props.theme.palette.color[props.color]
-      : props.theme.palette.color['iconColor']};
+      : props.theme.palette.color["iconColor"]};
   mask-position: center;
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-image: url(${(props) => props.icon ?? props.icon});
-`
+`;
 
 export default Icon;

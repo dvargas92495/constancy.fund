@@ -13,7 +13,7 @@ import useHandler from "@dvargas92495/ui/dist/useHandler";
 import type { ExternalScriptsFunction } from "remix-utils";
 
 import Icon from "~/_common/Icon";
-import styled, { keyframes, css } from 'styled-components'
+import styled, { keyframes, css } from "styled-components";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import SectionCircle from "~/_common/SectionCircle";
 import Spacer from "~/_common/Spacer";
@@ -32,7 +32,6 @@ import TextFieldBox from "~/_common/TextFieldBox";
 import TextFieldDescription from "~/_common/TextFieldDescription";
 import { LoadingIndicator } from "~/_common/LoadingIndicator";
 
-
 const ProfileContainer = styled.div`
   width: 100%;
   display: flex;
@@ -40,18 +39,18 @@ const ProfileContainer = styled.div`
   align-items: center;
   flex-direction: column;
   margin: auto;
-  background: ${props => props.theme.palette.color.backgroundColorDarker};
-`
+  background: ${(props) => props.theme.palette.color.backgroundColorDarker};
+`;
 
 const ProfileBottomContainer = styled.div<{ paddingTop: string }>`
   width: 800px;
-  padding-top: ${props => props.paddingTop};
+  padding-top: ${(props) => props.paddingTop};
   height: fit-content;
   padding-bottom: 100px;
-`
+`;
 
 const TopBarProfile = styled.div`
-  border-bottom: 1px solid ${props => props.theme.palette.color.lightgrey};
+  border-bottom: 1px solid ${(props) => props.theme.palette.color.lightgrey};
   width: 100%;
   height: 200px;
   display: flex;
@@ -59,7 +58,7 @@ const TopBarProfile = styled.div`
   top: 0;
   background: white;
   z-index: 10;
-`
+`;
 
 const ProfileContentBox = styled.div<{ scroll?: number }>`
   display: flex;
@@ -68,12 +67,13 @@ const ProfileContentBox = styled.div<{ scroll?: number }>`
   width: fill-available;
   align-items: space-between;
 
-  ${(props => props.scroll > 200 &&
-    css`  
+  ${(props) =>
+    props.scroll &&
+    props.scroll > 200 &&
+    css`
       grid-gap: 5px;
-      `
-  )}
-`
+    `}
+`;
 
 const TermSheetTitleBox = styled.div`
   display: flex;
@@ -82,7 +82,7 @@ const TermSheetTitleBox = styled.div`
   max-width: 800px;
   padding-top: 130px;
   grid-gap: 15px;
-`
+`;
 
 const BackButton = styled.div`
   display: flex;
@@ -93,27 +93,27 @@ const BackButton = styled.div`
   left: 20px;
   padding: 6px 12px;
   z-index: 1001;
-`
+`;
 
 const ProfileTitle = styled.div<{ scroll?: number }>`
-    color: ${props => props.theme.palette.color.darkerText};
-    font-size: 30px;
-    font-weight: 800;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-`
+  color: ${(props) => props.theme.palette.color.darkerText};
+  font-size: 30px;
+  font-weight: 800;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+`;
 
 const ProfileLowerBar = styled.div<{ scroll?: number }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`
+`;
 
 const ProfileSocialBar = styled.div<{ scroll?: number }>`
   display: flex;
   grid-gap: 20px;
-`
+`;
 
 const TopBarMainBox = styled.div<{ scroll?: number }>`
   width: fill-available;
@@ -124,37 +124,37 @@ const TopBarMainBox = styled.div<{ scroll?: number }>`
   margin-top: 200px;
   padding: 0 50px;
 
-  ${(props => props.scroll > 200 &&
+  ${(props) =>
+    props.scroll &&
+    props.scroll > 200 &&
     css`
-        padding: 0 20px;
-        margin-top: 0px;
-        align-items: center;
-        grid-gap: 20px;
-      `
-  )}
-`
+      padding: 0 20px;
+      margin-top: 0px;
+      align-items: center;
+      grid-gap: 20px;
+    `}
+`;
 
 const IconContent = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    grid-gap: 5px;
-`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-gap: 5px;
+`;
 
 const EversignEmbedContainer = styled.div`
-  border: 1px solid ${props => props.theme.palette.color.lightgrey};
+  border: 1px solid ${(props) => props.theme.palette.color.lightgrey};
   border-radius: 8px;
   overflow: hidden;
 
   & > div {
     margin-bottom: 0px;
-
   }
 
   & iframe {
     border: none;
   }
-`
+`;
 
 const LoadingBox = styled.div`
   height: 100%;
@@ -162,8 +162,7 @@ const LoadingBox = styled.div`
   display: flex;
   justify-content center;
   align-items: center;
-`
-
+`;
 
 declare global {
   interface Window {
@@ -212,7 +211,11 @@ const EversignEmbed = ({
   }, [url, setLoading]);
   return (
     <Box id={CONTAINER_ID} sx={{ height: "60vh", marginBottom: "32px" }}>
-      {loading && <LoadingBox><LoadingIndicator /> </LoadingBox> sx={{ height: "100%" }} />}
+      {loading && (
+        <LoadingBox>
+          <LoadingIndicator />{" "}
+        </LoadingBox>
+      )}
     </Box>
   );
 };
@@ -276,14 +279,12 @@ const ContractPage = (): React.ReactElement => {
             )
           }
         >
-          <Icon heightAndWidth={'20px'} name={'mail'} />
+          <Icon heightAndWidth={"20px"} name={"mail"} />
           Go Back
         </BackButton>
         <TopBarProfile>
           <TermSheetTitleBox>
-            <ProfileTitle>
-              Sign the agreement
-            </ProfileTitle>
+            <ProfileTitle>Sign the agreement</ProfileTitle>
             {/* <PrimaryAction
             label={<IconContent><Icon heightAndWidth={'20px'} name={error ? 'repeat' : 'dollar'} color={'white'} />
               <span>{error ? error : 'Read and Sign Term Sheet'}</span>
@@ -305,9 +306,8 @@ const ContractPage = (): React.ReactElement => {
             </ProfileLowerBar> */}
           </TermSheetTitleBox>
         </TopBarProfile>
-        <ProfileBottomContainer paddingTop={'20px'}>
+        <ProfileBottomContainer paddingTop={"20px"}>
           <Section>
-
             <EversignEmbedContainer>
               <EversignEmbed
                 url={url}
@@ -320,8 +320,8 @@ const ContractPage = (): React.ReactElement => {
               />
             </EversignEmbedContainer>
           </Section>
-          {/* <Body>
           {error}
+          {/* <Body>
           {signed && !isInvestor && (
             <Button
               color={"primary"}
@@ -335,21 +335,20 @@ const ContractPage = (): React.ReactElement => {
               Back to Dashboard
             </Button>
           )}
-        </Body>
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={5000}
-          onClose={() => setSnackbarOpen(false)}
-          color="success"
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        >
-          <Alert severity="success" sx={{ width: "100%" }}>
-            {isInvestor
-              ? "We are waiting for the creator to confirm this investment and send you an email with next steps when this happened."
-              : "Congratulations! Both you and the investor have both signed the agreement! Now go create something awesome"}
-          </Alert>
-        </Snackbar> */}
-
+        </Body> */}
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={5000}
+            onClose={() => setSnackbarOpen(false)}
+            color="success"
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          >
+            <Alert severity="success" sx={{ width: "100%" }}>
+              {isInvestor
+                ? "We are waiting for the creator to confirm this investment and send you an email with next steps when this happened."
+                : "Congratulations! Both you and the investor have both signed the agreement! Now go create something awesome"}
+            </Alert>
+          </Snackbar>
         </ProfileBottomContainer>
       </ProfileContainer>
     </Layout>

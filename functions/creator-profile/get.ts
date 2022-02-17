@@ -3,21 +3,13 @@ import formatError from "@dvargas92495/api/formatError";
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import prisma from "../_common/prisma";
 
-export type Props = {
-  fullName: string;
-  email: string;
-  profileImageUrl: string;
-  socialProfiles: string[];
-  questionaires: string[];
-  fundraises: { type: number; uuid: string }[];
-};
-
-const logic = ({ id }: { id: string }): Promise<Props> => {
+const logic = ({ id }: { id: string }) => {
   return Promise.all([
     users.getUser(id),
     prisma.contract.findMany({ where: { userId: id } }),
   ])
     .then(([u, fs]) => ({
+      userId: id,
       fullName: `${u.firstName} ${
         typeof u.publicMetadata.middleName === "string"
           ? `${u.publicMetadata.middleName.slice(0, 1)}. `
@@ -36,12 +28,13 @@ const logic = ({ id }: { id: string }): Promise<Props> => {
     .catch((e) => {
       console.error(formatError(e));
       return {
+        userId: id,
         fullName: ``,
         email: "",
         profileImageUrl: "",
-        socialProfiles: [],
-        questionaires: [],
-        fundraises: [],
+        socialProfiles: [] as string[],
+        questionaires: [] as string[],
+        fundraises: [] as { type: number; uuid: string }[],
       };
     });
 };
