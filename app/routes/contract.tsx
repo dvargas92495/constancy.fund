@@ -160,7 +160,7 @@ const LoadingBox = styled.div`
   height: 100%;
   width: 100%;
   display: flex;
-  justify-content center;
+  justify-content: center;
   align-items: center;
 `;
 
@@ -269,6 +269,7 @@ const ContractPage = (): React.ReactElement => {
     setIsInvestor,
     setContractUuid,
   ]);
+
   return (
     <Layout>
       <ProfileContainer>
