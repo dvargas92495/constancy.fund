@@ -107,7 +107,7 @@ const ProfileImageBox = styled.div`
     }
   }
 
-  & * {
+  & > * {
     height: fill-available;
     width: fill-available;
   }

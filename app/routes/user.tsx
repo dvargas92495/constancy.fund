@@ -32,10 +32,6 @@ const MenuListItem = styled.div`
     background: ${(props) => props.theme.palette.color.backgroundColorDarker};
   }
 
-  & * {
-    width: fill-available;
-  }
-
   > a {
     width: fill-available;
   }

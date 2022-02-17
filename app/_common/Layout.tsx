@@ -5,6 +5,7 @@ import Document from "@dvargas92495/ui/dist/components/Document";
 import RedirectToLogin from "@dvargas92495/ui/dist/components/RedirectToLogin";
 import { SignedIn } from "@clerk/clerk-react";
 import { ThemeProvider, createGlobalStyle } from "styled-components";
+import styled from "styled-components";
 
 const themeProps = {
   palette: {
@@ -153,9 +154,9 @@ const Layout: React.FC<{ privatePage?: boolean }> = ({
           <RedirectToLogin />
         </Document>
       ) : (
-        <DefaultLayout homeIcon={"Home"} themeProps={themeProps}>
+        <PublicContainer homeIcon={"Home"} themeProps={themeProps}>
           {children}
-        </DefaultLayout>
+        </PublicContainer>
       )}
     </ThemeProvider>
   );
@@ -189,3 +190,11 @@ export const getMeta =
     };
 
 export default Layout;
+
+const PublicContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: fit-content;
+`
