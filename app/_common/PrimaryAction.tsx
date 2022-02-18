@@ -46,9 +46,11 @@ const StyledPrimaryActionLinkText = styled.div<{
     fontSize?: string,
     disabled?: boolean
     textColor?: string
+    fontWeight?: string
 }>`
   font-size: ${(props) => (props.fontSize ? props.fontSize : "14px")};
   color: ${(props) => (props.disabled ? props.theme.palette.color.lighterText : (props.textColor ? props.textColor : "white"))};
+  font-weight: ${(props) => props.fontWeight};
 `;
 export const PrimaryAction = ({
     label,
@@ -61,6 +63,7 @@ export const PrimaryAction = ({
     width,
     bgColor,
     textColor,
+    fontWeight,
 }: {
     label: React.ReactNode;
     onClick: React.EventHandler<React.KeyboardEvent | React.MouseEvent>;
@@ -72,6 +75,7 @@ export const PrimaryAction = ({
     width?: string;
     bgColor?: string;
     textColor?: string;
+    fontWeight?: string;
 }) => (
     <StyledPrimaryAction
         autoFocus
@@ -87,7 +91,7 @@ export const PrimaryAction = ({
         {isLoading ? (
             <LoadingIndicator size="20px" thickness={3} />
         ) : (
-            <StyledPrimaryActionLinkText textColor={textColor} disabled={disabled} fontSize={fontSize}>
+            <StyledPrimaryActionLinkText fontWeight={fontWeight} textColor={textColor} disabled={disabled} fontSize={fontSize}>
                 {label}
             </StyledPrimaryActionLinkText>
         )}
