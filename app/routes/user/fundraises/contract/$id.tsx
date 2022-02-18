@@ -283,49 +283,49 @@ const STAGE_ACTIONS: ((a: {
   uuid: string;
   onDelete: (uuid: string) => void;
 }) => React.ReactElement)[] = [
-  (row) => {
-    const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
-      path: "agreement",
-      method: "DELETE",
-    });
-    const [loading, setLoading] = useState(false);
-    return (
-      <>
-        {!loading ? (
-          <>
-            <IconContainer
-              onClick={() => {
-                setLoading(true);
-                deleteHandler({ uuid: row.uuid })
-                  .then(() => row.onDelete(row.uuid))
-                  .finally(() => setLoading(false));
-              }}
-            >
-              <Icon name="remove" heightAndWidth={"16px"} />
-            </IconContainer>
-          </>
-        ) : (
-          <LoadingIndicator size={30} />
-        )}
-      </>
-    );
-  },
-  (row) => (
-    <Link href={`/contract?uuid=${row.uuid}&signer=1`}>
-      Send Link To Investor
-    </Link>
-  ),
-  (row) => (
-    <Link href={`/contract?uuid=${row.uuid}&signer=2`}>Sign Contract</Link>
-  ),
-  (row) => (
-    <Link href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
-      View Contract
-    </Link>
-  ),
-  () => <span />,
-  () => <span />,
-];
+    (row) => {
+      const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
+        path: "agreement",
+        method: "DELETE",
+      });
+      const [loading, setLoading] = useState(false);
+      return (
+        <>
+          {!loading ? (
+            <>
+              <IconContainer
+                onClick={() => {
+                  setLoading(true);
+                  deleteHandler({ uuid: row.uuid })
+                    .then(() => row.onDelete(row.uuid))
+                    .finally(() => setLoading(false));
+                }}
+              >
+                <Icon name="remove" heightAndWidth={"16px"} />
+              </IconContainer>
+            </>
+          ) : (
+            <LoadingIndicator size={30} />
+          )}
+        </>
+      );
+    },
+    (row) => (
+      <Link href={`/contract?uuid=${row.uuid}&signer=1`}>
+        Send Link To Investor
+      </Link>
+    ),
+    (row) => (
+      <Link href={`/contract?uuid=${row.uuid}&signer=2`}>Sign Contract</Link>
+    ),
+    (row) => (
+      <Link href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
+        View Contract
+      </Link>
+    ),
+    () => <span />,
+    () => <span />,
+  ];
 
 const AgreementRow = (
   row: Agreements[number] & {
@@ -407,7 +407,7 @@ const UserFundraisesContract = () => {
     <>
       <TopBar>
         <InfoArea>
-          <PageTitle>Your Fundraise</PageTitle>
+          <PageTitle>My Fundraise</PageTitle>
           <UpdatePill>
             {rows.filter((row) => row.status === 2).length > 0 && (
               <span>🎉 </span>
