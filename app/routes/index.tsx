@@ -1,15 +1,9 @@
 import React from "react";
 import Layout, { getMeta } from "~/_common/Layout";
-import ConvertKit from "@dvargas92495/ui/dist/components/ConvertKit";
+// import ConvertKit from "@dvargas92495/ui/dist/components/ConvertKit";
 import styled from "styled-components";
 import MainImage = require("~/_common/Images/runner.svg")
 import { PrimaryAction } from "~/_common/PrimaryAction";
-
-
-function change() {
-  const ab = document.getElementById('ghd').value = "";
-  console.log(ab)
-}
 
 const Home: React.FC = () => (
   <Layout>
@@ -25,8 +19,6 @@ const Home: React.FC = () => (
         <SignupBox>
           <SignupFieldContainer
             placeholder="Your Email"
-            id="ghd"
-            onClick={() => change()}
           />
           <PrimaryAction
             height='60px'
