@@ -528,7 +528,7 @@ const UserFundraisesContract = () => {
           </Section>
         </ProfileBottomContainer>
 
-        <H1
+        {/* <H1
           sx={{
             fontSize: 30,
             display: "flex",
@@ -618,7 +618,7 @@ const UserFundraisesContract = () => {
             <b>Progress New: </b>
             {rows.filter((row) => row.status === 2).length}
           </p>
-        </Box>
+        </Box> */}
       </ContentContainer>
     </>
   );

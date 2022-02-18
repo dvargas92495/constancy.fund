@@ -137,8 +137,18 @@ const ErrorBox = styled.div`
   width: fit-content;
   padding: 5px 15px;
   color: white;
-  height: 24px;
+  height: 30px;
+  display: flex;
+  align-items: center;
 `;
+
+
+const TextfieldHorizontalBox = styled.div`
+  justify-content: flex-start;
+  grid-gap: 10px;
+  display: flex;
+  align-items: flex-end;
+`
 
 const EnterDetails = () => {
   const state = useLoaderData<Data>();
@@ -211,6 +221,7 @@ const EnterDetails = () => {
             height={"44px"}
             fontSize={"16px"}
             isLoading={loading}
+            bgColor={error && "warning"}
           />
         </TermSheetTitleBox>
       </TopBarProfile>
@@ -282,7 +293,7 @@ const EnterDetails = () => {
             <ExplainMeLikeIamFiveContainer>
               <ExplainBox>
                 <ExplainContent>
-                  <ExplainTitle>How much you raise</ExplainTitle>
+                  <ExplainTitle>How much they raise</ExplainTitle>
                   <ExplainText>
                     They agree to request a total of paid out as a monthly
                     stipend of $
@@ -407,6 +418,55 @@ const EnterDetails = () => {
             </TextInputContainer>
           </TextFieldBox>
           <Spacer height={"10px"} />
+          <TextfieldHorizontalBox>
+            <TextFieldBox>
+              <TextFieldDescription>Address</TextFieldDescription>
+              <TextFieldDescription small required>
+                Street
+              </TextFieldDescription>
+              <TextInputContainer width={"270px"}>
+                <TextInputOneLine
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  required
+                />
+              </TextInputContainer>
+            </TextFieldBox>
+            <TextFieldBox>
+              <TextFieldDescription small required>
+                No
+              </TextFieldDescription>
+              <TextInputContainer width={"80px"}>
+                <TextInputOneLine
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  required
+                />
+              </TextInputContainer>
+            </TextFieldBox>
+          </TextfieldHorizontalBox>
+          <TextfieldHorizontalBox>
+            <TextFieldBox>
+              <TextFieldDescription small>City</TextFieldDescription>
+              <TextInputContainer width={"270px"}>
+                <TextInputOneLine
+                  value={companyType}
+                  onChange={(e) => setCompanyType(e.target.value)}
+                  required
+                />
+              </TextInputContainer>
+            </TextFieldBox>
+            <TextFieldBox>
+              <TextFieldDescription small>ZIP</TextFieldDescription>
+              <TextInputContainer width={"80px"}>
+                <TextInputOneLine
+                  value={companyType}
+                  onChange={(e) => setCompanyType(e.target.value)}
+                  required
+                />
+              </TextInputContainer>
+            </TextFieldBox>
+          </TextfieldHorizontalBox>
           <TextFieldBox>
             <TextFieldDescription>Address</TextFieldDescription>
             <TextFieldDescription $small required>
@@ -434,7 +494,9 @@ const EnterDetails = () => {
             <TextFieldDescription $small required>
               Registered Country
             </TextFieldDescription>
-            <TextInputContainer>
+            <TextInputContainer
+              width={"350px"}
+            >
               <Select
                 value={address}
                 maxRows={10}
