@@ -31,6 +31,7 @@ import Section from "~/_common/Section";
 import SectionTitle from "~/_common/SectionTitle";
 import InfoText from "~/_common/InfoText";
 import SubSectionTitle from "~/_common/SubSectionTitle";
+import { LoadingIndicator } from "~/_common/LoadingIndicator";
 
 const ExplainTitle = styled.div`
   font-size: 18px;
@@ -72,6 +73,37 @@ const ExplainContainer = styled.div`
   & > div {
     width: fill-available;
   }
+`;
+
+const EversignEmbedContainer = styled.div`
+  border: 1px solid ${(props) => props.theme.palette.color.lightgrey};
+  border-radius: 8px;
+  overflow: hidden;
+  height: 600px;
+
+  & > div {
+    margin-bottom: 0px;
+
+    & > div {
+    border: none;
+
+    & > div {
+    border: none;
+  }
+  }
+  }
+
+  & iframe {
+    border: none;
+  }
+`;
+
+const LoadingBox = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const loader: LoaderFunction = () => {
@@ -251,21 +283,12 @@ const UserFundraisePreview = () => {
             )}
           </Box>
           <SubSectionTitle></SubSectionTitle>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-              background: "#C4C4C4",
-              height: "500px",
-            }}
+          <EversignEmbedContainer
           >
             {loading ? (
-              <Skeleton
-                variant={"rectangular"}
-                sx={{ width: "100%", height: "100%" }}
-              />
+              <LoadingBox>
+                <LoadingIndicator />
+              </LoadingBox>
             ) : (
               <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.11.338/build/pdf.worker.min.js">
                 <Viewer
@@ -274,7 +297,7 @@ const UserFundraisePreview = () => {
                 />
               </Worker>
             )}
-          </Box>
+          </EversignEmbedContainer>
         </Section>
       </ContentContainer>
     </>
