@@ -127,5 +127,6 @@ const MainImageContainer = styled.img`
   position: absolute;
   right: 0px;
   top: 25%;
+  height:60%;
 `
 
