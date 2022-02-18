@@ -144,7 +144,7 @@ const deepEqual = (a: unknown, b: unknown): boolean => {
 const SOCIAL_PROFILES = [
   { iconName: "twitter" },
   { iconName: "github" },
-  { iconName: "linkedin" },
+  { iconName: "linkedIn" },
   { iconName: "public" },
 ] as const;
 
@@ -521,7 +521,7 @@ const UserProfile = () => {
             <AddressArea>
               <AddressBox>
                 <TextFieldBox>
-                  <TextFieldDescription small required>
+                  <TextFieldDescription $small required>
                     Street
                   </TextFieldDescription>
                   <TextInputContainer width={"300px"}>
@@ -535,7 +535,7 @@ const UserProfile = () => {
                   </TextInputContainer>
                 </TextFieldBox>
                 <TextFieldBox>
-                  <TextFieldDescription small required>
+                  <TextFieldDescription $small required>
                     City
                   </TextFieldDescription>
                   <TextInputContainer>
@@ -551,7 +551,7 @@ const UserProfile = () => {
               </AddressBox>
               <AddressBox>
                 <TextFieldBox>
-                  <TextFieldDescription small required>
+                  <TextFieldDescription $small required>
                     Nr.
                   </TextFieldDescription>
                   <TextInputContainer>
@@ -565,7 +565,7 @@ const UserProfile = () => {
                   </TextInputContainer>
                 </TextFieldBox>
                 <TextFieldBox>
-                  <TextFieldDescription small required>
+                  <TextFieldDescription $small required>
                     ZIP
                   </TextFieldDescription>
                   <TextInputContainer>

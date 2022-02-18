@@ -3,14 +3,14 @@ import { getMeta } from "~/_common/Layout";
 import useHandler from "@dvargas92495/ui/dist/useHandler";
 import PaymentPreference from "~/_common/PaymentPreferences";
 import type { Handler as PutHandler } from "../../../../functions/agreement/put";
+import type { Handler as GetHandler } from "../../../../functions/agreement/get";
 import {
-  //   LoaderFunction,
+  LoaderFunction,
   MetaFunction,
-  //   useLoaderData,
-  useLocation,
+  useLoaderData,
   useNavigate,
 } from "remix";
-// import axios from "axios";
+import axios from "axios";
 import CheckBox from "@mui/material/Checkbox";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -36,7 +36,9 @@ import {
   ProfileTitle,
   TopBarProfile,
 } from "../$id";
-import type { Agreement } from "./index";
+import formatAmount from "../../../../db/util/formatAmount";
+
+type Data = Awaited<ReturnType<GetHandler>>;
 
 const TermSheetTitleBox = styled.div`
   display: flex;
@@ -139,8 +141,7 @@ const ErrorBox = styled.div`
 `;
 
 const EnterDetails = () => {
-  // TODO: load state from useLoaderData();
-  const state = useLocation().state as Agreement & { userId: string };
+  const state = useLoaderData<Data>();
   const navigate = useNavigate();
   const [name, setName] = useState(state.name || "");
   const [email, setEmail] = useState(state.email || "");
@@ -168,9 +169,7 @@ const EnterDetails = () => {
       investorCompany: company,
       investorCompanyType: companyType,
     })
-      .then(({ uuid }) =>
-        window.location.assign(`/contract?uuid=${uuid}&signer=1`)
-      )
+      .then(({ uuid }) => navigate(`/contract?uuid=${uuid}&signer=1`))
       .catch((e) => {
         setError(e.message);
         setLoading(false);
@@ -185,6 +184,7 @@ const EnterDetails = () => {
     address,
     company,
     companyType,
+    navigate,
   ]);
 
   return (
@@ -195,7 +195,7 @@ const EnterDetails = () => {
       </BackButton>
       <TopBarProfile>
         <TermSheetTitleBox>
-          <ProfileTitle>Summary & Your Details</ProfileTitle>
+          <ProfileTitle>Summary {"&"} Your Details</ProfileTitle>
           <PrimaryAction
             label={
               <IconContent>
@@ -229,16 +229,26 @@ const EnterDetails = () => {
                 <ExplainContent>
                   <ExplainTitle>How much you invest</ExplainTitle>
                   <ExplainText>
-                    I agree to contribute with{" "}
-                    <b>$ {amount ? amount : "_____"}</b> paid out as a monthly
-                    stipend for <b>12 months</b>.
+                    I agree to contribute{" "}
+                    <b>
+                      $
+                      {formatAmount(
+                        Number(amount) / (Number(state.details.frequency) || 1)
+                      )}
+                    </b>{" "}
+                    paid out as a monthly stipend for{" "}
+                    <b>
+                      {state.details.frequency || 1} month
+                      {state.details.frequency === "1" ? "" : "s"}
+                    </b>
+                    .
                   </ExplainText>
                 </ExplainContent>
                 <CheckBox />
               </ExplainBox>
               <TextFieldBox>
                 <TextInputContainer width={"350px"}>
-                  {<InputMetrix>$ per month</InputMetrix>}
+                  {<InputMetrix>$</InputMetrix>}
                   <TextInputOneLine
                     value={amount}
                     onChange={(e) => setAmount(Number(e.target.value))}
@@ -275,7 +285,12 @@ const EnterDetails = () => {
                   <ExplainTitle>How much you raise</ExplainTitle>
                   <ExplainText>
                     They agree to request a total of paid out as a monthly
-                    stipend of 3000€ per month for 12 months.
+                    stipend of $
+                    {formatAmount(
+                      Number(amount) / (Number(state.details.frequency) || 1)
+                    )}{" "}
+                    per month for {Number(state.details.frequency) || 1} month
+                    {state.details.frequency === "1" ? "" : "s"}.
                   </ExplainText>
                 </ExplainContent>
                 <CheckBox />
@@ -286,9 +301,20 @@ const EnterDetails = () => {
                 <ExplainContent>
                   <ExplainTitle>How much they pay back</ExplainTitle>
                   <ExplainText>
-                    They agreed to pay back a dividend of 200%, or a total or
-                    72.000€ to their investors. By investing a total of $3,600,
-                    you’ll receive $7,200.{" "}
+                    They agreed to pay back a dividend capped at{" "}
+                    {formatAmount(state.details.return)}%, or a total or $
+                    {formatAmount(
+                      (Number(state.details.amount) *
+                        (Number(state.details.frequency) || 1) *
+                        Number(state.details.return)) /
+                        100
+                    )}{" "}
+                    to their investors. By investing a total of ${amount},
+                    you’ll receive a maximum amount of $
+                    {formatAmount(
+                      (Number(amount) * Number(state.details.return)) / 100
+                    )}
+                    .
                   </ExplainText>
                 </ExplainContent>
                 <CheckBox />
@@ -299,10 +325,19 @@ const EnterDetails = () => {
                 <ExplainContent>
                   <ExplainTitle>What they pay back</ExplainTitle>
                   <ExplainText>
-                    They agreed to take 12% of all their total revenue,
-                    including pre-existing assets, once they hit 3000€ per month
-                    or €36.000 per year. Your share of these 12% is proportional
-                    to the investment sum: 1.2%.
+                    They agreed to take {formatAmount(state.details.share)}% of
+                    all their total revenue, including pre-existing assets, once
+                    they hit $
+                    {formatAmount(Number(state.details.threshold) / 12)} per
+                    month or ${formatAmount(Number(state.details.threshold))}{" "}
+                    per year. Your share of these {state.details.share}% is
+                    proportional to the investment sum:{" "}
+                    {formatAmount(
+                      (Number(state.details.share) * Number(amount)) /
+                        (Number(state.details.amount) *
+                          (Number(state.details.frequency) || 1))
+                    )}
+                    %.
                   </ExplainText>
                 </ExplainContent>
                 <CheckBox />
@@ -313,8 +348,9 @@ const EnterDetails = () => {
                 <ExplainContent>
                   <ExplainTitle>How long they pay back</ExplainTitle>
                   <ExplainText>
-                    This agreement is valid for 8 years. Any amount that has not
-                    been paid back until then, does not have to be paid back
+                    This agreement is valid for{" "}
+                    {formatAmount(state.details.cap)} years. Any amount that has
+                    not been paid back until then, does not have to be paid back
                     anymore.
                   </ExplainText>
                 </ExplainContent>
@@ -373,7 +409,7 @@ const EnterDetails = () => {
           <Spacer height={"10px"} />
           <TextFieldBox>
             <TextFieldDescription>Address</TextFieldDescription>
-            <TextFieldDescription small required>
+            <TextFieldDescription $small required>
               Street
             </TextFieldDescription>
             <TextInputContainer width={"350px"}>
@@ -385,7 +421,7 @@ const EnterDetails = () => {
             </TextInputContainer>
           </TextFieldBox>
           <TextFieldBox>
-            <TextFieldDescription small>City & ZIP</TextFieldDescription>
+            <TextFieldDescription $small>City & ZIP</TextFieldDescription>
             <TextInputContainer width={"350px"}>
               <TextInputOneLine
                 value={companyType}
@@ -395,7 +431,7 @@ const EnterDetails = () => {
             </TextInputContainer>
           </TextFieldBox>
           <TextFieldBox>
-            <TextFieldDescription small required>
+            <TextFieldDescription $small required>
               Registered Country
             </TextFieldDescription>
             <TextInputContainer>
@@ -446,6 +482,15 @@ const EnterDetails = () => {
     </>
   );
 };
+
+export const loader: LoaderFunction = ({ params, request }) =>
+  axios
+    .get<Data>(
+      `${process.env.API_URL}/agreement${new URL(request.url).search}&userId=${
+        params["id"]
+      }`
+    )
+    .then((r) => r.data);
 
 export const meta: MetaFunction = (args) =>
   getMeta({

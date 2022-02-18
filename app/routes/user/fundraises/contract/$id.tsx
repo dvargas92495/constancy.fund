@@ -1,17 +1,11 @@
-import Loading from "@dvargas92495/ui/dist/components/Loading";
 import React, { useState, useCallback, useMemo } from "react";
 import Box from "@mui/material/Box";
-import { UserButton, useUser } from "@clerk/clerk-react";
+import { UserButton } from "@clerk/clerk-react";
 
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
 import useAuthenticatedHandler from "@dvargas92495/ui/dist/useAuthenticatedHandler";
-import ExternalLink from "@dvargas92495/ui/dist/components/ExternalLink";
-// import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-// import TableCell from "@mui/material/TableCell";
-// import TableRow from "@mui/material/TableRow";
-// import TableHead from "@mui/material/TableHead";
 import type { Handler as GetContractHandler } from "../../../../../functions/contract/get";
 import type { Handler as PostAgreementHandler } from "../../../../../functions/agreement/post";
 import type { Handler as DeleteAgreementHandler } from "../../../../../functions/agreement/delete";
@@ -33,29 +27,14 @@ import axios from "axios";
 import TopBar from "~/_common/TopBar";
 import InfoArea from "~/_common/InfoArea";
 import PageTitle from "~/_common/PageTitle";
-import ActionButton from "~/_common/ActionButton";
 import ContentContainer from "~/_common/ContentContainer";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-
 import Icon from "~/_common/Icon";
-import styled, { keyframes, css } from 'styled-components'
-import { PrimaryAction } from "~/_common/PrimaryAction";
+import styled from "styled-components";
 import SectionCircle from "~/_common/SectionCircle";
 import Spacer from "~/_common/Spacer";
-
-import PageTitle from "~/_common/PageTitle";
-import ContentContainer from "~/_common/ContentContainer";
 import Section from "~/_common/Section";
-import InfoText from "~/_common/InfoText";
-import SubSectionTitle from "~/_common/SubSectionTitle";
 import SectionTitle from "~/_common/SectionTitle";
-
-import TextInputContainer from "~/_common/TextInputContainer";
-import TextInputOneLine from "~/_common/TextInputOneLine";
-import TextFieldBox from "~/_common/TextFieldBox";
-import TextFieldDescription from "~/_common/TextFieldDescription";
-import ProgressBar from '~/_common/ProgressBar'
+import ProgressBar from "~/_common/ProgressBar";
 import { LoadingIndicator } from "~/_common/LoadingIndicator";
 
 const ConditionsContainer = styled.div`
@@ -106,269 +85,160 @@ const ConditionsSubTitle = styled.div`
   font-size: 12px;
 `;
 
-const ProfileContainer = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: column;
-  margin: auto;
-  background: ${props => props.theme.palette.color.backgroundColorDarker};
-`
-
 const ProfileBottomContainer = styled.div<{ paddingTop: string }>`
   width: 800px;
-  padding-top: ${props => props.paddingTop};
+  padding-top: ${(props) => props.paddingTop};
   height: fit-content;
   padding-bottom: 100px;
-`
-
-const TopBarProfile = styled.div`
-  border-bottom: 1px solid ${props => props.theme.palette.color.lightgrey};
-  width: 100%;
-  height: 200px;
-  display: flex;
-  justify-content: center;
-  top: 0;
-  background: white;
-  z-index: 10;
-`
-
-const ProfileContentBox = styled.div<{ scroll?: number }>`
-  display: flex;
-  flex-direction: column;
-  grid-gap: 30px;
-  width: fill-available;
-  align-items: space-between;
-
-  ${(props => props.scroll > 200 &&
-    css`  
-      grid-gap: 5px;
-      `
-  )}
-`
-
-const TermSheetTitleBox = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 800px;
-  padding-top: 130px;
-  grid-gap: 15px;
-`
-
-const BackButton = styled.div`
-  display: flex;
-  grid-gap: 5px;
-  width: fit-content;
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  padding: 6px 12px;
-  z-index: 1001;
-`
-
-const ProfileTitle = styled.div<{ scroll?: number }>`
-    color: ${props => props.theme.palette.color.darkerText};
-    font-size: 30px;
-    font-weight: 800;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-`
-
-const ProfileLowerBar = styled.div<{ scroll?: number }>`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`
-
-const ProfileSocialBar = styled.div<{ scroll?: number }>`
-  display: flex;
-  grid-gap: 20px;
-`
-
-const TopBarMainBox = styled.div<{ scroll?: number }>`
-  width: fill-available;
-  display: flex;
-  align-items: center;
-  grid-gap: 40px;
-  max-width: 800px;
-  margin-top: 200px;
-  padding: 0 50px;
-
-  ${(props => props.scroll > 200 &&
-    css`
-        padding: 0 20px;
-        margin-top: 0px;
-        align-items: center;
-        grid-gap: 20px;
-      `
-  )}
-`
-
-const IconContent = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    grid-gap: 5px;
-`
+`;
 
 const UpdatePill = styled.div`
   height: 50px;
   padding: 20px;
   font-size: 18px;
-  color: ${props => props.theme.palette.color.purple};
-  border: 1px solid ${props => props.theme.palette.color.lightgrey};
+  color: ${(props) => props.theme.palette.color.purple};
+  border: 1px solid ${(props) => props.theme.palette.color.lightgrey};
   border-radius: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
   grid-gap: 15px;
-`
+`;
 
 const ProgressPill = styled.div`
-    background-color: ${props => props.theme.palette.color.backgroundHighlight};
-    border-radius: 50px;
-    height: 50px;
-    padding: 10px 20px;
-    font-size: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: fit-content;
-    font-weight: bold;
-`
-
+  background-color: ${(props) => props.theme.palette.color.backgroundHighlight};
+  border-radius: 50px;
+  height: 50px;
+  padding: 10px 20px;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  font-weight: bold;
+`;
 
 const ProgressPillSmall = styled.div`
-    background-color: ${props => props.theme.palette.color.backgroundHighlight};
-    border-radius: 30px;
-    height: 30px;
-    padding: 10px 20px;
-    font-size: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: fit-content;
-    font-weight: normal;
-`
-
+  background-color: ${(props) => props.theme.palette.color.backgroundHighlight};
+  border-radius: 30px;
+  height: 30px;
+  padding: 10px 20px;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  font-weight: normal;
+`;
 
 const ProgressPillProgress = styled.div`
-    color: ${props => props.theme.palette.color.purple};
-    font-size: 16px;
-`
-
+  color: ${(props) => props.theme.palette.color.purple};
+  font-size: 16px;
+`;
 
 const ProgressPillSeparator = styled.div`
   width: 2px;
   height: 16px;
   margin: 0 5px;
-  background: ${props => props.theme.palette.text.tertiary}40;
-`
-
+  background: ${(props) => props.theme.palette.text.tertiary}40;
+`;
 
 const ProgressPillRear = styled.div`
   display: flex;
   justify-content: center;
   align-items: flex-end;
-`
-
+`;
 
 const ProgressPillTotal = styled.div`
-  color: ${props => props.theme.palette.color.primary};
-`
-
+  color: ${(props) => props.theme.palette.color.primary};
+`;
 
 const ProgressPillHelpText = styled.div`
-  color: ${props => props.theme.palette.text.tertiary};
+  color: ${(props) => props.theme.palette.text.tertiary};
   font-size: 12px;
   padding-bottom: 1px;
-`
+`;
 
 const TitleTopBox = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-`
+`;
 
 const TableRow = styled.tr`
   height: 80px;
   padding: 0 50px;
-`
-
+`;
 
 const TableHead = styled.thead`
   border-radius: 8px;
-  background-color: ${props => props.theme.palette.color.backgroundColorDarker};
+  background-color: ${(props) =>
+    props.theme.palette.color.backgroundColorDarker};
   display: table-header-group;
   align-items: center;
   width: fill-available;
-  color: ${props => props.theme.palette.text.secondary};
+  color: ${(props) => props.theme.palette.text.secondary};
   font-weight: 500;
   height: 60px !important;
-`
-
+`;
 
 const Table = styled.table`
   border-radius: 12px;
   overflow: hidden;
   border-spacing: 0px;
-`
+`;
 
 const TopText = styled.div`
   font-size: 14px;
-  color: ${props => props.theme.palette.text.primary};
+  color: ${(props) => props.theme.palette.text.primary};
   font-weight: bold;
   white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-`
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
 const BottomText = styled.div`
   font-size: 12px;
-  color: ${props => props.theme.palette.text.tertiary};
+  color: ${(props) => props.theme.palette.text.tertiary};
   font-weight: 400;
   white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-`
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
 
 const TableCell = styled.td`
- border-bottom: 1px solid ${props => props.theme.palette.color.lightgrey};
-    padding: 0 25px;
-    width: fit-content;
-    width: fit-content;
-    max-width: 210px;
-
-`
+  border-bottom: 1px solid ${(props) => props.theme.palette.color.lightgrey};
+  padding: 0 25px;
+  width: fit-content;
+  width: fit-content;
+  max-width: 210px;
+`;
 
 const IconContainer = styled.div`
-  display:flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   height: fit-content;
   width: fit-content;
   padding: 5px;
-`
+`;
 
 const StagePill = styled.div<{ color: string }>`
   height: 40px;
   padding: 5px 20px;
   border-radius: 8px;
-  background: ${props => props.color}20;
-  color: ${props => props.color};
+  background: ${(props) => props.color}20;
+  color: ${(props) => props.color};
   display: flex;
   justify-content: center;
   align-items: center;
   white-space: nowrap;
   font-size: 12px;
   width: fit-content;
-`
+`;
 
 const Link = styled.a`
-  color: ${props => props.theme.palette.color.purple};
+  color: ${(props) => props.theme.palette.color.purple};
   font-weight: 500;
   padding: 5px 10px;
   display: flex;
@@ -378,21 +248,18 @@ const Link = styled.a`
   font-size: 14px;
   white-space: nowrap;
 
-
   &:hover {
-    color: ${props => props.theme.palette.color.backgroundDarker};
+    color: ${(props) => props.theme.palette.color.backgroundDarker};
   }
-`
+`;
 
 const TitleTopBoxSmall = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  grid-gap: 20px;  
+  grid-gap: 20px;
   margin-bottom: 20px;
-`
-
-
+`;
 
 const H1 = (props: Parameters<typeof _H1>[0]) => (
   <_H1 sx={{ fontSize: 30, ...props.sx }} {...props} />
@@ -411,103 +278,76 @@ const STAGE_COLORS = [
   "#ff9090",
   "#8312DD",
 ];
-const STAGE_ICONS = [
-  "",
-  "",
-  "",
-  "check",
-  "",
-  "",
-];
 const STAGE_ACTIONS: ((a: {
   contractUuid: string;
   uuid: string;
   onDelete: (uuid: string) => void;
 }) => React.ReactElement)[] = [
-    (row) => {
-      const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
-        path: "agreement",
-        method: "DELETE",
-      });
-      const [loading, setLoading] = useState(false);
-      return (<>
-        {!loading ? (<>
-          <IconContainer
-            onClick={() => {
-              setLoading(true);
-              deleteHandler({ uuid: row.uuid })
-                .then(() => row.onDelete(row.uuid))
-                .finally(() => setLoading(false));
-            }}
-          >
-            <Icon
-              name='remove'
-              heightAndWidth={'16px'}
-            />
-          </IconContainer>
-        </>
+  (row) => {
+    const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
+      path: "agreement",
+      method: "DELETE",
+    });
+    const [loading, setLoading] = useState(false);
+    return (
+      <>
+        {!loading ? (
+          <>
+            <IconContainer
+              onClick={() => {
+                setLoading(true);
+                deleteHandler({ uuid: row.uuid })
+                  .then(() => row.onDelete(row.uuid))
+                  .finally(() => setLoading(false));
+              }}
+            >
+              <Icon name="remove" heightAndWidth={"16px"} />
+            </IconContainer>
+          </>
         ) : (
           <LoadingIndicator size={30} />
-        )
-        }</>
-      );
-    },
-    (row) => (
-      <Link href={`/contract?uuid=${row.uuid}&signer=1`}>
-        Send Link To Investor
-      </Link>
-    ),
-    (row) => (
-      <Link href={`/contract?uuid=${row.uuid}&signer=2`}>
-        Sign Contract
-      </Link>
-    ),
-    (row) => (
-      <Link href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
-        View Contract
-      </Link>
-    ),
-    () => <span />,
-    () => <span />,
-  ];
+        )}
+      </>
+    );
+  },
+  (row) => (
+    <Link href={`/contract?uuid=${row.uuid}&signer=1`}>
+      Send Link To Investor
+    </Link>
+  ),
+  (row) => (
+    <Link href={`/contract?uuid=${row.uuid}&signer=2`}>Sign Contract</Link>
+  ),
+  (row) => (
+    <Link href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
+      View Contract
+    </Link>
+  ),
+  () => <span />,
+  () => <span />,
+];
 
 const AgreementRow = (
   row: Agreements[number] & {
     contractUuid: string;
     onDelete: (uuid: string) => void;
+    total: number;
   }
-
 ) => {
   const StageAction = STAGE_ACTIONS[row.status];
-  const fundraiseData = useLoaderData<FundraiseData>();
-  const type = fundraiseData.type;
-  const [rows, setRows] = useState<Agreements>(fundraiseData.agreements);
-  const total = useMemo(
-    () =>
-      Number(fundraiseData.details.amount) *
-      (Number(fundraiseData.details.frequency) || 1),
-    [fundraiseData]
+  const ProgressPercentage = Math.round(
+    (Number(row.amount) / Number(row.total)) * 100
   );
-
-  const ProgressPercentage = Math.round((Number(row.amount) / Number(total)) * 100)
 
   return (
     <TableRow>
       <TableCell>
-        <TopText>
-          {row.name}
-        </TopText>
-        <BottomText>
-          {row.email}
-        </BottomText>
+        <TopText>{row.name}</TopText>
+        <BottomText>{row.email}</BottomText>
       </TableCell>
       <TableCell>
-        <TopText>
-          ${formatAmount(row.amount)}
-        </TopText>
-        <BottomText>
-          {ProgressPercentage} %
-        </BottomText>
+        <TopText>${formatAmount(row.amount)}</TopText>
+        <BottomText>{ProgressPercentage} %</BottomText>
       </TableCell>
       <TableCell>
         <StagePill color={STAGE_COLORS[row.status]}>
@@ -527,9 +367,7 @@ const AgreementRow = (
 
 type FundraiseData = Awaited<ReturnType<GetContractHandler>>;
 
-const UserFundraisesContract = (
-
-) => {
+const UserFundraisesContract = () => {
   const { id = "" } = useParams();
   const location = useLocation();
   const fundraiseData = useLoaderData<FundraiseData>();
@@ -561,8 +399,9 @@ const UserFundraisesContract = (
     isOpen?: boolean;
   };
 
-
-  const ProgressPercentage = Math.round((Number(progress) / Number(total)) * 100)
+  const ProgressPercentage = Math.round(
+    (Number(progress) / Number(total)) * 100
+  );
 
   return (
     <>
@@ -570,22 +409,13 @@ const UserFundraisesContract = (
         <InfoArea>
           <PageTitle>Your Fundraise</PageTitle>
           <UpdatePill>
-            {rows.filter((row) => row.status === 2).length > 0 && (<span>🎉 </span>)}
-            <span><b>{rows.filter((row) => row.status === 2).length}</b> New</span>
+            {rows.filter((row) => row.status === 2).length > 0 && (
+              <span>🎉 </span>
+            )}
+            <span>
+              <b>{rows.filter((row) => row.status === 2).length}</b> New
+            </span>
           </UpdatePill>
-          {/* <ActionButton>
-            <Snackbar
-              open={snackbarOpen}
-              autoHideDuration={5000}
-              onClose={() => setSnackbarOpen(false)}
-              color="success"
-            >
-              <Alert severity="success" sx={{ width: "100%" }}>
-                Successfully Saved Profile!
-              </Alert>
-            </Snackbar>
-            <span color={"darkred"}>{error}</span>
-          </ActionButton> */}
         </InfoArea>
         <UserButton />
       </TopBar>
@@ -600,22 +430,22 @@ const UserFundraisesContract = (
                 </ProgressPillProgress>
                 <ProgressPillSeparator />
                 <ProgressPillRear>
-                  <ProgressPillTotal>
-                    {formatAmount(total)}
-                  </ProgressPillTotal>
-                  <ProgressPillHelpText>
-                    / month
-                  </ProgressPillHelpText>
+                  <ProgressPillTotal>{formatAmount(total)}</ProgressPillTotal>
+                  <ProgressPillHelpText>/ month</ProgressPillHelpText>
                 </ProgressPillRear>
               </ProgressPill>
             </TitleTopBox>
-            <Spacer height={'20px'} />
+            <Spacer height={"20px"} />
             <ProgressBar progress={ProgressPercentage} />
           </Section>
           <ConditionsContainer>
             <ConditionsBox>
               <SectionCircle width={"30px"} margin={"0"}>
-                <Icon name={"dollar"} color={"purple"} heightAndWidth={"15px"} />
+                <Icon
+                  name={"dollar"}
+                  color={"purple"}
+                  heightAndWidth={"15px"}
+                />
               </SectionCircle>
               <ConditionsContent>
                 <ConditionsSubTitle>Funding Goal</ConditionsSubTitle>
@@ -624,7 +454,11 @@ const UserFundraisesContract = (
             </ConditionsBox>
             <ConditionsBox>
               <SectionCircle width={"30px"} margin={"0"}>
-                <Icon name={"repeat"} color={"purple"} heightAndWidth={"15px"} />
+                <Icon
+                  name={"repeat"}
+                  color={"purple"}
+                  heightAndWidth={"15px"}
+                />
               </SectionCircle>
               <ConditionsContent>
                 <ConditionsSubTitle>Pays Back</ConditionsSubTitle>
@@ -660,10 +494,11 @@ const UserFundraisesContract = (
           {/* // {FUNDRAISE_NAMES_BY_IDS[type]} */}
           <Section>
             <TitleTopBoxSmall>
-              <SectionTitle margin={'0px'}>Your Investors</SectionTitle>
+              <SectionTitle margin={"0px"}>Your Investors</SectionTitle>
               <ProgressPillSmall>
                 <ProgressPillProgress>
-                  Confirmed: <b>{rows.filter((row) => row.status === 3).length}</b>
+                  Confirmed:{" "}
+                  <b>{rows.filter((row) => row.status === 3).length}</b>
                 </ProgressPillProgress>
               </ProgressPillSmall>
             </TitleTopBoxSmall>
@@ -684,6 +519,7 @@ const UserFundraisesContract = (
                       {...row}
                       contractUuid={id}
                       onDelete={onDelete}
+                      total={total}
                     />
                   ))}
                 </TableBody>
