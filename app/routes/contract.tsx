@@ -322,21 +322,21 @@ const ContractPage = (): React.ReactElement => {
             </EversignEmbedContainer>
           </Section>
           {error}
-          {/* <Body>
-          {signed && !isInvestor && (
-            <Button
-              color={"primary"}
-              variant={"contained"}
-              onClick={() =>
-                window.location.assign(
-                  `/user/fundraises/contract/${contracUuid}`
-                )
-              }
-            >
-              Back to Dashboard
-            </Button>
-          )}
-        </Body> */}
+          <Body>
+            {signed && !isInvestor && (
+              <Button
+                color={"primary"}
+                variant={"contained"}
+                onClick={() =>
+                  window.location.assign(
+                    `/user/fundraises/contract/${contracUuid}`
+                  )
+                }
+              >
+                Back to Dashboard
+              </Button>
+            )}
+          </Body>
           <Snackbar
             open={snackbarOpen}
             autoHideDuration={5000}

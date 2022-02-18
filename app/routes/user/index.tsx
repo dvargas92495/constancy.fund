@@ -68,7 +68,6 @@ const ProfileImageContainer = styled.div`
   width: 150px;
   height: 150px;
   position: relative;
-  margin: 30px;
 `;
 
 const ProfileImageChangeOverlay = styled.div`

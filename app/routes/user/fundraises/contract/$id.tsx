@@ -1,15 +1,17 @@
 import Loading from "@dvargas92495/ui/dist/components/Loading";
 import React, { useState, useCallback, useMemo } from "react";
 import Box from "@mui/material/Box";
+import { UserButton, useUser } from "@clerk/clerk-react";
+
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
 import useAuthenticatedHandler from "@dvargas92495/ui/dist/useAuthenticatedHandler";
 import ExternalLink from "@dvargas92495/ui/dist/components/ExternalLink";
-import Table from "@mui/material/Table";
+// import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
+// import TableCell from "@mui/material/TableCell";
+// import TableRow from "@mui/material/TableRow";
+// import TableHead from "@mui/material/TableHead";
 import type { Handler as GetContractHandler } from "../../../../../functions/contract/get";
 import type { Handler as PostAgreementHandler } from "../../../../../functions/agreement/post";
 import type { Handler as DeleteAgreementHandler } from "../../../../../functions/agreement/delete";
@@ -28,6 +30,369 @@ import {
 import formatAmount from "../../../../../db/util/formatAmount";
 import cookie from "cookie";
 import axios from "axios";
+import TopBar from "~/_common/TopBar";
+import InfoArea from "~/_common/InfoArea";
+import PageTitle from "~/_common/PageTitle";
+import ActionButton from "~/_common/ActionButton";
+import ContentContainer from "~/_common/ContentContainer";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+
+import Icon from "~/_common/Icon";
+import styled, { keyframes, css } from 'styled-components'
+import { PrimaryAction } from "~/_common/PrimaryAction";
+import SectionCircle from "~/_common/SectionCircle";
+import Spacer from "~/_common/Spacer";
+
+import PageTitle from "~/_common/PageTitle";
+import ContentContainer from "~/_common/ContentContainer";
+import Section from "~/_common/Section";
+import InfoText from "~/_common/InfoText";
+import SubSectionTitle from "~/_common/SubSectionTitle";
+import SectionTitle from "~/_common/SectionTitle";
+
+import TextInputContainer from "~/_common/TextInputContainer";
+import TextInputOneLine from "~/_common/TextInputOneLine";
+import TextFieldBox from "~/_common/TextFieldBox";
+import TextFieldDescription from "~/_common/TextFieldDescription";
+import ProgressBar from '~/_common/ProgressBar'
+import { LoadingIndicator } from "~/_common/LoadingIndicator";
+
+const ConditionsContainer = styled.div`
+  display: flex;
+  grid-gap: 15px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+`;
+
+const ConditionsBox = styled.div`
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+  height: 80px;
+  flex: 1;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  grid-gap: 10px;
+  display: flex;
+`;
+
+const SmallConditionsText = styled.span`
+  color: ${(props) => props.theme.palette.text.tertiary};
+  font-size: 12px;
+  font-weight: 400;
+`;
+
+const ConditionsContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  grid-gap: 0px;
+`;
+
+const ConditionsTitle = styled.div`
+  color: ${(props) => props.theme.palette.text.primary};
+  font-weight: bold;
+  font-size: 16px;
+`;
+
+const ConditionsSubTitle = styled.div`
+  color: ${(props) => props.theme.palette.text.tertiary};
+  font-weight: normal;
+  font-size: 12px;
+`;
+
+const ProfileContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  margin: auto;
+  background: ${props => props.theme.palette.color.backgroundColorDarker};
+`
+
+const ProfileBottomContainer = styled.div<{ paddingTop: string }>`
+  width: 800px;
+  padding-top: ${props => props.paddingTop};
+  height: fit-content;
+  padding-bottom: 100px;
+`
+
+const TopBarProfile = styled.div`
+  border-bottom: 1px solid ${props => props.theme.palette.color.lightgrey};
+  width: 100%;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  top: 0;
+  background: white;
+  z-index: 10;
+`
+
+const ProfileContentBox = styled.div<{ scroll?: number }>`
+  display: flex;
+  flex-direction: column;
+  grid-gap: 30px;
+  width: fill-available;
+  align-items: space-between;
+
+  ${(props => props.scroll > 200 &&
+    css`  
+      grid-gap: 5px;
+      `
+  )}
+`
+
+const TermSheetTitleBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 800px;
+  padding-top: 130px;
+  grid-gap: 15px;
+`
+
+const BackButton = styled.div`
+  display: flex;
+  grid-gap: 5px;
+  width: fit-content;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 6px 12px;
+  z-index: 1001;
+`
+
+const ProfileTitle = styled.div<{ scroll?: number }>`
+    color: ${props => props.theme.palette.color.darkerText};
+    font-size: 30px;
+    font-weight: 800;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+`
+
+const ProfileLowerBar = styled.div<{ scroll?: number }>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`
+
+const ProfileSocialBar = styled.div<{ scroll?: number }>`
+  display: flex;
+  grid-gap: 20px;
+`
+
+const TopBarMainBox = styled.div<{ scroll?: number }>`
+  width: fill-available;
+  display: flex;
+  align-items: center;
+  grid-gap: 40px;
+  max-width: 800px;
+  margin-top: 200px;
+  padding: 0 50px;
+
+  ${(props => props.scroll > 200 &&
+    css`
+        padding: 0 20px;
+        margin-top: 0px;
+        align-items: center;
+        grid-gap: 20px;
+      `
+  )}
+`
+
+const IconContent = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-gap: 5px;
+`
+
+const UpdatePill = styled.div`
+  height: 50px;
+  padding: 20px;
+  font-size: 18px;
+  color: ${props => props.theme.palette.color.purple};
+  border: 1px solid ${props => props.theme.palette.color.lightgrey};
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-gap: 15px;
+`
+
+const ProgressPill = styled.div`
+    background-color: ${props => props.theme.palette.color.backgroundHighlight};
+    border-radius: 50px;
+    height: 50px;
+    padding: 10px 20px;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    font-weight: bold;
+`
+
+
+const ProgressPillSmall = styled.div`
+    background-color: ${props => props.theme.palette.color.backgroundHighlight};
+    border-radius: 30px;
+    height: 30px;
+    padding: 10px 20px;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    font-weight: normal;
+`
+
+
+const ProgressPillProgress = styled.div`
+    color: ${props => props.theme.palette.color.purple};
+    font-size: 16px;
+`
+
+
+const ProgressPillSeparator = styled.div`
+  width: 2px;
+  height: 16px;
+  margin: 0 5px;
+  background: ${props => props.theme.palette.text.tertiary}40;
+`
+
+
+const ProgressPillRear = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+`
+
+
+const ProgressPillTotal = styled.div`
+  color: ${props => props.theme.palette.color.primary};
+`
+
+
+const ProgressPillHelpText = styled.div`
+  color: ${props => props.theme.palette.text.tertiary};
+  font-size: 12px;
+  padding-bottom: 1px;
+`
+
+const TitleTopBox = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+const TableRow = styled.tr`
+  height: 80px;
+  padding: 0 50px;
+`
+
+
+const TableHead = styled.thead`
+  border-radius: 8px;
+  background-color: ${props => props.theme.palette.color.backgroundColorDarker};
+  display: table-header-group;
+  align-items: center;
+  width: fill-available;
+  color: ${props => props.theme.palette.text.secondary};
+  font-weight: 500;
+  height: 60px !important;
+`
+
+
+const Table = styled.table`
+  border-radius: 12px;
+  overflow: hidden;
+  border-spacing: 0px;
+`
+
+const TopText = styled.div`
+  font-size: 14px;
+  color: ${props => props.theme.palette.text.primary};
+  font-weight: bold;
+  white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+`
+const BottomText = styled.div`
+  font-size: 12px;
+  color: ${props => props.theme.palette.text.tertiary};
+  font-weight: 400;
+  white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+`
+
+const TableCell = styled.td`
+ border-bottom: 1px solid ${props => props.theme.palette.color.lightgrey};
+    padding: 0 25px;
+    width: fit-content;
+    width: fit-content;
+    max-width: 210px;
+
+`
+
+const IconContainer = styled.div`
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  height: fit-content;
+  width: fit-content;
+  padding: 5px;
+`
+
+const StagePill = styled.div<{ color: string }>`
+  height: 40px;
+  padding: 5px 20px;
+  border-radius: 8px;
+  background: ${props => props.color}20;
+  color: ${props => props.color};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+  font-size: 12px;
+  width: fit-content;
+`
+
+const Link = styled.a`
+  color: ${props => props.theme.palette.color.purple};
+  font-weight: 500;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-decoration: none;
+  font-size: 14px;
+  white-space: nowrap;
+
+
+  &:hover {
+    color: ${props => props.theme.palette.color.backgroundDarker};
+  }
+`
+
+const TitleTopBoxSmall = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  grid-gap: 20px;  
+  margin-bottom: 20px;
+`
+
+
 
 const H1 = (props: Parameters<typeof _H1>[0]) => (
   <_H1 sx={{ fontSize: 30, ...props.sx }} {...props} />
@@ -39,93 +404,115 @@ const FUNDRAISE_NAMES_BY_IDS = Object.fromEntries(
 
 type Agreements = Awaited<ReturnType<GetContractHandler>>["agreements"];
 const STAGE_COLORS = [
-  "#C4C4C4",
-  "#A2F159",
-  "#D4E862",
-  "#2FEC00",
-  "#FF8B8B",
+  "#48cae4",
+  "#0096c7",
+  "#0077b6",
+  "#718355",
+  "#ff9090",
   "#8312DD",
+];
+const STAGE_ICONS = [
+  "",
+  "",
+  "",
+  "check",
+  "",
+  "",
 ];
 const STAGE_ACTIONS: ((a: {
   contractUuid: string;
   uuid: string;
   onDelete: (uuid: string) => void;
 }) => React.ReactElement)[] = [
-  (row) => {
-    const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
-      path: "agreement",
-      method: "DELETE",
-    });
-    const [loading, setLoading] = useState(false);
-    return (
-      <Box
-        component={"span"}
-        sx={{
-          color: "#0000EE",
-          textDecoration: "underline",
-          "&:hover": {
-            textDecoration: "none",
-            cursor: "pointer",
-          },
-        }}
-        onClick={() => {
-          setLoading(true);
-          deleteHandler({ uuid: row.uuid })
-            .then(() => row.onDelete(row.uuid))
-            .finally(() => setLoading(false));
-        }}
-      >
-        <Box component={"span"} sx={{ marginRight: 16 }}>
-          Remove Invitation
-        </Box>{" "}
-        <Loading loading={loading} size={16} />
-      </Box>
-    );
-  },
-  (row) => (
-    <ExternalLink href={`/contract?uuid=${row.uuid}&signer=1`}>
-      Send Link To Investor
-    </ExternalLink>
-  ),
-  (row) => (
-    <ExternalLink href={`/contract?uuid=${row.uuid}&signer=2`}>
-      Sign Contract
-    </ExternalLink>
-  ),
-  (row) => (
-    <ExternalLink href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
-      View Contract
-    </ExternalLink>
-  ),
-  () => <span />,
-  () => <span />,
-];
+    (row) => {
+      const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
+        path: "agreement",
+        method: "DELETE",
+      });
+      const [loading, setLoading] = useState(false);
+      return (<>
+        {!loading ? (<>
+          <IconContainer
+            onClick={() => {
+              setLoading(true);
+              deleteHandler({ uuid: row.uuid })
+                .then(() => row.onDelete(row.uuid))
+                .finally(() => setLoading(false));
+            }}
+          >
+            <Icon
+              name='remove'
+              heightAndWidth={'16px'}
+            />
+          </IconContainer>
+        </>
+        ) : (
+          <LoadingIndicator size={30} />
+        )
+        }</>
+      );
+    },
+    (row) => (
+      <Link href={`/contract?uuid=${row.uuid}&signer=1`}>
+        Send Link To Investor
+      </Link>
+    ),
+    (row) => (
+      <Link href={`/contract?uuid=${row.uuid}&signer=2`}>
+        Sign Contract
+      </Link>
+    ),
+    (row) => (
+      <Link href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
+        View Contract
+      </Link>
+    ),
+    () => <span />,
+    () => <span />,
+  ];
 
 const AgreementRow = (
   row: Agreements[number] & {
     contractUuid: string;
     onDelete: (uuid: string) => void;
   }
+
 ) => {
   const StageAction = STAGE_ACTIONS[row.status];
+  const fundraiseData = useLoaderData<FundraiseData>();
+  const type = fundraiseData.type;
+  const [rows, setRows] = useState<Agreements>(fundraiseData.agreements);
+  const total = useMemo(
+    () =>
+      Number(fundraiseData.details.amount) *
+      (Number(fundraiseData.details.frequency) || 1),
+    [fundraiseData]
+  );
+
+  const ProgressPercentage = Math.round((Number(row.amount) / Number(total)) * 100)
+
   return (
     <TableRow>
-      <TableCell>{row.name}</TableCell>
-      <TableCell>${formatAmount(row.amount)}</TableCell>
       <TableCell>
-        <Box
-          sx={{
-            height: 24,
-            borderRadius: 12,
-            px: "40px",
-            py: "4px",
-            backgroundColor: STAGE_COLORS[row.status],
-            width: "fit-content",
-            textAlign: "center",
-          }}
-        >
-          {CONTRACT_STAGES[row.status].replace(/_/g, " ").toLowerCase()}
-        </Box>
+        <TopText>
+          {row.name}
+        </TopText>
+        <BottomText>
+          {row.email}
+        </BottomText>
+      </TableCell>
+      <TableCell>
+        <TopText>
+          ${formatAmount(row.amount)}
+        </TopText>
+        <BottomText>
+          {ProgressPercentage} %
+        </BottomText>
+      </TableCell>
+      <TableCell>
+        <StagePill color={STAGE_COLORS[row.status]}>
+          {CONTRACT_STAGES[row.status].replace(/_/g, " ").toUpperCase()}
+        </StagePill>
       </TableCell>
       <TableCell>
         <StageAction
@@ -140,12 +527,15 @@ const AgreementRow = (
 
 type FundraiseData = Awaited<ReturnType<GetContractHandler>>;
 
-const UserFundraisesContract = () => {
+const UserFundraisesContract = (
+
+) => {
   const { id = "" } = useParams();
   const location = useLocation();
   const fundraiseData = useLoaderData<FundraiseData>();
   const type = fundraiseData.type;
   const [rows, setRows] = useState<Agreements>(fundraiseData.agreements);
+
   const total = useMemo(
     () =>
       Number(fundraiseData.details.amount) *
@@ -156,6 +546,8 @@ const UserFundraisesContract = () => {
     () => rows.reduce((p, c) => p + c.amount, 0),
     [rows]
   );
+  // const [error, setError] = useState("");
+
   const capSpace = useMemo(() => total - progress, [total, progress]);
   const postAgreement = useAuthenticatedHandler<PostAgreementHandler>({
     path: "agreement",
@@ -168,120 +560,230 @@ const UserFundraisesContract = () => {
   const { isOpen: defaultIsOpen } = (location.state || {}) as {
     isOpen?: boolean;
   };
+
+
+  const ProgressPercentage = Math.round((Number(progress) / Number(total)) * 100)
+
   return (
     <>
-      <Box>
-        <p>
-          <b>Wants to raise: </b>${formatAmount(total)}
-        </p>
-        <p>
-          <b>Pays Back: </b>$
-          {formatAmount((total * Number(fundraiseData.details.return)) / 100)}
-        </p>
-        <p>
-          <b>Shares Revenue: </b>
-          {Number(fundraiseData.details.share)}%
-        </p>
-        <p>
-          <b>Income Threshold: </b>$
-          {formatAmount(Number(fundraiseData.details.threshold))} / year
-        </p>
-        <p>
-          <b>Progress: </b>${formatAmount(progress)} / {formatAmount(total)}
-        </p>
-        <p>
-          <b>Progress Investors: </b>
-          {rows.length}
-        </p>
-        <p>
-          <b>Progress New: </b>
-          {rows.filter((row) => row.status === 2).length}
-        </p>
-      </Box>
-      <H1
-        sx={{
-          fontSize: 30,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Box
-          component={"span"}
+      <TopBar>
+        <InfoArea>
+          <PageTitle>Your Fundraise</PageTitle>
+          <UpdatePill>
+            {rows.filter((row) => row.status === 2).length > 0 && (<span>🎉 </span>)}
+            <span><b>{rows.filter((row) => row.status === 2).length}</b> New</span>
+          </UpdatePill>
+          {/* <ActionButton>
+            <Snackbar
+              open={snackbarOpen}
+              autoHideDuration={5000}
+              onClose={() => setSnackbarOpen(false)}
+              color="success"
+            >
+              <Alert severity="success" sx={{ width: "100%" }}>
+                Successfully Saved Profile!
+              </Alert>
+            </Snackbar>
+            <span color={"darkred"}>{error}</span>
+          </ActionButton> */}
+        </InfoArea>
+        <UserButton />
+      </TopBar>
+      <ContentContainer>
+        <ProfileBottomContainer paddingTop={"0"}>
+          <Section>
+            <TitleTopBox>
+              <SectionTitle>Progress</SectionTitle>
+              <ProgressPill>
+                <ProgressPillProgress>
+                  ${formatAmount(progress)}
+                </ProgressPillProgress>
+                <ProgressPillSeparator />
+                <ProgressPillRear>
+                  <ProgressPillTotal>
+                    {formatAmount(total)}
+                  </ProgressPillTotal>
+                  <ProgressPillHelpText>
+                    / month
+                  </ProgressPillHelpText>
+                </ProgressPillRear>
+              </ProgressPill>
+            </TitleTopBox>
+            <Spacer height={'20px'} />
+            <ProgressBar progress={ProgressPercentage} />
+          </Section>
+          <ConditionsContainer>
+            <ConditionsBox>
+              <SectionCircle width={"30px"} margin={"0"}>
+                <Icon name={"dollar"} color={"purple"} heightAndWidth={"15px"} />
+              </SectionCircle>
+              <ConditionsContent>
+                <ConditionsSubTitle>Funding Goal</ConditionsSubTitle>
+                <ConditionsTitle>30.000</ConditionsTitle>
+              </ConditionsContent>
+            </ConditionsBox>
+            <ConditionsBox>
+              <SectionCircle width={"30px"} margin={"0"}>
+                <Icon name={"repeat"} color={"purple"} heightAndWidth={"15px"} />
+              </SectionCircle>
+              <ConditionsContent>
+                <ConditionsSubTitle>Pays Back</ConditionsSubTitle>
+                <ConditionsTitle>60.000</ConditionsTitle>
+              </ConditionsContent>
+            </ConditionsBox>
+            <ConditionsBox>
+              <SectionCircle width={"30px"} margin={"0"}>
+                <Icon name={"split"} color={"purple"} heightAndWidth={"15px"} />
+              </SectionCircle>
+              <ConditionsContent>
+                <ConditionsSubTitle>Shares Revenue</ConditionsSubTitle>
+                <ConditionsTitle>12%</ConditionsTitle>
+              </ConditionsContent>
+            </ConditionsBox>
+            <ConditionsBox>
+              <SectionCircle width={"30px"} margin={"0"}>
+                <Icon
+                  name={"trendingUp"}
+                  color={"purple"}
+                  heightAndWidth={"15px"}
+                />
+              </SectionCircle>
+              <ConditionsContent>
+                <ConditionsSubTitle>Income Threshold</ConditionsSubTitle>
+                <ConditionsTitle>
+                  30.000<SmallConditionsText>/year</SmallConditionsText>
+                </ConditionsTitle>
+              </ConditionsContent>
+            </ConditionsBox>
+          </ConditionsContainer>
+
+          {/* // {FUNDRAISE_NAMES_BY_IDS[type]} */}
+          <Section>
+            <TitleTopBoxSmall>
+              <SectionTitle margin={'0px'}>Your Investors</SectionTitle>
+              <ProgressPillSmall>
+                <ProgressPillProgress>
+                  Confirmed: <b>{rows.filter((row) => row.status === 3).length}</b>
+                </ProgressPillProgress>
+              </ProgressPillSmall>
+            </TitleTopBoxSmall>
+            <Box>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Investor</TableCell>
+                    <TableCell>Amount</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => (
+                    <AgreementRow
+                      key={row.uuid}
+                      {...row}
+                      contractUuid={id}
+                      onDelete={onDelete}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+          </Section>
+        </ProfileBottomContainer>
+
+        <H1
           sx={{
-            a: {
-              textDecoration: "none",
-              color: "#333333",
-            },
+            fontSize: 30,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          <RemixLink to={"/fundraises"}>Your Fundraises</RemixLink>
-          {" > "}
-          {FUNDRAISE_NAMES_BY_IDS[type]}
-        </Box>
-        <FormDialog<{ name: string; email: string; amount: number }>
-          formElements={{
-            name: {
-              defaultValue: "",
-              order: 0,
-              component: StringField,
-              validate: (s) => (!s ? "Name is required" : ""),
-            },
-            email: {
-              defaultValue: "",
-              order: 1,
-              component: StringField,
-              validate: (s) => (!s ? "Email is required" : ""),
-            },
-            amount: {
-              defaultValue: 0,
-              order: 2,
-              component: NumberField,
-              validate: (n) => {
-                if (n < 100) {
-                  return "Amount must be greater than $100";
-                }
-                if (capSpace < n) {
-                  return `Requested more than available cap space: $${formatAmount(
-                    capSpace
-                  )}`;
-                }
-                return "";
+          <Box
+            component={"span"}
+            sx={{
+              a: {
+                textDecoration: "none",
+                color: "#333333",
               },
-            },
-          }}
-          title={"Invite New Investor"}
-          buttonText={"Invite Investor"}
-          onSave={(body) =>
-            postAgreement({ uuid: id, ...body }).then((r) =>
-              setRows([...rows, { ...body, uuid: r.uuid, status: 0 }])
-            )
-          }
-          defaultIsOpen={defaultIsOpen}
-        />
-      </H1>
-      <Box>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Investor</TableCell>
-              <TableCell>Amount</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <AgreementRow
-                key={row.uuid}
-                {...row}
-                contractUuid={id}
-                onDelete={onDelete}
-              />
-            ))}
-          </TableBody>
-        </Table>
-      </Box>
+            }}
+          >
+            <RemixLink to={"/fundraises"}>Your Fundraises</RemixLink>
+            {" > "}
+            {FUNDRAISE_NAMES_BY_IDS[type]}
+          </Box>
+          <FormDialog<{ name: string; email: string; amount: number }>
+            formElements={{
+              name: {
+                defaultValue: "",
+                order: 0,
+                component: StringField,
+                validate: (s) => (!s ? "Name is required" : ""),
+              },
+              email: {
+                defaultValue: "",
+                order: 1,
+                component: StringField,
+                validate: (s) => (!s ? "Email is required" : ""),
+              },
+              amount: {
+                defaultValue: 0,
+                order: 2,
+                component: NumberField,
+                validate: (n) => {
+                  if (n < 100) {
+                    return "Amount must be greater than $100";
+                  }
+                  if (capSpace < n) {
+                    return `Requested more than available cap space: $${formatAmount(
+                      capSpace
+                    )}`;
+                  }
+                  return "";
+                },
+              },
+            }}
+            title={"Invite New Investor"}
+            buttonText={"Invite Investor"}
+            onSave={(body) =>
+              postAgreement({ uuid: id, ...body }).then((r) =>
+                setRows([...rows, { ...body, uuid: r.uuid, status: 0 }])
+              )
+            }
+            defaultIsOpen={defaultIsOpen}
+          />
+        </H1>
+
+        <Box>
+          <p>
+            <b>Wants to raise: </b>${formatAmount(total)}
+          </p>
+          <p>
+            <b>Pays Back: </b>$
+            {formatAmount((total * Number(fundraiseData.details.return)) / 100)}
+          </p>
+          <p>
+            <b>Shares Revenue: </b>
+            {Number(fundraiseData.details.share)}%
+          </p>
+          <p>
+            <b>Income Threshold: </b>$
+            {formatAmount(Number(fundraiseData.details.threshold))} / year
+          </p>
+          <p>
+            <b>Progress: </b>${formatAmount(progress)} / {formatAmount(total)}
+          </p>
+          <p>
+            <b>Progress Investors: </b>
+            {rows.length}
+          </p>
+          <p>
+            <b>Progress New: </b>
+            {rows.filter((row) => row.status === 2).length}
+          </p>
+        </Box>
+      </ContentContainer>
     </>
   );
 };

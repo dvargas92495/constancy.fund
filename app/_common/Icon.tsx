@@ -29,6 +29,7 @@ import ThumbsUp from "./Icons/thumbsUp.svg";
 import Repeat from "./Icons/repeat.svg";
 import Split from "./Icons/split.svg";
 import TrendingUp from "./Icons/trendingUp.svg";
+import Remove from "./Icons/close.svg";
 
 const Icon = ({
   name,
@@ -37,36 +38,37 @@ const Icon = ({
   heightAndWidth?: string;
   color?: string;
   name:
-    | "arrow-drop-down"
-    | "arrow-right"
-    | "book"
-    | "check"
-    | "delete"
-    | "dollar"
-    | "email"
-    | "facebook"
-    | "fundraise"
-    | "github"
-    | "globe"
-    | "home"
-    | "info"
-    | "Instagram"
-    | "linkedIn"
-    | "mail"
-    | "more-vert"
-    | "note"
-    | "personFine"
-    | "preview"
-    | "public"
-    | "reddit"
-    | "repeat"
-    | "settings"
-    | "split"
-    | "thumbsUp"
-    | "trendingUp"
-    | "twitter"
-    | "webIcon"
-    | "youtube";
+  | "arrow-drop-down"
+  | "arrow-right"
+  | "book"
+  | "check"
+  | "delete"
+  | "dollar"
+  | "email"
+  | "facebook"
+  | "fundraise"
+  | "github"
+  | "globe"
+  | "home"
+  | "info"
+  | "Instagram"
+  | "linkedIn"
+  | "mail"
+  | "more-vert"
+  | "note"
+  | "personFine"
+  | "preview"
+  | "public"
+  | "reddit"
+  | "repeat"
+  | "settings"
+  | "split"
+  | "thumbsUp"
+  | "trendingUp"
+  | "twitter"
+  | "webIcon"
+  | "youtube"
+  | "remove"
 } & Pick<SvgIconProps, "height" | "width">) => {
   const muiProps = {
     ...props,
@@ -133,6 +135,8 @@ const Icon = ({
       return <PublicIcon {...muiProps} />;
     case "youtube":
       return <YoutubeIcon {...muiProps} />;
+    case "remove":
+      return <StyledIcon {...props} icon={Remove} />;
     default:
       return <SvgIcon {...muiProps} />;
   }

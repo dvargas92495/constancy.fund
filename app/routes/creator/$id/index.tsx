@@ -37,6 +37,7 @@ import {
   ProfileBottomContainer,
   TopBarProfile,
 } from "../$id";
+import CompanyLogo from "~/_common/Images/memexlogo.png";
 
 type Props = Awaited<ReturnType<GetPropsHandler>>;
 export type Agreement = Awaited<ReturnType<GetHandler>>;
@@ -99,7 +100,6 @@ const TopBarMainBox = styled.div<{ scroll?: number }>`
   grid-gap: 40px;
   max-width: 800px;
   margin-top: 200px;
-  padding: 0 50px;
 
   ${(props) =>
     props.scroll &&
@@ -166,7 +166,7 @@ const ConditionsContainer = styled.div`
 
 const ConditionsBox = styled.div`
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
-  height: 50px;
+  height: 80px;
   flex: 1;
   background: white;
   border-radius: 8px;
@@ -189,7 +189,7 @@ const ConditionsContent = styled.div`
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  grid-gap: 5px;
+  grid-gap: 0px;
 `;
 
 const ConditionsTitle = styled.div`
@@ -243,6 +243,36 @@ const VideoEmbed = styled.iframe`
   border-radius: 8px;
 `;
 
+
+const ProfileImageBox = styled.div`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 2px solid #347ae2;
+  border-radius: 300px;
+  margin: 1px;
+  cursor: pointer;
+
+
+  & > * {
+    height: fill-available;
+    width: fill-available;
+  }
+`;
+
+const ProfileImageContainer = styled.div<{ scroll?: number }>`
+  width: ${(props) => props.scroll > 200 ? '100px' : '150px'};
+  height: ${(props) => props.scroll > 200 ? '100px' : '150px'};
+  position: relative;
+
+  & * {
+    width: fill-available;
+    height: fill-available;
+  }
+`;
+
 const SectionInnerContent = styled.div``;
 
 const CreatorProfile = (): React.ReactElement => {
@@ -277,7 +307,18 @@ const CreatorProfile = (): React.ReactElement => {
     <>
       <TopBarContainerMinified scroll={scrollPosition}>
         <TopBarMainBox scroll={scrollPosition}>
-          <Avatar src={profileImageUrl} sx={{ width: 100, height: 100 }} />
+          {/* <Avatar src={profileImageUrl} sx={{ width: 100, height: 100 }} /> */}
+          <ProfileImageContainer
+            scroll={scrollPosition}
+          >
+            <ProfileImage>
+              <img
+                src={CompanyLogo}
+                alt={"Profile Image"}
+                style={{ borderRadius: "150px" }}
+              />
+            </ProfileImage>
+          </ProfileImageContainer>
           <ProfileContentBox scroll={scrollPosition}>
             <ProfileTitle scroll={scrollPosition}>{fullName}</ProfileTitle>
             <ProfileLowerBar scroll={scrollPosition}>
@@ -303,7 +344,7 @@ const CreatorProfile = (): React.ReactElement => {
                       name={"dollar"}
                       color={"white"}
                     />{" "}
-                    <span>Invest</span>
+                    <span>Invest in Project</span>
                   </IconContent>
                 }
                 onClick={() => {
@@ -324,9 +365,18 @@ const CreatorProfile = (): React.ReactElement => {
 
       <TopBarProfile>
         <TopBarMainBox>
-          <ProfileImage>
-            <Avatar src={profileImageUrl} sx={{ width: 200, height: 200 }} />
-          </ProfileImage>
+          <ProfileImageContainer
+            scroll={scrollPosition}
+          >
+            <ProfileImage
+            >
+              <img
+                src={CompanyLogo}
+                alt={"Profile Image"}
+                style={{ borderRadius: "150px" }}
+              />
+            </ProfileImage>
+          </ProfileImageContainer>
           <ProfileContentBox>
             <ProfileTitle>{fullName}</ProfileTitle>
             <ProfileLowerBar>
@@ -352,7 +402,7 @@ const CreatorProfile = (): React.ReactElement => {
                       name={"dollar"}
                       color={"white"}
                     />{" "}
-                    <span>Invest</span>
+                    <span>Invest in Project</span>
                   </IconContent>
                 }
                 onClick={() => {

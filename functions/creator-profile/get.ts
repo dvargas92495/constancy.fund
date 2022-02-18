@@ -10,11 +10,10 @@ const logic = ({ id }: { id: string }) => {
   ])
     .then(([u, fs]) => ({
       userId: id,
-      fullName: `${u.firstName} ${
-        typeof u.publicMetadata.middleName === "string"
-          ? `${u.publicMetadata.middleName.slice(0, 1)}. `
+      fullName: `${u.firstName} ${typeof u.publicMetadata.middleName === "string"
+          ? `${u.publicMetadata.middleName.slice(0, 1)}`
           : ""
-      }${u.lastName}`,
+        }${u.lastName}`,
       email:
         u.emailAddresses.find((e) => e.id === u.primaryEmailAddressId)
           ?.emailAddress || "",
