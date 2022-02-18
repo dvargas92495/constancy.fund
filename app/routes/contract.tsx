@@ -93,6 +93,8 @@ const BackButton = styled.div`
   left: 20px;
   padding: 6px 12px;
   z-index: 1001;
+  align-items: center;
+  cursor: pointer;
 `;
 
 const ProfileTitle = styled.div<{ scroll?: number }>`
@@ -280,7 +282,7 @@ const ContractPage = (): React.ReactElement => {
             )
           }
         >
-          <Icon heightAndWidth={"20px"} name={"mail"} />
+          <Icon heightAndWidth={"20px"} name={"backArrow"} />
           Go Back
         </BackButton>
         <TopBarProfile>

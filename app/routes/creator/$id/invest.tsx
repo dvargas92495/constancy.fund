@@ -4,9 +4,9 @@ import useHandler from "@dvargas92495/ui/dist/useHandler";
 import PaymentPreference from "~/_common/PaymentPreferences";
 import type { Handler as PutHandler } from "../../../../functions/agreement/put";
 import {
-//   LoaderFunction,
+  //   LoaderFunction,
   MetaFunction,
-//   useLoaderData,
+  //   useLoaderData,
   useLocation,
   useNavigate,
 } from "remix";
@@ -56,6 +56,8 @@ const BackButton = styled.div`
   left: 20px;
   padding: 6px 12px;
   z-index: 1001;
+  align-items: center;
+  cursor: pointer;
 `;
 
 const ExplainTitle = styled.div`
@@ -188,7 +190,7 @@ const EnterDetails = () => {
   return (
     <>
       <BackButton onClick={() => navigate(`/creator/${state.userId}`)}>
-        <Icon heightAndWidth={"20px"} name={"mail"} />
+        <Icon heightAndWidth={"20px"} name={"backArrow"} />
         Go Back
       </BackButton>
       <TopBarProfile>
