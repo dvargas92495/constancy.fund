@@ -1,4 +1,4 @@
-const formatAmount = (n: number) => {
+const formatAmount = (n: number | string) => {
   const [predecimal, postdecimal] = n.toString().split(".");
   const order = predecimal.length - 1;
   return `${predecimal

@@ -1,24 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { getMeta } from "~/_common/Layout";
-import Avatar from "@mui/material/Avatar";
 import ExternalLink from "@dvargas92495/ui/dist/components/ExternalLink";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import RedditIcon from "@mui/icons-material/Reddit";
-import YouTubeIcon from "@mui/icons-material/YouTube";
-import EmailIcon from "@mui/icons-material/Email";
-import WebIcon from "@mui/icons-material/Public";
 import QUESTIONAIRES from "~/_common/questionaires";
-import useHandler from "@dvargas92495/ui/dist/useHandler";
-import type { Handler as GetHandler } from "../../../../functions/agreement/get";
 import {
   LoaderFunction,
   MetaFunction,
   useLoaderData,
   useNavigate,
+  useParams,
 } from "remix";
 import type { Handler as GetPropsHandler } from "../../../../functions/creator-profile/get";
 import axios from "axios";
@@ -40,7 +29,6 @@ import {
 import CompanyLogo from "~/_common/Images/memexlogo.png";
 
 type Props = Awaited<ReturnType<GetPropsHandler>>;
-export type Agreement = Awaited<ReturnType<GetHandler>>;
 
 function useScroll() {
   const [scrollPosition, setScrollPosition] = useState(
@@ -65,15 +53,15 @@ function useScroll() {
 }
 
 const icons = [
-  { test: /twitter\.com/, component: TwitterIcon, name: "twitter" },
-  { test: /github\.com/, component: GitHubIcon, name: "github" },
-  { test: /linkedin\.com/, component: LinkedInIcon, name: "linkedIn" },
-  { test: /instagram\.com/, component: InstagramIcon, name: "Instagram" },
-  { test: /facebook\.com/, component: FacebookIcon, name: "facebook" },
-  { test: /reddit\.com/, component: RedditIcon, name: "reddit" },
-  { test: /youtube\.com/, component: YouTubeIcon, name: "youtube" },
-  { test: /^mailto:/, component: EmailIcon, name: "email" },
-  { test: /.*/, component: WebIcon, name: "webIcon" },
+  { test: /twitter\.com/, name: "twitter" },
+  { test: /github\.com/, name: "github" },
+  { test: /linkedin\.com/, name: "linkedIn" },
+  { test: /instagram\.com/, name: "Instagram" },
+  { test: /facebook\.com/, name: "facebook" },
+  { test: /reddit\.com/, name: "reddit" },
+  { test: /youtube\.com/, name: "youtube" },
+  { test: /^mailto:/, name: "email" },
+  { test: /.*/, name: "webIcon" },
 ] as const;
 
 const TopBarMoving = keyframes`0% { top: '-100px' } 100% { top: '100px'}`;
@@ -243,28 +231,9 @@ const VideoEmbed = styled.iframe`
   border-radius: 8px;
 `;
 
-
-const ProfileImageBox = styled.div`
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  border: 2px solid #347ae2;
-  border-radius: 300px;
-  margin: 1px;
-  cursor: pointer;
-
-
-  & > * {
-    height: fill-available;
-    width: fill-available;
-  }
-`;
-
 const ProfileImageContainer = styled.div<{ scroll?: number }>`
-  width: ${(props) => props.scroll > 200 ? '100px' : '150px'};
-  height: ${(props) => props.scroll > 200 ? '100px' : '150px'};
+  width: ${({ scroll = 0 }) => (scroll > 200 ? "100px" : "150px")};
+  height: ${({ scroll = 0 }) => (scroll > 200 ? "100px" : "150px")};
   position: relative;
 
   & * {
@@ -281,25 +250,11 @@ const CreatorProfile = (): React.ReactElement => {
   const {
     userId,
     fullName,
-    profileImageUrl,
     socialProfiles = [],
     questionaires = [],
     fundraises = [],
   } = props;
-  const [agreement, setAgreement] = useState<Agreement>();
-  const getAgreement = useHandler<GetHandler>({
-    path: "agreement",
-    method: "GET",
-  });
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const agreementUuid = params.get("agreement");
-    if (agreementUuid) {
-      getAgreement({ uuid: agreementUuid }).then((r) => {
-        setAgreement(r);
-      });
-    }
-  }, [setAgreement, getAgreement]);
+  const agreementUuid = useParams()["agreement"];
 
   const scrollPosition = useScroll();
 
@@ -307,10 +262,7 @@ const CreatorProfile = (): React.ReactElement => {
     <>
       <TopBarContainerMinified scroll={scrollPosition}>
         <TopBarMainBox scroll={scrollPosition}>
-          {/* <Avatar src={profileImageUrl} sx={{ width: 100, height: 100 }} /> */}
-          <ProfileImageContainer
-            scroll={scrollPosition}
-          >
+          <ProfileImageContainer scroll={scrollPosition}>
             <ProfileImage>
               <img
                 src={CompanyLogo}
@@ -348,12 +300,13 @@ const CreatorProfile = (): React.ReactElement => {
                   </IconContent>
                 }
                 onClick={() => {
-                  navigate(`/creator/${userId}/invest`, {
-                    state: {
-                      ...(agreement || { contractUuid: fundraises[0].uuid }),
-                      userId,
-                    },
-                  });
+                  navigate(
+                    `/creator/${userId}/invest${
+                      agreementUuid
+                        ? `?agreement=${agreementUuid}`
+                        : `?fundraise=${fundraises[0].uuid}`
+                    }`
+                  );
                 }}
                 height={"44px"}
                 fontSize={"16px"}
@@ -365,11 +318,8 @@ const CreatorProfile = (): React.ReactElement => {
 
       <TopBarProfile>
         <TopBarMainBox>
-          <ProfileImageContainer
-            scroll={scrollPosition}
-          >
-            <ProfileImage
-            >
+          <ProfileImageContainer scroll={scrollPosition}>
+            <ProfileImage>
               <img
                 src={CompanyLogo}
                 alt={"Profile Image"}
@@ -406,12 +356,13 @@ const CreatorProfile = (): React.ReactElement => {
                   </IconContent>
                 }
                 onClick={() => {
-                  navigate(`/creator/${userId}/invest`, {
-                    state: {
-                      ...(agreement || { contractUuid: fundraises[0].uuid }),
-                      userId,
-                    },
-                  });
+                  navigate(
+                    `/creator/${userId}/invest${
+                      agreementUuid
+                        ? `?agreement=${agreementUuid}`
+                        : `?fundraise=${fundraises[0].uuid}`
+                    }`
+                  );
                 }}
                 height={"44px"}
                 fontSize={"16px"}
