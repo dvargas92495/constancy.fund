@@ -7,7 +7,6 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import type { Handler } from "../../functions/convertkit/post";
 import { useNavigate } from "remix";
-
 import MainImage from "~/_common/Images/runner.svg";
 import Logo from "~/_common/Images/constancy-logo.svg";
 
@@ -17,7 +16,7 @@ const LogoContainer = styled.img`
   left: 80px;
   height: 60px;
   width: 200px;
-`
+`;
 
 const ButtonInnerDiv = styled.div`
   padding: 0 10px;
