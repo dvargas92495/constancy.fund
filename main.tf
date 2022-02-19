@@ -262,5 +262,5 @@ resource "github_actions_secret" "staging_cloudfront_distribution_id" {
 resource "github_actions_secret" "convertkit_api_key" {
   repository       = "crowdinvestin.me"
   secret_name      = "CONVERTKIT_API_KEY"
-  plaintext_value  = module.aws_static_site_staging.convertkit_api_key
+  plaintext_value  = var.convertkit_api_key
 }

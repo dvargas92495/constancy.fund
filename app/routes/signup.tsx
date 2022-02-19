@@ -4,7 +4,11 @@ import { SignUp } from "@clerk/clerk-react";
 
 const Signup: React.FunctionComponent = () => (
   <Layout>
-    <SignUp />
+    {process.env.NODE_ENV === "production" ? (
+      <div>{"Signup page coming soon!"}</div>
+    ) : (
+      <SignUp />
+    )}
   </Layout>
 );
 
