@@ -4,7 +4,7 @@ import Contact from "@dvargas92495/ui/dist/components/Contact";
 
 const ContactPage: React.FunctionComponent = () => (
   <Layout>
-    <Contact email={"support@crowdinvestin.me"} />
+    <Contact email={"support@constancy.fund"} />
   </Layout>
 );
 

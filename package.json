@@ -1,9 +1,9 @@
 {
-  "name": "crowdinvestin.me",
-  "description": "Description for crowdinvestin.me",
+  "name": "constancy.fund",
+  "description": "Description for constancy.fund",
   "version": "0.0.0",
   "license": "MIT",
-  "repository": "dvargas92495/crowdinvestin.me",
+  "repository": "dvargas92495/constancy.fund",
   "scripts": {
     "format": "prettier --write \"**/*.tsx\"",
     "lint": "eslint . --ext .ts,.tsx",

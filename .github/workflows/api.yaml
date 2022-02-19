@@ -8,17 +8,17 @@ on:
       - ".github/workflows/api.yaml"
 
 env:
-  API_URL: https://api.crowdinvestin.me
+  API_URL: https://api.constancy.fund
   AWS_ACCESS_KEY_ID: ${{ secrets.LAMBDA_AWS_ACCESS_KEY }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.LAMBDA_AWS_ACCESS_SECRET }}
   AWS_REGION: us-east-1
   CLERK_API_KEY: ${{ secrets.CLERK_API_KEY }}
-  CLERK_FRONTEND_API: clerk.crowdinvestin.me
+  CLERK_FRONTEND_API: clerk.constancy.fund
   CONVERTKIT_API_KEY: ${{ secrets.CONVERTKIT_API_KEY }}
-  DATABASE_URL: mysql://crowdinvestin_me:${{ secrets.MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/crowdinvestin_me
+  DATABASE_URL: mysql://constancy_fund:${{ secrets.MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/constancy_fund
   EVERSIGN_API_KEY: ${{ secrets.EVERSIGN_API_KEY }}
   FE_DIR_PREFIX: /tmp
-  HOST: https://crowdinvestin.me
+  HOST: https://constancy.fund
   STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
 jobs:

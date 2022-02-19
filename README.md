@@ -1,11 +1,11 @@
-# crowdinvestin.me
+# constancy.fund
 
 ## Quick Links
 
-- [🎤 Staging Environment](https://staging.crowdinvestin.me/)
+- [🎤 Staging Environment](https://staging.constancy.fund/)
 - [🙋 Start contributing](#Contributing)
 - [🎯 Task Board](https://www.notion.so/Team-Dashboard-5d9ccc54b63c42b6a2c03bbf652e0d3e)
-- [🐞 Report a Bug](https://github.com/dvargas92495/crowdinvestin.me/issues/new)
+- [🐞 Report a Bug](https://github.com/dvargas92495/constancy.fund/issues/new)
 
 ## Contributing
 
@@ -20,8 +20,8 @@
 There are three main environments that are managed:
 
 - local - Running the app on your machine such that you are the only one with access.
-- staging - A test environment deployed to `https://staging.crowdinvestin.me` used by the team to have a shared live instance to give feedback on. Third party services that support test environments like Clerk and Eversign share the same test environment between local and staging.
-- production - The live environment used by users, deployed to `https://crowdinvestin.me`. Changes to this branch and data found on it should be considered sacred.
+- staging - A test environment deployed to `https://staging.constancy.fund` used by the team to have a shared live instance to give feedback on. Third party services that support test environments like Clerk and Eversign share the same test environment between local and staging.
+- production - The live environment used by users, deployed to `https://constancy.fund`. Changes to this branch and data found on it should be considered sacred.
 
 Every change causes a new staging deploy when merged into main. For production, only the relevant infrastructure is redeployed.
 

@@ -11,7 +11,7 @@ on:
       - ".github/workflows/staging.yaml"
 
 env:
-  API_URL: https://api.staging.crowdinvestin.me
+  API_URL: https://api.staging.constancy.fund
   AWS_ACCESS_KEY_ID: ${{ secrets.STAGINGD_AWS_ACCESS_KEY }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGINGD_AWS_ACCESS_SECRET }}
   AWS_REGION: us-east-1
@@ -19,14 +19,14 @@ env:
   CLERK_FRONTEND_API: clerk.rjzug.yeali.lcl.dev
   CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.STAGING_CLOUDFRONT_DISTRIBUTION_ID }}
   CONVERTKIT_API_KEY: ${{ secrets.CONVERTKIT_API_KEY }}
-  DATABASE_URL: mysql://staging_crowdinvestin_me:${{ secrets.STAGING_MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/staging_crowdinvestin_me
+  DATABASE_URL: mysql://staging_constancy_fund:${{ secrets.STAGING_MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/staging_constancy_fund
   EVERSIGN_API_KEY: ${{ secrets.EVERSIGN_API_KEY }}
   EVERSIGN_SANDBOX: 1
-  HOST: https://staging.crowdinvestin.me
+  HOST: https://staging.constancy.fund
   STRIPE_PUBLIC_KEY: ${{ secrets.STAGING_STRIPE_PUBLIC_KEY }}
   STRIPE_SECRET_KEY: ${{ secrets.STAGING_STRIPE_SECRET_KEY }}
   STRIPE_CHECKOUT_SECRET: ${{ secrets.STAGING_STRIPE_CHECKOUT_SECRET }}
-  SUPPORT_EMAIL: support@staging.crowdinvestin.me
+  SUPPORT_EMAIL: support@staging.constancy.fund
 
 jobs:
   deploy:
@@ -46,7 +46,7 @@ jobs:
         env:
           FE_DIR_PREFIX: /tmp
       - name: deploy api
-        run: npm run publish -- --name staging.crowdinvestin.me
+        run: npm run publish -- --name staging.constancy.fund
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGINGL_AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGINGL_AWS_ACCESS_SECRET }}
@@ -54,4 +54,4 @@ jobs:
       - name: build fe
         run: npm run build
       - name: deploy fe
-        run: npm run deploy -- --domain staging.crowdinvestin.me
+        run: npm run deploy -- --domain staging.constancy.fund

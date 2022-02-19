@@ -11,7 +11,7 @@ export const handler = createRequestHandler({
   ],
   onError: (e) => console.log("Send email to me", e),
   /*sendEmail({
-      to: "support@crowdinvestin.me",
+      to: "support@constancy.fund",
       subject: "Remix Origin Error",
       body: e.message,
     }),*/
