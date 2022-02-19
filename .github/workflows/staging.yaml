@@ -18,6 +18,7 @@ env:
   CLERK_API_KEY: ${{ secrets.STAGING_CLERK_API_KEY }}
   CLERK_FRONTEND_API: clerk.rjzug.yeali.lcl.dev
   CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.STAGING_CLOUDFRONT_DISTRIBUTION_ID }}
+  CONVERTKIT_API_KEY: ${{ secrets.CONVERTKIT_API_KEY }}
   DATABASE_URL: mysql://staging_crowdinvestin_me:${{ secrets.STAGING_MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/staging_crowdinvestin_me
   EVERSIGN_API_KEY: ${{ secrets.EVERSIGN_API_KEY }}
   EVERSIGN_SANDBOX: 1

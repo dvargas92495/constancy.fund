@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import getStaticProps from "~/creator.server";
 import { LoadingIndicator } from "./LoadingIndicator";
 
 const StyledPrimaryAction = styled.div<{

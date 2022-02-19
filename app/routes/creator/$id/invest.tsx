@@ -421,7 +421,7 @@ const EnterDetails = () => {
           <TextfieldHorizontalBox>
             <TextFieldBox>
               <TextFieldDescription>Address</TextFieldDescription>
-              <TextFieldDescription small required>
+              <TextFieldDescription $small required>
                 Street
               </TextFieldDescription>
               <TextInputContainer width={"270px"}>
@@ -433,7 +433,7 @@ const EnterDetails = () => {
               </TextInputContainer>
             </TextFieldBox>
             <TextFieldBox>
-              <TextFieldDescription small required>
+              <TextFieldDescription $small required>
                 No
               </TextFieldDescription>
               <TextInputContainer width={"80px"}>
@@ -447,7 +447,7 @@ const EnterDetails = () => {
           </TextfieldHorizontalBox>
           <TextfieldHorizontalBox>
             <TextFieldBox>
-              <TextFieldDescription small>City</TextFieldDescription>
+              <TextFieldDescription $small>City</TextFieldDescription>
               <TextInputContainer width={"270px"}>
                 <TextInputOneLine
                   value={companyType}
@@ -457,7 +457,7 @@ const EnterDetails = () => {
               </TextInputContainer>
             </TextFieldBox>
             <TextFieldBox>
-              <TextFieldDescription small>ZIP</TextFieldDescription>
+              <TextFieldDescription $small>ZIP</TextFieldDescription>
               <TextInputContainer width={"80px"}>
                 <TextInputOneLine
                   value={companyType}

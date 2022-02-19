@@ -62,6 +62,10 @@ variable "staging_mysql_password" {
   type = string
 }
 
+variable "convertkit_api_key" {
+  type = string
+}
+
 provider "aws" {
   region = "us-east-1"
   access_key = var.aws_access_token
@@ -253,4 +257,10 @@ resource "github_actions_secret" "staging_cloudfront_distribution_id" {
   repository       = "crowdinvestin.me"
   secret_name      = "STAGING_CLOUDFRONT_DISTRIBUTION_ID"
   plaintext_value  = module.aws_static_site_staging.cloudfront_distribution_id
+}
+
+resource "github_actions_secret" "convertkit_api_key" {
+  repository       = "crowdinvestin.me"
+  secret_name      = "CONVERTKIT_API_KEY"
+  plaintext_value  = module.aws_static_site_staging.convertkit_api_key
 }
