@@ -175,7 +175,7 @@ const SocialProfile = React.memo(
 const UserProfile = () => {
   const {isSignedIn, user} = useUser();
   if (!user || !isSignedIn) {
-    throw new Error(`Somehow tried to load a non-logged in User profile, ${!!user}, ${isSignedIn}`);
+    throw new Error(`Somehow tried to load a non-logged in User profile`);
   }
   const {
     id,

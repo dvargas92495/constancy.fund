@@ -145,7 +145,7 @@ const UserPage = (): React.ReactElement => (
 );
 
 export const loader: LoaderFunction = ({ request }) => {
-  return getAuth(request).then((authData) => {
+  getAuth(request).then((authData) => {
     if (!authData.userId) {
       return redirect("/login");
     }

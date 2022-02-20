@@ -107,9 +107,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   return (
     <>
-      <LogoContainer
-        src={Logo}
-      />
+      <LogoContainer src={Logo} />
       <MainContentContainer>
         <IntroBox>
           <BigTitle>
