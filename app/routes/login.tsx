@@ -4,6 +4,11 @@ import Layout, { getMeta } from "~/_common/Layout";
 
 const LoginPage: React.FC = () => (
   <Layout>
+    {process.env.NODE_ENV === "production" && (
+      <style>{`.cl-auth-form-switch {
+        display: none;
+      }`}</style>
+    )}
     <SignIn />
   </Layout>
 );

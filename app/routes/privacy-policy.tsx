@@ -4,7 +4,7 @@ import PrivacyPolicy from "@dvargas92495/ui/dist/components/PrivacyPolicy";
 
 const PrivacyPolicyPage: React.FunctionComponent = () => (
   <Layout>
-    <PrivacyPolicy name={"crowdinvestin-me"} domain={"crowdinvestin.me"} />
+    <PrivacyPolicy name={"constancy-fund"} domain={"constancy.fund"} />
   </Layout>
 );
 

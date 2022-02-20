@@ -4,7 +4,7 @@ import TermsOfUse from "@dvargas92495/ui/dist/components/TermsOfUse";
 
 const TermsOfUsePage: React.FC = () => (
   <Layout>
-    <TermsOfUse name={"crowdinvestin-me"} domain={"crowdinvestin.me"} />
+    <TermsOfUse name={"constancy-fund"} domain={"constancy.fund"} />
   </Layout>
 );
 
