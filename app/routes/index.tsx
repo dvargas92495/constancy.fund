@@ -1,12 +1,22 @@
 import React, { useState } from "react";
 import Layout, { getMeta } from "~/_common/Layout";
 import styled from "styled-components";
-import MainImage from "~/_common/Images/runner.svg";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import useHandler from "@dvargas92495/ui/dist/useHandler";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import type { Handler } from "../../functions/convertkit/post";
+
+import MainImage from "~/_common/Images/runner.svg";
+import Logo from "~/_common/Images/constancy-logo.svg";
+
+const LogoContainer = styled.img`
+  position: absolute;
+  top: 40px;
+  left: 80px;
+  height: 60px;
+  width: 200px;
+`
 
 const ButtonInnerDiv = styled.div`
   padding: 0 10px;
@@ -17,8 +27,8 @@ const LoginButton = styled.div`
   font-size: 18px;
   font-weight: 800;
   position: absolute;
-  right: 30px;
-  top: 30px;
+  right: 50px;
+  top: 40px;
   cursor: pointer;
   padding: 10px 20px;
 `;
@@ -97,6 +107,10 @@ const Home: React.FC = () => {
   return (
     <Layout>
       {/* <ConvertKit id={"eb07e20bc3"} /> */}
+
+      <LogoContainer
+        src={Logo}
+      />
       <MainContentContainer>
         <IntroBox>
           <BigTitle>
