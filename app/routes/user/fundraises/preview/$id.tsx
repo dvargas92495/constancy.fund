@@ -8,7 +8,6 @@ import type { Handler as ContractRefreshHandler } from "../../../../../functions
 import type { Handler as GetRefreshHandler } from "../../../../../functions/contract-refresh/get";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
-import Skeleton from "@mui/material/Skeleton";
 import pdfViewerCore from "@react-pdf-viewer/core/lib/styles/index.css";
 import pdfViewerLayout from "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import {
