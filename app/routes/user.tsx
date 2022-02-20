@@ -1,4 +1,4 @@
-import Layout, { getMeta } from "~/_common/Layout";
+import getMeta from "~/_common/getMeta";
 import clerkUserProfileCss from "@dvargas92495/ui/dist/clerkUserProfileCss";
 import React from "react";
 import Drawer from "@mui/material/Drawer";
@@ -7,14 +7,12 @@ import List from "@mui/material/List";
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
 import GlobalStyles from "@mui/material/GlobalStyles";
-import {
-  Link as RemixLink,
-  Outlet,
-} from "remix";
+import { Link as RemixLink, LoaderFunction, Outlet, redirect } from "remix";
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
 import ListItemIcon from "~/_common/ListItemIcon";
 import ListItemText from "~/_common/ListItemText";
+import { getAuth } from "@clerk/remix/ssr.server";
 
 const MenuListItem = styled.div`
   height: 60px;
@@ -139,12 +137,21 @@ const globalStyles = (
 );
 
 const UserPage = (): React.ReactElement => (
-  <Layout privatePage>
+  <>
     {globalStyles}
     <style>{clerkUserProfileCss}</style>
     <Dashboard />
-  </Layout>
+  </>
 );
+
+export const loader: LoaderFunction = ({ request }) =>
+  getAuth(request).then((authData) => {
+    console.log('loader', !authData.userId);
+    if (!authData.userId) {
+      return redirect("/login");
+    }
+    return {};
+  });
 
 export const meta = getMeta({ title: "User" });
 

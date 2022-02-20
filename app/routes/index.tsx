@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Layout, { getMeta } from "~/_common/Layout";
+import getMeta from "~/_common/getMeta";
 import styled from "styled-components";
 import MainImage from "~/_common/Images/runner.svg";
 import { PrimaryAction } from "~/_common/PrimaryAction";
@@ -7,6 +7,7 @@ import useHandler from "@dvargas92495/ui/dist/useHandler";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import type { Handler } from "../../functions/convertkit/post";
+import { useNavigate } from "remix";
 
 const ButtonInnerDiv = styled.div`
   padding: 0 10px;
@@ -94,9 +95,9 @@ const Home: React.FC = () => {
   });
   const [subscribed, setSubscribed] = useState(false);
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
   return (
-    <Layout>
-      {/* <ConvertKit id={"eb07e20bc3"} /> */}
+    <>
       <MainContentContainer>
         <IntroBox>
           <BigTitle>
@@ -139,10 +140,10 @@ const Home: React.FC = () => {
             </Snackbar>
           </SignupBox>
         </IntroBox>
-        <LoginButton>LOGIN</LoginButton>
+        <LoginButton onClick={() => navigate("/login")}>LOGIN</LoginButton>
       </MainContentContainer>
       <MainImageContainer src={MainImage} />
-    </Layout>
+    </>
   );
 };
 

@@ -1,11 +1,9 @@
 import React from "react";
-import Layout, { getMeta } from "~/_common/Layout";
+import getMeta from "~/_common/getMeta";
 import PrivacyPolicy from "@dvargas92495/ui/dist/components/PrivacyPolicy";
 
 const PrivacyPolicyPage: React.FunctionComponent = () => (
-  <Layout>
-    <PrivacyPolicy name={"constancy-fund"} domain={"constancy.fund"} />
-  </Layout>
+  <PrivacyPolicy name={"constancy-fund"} domain={"constancy.fund"} />
 );
 
 export const Head = getMeta({ title: "Privacy Policy" });

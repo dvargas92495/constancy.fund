@@ -1,11 +1,9 @@
 import React from "react";
-import Layout, { getMeta } from "../_common/Layout";
+import getMeta from "~/_common/getMeta";
 import About from "@dvargas92495/ui/dist/components/About";
 
 const AboutPage: React.FunctionComponent = () => (
-  <Layout>
-    <About title={"About"} subtitle={"Description"} paragraphs={[]} />
-  </Layout>
+  <About title={"About"} subtitle={"Description"} paragraphs={[]} />
 );
 
 export const meta = getMeta({ title: "About" });

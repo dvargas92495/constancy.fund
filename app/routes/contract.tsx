@@ -1,4 +1,4 @@
-import Layout, { getMeta } from "~/_common/Layout";
+import getMeta from "~/_common/getMeta";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Body from "@dvargas92495/ui/dist/components/Body";
@@ -157,12 +157,7 @@ const EversignEmbed = ({
 type Data = Awaited<ReturnType<GetHandler>>;
 
 const ContractPage = (): React.ReactElement => {
-  const {
-    contractUuid,
-    userId,
-    url,
-    agreementUuid,
-  } = useLoaderData<Data>();
+  const { contractUuid, userId, url, agreementUuid } = useLoaderData<Data>();
   const isInvestor = Number(useParams().signer) === 1;
   const [signed, setSigned] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -172,78 +167,73 @@ const ContractPage = (): React.ReactElement => {
   });
 
   return (
-    <Layout>
-      <ProfileContainer>
-        <BackButton
-          onClick={() =>
-            window.location.assign(
-              `/creator/${userId}?agreement=${agreementUuid}`
-            )
-          }
+    <ProfileContainer>
+      <BackButton
+        onClick={() =>
+          window.location.assign(
+            `/creator/${userId}?agreement=${agreementUuid}`
+          )
+        }
+      >
+        <Icon heightAndWidth={"20px"} name={"backArrow"} />
+        Go Back
+      </BackButton>
+      <TopBarProfile>
+        <TermSheetTitleBox>
+          <ProfileTitle>Sign the agreement</ProfileTitle>
+        </TermSheetTitleBox>
+      </TopBarProfile>
+      <ProfileBottomContainer paddingTop={"20px"}>
+        <Section>
+          <EversignEmbedContainer>
+            <EversignEmbed
+              url={url}
+              onSign={() => {
+                signAgreement({ agreementUuid }).then(() => {
+                  setSigned(true);
+                  setSnackbarOpen(true);
+                });
+              }}
+            />
+          </EversignEmbedContainer>
+        </Section>
+        <Body>
+          {signed && !isInvestor && (
+            <Button
+              color={"primary"}
+              variant={"contained"}
+              onClick={() =>
+                window.location.assign(
+                  `/user/fundraises/contract/${contractUuid}`
+                )
+              }
+            >
+              Back to Dashboard
+            </Button>
+          )}
+        </Body>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={5000}
+          onClose={() => setSnackbarOpen(false)}
+          color="success"
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          <Icon heightAndWidth={"20px"} name={"backArrow"} />
-          Go Back
-        </BackButton>
-        <TopBarProfile>
-          <TermSheetTitleBox>
-            <ProfileTitle>Sign the agreement</ProfileTitle>
-          </TermSheetTitleBox>
-        </TopBarProfile>
-        <ProfileBottomContainer paddingTop={"20px"}>
-          <Section>
-            <EversignEmbedContainer>
-              <EversignEmbed
-                url={url}
-                onSign={() => {
-                  signAgreement({ agreementUuid }).then(() => {
-                    setSigned(true);
-                    setSnackbarOpen(true);
-                  });
-                }}
-              />
-            </EversignEmbedContainer>
-          </Section>
-          <Body>
-            {signed && !isInvestor && (
-              <Button
-                color={"primary"}
-                variant={"contained"}
-                onClick={() =>
-                  window.location.assign(
-                    `/user/fundraises/contract/${contractUuid}`
-                  )
-                }
-              >
-                Back to Dashboard
-              </Button>
-            )}
-          </Body>
-          <Snackbar
-            open={snackbarOpen}
-            autoHideDuration={5000}
-            onClose={() => setSnackbarOpen(false)}
-            color="success"
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          >
-            <Alert severity="success" sx={{ width: "100%" }}>
-              {isInvestor
-                ? "We are waiting for the creator to confirm this investment and send you an email with next steps when this happened."
-                : "Congratulations! Both you and the investor have both signed the agreement! Now go create something awesome"}
-            </Alert>
-          </Snackbar>
-        </ProfileBottomContainer>
-      </ProfileContainer>
-    </Layout>
+          <Alert severity="success" sx={{ width: "100%" }}>
+            {isInvestor
+              ? "We are waiting for the creator to confirm this investment and send you an email with next steps when this happened."
+              : "Congratulations! Both you and the investor have both signed the agreement! Now go create something awesome"}
+          </Alert>
+        </Snackbar>
+      </ProfileBottomContainer>
+    </ProfileContainer>
   );
 };
 
 export const loader: LoaderFunction = ({ request }) =>
   axios
-    .get<Data>(
-      `${process.env.API_URL}/eversign${new URL(request.url).search}`
-    )
+    .get<Data>(`${process.env.API_URL}/eversign${new URL(request.url).search}`)
     .then((r) => r.data);
-
 
 export const meta = getMeta({
   title: "Contract",

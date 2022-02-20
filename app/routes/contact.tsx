@@ -1,11 +1,9 @@
 import React from "react";
-import Layout, { getMeta } from "../_common/Layout";
+import getMeta from "~/_common/getMeta";
 import Contact from "@dvargas92495/ui/dist/components/Contact";
 
 const ContactPage: React.FunctionComponent = () => (
-  <Layout>
-    <Contact email={"support@constancy.fund"} />
-  </Layout>
+  <Contact email={"support@constancy.fund"} />
 );
 
 export const meta = getMeta({ title: "Contact Us" });

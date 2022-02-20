@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { getMeta } from "~/_common/Layout";
+import getMeta from "~/_common/getMeta";
 import useHandler from "@dvargas92495/ui/dist/useHandler";
 import PaymentPreference from "~/_common/PaymentPreferences";
 import type { Handler as PutHandler } from "../../../../functions/agreement/put";

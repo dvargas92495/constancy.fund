@@ -1,5 +1,4 @@
 import React from "react";
-import Layout from "~/_common/Layout";
 import { Outlet } from "remix";
 import styled from "styled-components";
 
@@ -53,13 +52,11 @@ export const IconContent = styled.div`
 
 const CreatorPage = (): React.ReactElement => {
   return (
-    <Layout>
-      <CreatorPublicContainer>
-        <ProfileContainer>
-          <Outlet />
-        </ProfileContainer>
-      </CreatorPublicContainer>
-    </Layout>
+    <CreatorPublicContainer>
+      <ProfileContainer>
+        <Outlet />
+      </ProfileContainer>
+    </CreatorPublicContainer>
   );
 };
 

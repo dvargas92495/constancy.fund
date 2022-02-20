@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { UserButton, useUser } from "@clerk/clerk-react";
+import { UserButton, useUser } from "@clerk/remix";
 import Box from "@mui/material/Box";
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
@@ -172,6 +172,10 @@ const SocialProfile = React.memo(
 );
 
 const UserProfile = () => {
+  const {isSignedIn, user} = useUser();
+  if (!user || !isSignedIn) {
+    throw new Error(`Somehow tried to load a non-logged in User profile`);
+  }
   const {
     id,
     update,
@@ -180,7 +184,7 @@ const UserProfile = () => {
     emailAddresses,
     primaryEmailAddressId,
     publicMetadata: { completed = false, ...publicMetadata } = {},
-  } = useUser();
+  } = user;
   const {
     middleName,
     contactEmail = emailAddresses.find((e) => e.id === primaryEmailAddressId)
@@ -352,9 +356,7 @@ const UserProfile = () => {
                 </TextInputContainer>
               </TextFieldBox>
               <TextFieldBox>
-                <TextFieldDescription>
-                  Middle Name
-                </TextFieldDescription>
+                <TextFieldDescription>Middle Name</TextFieldDescription>
                 <TextInputContainer width={"350px"}>
                   <TextInputOneLine
                     value={middleNameValue}
@@ -363,9 +365,7 @@ const UserProfile = () => {
                 </TextInputContainer>
               </TextFieldBox>
               <TextFieldBox>
-                <TextFieldDescription>
-                  Contact Email
-                </TextFieldDescription>
+                <TextFieldDescription>Contact Email</TextFieldDescription>
                 <TextInputContainer width={"350px"}>
                   <TextInputOneLine
                     value={contactEmailValue}
