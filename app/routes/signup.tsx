@@ -1,6 +1,8 @@
 import React from "react";
 import getMeta from "~/_common/getMeta";
 import { SignUp } from "@clerk/remix";
+import { LoaderFunction, redirect } from "remix";
+import { getAuth } from "@clerk/remix/ssr.server";
 
 const Signup: React.FunctionComponent = () => (
   <>
