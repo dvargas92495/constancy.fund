@@ -9,6 +9,7 @@ import type { Handler } from "../../functions/convertkit/post";
 import { useNavigate } from "remix";
 import MainImage from "~/_common/Images/runner.svg";
 import Logo from "~/_common/Images/constancy-logo.svg";
+import { UserButton, useUser } from "@clerk/remix";
 
 const LogoContainer = styled.img`
   position: absolute;
@@ -22,7 +23,11 @@ const ButtonInnerDiv = styled.div`
   padding: 0 10px;
 `;
 
-const LoginButton = styled.div`
+const LoginButton = styled.a`
+  padding: 10px 20px;
+`;
+
+const UserContainer = styled.div`
   color: ${(props) => props.theme.palette.color.purple};
   font-size: 18px;
   font-weight: 800;
@@ -30,7 +35,6 @@ const LoginButton = styled.div`
   right: 50px;
   top: 40px;
   cursor: pointer;
-  padding: 10px 20px;
 `;
 
 const MainContentContainer = styled.div`
@@ -98,6 +102,7 @@ const MainImageContainer = styled.img`
 `;
 
 const Home: React.FC = () => {
+  const { isSignedIn } = useUser();
   const convertKit = useHandler<Handler>({
     path: "convertkit",
     method: "POST",
@@ -150,7 +155,13 @@ const Home: React.FC = () => {
             </Snackbar>
           </SignupBox>
         </IntroBox>
-        <LoginButton onClick={() => navigate("/login")}>LOGIN</LoginButton>
+        <UserContainer>
+          {isSignedIn ? (
+            <UserButton />
+          ) : (
+            <LoginButton onClick={() => navigate("/login")}>LOGIN</LoginButton>
+          )}
+        </UserContainer>
       </MainContentContainer>
       <MainImageContainer src={MainImage} />
     </>
