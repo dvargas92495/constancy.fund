@@ -175,7 +175,7 @@ export const loader: LoaderFunction = (args) =>
         STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
       },
     }),
-    {}
+    { loadUser: true}
   );
 
 export const links: LinksFunction = () => {

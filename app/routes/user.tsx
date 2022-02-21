@@ -144,14 +144,14 @@ const UserPage = (): React.ReactElement => (
   </>
 );
 
-export const loader: LoaderFunction = ({ request }) =>
-  getAuth(request).then((authData) => {
-    console.log('loader', !authData.userId);
+export const loader: LoaderFunction = ({ request }) => {
+  return getAuth(request).then((authData) => {
     if (!authData.userId) {
       return redirect("/login");
     }
     return {};
   });
+}
 
 export const meta = getMeta({ title: "User" });
 
