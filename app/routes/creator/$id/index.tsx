@@ -255,9 +255,8 @@ const CreatorProfile = (): React.ReactElement => {
     fundraises = [],
   } = props;
   const agreementUuid = useParams()["agreement"];
-  const fundraiseData = useLoaderData<FundraiseData>();
 
-  console.log(fundraises[0].type)
+  console.log(props)
 
   const scrollPosition = useScroll();
 

@@ -150,6 +150,45 @@ const TextfieldHorizontalBox = styled.div`
   align-items: flex-end;
 `
 
+const InfoPillTitle = styled.div`
+display: flex;
+justify-content: center;
+align-items: center;
+font-weight: 600;
+font-size: 14px;
+white-space: nowrap;
+color: ${(props) => props.theme.palette.color.primary};
+`;
+
+const InfoPillInfo = styled.div`
+display: flex;
+justify-content: center;
+align-items: center;
+font-size: 14px;
+font-weight: 700;
+color: ${(props) => props.theme.palette.color.purple};
+`;
+
+const InfoPill = styled.div`
+display: flex;
+justify-content: center;
+align-items: center;
+background: ${(props) =>
+    props.theme.palette.color.backgroundColorDarkerDarker};
+padding: 0px 20px;
+height: 40px;
+width: fit-content;
+border-radius: 50px;
+grid-gap: 5px;
+`;
+
+const ContainerWithInfo = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  grid-gap: 20px;
+`;
+
 const EnterDetails = () => {
   const state = useLoaderData<Data>();
   const navigate = useNavigate();
@@ -197,6 +236,8 @@ const EnterDetails = () => {
     navigate,
   ]);
 
+  console.log(state)
+
   return (
     <>
       <BackButton onClick={() => navigate(`/creator/${state.userId}`)}>
@@ -238,7 +279,7 @@ const EnterDetails = () => {
             <ExplainMeLikeIamFiveContainer>
               <ExplainBox>
                 <ExplainContent>
-                  <ExplainTitle>How much you invest</ExplainTitle>
+                  <ExplainTitle>How much you back this project with</ExplainTitle>
                   <ExplainText>
                     I agree to contribute{" "}
                     <b>
@@ -247,61 +288,76 @@ const EnterDetails = () => {
                         Number(amount) / (Number(state.details.frequency) || 1)
                       )}
                     </b>{" "}
-                    paid out as a monthly stipend for{" "}
-                    <b>
-                      {state.details.frequency || 1} month
-                      {state.details.frequency === "1" ? "" : "s"}
-                    </b>
+                    {state.details.supportType === 'monthly' && (
+                      <>paid out as a monthly stipend for{" "}
+                        <b>
+                          {state.details.frequency || 1} month
+                          {state.details.frequency === "1" ? "" : "s"}
+                        </b></>)}
                     .
                   </ExplainText>
                 </ExplainContent>
-                <CheckBox />
               </ExplainBox>
               <TextFieldBox>
-                <TextInputContainer width={"350px"}>
-                  {<InputMetrix>$</InputMetrix>}
-                  <TextInputOneLine
-                    value={amount}
-                    onChange={(e) => setAmount(Number(e.target.value))}
-                    type={"number"}
-                    placeholder={"100"}
-                  />
-                </TextInputContainer>
+                <ContainerWithInfo>
+                  <TextInputContainer width={"350px"}>
+                    {<InputMetrix>$</InputMetrix>}
+                    <TextInputOneLine
+                      value={amount}
+                      onChange={(e) => setAmount(Number(e.target.value))}
+                      type={"number"}
+                      placeholder={"100"}
+                    />
+                  </TextInputContainer>
+                  <InfoPill>
+                    <InfoPillTitle>what you'll make</InfoPillTitle>
+                    <InfoPillInfo>
+                      ${formatAmount((Number(Math.floor(amount * state.details.return) / 100)) || 0)}
+                    </InfoPillInfo>
+                  </InfoPill>
+                </ContainerWithInfo>
               </TextFieldBox>
             </ExplainMeLikeIamFiveContainer>
-            <ExplainMeLikeIamFiveContainer>
-              <ExplainBox>
-                <ExplainContent>
-                  <ExplainTitle>
-                    Paying monthly stipend as one-time-payment
-                  </ExplainTitle>
-                  <ExplainText>
-                    I acknowledge that I can pay my monthly stipend as a
-                    one-time-payment. In case the creator cancels the monthly
-                    stipend early, they have 30 days to return the excess
-                    payments and are not obliged to pay dividends on those.
-                  </ExplainText>
-                </ExplainContent>
-                <CheckBox />
-              </ExplainBox>
-            </ExplainMeLikeIamFiveContainer>
+
+            {state.details.supportType === 'monthly' && (
+              <ExplainMeLikeIamFiveContainer>
+                <ExplainBox>
+                  <ExplainContent>
+                    <ExplainTitle>
+                      Paying monthly stipend as one-time-payment
+                    </ExplainTitle>
+                    <ExplainText>
+                      I acknowledge that I can pay my monthly stipend as a
+                      one-time-payment. In case the project cancels the monthly
+                      stipend early, they have 30 days to return the excess
+                      payments and are not obliged to pay dividends on those.
+                    </ExplainText>
+                  </ExplainContent>
+                  <CheckBox />
+                </ExplainBox>
+              </ExplainMeLikeIamFiveContainer>
+            )}
           </ExplainContainer>
         </Section>
         <Section>
-          <SubSectionTitle>What the creator is signing</SubSectionTitle>
+          <SubSectionTitle>What the project is signing</SubSectionTitle>
           <ExplainContainer>
             <ExplainMeLikeIamFiveContainer>
               <ExplainBox>
                 <ExplainContent>
                   <ExplainTitle>How much they raise</ExplainTitle>
                   <ExplainText>
-                    They agree to request a total of paid out as a monthly
-                    stipend of $
-                    {formatAmount(
-                      Number(amount) / (Number(state.details.frequency) || 1)
-                    )}{" "}
-                    per month for {Number(state.details.frequency) || 1} month
-                    {state.details.frequency === "1" ? "" : "s"}.
+                    They agree to request a total of <b>${formatAmount(
+                      Number(state.details.amount))}</b>{' '}from all their backers{' '}
+                    {state.details.supportType === 'monthly' ? (<>, paid out as a monthly
+                      stipend of $
+                      {formatAmount(
+                        Number(amount) / (Number(state.details.frequency) || 1)
+                      )}{" "}
+                      per month for {Number(state.details.frequency) || 1} months.
+                      {state.details.frequency === "1" ? "" : "s"}.</>) : (
+                      <>paid out as a one-time payment.</>
+                    )}
                   </ExplainText>
                 </ExplainContent>
                 <CheckBox />
@@ -312,19 +368,19 @@ const EnterDetails = () => {
                 <ExplainContent>
                   <ExplainTitle>How much they pay back</ExplainTitle>
                   <ExplainText>
-                    They agreed to pay back a dividend capped at{" "}
-                    {formatAmount(state.details.return)}%, or a total or $
-                    {formatAmount(
-                      (Number(state.details.amount) *
-                        (Number(state.details.frequency) || 1) *
-                        Number(state.details.return)) /
-                      100
-                    )}{" "}
-                    to their investors. By investing a total of ${amount},
-                    you’ll receive a maximum amount of $
-                    {formatAmount(
-                      (Number(amount) * Number(state.details.return)) / 100
-                    )}
+                    They agreed to pay back{" "}
+                    <b>{formatAmount(state.details.return)}%</b>, or a total of <b>$
+                      {formatAmount(
+                        (Number(state.details.amount) *
+                          (Number(state.details.frequency) || 1) *
+                          Number(state.details.return)) /
+                        100
+                      )}</b>{" "}
+                    to their backers. By contributing a total of <b>${amount ? Number(amount) : '_____'}</b>,
+                    you’ll receive a maximum amount of <b>$
+                      {formatAmount(
+                        (Number(amount) * Number(state.details.return)) / 100
+                      )}</b>
                     .
                   </ExplainText>
                 </ExplainContent>
@@ -336,19 +392,19 @@ const EnterDetails = () => {
                 <ExplainContent>
                   <ExplainTitle>What they pay back</ExplainTitle>
                   <ExplainText>
-                    They agreed to take {formatAmount(state.details.share)}% of
-                    all their total revenue, including pre-existing assets, once
-                    they hit $
-                    {formatAmount(Number(state.details.threshold) / 12)} per
-                    month or ${formatAmount(Number(state.details.threshold))}{" "}
-                    per year. Your share of these {state.details.share}% is
-                    proportional to the investment sum:{" "}
-                    {formatAmount(
+                    They agreed to take <b>{formatAmount(state.details.share)}%</b> of
+                    all their total revenue, including from pre-existing assets, once
+                    they hit <b>$
+                      {formatAmount(Math.floor(Number(state.details.threshold) / 12))} per
+                      month</b> or <b>${formatAmount(Number(state.details.threshold))}{" "}
+                      per year</b>. Your share of these <b>{state.details.share}%</b> is
+                    proportional to the contributed amount:{" "}
+                    <b>{formatAmount(
                       (Number(state.details.share) * Number(amount)) /
                       (Number(state.details.amount) *
                         (Number(state.details.frequency) || 1))
                     )}
-                    %.
+                      %</b>.
                   </ExplainText>
                 </ExplainContent>
                 <CheckBox />
@@ -359,8 +415,8 @@ const EnterDetails = () => {
                 <ExplainContent>
                   <ExplainTitle>How long they pay back</ExplainTitle>
                   <ExplainText>
-                    This agreement is valid for{" "}
-                    {formatAmount(state.details.cap)} years. Any amount that has
+                    This agreement is valid for{" "}<b>
+                      {formatAmount(state.details.cap)} years</b>. Any amount that has
                     not been paid back until then, does not have to be paid back
                     anymore.
                   </ExplainText>
@@ -373,8 +429,8 @@ const EnterDetails = () => {
                 <ExplainContent>
                   <ExplainTitle>How they inform</ExplainTitle>
                   <ExplainText>
-                    They agree to update investors on a monthly basis about
-                    their income and to provide their tax returns yearly.
+                    They agree to update their backers <b>on a monthly basis</b> about
+                    their income and to <b>provide their tax returns yearly</b>.
                   </ExplainText>
                 </ExplainContent>
                 <CheckBox />
@@ -385,8 +441,8 @@ const EnterDetails = () => {
                 <ExplainContent>
                   <ExplainTitle>When they pay back</ExplainTitle>
                   <ExplainText>
-                    They agree to start paying back my investors latest 3 months
-                    after they hit my revenue treshold.
+                    They agree to start paying back my backers latest <b>3 months</b>{' '}
+                    after they hit their revenue treshold.
                   </ExplainText>
                 </ExplainContent>
                 <CheckBox />
