@@ -12,5 +12,14 @@ const Signup: React.FunctionComponent = () => (
   </>
 );
 
+export const loader: LoaderFunction = ({ request }) => {
+  return getAuth(request).then((authData) => {
+    if (!!authData.userId) {
+      return redirect("/user");
+    }
+    return {};
+  });
+}
+
 export const Head = getMeta({ title: "Sign up" });
 export default Signup;
