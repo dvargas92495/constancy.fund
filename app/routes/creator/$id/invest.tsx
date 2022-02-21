@@ -211,7 +211,7 @@ const EnterDetails = () => {
               <IconContent>
                 <Icon
                   heightAndWidth={"20px"}
-                  name={error ? "repeat" : "dollar"}
+                  name={error ? "repeat" : "edit"}
                   color={"white"}
                 />
                 <span>{error ? error : "Read and Sign Term Sheet"}</span>
@@ -318,7 +318,7 @@ const EnterDetails = () => {
                       (Number(state.details.amount) *
                         (Number(state.details.frequency) || 1) *
                         Number(state.details.return)) /
-                        100
+                      100
                     )}{" "}
                     to their investors. By investing a total of ${amount},
                     you’ll receive a maximum amount of $
@@ -345,8 +345,8 @@ const EnterDetails = () => {
                     proportional to the investment sum:{" "}
                     {formatAmount(
                       (Number(state.details.share) * Number(amount)) /
-                        (Number(state.details.amount) *
-                          (Number(state.details.frequency) || 1))
+                      (Number(state.details.amount) *
+                        (Number(state.details.frequency) || 1))
                     )}
                     %.
                   </ExplainText>
@@ -530,7 +530,7 @@ const EnterDetails = () => {
           <PrimaryAction
             label={
               <IconContent>
-                <Icon heightAndWidth={"20px"} name={"dollar"} color={"white"} />{" "}
+                <Icon heightAndWidth={"20px"} name={"edit"} color={"white"} />{" "}
                 <span>Read and Sign Term Sheet</span>
               </IconContent>
             }
@@ -548,8 +548,7 @@ const EnterDetails = () => {
 export const loader: LoaderFunction = ({ params, request }) =>
   axios
     .get<Data>(
-      `${process.env.API_URL}/agreement${new URL(request.url).search}&userId=${
-        params["id"]
+      `${process.env.API_URL}/agreement${new URL(request.url).search}&userId=${params["id"]
       }`
     )
     .then((r) => r.data);

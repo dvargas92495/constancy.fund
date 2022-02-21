@@ -51,7 +51,7 @@ const ConditionsBox = styled.div`
   flex: 1;
   background: white;
   border-radius: 8px;
-  padding: 20px;
+  padding: 20px 15px;
   justify-content: center;
   align-items: center;
   flex-direction: row;
@@ -187,6 +187,7 @@ const Table = styled.table`
   border-radius: 12px;
   overflow: hidden;
   border-spacing: 0px;
+  width: 100%;  
 `;
 
 const TopText = styled.div`
@@ -373,7 +374,6 @@ const UserFundraisesContract = () => {
   const fundraiseData = useLoaderData<FundraiseData>();
   const type = fundraiseData.type;
   const [rows, setRows] = useState<Agreements>(fundraiseData.agreements);
-
   const total = useMemo(
     () =>
       Number(fundraiseData.details.amount) *
@@ -381,7 +381,7 @@ const UserFundraisesContract = () => {
     [fundraiseData]
   );
   const progress = useMemo(
-    () => rows.reduce((p, c) => p + c.amount, 0),
+    () => rows.filter(row => row.status === 3).reduce((p, c) => p + c.amount, 0),
     [rows]
   );
   // const [error, setError] = useState("");
@@ -399,10 +399,17 @@ const UserFundraisesContract = () => {
     isOpen?: boolean;
   };
 
-  const ProgressPercentage = Math.round(
-    (Number(progress) / Number(total)) * 100
-  );
+  const getProgressPercentage = () => {
+    if (fundraiseData.details.supportType === 'monthly') {
+      return Math.round(((Number(progress)) / (Number(total)) * 100))
+    } else {
+      return Math.round((Number(progress) / (Number(total)) * 100))
+    }
+  }
 
+  console.log(fundraiseData)
+
+  console.log(getProgressPercentage())
   return (
     <>
       <TopBar>
@@ -425,18 +432,22 @@ const UserFundraisesContract = () => {
             <TitleTopBox>
               <SectionTitle>Progress</SectionTitle>
               <ProgressPill>
-                <ProgressPillProgress>
+                {fundraiseData.details.supportType === 'monthly' && <ProgressPillProgress>
+                  ${formatAmount(progress / 12)}
+                </ProgressPillProgress>}
+                {fundraiseData.details.supportType === 'once' && <ProgressPillProgress>
                   ${formatAmount(progress)}
-                </ProgressPillProgress>
+                </ProgressPillProgress>}
                 <ProgressPillSeparator />
                 <ProgressPillRear>
-                  <ProgressPillTotal>{formatAmount(total)}</ProgressPillTotal>
+                  {fundraiseData.details.supportType === 'monthly' && <ProgressPillTotal>{formatAmount(total / 12)}</ProgressPillTotal>}
+                  {fundraiseData.details.supportType === 'once' && <ProgressPillTotal>{formatAmount(total)}</ProgressPillTotal>}
                   <ProgressPillHelpText>/ month</ProgressPillHelpText>
                 </ProgressPillRear>
               </ProgressPill>
             </TitleTopBox>
             <Spacer height={"20px"} />
-            <ProgressBar progress={ProgressPercentage} />
+            <ProgressBar progress={getProgressPercentage()} />
           </Section>
           <ConditionsContainer>
             <ConditionsBox>
@@ -449,7 +460,10 @@ const UserFundraisesContract = () => {
               </SectionCircle>
               <ConditionsContent>
                 <ConditionsSubTitle>Funding Goal</ConditionsSubTitle>
-                <ConditionsTitle>30.000</ConditionsTitle>
+                <ConditionsTitle>
+                  {fundraiseData.details.supportType === 'monthly' && (<>${formatAmount(total / 12)}<SmallConditionsText>/month</SmallConditionsText></>)}
+                  {fundraiseData.details.supportType === 'once' && (<>${formatAmount(total / 12)}<SmallConditionsText>/ one-time</SmallConditionsText></>)}
+                </ConditionsTitle>
               </ConditionsContent>
             </ConditionsBox>
             <ConditionsBox>
@@ -462,7 +476,10 @@ const UserFundraisesContract = () => {
               </SectionCircle>
               <ConditionsContent>
                 <ConditionsSubTitle>Pays Back</ConditionsSubTitle>
-                <ConditionsTitle>60.000</ConditionsTitle>
+                <ConditionsTitle>
+                  ${formatAmount((total * fundraiseData.details.return) / 100)}<SmallConditionsText> {fundraiseData.details.return}%</SmallConditionsText>
+
+                </ConditionsTitle>
               </ConditionsContent>
             </ConditionsBox>
             <ConditionsBox>
@@ -483,9 +500,9 @@ const UserFundraisesContract = () => {
                 />
               </SectionCircle>
               <ConditionsContent>
-                <ConditionsSubTitle>Income Threshold</ConditionsSubTitle>
+                <ConditionsSubTitle>Revenue Threshold</ConditionsSubTitle>
                 <ConditionsTitle>
-                  30.000<SmallConditionsText>/year</SmallConditionsText>
+                  ${formatAmount(fundraiseData.details.threshold / 12)}<SmallConditionsText>/month</SmallConditionsText>
                 </ConditionsTitle>
               </ConditionsContent>
             </ConditionsBox>

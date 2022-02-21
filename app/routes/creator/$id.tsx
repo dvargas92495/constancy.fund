@@ -48,7 +48,7 @@ export const IconContent = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  grid-gap: 5px;
+  grid-gap: 10px;
 `;
 
 const CreatorPage = (): React.ReactElement => {

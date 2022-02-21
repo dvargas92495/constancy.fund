@@ -255,6 +255,9 @@ const CreatorProfile = (): React.ReactElement => {
     fundraises = [],
   } = props;
   const agreementUuid = useParams()["agreement"];
+  const fundraiseData = useLoaderData<FundraiseData>();
+
+  console.log(fundraises[0].type)
 
   const scrollPosition = useScroll();
 
@@ -296,15 +299,14 @@ const CreatorProfile = (): React.ReactElement => {
                       name={"dollar"}
                       color={"white"}
                     />{" "}
-                    <span>Invest in Project</span>
+                    <span>Back this Project</span>
                   </IconContent>
                 }
                 onClick={() => {
                   navigate(
-                    `/creator/${userId}/invest${
-                      agreementUuid
-                        ? `?agreement=${agreementUuid}`
-                        : `?fundraise=${fundraises[0].uuid}`
+                    `/creator/${userId}/invest${agreementUuid
+                      ? `?agreement=${agreementUuid}`
+                      : `?fundraise=${fundraises[0].uuid}`
                     }`
                   );
                 }}
@@ -352,15 +354,14 @@ const CreatorProfile = (): React.ReactElement => {
                       name={"dollar"}
                       color={"white"}
                     />{" "}
-                    <span>Invest in Project</span>
+                    <span>Back this Project</span>
                   </IconContent>
                 }
                 onClick={() => {
                   navigate(
-                    `/creator/${userId}/invest${
-                      agreementUuid
-                        ? `?agreement=${agreementUuid}`
-                        : `?fundraise=${fundraises[0].uuid}`
+                    `/creator/${userId}/invest${agreementUuid
+                      ? `?agreement=${agreementUuid}`
+                      : `?fundraise=${fundraises[0].uuid}`
                     }`
                   );
                 }}
@@ -379,7 +380,7 @@ const CreatorProfile = (): React.ReactElement => {
             </SectionCircle>
             <ConditionsContent>
               <ConditionsSubTitle>Wants to raise</ConditionsSubTitle>
-              <ConditionsTitle>30.000</ConditionsTitle>
+              <ConditionsTitle>5,000 <SmallConditionsText> / month</SmallConditionsText></ConditionsTitle>
             </ConditionsContent>
           </ConditionsBox>
           <ConditionsBox>
@@ -388,7 +389,7 @@ const CreatorProfile = (): React.ReactElement => {
             </SectionCircle>
             <ConditionsContent>
               <ConditionsSubTitle>Pays Back</ConditionsSubTitle>
-              <ConditionsTitle>60.000</ConditionsTitle>
+              <ConditionsTitle>120,000<SmallConditionsText> 200%</SmallConditionsText></ConditionsTitle>
             </ConditionsContent>
           </ConditionsBox>
           <ConditionsBox>

@@ -31,6 +31,7 @@ import Split from "./Icons/split.svg";
 import TrendingUp from "./Icons/trendingUp.svg";
 import Remove from "./Icons/close.svg";
 import BackArrow from "./Icons/backArrow.svg";
+import Edit from "./Icons/edit.svg";
 
 const Icon = ({
   name,
@@ -71,6 +72,7 @@ const Icon = ({
   | "youtube"
   | "remove"
   | "backArrow"
+  | "edit"
 } & Pick<SvgIconProps, "height" | "width">) => {
   const muiProps = {
     ...props,
@@ -141,6 +143,8 @@ const Icon = ({
       return <StyledIcon {...props} icon={Remove} />;
     case "backArrow":
       return <StyledIcon {...props} icon={BackArrow} />;
+    case "edit":
+      return <StyledIcon {...props} icon={Edit} />;
     default:
       return <SvgIcon {...muiProps} />;
   }
