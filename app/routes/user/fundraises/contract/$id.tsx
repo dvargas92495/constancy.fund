@@ -5,7 +5,6 @@ import { UserButton } from "@clerk/clerk-react";
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
 import useAuthenticatedHandler from "@dvargas92495/ui/dist/useAuthenticatedHandler";
-import TableBody from "@mui/material/TableBody";
 import type { Handler as GetContractHandler } from "../../../../../functions/contract/get";
 import type { Handler as PostAgreementHandler } from "../../../../../functions/agreement/post";
 import type { Handler as DeleteAgreementHandler } from "../../../../../functions/agreement/delete";
@@ -172,6 +171,15 @@ const TableRow = styled.tr`
   padding: 0 50px;
 `;
 
+const TableBody = styled.tbody`
+  border-radius: 8px;
+  font-weight: 500;
+
+  & > tr {
+    height: 80px;
+  }
+`;
+
 const TableHead = styled.thead`
   border-radius: 8px;
   background-color: ${(props) =>
@@ -212,7 +220,7 @@ const BottomText = styled.div`
 `;
 
 const TableCell = styled.td`
-  border-bottom: 1px solid ${(props) => props.theme.palette.color.lightgrey};
+  border-top: 1px solid ${(props) => props.theme.palette.color.lightgrey};
   padding: 0 25px;
   width: fit-content;
   width: fit-content;
@@ -229,9 +237,9 @@ const IconContainer = styled.div`
 `;
 
 const StagePill = styled.div<{ color: string }>`
-  height: 40px;
-  padding: 5px 20px;
-  border-radius: 8px;
+  height: 30px;
+  width: 30px;
+  border-radius: 50px;
   background: ${(props) => props.color}20;
   color: ${(props) => props.color};
   display: flex;
@@ -239,8 +247,17 @@ const StagePill = styled.div<{ color: string }>`
   align-items: center;
   white-space: nowrap;
   font-size: 12px;
-  width: fit-content;
 `;
+
+const StatusRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 12px;
+  grid-gap: 10px;
+  color: ${(props) => props.theme.palette.color.darkerText};
+  white-space: nowrap;
+`
 
 const Link = styled.a`
   color: ${(props) => props.theme.palette.color.purple};
@@ -317,7 +334,7 @@ const STAGE_ACTIONS: ((a: {
     },
     (row) => (
       <Link href={`/contract?uuid=${row.uuid}&signer=1`}>
-        Send Link To Investor
+        Resend invitation to Backer
       </Link>
     ),
     (row) => (
@@ -348,9 +365,13 @@ const AgreementRow = (
   return (
     <TableRow>
       <TableCell>
-        <StagePill color={STAGE_COLORS[row.status]}>
+        <StatusRow>
+          <StagePill color={STAGE_COLORS[row.status]}>
+            {row.status === 3 && '🎉'}
+            {row.status === 2 && <Icon name={'edit'} heightAndWidth="14px" color="purple" />}
+          </StagePill>
           {CONTRACT_STAGES[row.status].replace(/_/g, " ").toUpperCase()}
-        </StagePill>
+        </StatusRow>
       </TableCell>
       <TableCell>
         <TopText>{row.name}</TopText>
@@ -511,7 +532,7 @@ const UserFundraisesContract = () => {
           {/* // {FUNDRAISE_NAMES_BY_IDS[type]} */}
           <Section>
             <TitleTopBoxSmall>
-              <SectionTitle margin={"0px"}>Your Investors</SectionTitle>
+              <SectionTitle margin={"0px"}>Your Backers</SectionTitle>
               <ProgressPillSmall>
                 <ProgressPillProgress>
                   Confirmed:{" "}
@@ -521,14 +542,14 @@ const UserFundraisesContract = () => {
             </TitleTopBoxSmall>
             <Box>
               <Table>
-                <TableHead>
+                {/* <TableHead>
                   <TableRow>
                     <TableCell></TableCell>
-                    <TableCell>Investor</TableCell>
+                    <TableCell>Name</TableCell>
                     <TableCell>Amount</TableCell>
                     <TableCell></TableCell>
                   </TableRow>
-                </TableHead>
+                </TableHead> */}
                 <TableBody>
                   {rows.map((row) => (
                     <AgreementRow

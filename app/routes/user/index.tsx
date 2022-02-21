@@ -62,11 +62,12 @@ const NameandProfileImageSection = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   grid-gap: 30px;
+  padding-right: 40px;
 `;
 
 const ProfileImageContainer = styled.div`
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
   position: relative;
 `;
 
@@ -95,7 +96,7 @@ const ProfileImageBox = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  border: 2px solid #347ae2;
+  border: 1px solid ${(props) => props.theme.palette.color.lightgrey};
   border-radius: 300px;
   margin: 1px;
   cursor: pointer;
@@ -346,34 +347,6 @@ const UserProfile = () => {
                   />
                 </TextInputContainer>
               </TextFieldBox>
-              <TextFieldBox>
-                <TextFieldDescription required>Last Name</TextFieldDescription>
-                <TextInputContainer width={"350px"}>
-                  <TextInputOneLine
-                    value={lastNameValue}
-                    onChange={(e) => setLastNameValue(e.target.value)}
-                  />
-                </TextInputContainer>
-              </TextFieldBox>
-              <TextFieldBox>
-                <TextFieldDescription>Middle Name</TextFieldDescription>
-                <TextInputContainer width={"350px"}>
-                  <TextInputOneLine
-                    value={middleNameValue}
-                    onChange={(e) => setMiddleNameValue(e.target.value)}
-                  />
-                </TextInputContainer>
-              </TextFieldBox>
-              <TextFieldBox>
-                <TextFieldDescription>Contact Email</TextFieldDescription>
-                <TextInputContainer width={"350px"}>
-                  <TextInputOneLine
-                    value={contactEmailValue}
-                    onChange={(e) => setContactEmailValue(e.target.value)}
-                    required
-                  />
-                </TextInputContainer>
-              </TextFieldBox>
             </NameAreaBox>
             <ProfileImageContainer>
               <ProfileImageBox>
@@ -580,6 +553,108 @@ const UserProfile = () => {
                 </TextFieldBox>
               </AddressBox>
             </AddressArea>
+
+            <SubSection>
+              <SubSectionTitle>Legal Representative</SubSectionTitle>
+              <InfoText>
+                The person who is authorized to raise funds on behalf of the company.
+              </InfoText>
+              <TextFieldBox>
+                <TextFieldDescription required>First Name</TextFieldDescription>
+                <TextInputContainer width={"350px"}>
+                  <TextInputOneLine
+                    value={lastNameValue}
+                    onChange={(e) => setLastNameValue(e.target.value)}
+                  />
+                </TextInputContainer>
+              </TextFieldBox>
+              <TextFieldBox>
+                <TextFieldDescription>
+                  Last Name
+                </TextFieldDescription>
+                <TextInputContainer width={"350px"}>
+                  <TextInputOneLine
+                    value={middleNameValue}
+                    onChange={(e) => setMiddleNameValue(e.target.value)}
+                  />
+                </TextInputContainer>
+              </TextFieldBox>
+              <TextFieldBox>
+                <TextFieldDescription>
+                  Contact Email
+                </TextFieldDescription>
+                <TextInputContainer width={"350px"}>
+                  <TextInputOneLine
+                    value={contactEmailValue}
+                    onChange={(e) => setContactEmailValue(e.target.value)}
+                    required
+                  />
+                </TextInputContainer>
+              </TextFieldBox>
+              <TextFieldDescription required>Address</TextFieldDescription>
+              <AddressArea>
+                <AddressBox>
+                  <TextFieldBox>
+                    <TextFieldDescription $small required>
+                      Street
+                    </TextFieldDescription>
+                    <TextInputContainer width={"300px"}>
+                      <TextInputOneLine
+                        value={companyAddressStreetValue}
+                        onChange={(e) =>
+                          setCompanyAddressStreetValue(e.target.value)
+                        }
+                        required
+                      />
+                    </TextInputContainer>
+                  </TextFieldBox>
+                  <TextFieldBox>
+                    <TextFieldDescription $small required>
+                      City
+                    </TextFieldDescription>
+                    <TextInputContainer>
+                      <TextInputOneLine
+                        value={companyAddressCityValue}
+                        onChange={(e) =>
+                          setCompanyAddressCityValue(e.target.value)
+                        }
+                        required
+                      />
+                    </TextInputContainer>
+                  </TextFieldBox>
+                </AddressBox>
+                <AddressBox>
+                  <TextFieldBox>
+                    <TextFieldDescription $small required>
+                      Nr.
+                    </TextFieldDescription>
+                    <TextInputContainer>
+                      <TextInputOneLine
+                        value={companyAddressNumberValue}
+                        onChange={(e) =>
+                          setCompanyAddressNumberValue(e.target.value)
+                        }
+                        required
+                      />
+                    </TextInputContainer>
+                  </TextFieldBox>
+                  <TextFieldBox>
+                    <TextFieldDescription $small required>
+                      ZIP
+                    </TextFieldDescription>
+                    <TextInputContainer>
+                      <TextInputOneLine
+                        value={companyAddressZipValue}
+                        onChange={(e) =>
+                          setCompanyAddressZipValue(e.target.value)
+                        }
+                        required
+                      />
+                    </TextInputContainer>
+                  </TextFieldBox>
+                </AddressBox>
+              </AddressArea>
+            </SubSection>
           </Box>
         </Section>
       </ContentContainer>
