@@ -36,6 +36,7 @@ import Section from "~/_common/Section";
 import SectionTitle from "~/_common/SectionTitle";
 import ProgressBar from "~/_common/ProgressBar";
 import { LoadingIndicator } from "~/_common/LoadingIndicator";
+import { PrimaryAction } from "~/_common/PrimaryAction";
 
 const ConditionsContainer = styled.div`
   display: flex;
@@ -180,7 +181,10 @@ const TableHead = styled.thead`
   width: fill-available;
   color: ${(props) => props.theme.palette.text.secondary};
   font-weight: 500;
-  height: 60px !important;
+
+  & > tr {
+    height: 50px;
+  }
 `;
 
 const Table = styled.table`
@@ -317,7 +321,8 @@ const STAGE_ACTIONS: ((a: {
       </Link>
     ),
     (row) => (
-      <Link href={`/contract?uuid=${row.uuid}&signer=2`}>Sign Contract</Link>
+      <PrimaryAction textColor="white" bgColor="purple" label={'Sign Contract'} />
+      // onClick={window.open(`/contract?uuid=${row.uuid}&signer=2`)}
     ),
     (row) => (
       <Link href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
@@ -343,17 +348,17 @@ const AgreementRow = (
   return (
     <TableRow>
       <TableCell>
+        <StagePill color={STAGE_COLORS[row.status]}>
+          {CONTRACT_STAGES[row.status].replace(/_/g, " ").toUpperCase()}
+        </StagePill>
+      </TableCell>
+      <TableCell>
         <TopText>{row.name}</TopText>
         <BottomText>{row.email}</BottomText>
       </TableCell>
       <TableCell>
         <TopText>${formatAmount(row.amount)}</TopText>
         <BottomText>{ProgressPercentage} %</BottomText>
-      </TableCell>
-      <TableCell>
-        <StagePill color={STAGE_COLORS[row.status]}>
-          {CONTRACT_STAGES[row.status].replace(/_/g, " ").toUpperCase()}
-        </StagePill>
       </TableCell>
       <TableCell>
         <StageAction
@@ -406,10 +411,6 @@ const UserFundraisesContract = () => {
       return Math.round((Number(progress) / (Number(total)) * 100))
     }
   }
-
-  console.log(fundraiseData)
-
-  console.log(getProgressPercentage())
   return (
     <>
       <TopBar>
@@ -440,9 +441,8 @@ const UserFundraisesContract = () => {
                 </ProgressPillProgress>}
                 <ProgressPillSeparator />
                 <ProgressPillRear>
-                  {fundraiseData.details.supportType === 'monthly' && <ProgressPillTotal>{formatAmount(total / 12)}</ProgressPillTotal>}
-                  {fundraiseData.details.supportType === 'once' && <ProgressPillTotal>{formatAmount(total)}</ProgressPillTotal>}
-                  <ProgressPillHelpText>/ month</ProgressPillHelpText>
+                  {fundraiseData.details.supportType === 'monthly' && (<><ProgressPillTotal>{formatAmount(total / 12)}</ProgressPillTotal><ProgressPillHelpText>/ month</ProgressPillHelpText></>)}
+                  {fundraiseData.details.supportType === 'once' && <ProgressPillTotal>${formatAmount(total)}</ProgressPillTotal>}
                 </ProgressPillRear>
               </ProgressPill>
             </TitleTopBox>
@@ -461,8 +461,8 @@ const UserFundraisesContract = () => {
               <ConditionsContent>
                 <ConditionsSubTitle>Funding Goal</ConditionsSubTitle>
                 <ConditionsTitle>
-                  {fundraiseData.details.supportType === 'monthly' && (<>${formatAmount(total / 12)}<SmallConditionsText>/month</SmallConditionsText></>)}
-                  {fundraiseData.details.supportType === 'once' && (<>${formatAmount(total / 12)}<SmallConditionsText>/ one-time</SmallConditionsText></>)}
+                  {fundraiseData.details.supportType === 'monthly' && (<>${formatAmount(Math.floor(total / 12))}<SmallConditionsText>/month</SmallConditionsText></>)}
+                  {fundraiseData.details.supportType === 'once' && (<>${formatAmount(Math.floor(total))}</>)}
                 </ConditionsTitle>
               </ConditionsContent>
             </ConditionsBox>
@@ -502,7 +502,7 @@ const UserFundraisesContract = () => {
               <ConditionsContent>
                 <ConditionsSubTitle>Revenue Threshold</ConditionsSubTitle>
                 <ConditionsTitle>
-                  ${formatAmount(fundraiseData.details.threshold / 12)}<SmallConditionsText>/month</SmallConditionsText>
+                  ${formatAmount(Math.floor(fundraiseData.details.threshold / 12))}<SmallConditionsText>/month</SmallConditionsText>
                 </ConditionsTitle>
               </ConditionsContent>
             </ConditionsBox>
@@ -523,9 +523,9 @@ const UserFundraisesContract = () => {
               <Table>
                 <TableHead>
                   <TableRow>
+                    <TableCell></TableCell>
                     <TableCell>Investor</TableCell>
                     <TableCell>Amount</TableCell>
-                    <TableCell>Status</TableCell>
                     <TableCell></TableCell>
                   </TableRow>
                 </TableHead>
