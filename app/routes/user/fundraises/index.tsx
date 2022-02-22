@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { UserButton, useUser } from "@clerk/remix";
 import Box from "@mui/material/Box";
 import _H1 from "@dvargas92495/ui/dist/components/H1";
@@ -18,11 +18,9 @@ import ListItemIcon from "~/_common/ListItemIcon";
 import ListItemText from "~/_common/ListItemText";
 import type { Handler as DeleteHandler } from "../../../../functions/contract/delete";
 import type { Handler as GetHandler } from "../../../../functions/fundraises/get";
-import Skeleton from "@mui/material/Skeleton";
-import { useNavigate } from "remix";
+import { LoaderFunction, useNavigate } from "remix";
 import Icon from "~/_common/Icon";
 import { PrimaryAction } from "~/_common/PrimaryAction";
-import { LoadingIndicator } from "~/_common/LoadingIndicator";
 import TopBar from "~/_common/TopBar";
 import InfoArea from "~/_common/InfoArea";
 import PageTitle from "~/_common/PageTitle";
@@ -34,6 +32,8 @@ import InfoText from "~/_common/InfoText";
 import SubSectionTitle from "~/_common/SubSectionTitle";
 import styled from "styled-components";
 import formatAmount from "../../../../db/util/formatAmount";
+import cookie from "cookie";
+import axios from "axios";
 
 const NotCompletedMessageContainer = styled.div`
   display: flex;
@@ -44,19 +44,12 @@ const NotCompletedMessageContainer = styled.div`
 
 const FundraisingContainer = styled.div``;
 
-const LoadingBox = styled.div`
-  width: 100%;
-  height: 500px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
 const H4 = (props: Parameters<typeof _H4>[0]) => (
   <_H4 sx={{ fontSize: 20, mt: 0, ...props.sx }} {...props} />
 );
 
-type Fundraises = Awaited<ReturnType<GetHandler>>["fundraises"];
+type Data = Awaited<ReturnType<GetHandler>>;
+type Fundraises = Data["fundraises"];
 
 const DetailComponentById: Record<
   string,
@@ -244,24 +237,6 @@ const UserFundraiseIndex = () => {
     }
   }, [getFundraises, setRows, setLoading, completed]);
   const navigate = useNavigate();
-  const startFundraiseButton = useMemo(
-    () => (
-      <Button
-        variant={"contained"}
-        onClick={() => navigate(`/user/fundraises/setup`)}
-      >
-        Start New Fundraise
-      </Button>
-    ),
-    [navigate]
-  );
-  const Container: React.FC = loading
-    ? ({ children }) => (
-        <Skeleton variant={"rectangular"} sx={{ minHeight: "60vh" }}>
-          {children}
-        </Skeleton>
-      )
-    : Box;
   return (
     <>
       <TopBar>
@@ -312,48 +287,60 @@ const UserFundraiseIndex = () => {
             </NotCompletedMessageContainer>
           )}
           {rows.length ? (
-            <Container>
-              <FundraisingContainer>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Type</TableCell>
-                      <TableCell>Details</TableCell>
-                      <TableCell>Progress</TableCell>
-                      <TableCell># Investors</TableCell>
-                      <TableCell></TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row) => (
-                      <FundraiseContentRow
-                        key={row.uuid}
-                        {...row}
-                        onDeleteSuccess={onDeleteSuccess}
-                      />
-                    ))}
-                  </TableBody>
-                </Table>
-                {!rows.length && (
-                  <Box sx={{ mt: 4 }} textAlign={"center"}>
-                    <H4>Set up your first fundraise</H4>
-                    {startFundraiseButton}
-                  </Box>
-                )}
-              </FundraisingContainer>
-            </Container>
+            <FundraisingContainer>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Type</TableCell>
+                    <TableCell>Details</TableCell>
+                    <TableCell>Progress</TableCell>
+                    <TableCell># Investors</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => (
+                    <FundraiseContentRow
+                      key={row.uuid}
+                      {...row}
+                      onDeleteSuccess={onDeleteSuccess}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </FundraisingContainer>
           ) : (
-            <LoadingBox>
-              <LoadingIndicator />
-              <FundraisingContainer
+            <Box sx={{ mt: 4 }} textAlign={"center"}>
+              <H4>Set up your first fundraise</H4>
+              <Button
+                variant={"contained"}
                 onClick={() => navigate(`/user/fundraises/setup`)}
-              />
-            </LoadingBox>
+              >
+                Start New Fundraise
+              </Button>
+            </Box>
           )}
         </Section>
       </ContentContainer>
     </>
   );
+};
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const cookieHeader = request.headers.get("cookie") || "";
+  const cookieObj = cookie.parse(cookieHeader);
+  const token = cookieObj.__session;
+  return axios
+    .get<Data>(`${process.env.API_URL}/fundraises`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((r) => r.data)
+    .catch((e) => {
+      console.error(e);
+      return {};
+    });
 };
 
 export default UserFundraiseIndex;
