@@ -161,14 +161,14 @@ const StyledIcon = styled.div<{
   width?: string | number;
   color?: string;
   hoverOff?: boolean;
-  heightAndWidth?: string;
+  $heightAndWidth?: string;
   rotation?: number;
 }>`
   cursor: ${(props) => (props.hoverOff ? "default" : "pointer")};
   height: ${(props) =>
-    props.heightAndWidth ? props.heightAndWidth : props.height};
+    props.$heightAndWidth ? props.$heightAndWidth : props.height};
   width: ${(props) =>
-    props.heightAndWidth ? props.heightAndWidth : props.width};
+    props.$heightAndWidth ? props.$heightAndWidth : props.width};
   background-color: ${(props) =>
     props.color
       ? props.theme.palette.color[props.color]
