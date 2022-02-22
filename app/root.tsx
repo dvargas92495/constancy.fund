@@ -115,6 +115,8 @@ const GlobalStyle = createGlobalStyle<{ theme: typeof themeProps }>`
 
     html { font-family: "Inter", "system-ui" !important; }
 
+    html, body { height: 100%; }
+
     @supports (font-variation-settings: normal) {
       html { font-family: "Inter", "system-ui" !important; }
     }
@@ -139,19 +141,16 @@ const GlobalStyle = createGlobalStyle<{ theme: typeof themeProps }>`
           background: ${(props) =>
             props.theme.palette.color.backgroundColorDarker} !important;
         }
-      }
     }
 
     & .Mui-selected {
         background: ${(props) =>
           props.theme.palette.color.backgroundHighlight} !important;
-      }
     }
 
     & .Mui-focusVisible {
         background: ${(props) =>
           props.theme.palette.color.backgroundColorDarker} !important;
-      }
     }
 `;
 
@@ -175,7 +174,7 @@ export const loader: LoaderFunction = (args) =>
         STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
       },
     }),
-    { loadUser: true}
+    { loadUser: true }
   );
 
 export const links: LinksFunction = () => {
@@ -225,7 +224,7 @@ export default function App() {
               }
             >
               <MuiThemeProvider {...themeProps}>
-                <RootContainer>
+                <RootContainer id="root">
                   <Outlet />
                 </RootContainer>
               </MuiThemeProvider>

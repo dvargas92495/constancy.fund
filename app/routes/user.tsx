@@ -1,5 +1,4 @@
 import getMeta from "~/_common/getMeta";
-import clerkUserProfileCss from "@dvargas92495/ui/dist/clerkUserProfileCss";
 import React from "react";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
@@ -129,9 +128,7 @@ const Dashboard = () => {
 const globalStyles = (
   <GlobalStyles
     styles={{
-      html: { height: "100%" },
-      body: { height: "100%" },
-      "body > div[data-reactroot]": { height: "100%" },
+      "body > div#root": { justifyContent: "unset" },
     }}
   />
 );
@@ -139,19 +136,18 @@ const globalStyles = (
 const UserPage = (): React.ReactElement => (
   <>
     {globalStyles}
-    <style>{clerkUserProfileCss}</style>
     <Dashboard />
   </>
 );
 
 export const loader: LoaderFunction = ({ request }) => {
-  getAuth(request).then((authData) => {
+  return getAuth(request).then((authData) => {
     if (!authData.userId) {
       return redirect("/login");
     }
     return {};
   });
-}
+};
 
 export const meta = getMeta({ title: "User" });
 
