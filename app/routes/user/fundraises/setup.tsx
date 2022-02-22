@@ -54,7 +54,7 @@ const UserFundraisesSetup = () => {
       </TopBar>
       <ContentContainer>
         {FUNDRAISE_TYPES.map(({ name, description, help, enabled, id }) => (
-          <Section>
+          <Section key={id}>
             <FundraisingTypeCard>
               <FundraisingTypeTopRow>
                 <FundraisingTypeTitleSubTitleContainer>
