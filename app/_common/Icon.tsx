@@ -35,48 +35,53 @@ import Edit from "./Icons/edit.svg";
 
 const Icon = ({
   name,
-  ...props
+  heightAndWidth,
+  ...inputProps
 }: {
   heightAndWidth?: string;
   color?: string;
   name:
-  | "arrow-drop-down"
-  | "arrow-right"
-  | "book"
-  | "check"
-  | "delete"
-  | "dollar"
-  | "email"
-  | "facebook"
-  | "fundraise"
-  | "github"
-  | "globe"
-  | "home"
-  | "info"
-  | "Instagram"
-  | "linkedIn"
-  | "mail"
-  | "more-vert"
-  | "note"
-  | "personFine"
-  | "preview"
-  | "public"
-  | "reddit"
-  | "repeat"
-  | "settings"
-  | "split"
-  | "thumbsUp"
-  | "trendingUp"
-  | "twitter"
-  | "webIcon"
-  | "youtube"
-  | "remove"
-  | "backArrow"
-  | "edit"
+    | "arrow-drop-down"
+    | "arrow-right"
+    | "book"
+    | "check"
+    | "delete"
+    | "dollar"
+    | "email"
+    | "facebook"
+    | "fundraise"
+    | "github"
+    | "globe"
+    | "home"
+    | "info"
+    | "Instagram"
+    | "linkedIn"
+    | "mail"
+    | "more-vert"
+    | "note"
+    | "personFine"
+    | "preview"
+    | "public"
+    | "reddit"
+    | "repeat"
+    | "settings"
+    | "split"
+    | "thumbsUp"
+    | "trendingUp"
+    | "twitter"
+    | "webIcon"
+    | "youtube"
+    | "remove"
+    | "backArrow"
+    | "edit";
 } & Pick<SvgIconProps, "height" | "width">) => {
   const muiProps = {
-    ...props,
-    color: props.color as SvgIconProps["color"],
+    ...inputProps,
+    color: inputProps.color as SvgIconProps["color"],
+  };
+  const props = {
+    ...inputProps,
+    $heightAndWidth: heightAndWidth,
   };
   switch (name) {
     case "arrow-drop-down":

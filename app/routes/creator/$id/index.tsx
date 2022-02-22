@@ -27,6 +27,7 @@ import {
   TopBarProfile,
 } from "../$id";
 import CompanyLogo from "~/_common/Images/memexlogo.png";
+import formatAmount from "../../../../db/util/formatAmount";
 
 type Props = Awaited<ReturnType<GetPropsHandler>>;
 
@@ -256,8 +257,6 @@ const CreatorProfile = (): React.ReactElement => {
   } = props;
   const agreementUuid = useParams()["agreement"];
 
-  console.log(props)
-
   const scrollPosition = useScroll();
 
   return (
@@ -303,9 +302,10 @@ const CreatorProfile = (): React.ReactElement => {
                 }
                 onClick={() => {
                   navigate(
-                    `/creator/${userId}/invest${agreementUuid
-                      ? `?agreement=${agreementUuid}`
-                      : `?fundraise=${fundraises[0].uuid}`
+                    `/creator/${userId}/invest${
+                      agreementUuid
+                        ? `?agreement=${agreementUuid}`
+                        : `?fundraise=${fundraises[0].uuid}`
                     }`
                   );
                 }}
@@ -358,9 +358,10 @@ const CreatorProfile = (): React.ReactElement => {
                 }
                 onClick={() => {
                   navigate(
-                    `/creator/${userId}/invest${agreementUuid
-                      ? `?agreement=${agreementUuid}`
-                      : `?fundraise=${fundraises[0].uuid}`
+                    `/creator/${userId}/invest${
+                      agreementUuid
+                        ? `?agreement=${agreementUuid}`
+                        : `?fundraise=${fundraises[0].uuid}`
                     }`
                   );
                 }}
@@ -371,85 +372,114 @@ const CreatorProfile = (): React.ReactElement => {
           </ProfileContentBox>
         </TopBarMainBox>
       </TopBarProfile>
-      <ProfileBottomContainer paddingTop={"150px"}>
-        <ConditionsContainer>
-          <ConditionsBox>
-            <SectionCircle width={"30px"} margin={"0"}>
-              <Icon name={"dollar"} color={"purple"} heightAndWidth={"15px"} />
-            </SectionCircle>
-            <ConditionsContent>
-              <ConditionsSubTitle>Wants to raise</ConditionsSubTitle>
-              <ConditionsTitle>5,000 <SmallConditionsText> / month</SmallConditionsText></ConditionsTitle>
-            </ConditionsContent>
-          </ConditionsBox>
-          <ConditionsBox>
-            <SectionCircle width={"30px"} margin={"0"}>
-              <Icon name={"repeat"} color={"purple"} heightAndWidth={"15px"} />
-            </SectionCircle>
-            <ConditionsContent>
-              <ConditionsSubTitle>Pays Back</ConditionsSubTitle>
-              <ConditionsTitle>120,000<SmallConditionsText> 200%</SmallConditionsText></ConditionsTitle>
-            </ConditionsContent>
-          </ConditionsBox>
-          <ConditionsBox>
-            <SectionCircle width={"30px"} margin={"0"}>
-              <Icon name={"split"} color={"purple"} heightAndWidth={"15px"} />
-            </SectionCircle>
-            <ConditionsContent>
-              <ConditionsSubTitle>Shares Revenue</ConditionsSubTitle>
-              <ConditionsTitle>12%</ConditionsTitle>
-            </ConditionsContent>
-          </ConditionsBox>
-          <ConditionsBox>
-            <SectionCircle width={"30px"} margin={"0"}>
-              <Icon
-                name={"trendingUp"}
-                color={"purple"}
-                heightAndWidth={"15px"}
-              />
-            </SectionCircle>
-            <ConditionsContent>
-              <ConditionsSubTitle>Income Threshold</ConditionsSubTitle>
-              <ConditionsTitle>
-                30.000<SmallConditionsText>/year</SmallConditionsText>
-              </ConditionsTitle>
-            </ConditionsContent>
-          </ConditionsBox>
-        </ConditionsContainer>
-        <ContractExplainerContainer>
-          <ContractExplainerTitle>
-            Income Sharing Agreement
-          </ContractExplainerTitle>
-          <ContractExplainerInfo>
-            The creator will start paying back a loan with interests once they
-            reach their income threshold of $30.000 yearly. Then, 12% of their
-            income is used to pay back investors.
-          </ContractExplainerInfo>
-        </ContractExplainerContainer>
-        <Spacer height={"40px"} />
-        <SectionTitle>About the Project</SectionTitle>
-        <Spacer height={"20px"} />
-        <Section>
-          <VideoEmbed
-            src="https://www.youtube.com/embed/PBNXY1Ud_Is"
-            title="YouTube video player"
-            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </Section>
-        <Section>
-          <SectionInnerContent>
-            {QUESTIONAIRES.map(({ q }, i) => (
-              <QuestionAireBox key={i}>
-                <ContractExplainerTitle>{q}</ContractExplainerTitle>
-                <ContractExplainerInfo>
-                  {questionaires[i]}
-                </ContractExplainerInfo>
-              </QuestionAireBox>
-            ))}
-          </SectionInnerContent>
-        </Section>
-      </ProfileBottomContainer>
+      {fundraises[0] && (
+        <ProfileBottomContainer paddingTop={"150px"}>
+          <ConditionsContainer>
+            <ConditionsBox>
+              <SectionCircle width={"30px"} margin={"0"}>
+                <Icon
+                  name={"dollar"}
+                  color={"purple"}
+                  heightAndWidth={"15px"}
+                />
+              </SectionCircle>
+              <ConditionsContent>
+                <ConditionsSubTitle>Wants to raise</ConditionsSubTitle>
+                <ConditionsTitle>
+                  {formatAmount(fundraises[0].details.amount)}{" "}
+                  {Number(fundraises[0].details.frequency) > 1 && (
+                    <SmallConditionsText> / month</SmallConditionsText>
+                  )}
+                </ConditionsTitle>
+              </ConditionsContent>
+            </ConditionsBox>
+            <ConditionsBox>
+              <SectionCircle width={"30px"} margin={"0"}>
+                <Icon
+                  name={"repeat"}
+                  color={"purple"}
+                  heightAndWidth={"15px"}
+                />
+              </SectionCircle>
+              <ConditionsContent>
+                <ConditionsSubTitle>Pays Back</ConditionsSubTitle>
+                <ConditionsTitle>
+                  {formatAmount(
+                    (Number(fundraises[0].details.return || 0) *
+                      Number(fundraises[0].details.frequency || 1) *
+                      Number(fundraises[0].details.amount || 0)) /
+                      100
+                  )}
+                  <SmallConditionsText>
+                    {" "}
+                    {formatAmount(Number(fundraises[0].details.return || 0))}%
+                  </SmallConditionsText>
+                </ConditionsTitle>
+              </ConditionsContent>
+            </ConditionsBox>
+            <ConditionsBox>
+              <SectionCircle width={"30px"} margin={"0"}>
+                <Icon name={"split"} color={"purple"} heightAndWidth={"15px"} />
+              </SectionCircle>
+              <ConditionsContent>
+                <ConditionsSubTitle>Shares Revenue</ConditionsSubTitle>
+                <ConditionsTitle>
+                  {formatAmount(Number(fundraises[0].details.share || 0))}%
+                </ConditionsTitle>
+              </ConditionsContent>
+            </ConditionsBox>
+            <ConditionsBox>
+              <SectionCircle width={"30px"} margin={"0"}>
+                <Icon
+                  name={"trendingUp"}
+                  color={"purple"}
+                  heightAndWidth={"15px"}
+                />
+              </SectionCircle>
+              <ConditionsContent>
+                <ConditionsSubTitle>Income Threshold</ConditionsSubTitle>
+                <ConditionsTitle>
+                  ${formatAmount(Number(fundraises[0].details.threshold || 0))}
+                  <SmallConditionsText>/year</SmallConditionsText>
+                </ConditionsTitle>
+              </ConditionsContent>
+            </ConditionsBox>
+          </ConditionsContainer>
+          <ContractExplainerContainer>
+            <ContractExplainerTitle>
+              Income Sharing Agreement
+            </ContractExplainerTitle>
+            <ContractExplainerInfo>
+              The creator will start paying back a loan with interests once they
+              reach their income threshold of $30.000 yearly. Then, 12% of their
+              income is used to pay back investors.
+            </ContractExplainerInfo>
+          </ContractExplainerContainer>
+          <Spacer height={"40px"} />
+          <SectionTitle>About the Project</SectionTitle>
+          <Spacer height={"20px"} />
+          <Section>
+            <VideoEmbed
+              src="https://www.youtube.com/embed/PBNXY1Ud_Is"
+              title="YouTube video player"
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </Section>
+          <Section>
+            <SectionInnerContent>
+              {QUESTIONAIRES.map(({ q }, i) => (
+                <QuestionAireBox key={i}>
+                  <ContractExplainerTitle>{q}</ContractExplainerTitle>
+                  <ContractExplainerInfo>
+                    {questionaires[i]}
+                  </ContractExplainerInfo>
+                </QuestionAireBox>
+              ))}
+            </SectionInnerContent>
+          </Section>
+        </ProfileBottomContainer>
+      )}
     </>
   );
 };
