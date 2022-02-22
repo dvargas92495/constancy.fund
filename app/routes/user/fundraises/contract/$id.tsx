@@ -1,25 +1,14 @@
 import React, { useState, useCallback, useMemo } from "react";
 import Box from "@mui/material/Box";
-import { UserButton } from "@clerk/clerk-react";
+import { UserButton } from "@clerk/remix";
 
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
 import useAuthenticatedHandler from "@dvargas92495/ui/dist/useAuthenticatedHandler";
 import type { Handler as GetContractHandler } from "../../../../../functions/contract/get";
-import type { Handler as PostAgreementHandler } from "../../../../../functions/agreement/post";
 import type { Handler as DeleteAgreementHandler } from "../../../../../functions/agreement/delete";
-import FUNDRAISE_TYPES from "../../../../../db/fundraise_types";
 import CONTRACT_STAGES from "../../../../../db/contract_stages";
-import FormDialog from "@dvargas92495/ui/dist/components/FormDialog";
-import StringField from "@dvargas92495/ui/dist/components/StringField";
-import NumberField from "@dvargas92495/ui/dist/components/NumberField";
-import {
-  Link as RemixLink,
-  LoaderFunction,
-  useLoaderData,
-  useLocation,
-  useParams,
-} from "remix";
+import { LoaderFunction, useLoaderData, useParams } from "remix";
 import formatAmount from "../../../../../db/util/formatAmount";
 import cookie from "cookie";
 import axios from "axios";
@@ -180,26 +169,11 @@ const TableBody = styled.tbody`
   }
 `;
 
-const TableHead = styled.thead`
-  border-radius: 8px;
-  background-color: ${(props) =>
-    props.theme.palette.color.backgroundColorDarker};
-  display: table-header-group;
-  align-items: center;
-  width: fill-available;
-  color: ${(props) => props.theme.palette.text.secondary};
-  font-weight: 500;
-
-  & > tr {
-    height: 50px;
-  }
-`;
-
 const Table = styled.table`
   border-radius: 12px;
   overflow: hidden;
   border-spacing: 0px;
-  width: 100%;  
+  width: 100%;
 `;
 
 const TopText = styled.div`
@@ -257,7 +231,7 @@ const StatusRow = styled.div`
   grid-gap: 10px;
   color: ${(props) => props.theme.palette.color.darkerText};
   white-space: nowrap;
-`
+`;
 
 const Link = styled.a`
   color: ${(props) => props.theme.palette.color.purple};
@@ -283,14 +257,6 @@ const TitleTopBoxSmall = styled.div`
   margin-bottom: 20px;
 `;
 
-const H1 = (props: Parameters<typeof _H1>[0]) => (
-  <_H1 sx={{ fontSize: 30, ...props.sx }} {...props} />
-);
-
-const FUNDRAISE_NAMES_BY_IDS = Object.fromEntries(
-  FUNDRAISE_TYPES.map(({ name, id }) => [id, name])
-);
-
 type Agreements = Awaited<ReturnType<GetContractHandler>>["agreements"];
 const STAGE_COLORS = [
   "#48cae4",
@@ -305,50 +271,54 @@ const STAGE_ACTIONS: ((a: {
   uuid: string;
   onDelete: (uuid: string) => void;
 }) => React.ReactElement)[] = [
-    (row) => {
-      const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
-        path: "agreement",
-        method: "DELETE",
-      });
-      const [loading, setLoading] = useState(false);
-      return (
-        <>
-          {!loading ? (
-            <>
-              <IconContainer
-                onClick={() => {
-                  setLoading(true);
-                  deleteHandler({ uuid: row.uuid })
-                    .then(() => row.onDelete(row.uuid))
-                    .finally(() => setLoading(false));
-                }}
-              >
-                <Icon name="remove" heightAndWidth={"16px"} />
-              </IconContainer>
-            </>
-          ) : (
-            <LoadingIndicator size={30} />
-          )}
-        </>
-      );
-    },
-    (row) => (
-      <Link href={`/contract?uuid=${row.uuid}&signer=1`}>
-        Resend invitation to Backer
-      </Link>
-    ),
-    (row) => (
-      <PrimaryAction textColor="white" bgColor="purple" label={'Sign Contract'} />
-      // onClick={window.open(`/contract?uuid=${row.uuid}&signer=2`)}
-    ),
-    (row) => (
-      <Link href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
-        View Contract
-      </Link>
-    ),
-    () => <span />,
-    () => <span />,
-  ];
+  (row) => {
+    const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
+      path: "agreement",
+      method: "DELETE",
+    });
+    const [loading, setLoading] = useState(false);
+    return (
+      <>
+        {!loading ? (
+          <>
+            <IconContainer
+              onClick={() => {
+                setLoading(true);
+                deleteHandler({ uuid: row.uuid })
+                  .then(() => row.onDelete(row.uuid))
+                  .finally(() => setLoading(false));
+              }}
+            >
+              <Icon name="remove" heightAndWidth={"16px"} />
+            </IconContainer>
+          </>
+        ) : (
+          <LoadingIndicator size={30} />
+        )}
+      </>
+    );
+  },
+  (row) => (
+    <Link href={`/contract?uuid=${row.uuid}&signer=1`}>
+      Resend invitation to Backer
+    </Link>
+  ),
+  (row) => (
+    <PrimaryAction
+      textColor="white"
+      bgColor="purple"
+      label={"Sign Contract"}
+      onClick={() => window.open(`/contract?uuid=${row.uuid}&signer=2`)}
+    />
+  ),
+  (row) => (
+    <Link href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
+      View Contract
+    </Link>
+  ),
+  () => <span />,
+  () => <span />,
+];
 
 const AgreementRow = (
   row: Agreements[number] & {
@@ -367,8 +337,10 @@ const AgreementRow = (
       <TableCell>
         <StatusRow>
           <StagePill color={STAGE_COLORS[row.status]}>
-            {row.status === 3 && '🎉'}
-            {row.status === 2 && <Icon name={'edit'} heightAndWidth="14px" color="purple" />}
+            {row.status === 3 && "🎉"}
+            {row.status === 2 && (
+              <Icon name={"edit"} heightAndWidth="14px" color="purple" />
+            )}
           </StagePill>
           {CONTRACT_STAGES[row.status].replace(/_/g, " ").toUpperCase()}
         </StatusRow>
@@ -396,9 +368,7 @@ type FundraiseData = Awaited<ReturnType<GetContractHandler>>;
 
 const UserFundraisesContract = () => {
   const { id = "" } = useParams();
-  const location = useLocation();
   const fundraiseData = useLoaderData<FundraiseData>();
-  const type = fundraiseData.type;
   const [rows, setRows] = useState<Agreements>(fundraiseData.agreements);
   const total = useMemo(
     () =>
@@ -407,31 +377,23 @@ const UserFundraisesContract = () => {
     [fundraiseData]
   );
   const progress = useMemo(
-    () => rows.filter(row => row.status === 3).reduce((p, c) => p + c.amount, 0),
+    () =>
+      rows.filter((row) => row.status === 3).reduce((p, c) => p + c.amount, 0),
     [rows]
   );
-  // const [error, setError] = useState("");
 
-  const capSpace = useMemo(() => total - progress, [total, progress]);
-  const postAgreement = useAuthenticatedHandler<PostAgreementHandler>({
-    path: "agreement",
-    method: "POST",
-  });
   const onDelete = useCallback(
     (uuid: string) => setRows(rows.filter((r) => r.uuid !== uuid)),
     [setRows, rows]
   );
-  const { isOpen: defaultIsOpen } = (location.state || {}) as {
-    isOpen?: boolean;
-  };
 
   const getProgressPercentage = () => {
-    if (fundraiseData.details.supportType === 'monthly') {
-      return Math.round(((Number(progress)) / (Number(total)) * 100))
+    if (fundraiseData.details.supportType === "monthly") {
+      return Math.round((Number(progress) / Number(total)) * 100);
     } else {
-      return Math.round((Number(progress) / (Number(total)) * 100))
+      return Math.round((Number(progress) / Number(total)) * 100);
     }
-  }
+  };
   return (
     <>
       <TopBar>
@@ -454,16 +416,31 @@ const UserFundraisesContract = () => {
             <TitleTopBox>
               <SectionTitle>Progress</SectionTitle>
               <ProgressPill>
-                {fundraiseData.details.supportType === 'monthly' && <ProgressPillProgress>
-                  ${formatAmount(progress / 12)}
-                </ProgressPillProgress>}
-                {fundraiseData.details.supportType === 'once' && <ProgressPillProgress>
-                  ${formatAmount(progress)}
-                </ProgressPillProgress>}
+                {fundraiseData.details.supportType === "monthly" && (
+                  <ProgressPillProgress>
+                    ${formatAmount(progress / 12)}
+                  </ProgressPillProgress>
+                )}
+                {fundraiseData.details.supportType === "once" && (
+                  <ProgressPillProgress>
+                    ${formatAmount(progress)}
+                  </ProgressPillProgress>
+                )}
                 <ProgressPillSeparator />
                 <ProgressPillRear>
-                  {fundraiseData.details.supportType === 'monthly' && (<><ProgressPillTotal>{formatAmount(total / 12)}</ProgressPillTotal><ProgressPillHelpText>/ month</ProgressPillHelpText></>)}
-                  {fundraiseData.details.supportType === 'once' && <ProgressPillTotal>${formatAmount(total)}</ProgressPillTotal>}
+                  {fundraiseData.details.supportType === "monthly" && (
+                    <>
+                      <ProgressPillTotal>
+                        {formatAmount(total / 12)}
+                      </ProgressPillTotal>
+                      <ProgressPillHelpText>/ month</ProgressPillHelpText>
+                    </>
+                  )}
+                  {fundraiseData.details.supportType === "once" && (
+                    <ProgressPillTotal>
+                      ${formatAmount(total)}
+                    </ProgressPillTotal>
+                  )}
                 </ProgressPillRear>
               </ProgressPill>
             </TitleTopBox>
@@ -482,8 +459,15 @@ const UserFundraisesContract = () => {
               <ConditionsContent>
                 <ConditionsSubTitle>Funding Goal</ConditionsSubTitle>
                 <ConditionsTitle>
-                  {fundraiseData.details.supportType === 'monthly' && (<>${formatAmount(Math.floor(total / 12))}<SmallConditionsText>/month</SmallConditionsText></>)}
-                  {fundraiseData.details.supportType === 'once' && (<>${formatAmount(Math.floor(total))}</>)}
+                  {fundraiseData.details.supportType === "monthly" && (
+                    <>
+                      ${formatAmount(Math.floor(total / 12))}
+                      <SmallConditionsText>/month</SmallConditionsText>
+                    </>
+                  )}
+                  {fundraiseData.details.supportType === "once" && (
+                    <>${formatAmount(Math.floor(total))}</>
+                  )}
                 </ConditionsTitle>
               </ConditionsContent>
             </ConditionsBox>
@@ -498,8 +482,11 @@ const UserFundraisesContract = () => {
               <ConditionsContent>
                 <ConditionsSubTitle>Pays Back</ConditionsSubTitle>
                 <ConditionsTitle>
-                  ${formatAmount((total * fundraiseData.details.return) / 100)}<SmallConditionsText> {fundraiseData.details.return}%</SmallConditionsText>
-
+                  ${formatAmount((total * Number(fundraiseData.details.return || 0)) / 100)}
+                  <SmallConditionsText>
+                    {" "}
+                    {fundraiseData.details.return}%
+                  </SmallConditionsText>
                 </ConditionsTitle>
               </ConditionsContent>
             </ConditionsBox>
@@ -523,7 +510,13 @@ const UserFundraisesContract = () => {
               <ConditionsContent>
                 <ConditionsSubTitle>Revenue Threshold</ConditionsSubTitle>
                 <ConditionsTitle>
-                  ${formatAmount(Math.floor(fundraiseData.details.threshold / 12))}<SmallConditionsText>/month</SmallConditionsText>
+                  $
+                  {formatAmount(
+                    Math.floor(
+                      Number(fundraiseData.details.threshold || 0) / 12
+                    )
+                  )}
+                  <SmallConditionsText>/month</SmallConditionsText>
                 </ConditionsTitle>
               </ConditionsContent>
             </ConditionsBox>
@@ -565,98 +558,6 @@ const UserFundraisesContract = () => {
             </Box>
           </Section>
         </ProfileBottomContainer>
-
-        {/* <H1
-          sx={{
-            fontSize: 30,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Box
-            component={"span"}
-            sx={{
-              a: {
-                textDecoration: "none",
-                color: "#333333",
-              },
-            }}
-          >
-            <RemixLink to={"/fundraises"}>Your Fundraises</RemixLink>
-            {" > "}
-            {FUNDRAISE_NAMES_BY_IDS[type]}
-          </Box>
-          <FormDialog<{ name: string; email: string; amount: number }>
-            formElements={{
-              name: {
-                defaultValue: "",
-                order: 0,
-                component: StringField,
-                validate: (s) => (!s ? "Name is required" : ""),
-              },
-              email: {
-                defaultValue: "",
-                order: 1,
-                component: StringField,
-                validate: (s) => (!s ? "Email is required" : ""),
-              },
-              amount: {
-                defaultValue: 0,
-                order: 2,
-                component: NumberField,
-                validate: (n) => {
-                  if (n < 100) {
-                    return "Amount must be greater than $100";
-                  }
-                  if (capSpace < n) {
-                    return `Requested more than available cap space: $${formatAmount(
-                      capSpace
-                    )}`;
-                  }
-                  return "";
-                },
-              },
-            }}
-            title={"Invite New Investor"}
-            buttonText={"Invite Investor"}
-            onSave={(body) =>
-              postAgreement({ uuid: id, ...body }).then((r) =>
-                setRows([...rows, { ...body, uuid: r.uuid, status: 0 }])
-              )
-            }
-            defaultIsOpen={defaultIsOpen}
-          />
-        </H1>
-
-        <Box>
-          <p>
-            <b>Wants to raise: </b>${formatAmount(total)}
-          </p>
-          <p>
-            <b>Pays Back: </b>$
-            {formatAmount((total * Number(fundraiseData.details.return)) / 100)}
-          </p>
-          <p>
-            <b>Shares Revenue: </b>
-            {Number(fundraiseData.details.share)}%
-          </p>
-          <p>
-            <b>Income Threshold: </b>$
-            {formatAmount(Number(fundraiseData.details.threshold))} / year
-          </p>
-          <p>
-            <b>Progress: </b>${formatAmount(progress)} / {formatAmount(total)}
-          </p>
-          <p>
-            <b>Progress Investors: </b>
-            {rows.length}
-          </p>
-          <p>
-            <b>Progress New: </b>
-            {rows.filter((row) => row.status === 2).length}
-          </p>
-        </Box> */}
       </ContentContainer>
     </>
   );

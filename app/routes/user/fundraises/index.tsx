@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState, useCallback } from "react";
-import { UserButton, useUser } from "@clerk/clerk-react";
+import { UserButton, useUser } from "@clerk/remix";
 import Box from "@mui/material/Box";
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
@@ -215,9 +215,13 @@ const FundraiseContentRow = ({
 };
 
 const UserFundraiseIndex = () => {
+  const { isSignedIn, user } = useUser();
+  if (!user || !isSignedIn) {
+    throw new Error(`Somehow tried to load a non-logged in User profile`);
+  }
   const {
     publicMetadata: { completed = false },
-  } = useUser();
+  } = user;
   const [error] = useState("");
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Fundraises>([]);
