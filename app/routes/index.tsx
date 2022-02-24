@@ -134,7 +134,7 @@ const Home: React.FC = () => {
               width="150px"
               label={<ButtonInnerDiv>JOIN ONBOARDING QUEUE</ButtonInnerDiv>}
               onClick={() =>
-                convertKit({ id: "eb07e20bc3", email }).then(() =>
+                convertKit({ id: "2823917", email }).then(() =>
                   setSubscribed(true)
                 )
               }
