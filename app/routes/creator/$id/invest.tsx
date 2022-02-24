@@ -312,7 +312,7 @@ const EnterDetails = () => {
                   <InfoPill>
                     <InfoPillTitle>what you'll make</InfoPillTitle>
                     <InfoPillInfo>
-                      ${formatAmount((Number(Math.floor(amount * state.details.return) / 100)) || 0)}
+                      ${formatAmount(Math.floor(Number(amount) * Number(state.details.return || 0) / 100))}
                     </InfoPillInfo>
                   </InfoPill>
                 </ContainerWithInfo>
