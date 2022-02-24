@@ -31,6 +31,9 @@ import SectionTitle from "~/_common/SectionTitle";
 import InfoText from "~/_common/InfoText";
 import SubSectionTitle from "~/_common/SubSectionTitle";
 import { LoadingIndicator } from "~/_common/LoadingIndicator";
+import cookie from "cookie";
+import axios from "axios";
+import type { Handler as GetContractHandler } from "../../../../../functions/contract/get";
 
 const ExplainTitle = styled.div`
   font-size: 18px;
@@ -84,12 +87,12 @@ const EversignEmbedContainer = styled.div`
     margin-bottom: 0px;
 
     & > div {
-    border: none;
+      border: none;
 
-    & > div {
-    border: none;
-  }
-  }
+      & > div {
+        border: none;
+      }
+    }
   }
 
   & iframe {
@@ -105,15 +108,32 @@ const LoadingBox = styled.div`
   align-items: center;
 `;
 
-export const loader: LoaderFunction = () => {
-  return {
-    totalAmount: 0,
-  };
+type FundraiseData = Awaited<ReturnType<GetContractHandler>>;
+
+export const loader: LoaderFunction = async ({ request, params }) => {
+  const cookieHeader = request.headers.get("cookie") || "";
+  const cookieObj = cookie.parse(cookieHeader);
+  const token = cookieObj.__session;
+  return axios
+    .get<FundraiseData>(`${process.env.API_URL}/contract?uuid=${params.id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((r) => r.data)
+    .catch((e) => {
+      console.error(e);
+      return {};
+    });
 };
 
 const UserFundraisePreview = () => {
   const { id = "" } = useParams();
-  const totalAmount = useLoaderData<{ totalAmount: number }>().totalAmount || 0;
+  const data = useLoaderData<FundraiseData>();
+  const paymentAmount = Number(data.details.amount || 0);
+  const frequency = Number(data.details.frequency || 1);
+  const threshold = Number(data.details.threshold || 0);
+  const totalAmount = paymentAmount * frequency;
   const navigate = useNavigate();
   const state = useLocation().state as { initialCreate?: boolean };
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
@@ -173,7 +193,8 @@ const UserFundraisePreview = () => {
                 <ExplainText>
                   I agree to request a total of{" "}
                   <b>${formatAmount(totalAmount)}</b> paid out as a monthly
-                  stipend of 3000€ per month for 12 months.
+                  stipend of ${formatAmount(paymentAmount)} per month for{" "}
+                  {frequency} months.
                 </ExplainText>
               </ExplainContent>
               <CheckBox />
@@ -182,7 +203,11 @@ const UserFundraisePreview = () => {
               <ExplainContent>
                 <ExplainTitle>How much you pay back</ExplainTitle>
                 <ExplainText>
-                  I agree to pay back a total or 72.000€ to my investors
+                  I agree to pay back a maximum total of $
+                  {formatAmount(
+                    (totalAmount * Number(data.details.return)) / 100
+                  )}{" "}
+                  to my investors
                 </ExplainText>
               </ExplainContent>
               <CheckBox />
@@ -191,9 +216,11 @@ const UserFundraisePreview = () => {
               <ExplainContent>
                 <ExplainTitle>What you pay back</ExplainTitle>
                 <ExplainText>
-                  I agree to take 12% of all my revenue once I hit 3000€ per
-                  month or €30.000 per year in the next 8 years in order to pay
-                  back my investors. Includes revenue from preexisting assets.
+                  I agree to take {formatAmount(data.details.share)}% of all my
+                  revenue once I hit ${formatAmount(threshold / 12)} per month
+                  or ${formatAmount(threshold)} per year in the next{" "}
+                  {Number(data.details.cap || 0)} years in order to pay back my
+                  investors. Includes revenue from preexisting assets.
                 </ExplainText>
               </ExplainContent>
               <CheckBox />
@@ -224,7 +251,7 @@ const UserFundraisePreview = () => {
                 <ExplainTitle>When you pay back</ExplainTitle>
                 <ExplainText>
                   I acknowledge that I only have to pay my investors when I
-                  reach $36.000/year or on average $3000/month. My dividends are
+                  reach ${formatAmount(threshold / 12)}/year or on average ${formatAmount(threshold)}/month. My dividends are
                   then paid from my total income, including from pre-existing
                   assets.
                 </ExplainText>
@@ -282,8 +309,7 @@ const UserFundraisePreview = () => {
             )}
           </Box>
           <SubSectionTitle></SubSectionTitle>
-          <EversignEmbedContainer
-          >
+          <EversignEmbedContainer>
             {loading ? (
               <LoadingBox>
                 <LoadingIndicator />
