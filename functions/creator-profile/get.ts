@@ -1,7 +1,7 @@
 import { users } from "@clerk/clerk-sdk-node";
 import formatError from "@dvargas92495/api/formatError";
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
-import { execute } from "../_common/mysql";
+import { execute } from "../../app/data/mysql";
 
 const logic = ({ id }: { id: string }) => {
   return Promise.all([

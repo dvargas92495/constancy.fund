@@ -1,5 +1,5 @@
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
-import { execute } from "../_common/mysql";
+import { execute } from "../../app/data/mysql";
 import { users } from "@clerk/clerk-sdk-node";
 import {
   MethodNotAllowedError,

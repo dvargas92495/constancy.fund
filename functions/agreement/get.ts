@@ -1,6 +1,6 @@
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import { BadRequestError, NotFoundError } from "aws-sdk-plus/dist/errors";
-import { execute } from "../_common/mysql";
+import { execute } from "../../app/data/mysql";
 
 const logic = ({
   agreement,

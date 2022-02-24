@@ -37,7 +37,7 @@ export const execute = <
     | mysql.ResultSetHeader
 >(
   s: string,
-  args: (string | number)[]
+  args: (string | number)[] = []
 ): Promise<T> =>
   new Promise((resolve, reject) => {
     return getConnection().execute<T>(s, args, (err, res) => {

@@ -1,7 +1,7 @@
 import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
 import { createAPIGatewayProxyHandler } from "aws-sdk-plus";
 import type { User } from "@clerk/clerk-sdk-node";
-import { execute } from "../_common/mysql";
+import { execute } from "../../app/data/mysql";
 import { NotFoundError, MethodNotAllowedError } from "aws-sdk-plus/dist/errors";
 
 const logic = ({ uuid, user: { id: userId } }: { uuid: string; user: User }) =>

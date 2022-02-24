@@ -18,7 +18,7 @@ const EmailLayout: React.FC = ({ children }) => (
         textAlign: "center",
       }}
     >
-      ISA
+      <img height={40} src={`${process.env.HOST}/images/constancy-logo.svg`}></img>
     </div>
     <div
       style={{
@@ -45,7 +45,7 @@ const EmailLayout: React.FC = ({ children }) => (
           href={process.env.HOST}
           style={{ color: "#4d9bd7", textDecoration: "none" }}
         >
-          ISA
+          Constancy
         </a>
       </div>
       <div style={{ width: "50%", textAlign: "right" }}>

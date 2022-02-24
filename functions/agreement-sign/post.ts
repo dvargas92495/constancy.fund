@@ -1,9 +1,9 @@
 import sendEmail from "aws-sdk-plus/dist/sendEmail";
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
-import { execute } from "../_common/mysql";
+import { execute } from "../../app/data/mysql";
 import React from "react";
 import { users } from "@clerk/clerk-sdk-node";
-import EmailLayout from "../_common/EmailLayout";
+import EmailLayout from "../../app/emails/EmailLayout";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
 import eversign from "../_common/eversign";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";

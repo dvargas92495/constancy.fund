@@ -7,6 +7,7 @@ import {
   MetaFunction,
   Outlet,
   Scripts,
+  useCatch,
   // ScrollRestoration,
   useLoaderData,
 } from "remix";
@@ -156,7 +157,7 @@ const GlobalStyle = createGlobalStyle<{ theme: typeof themeProps }>`
 
 export const meta: MetaFunction = () => {
   return {
-    title: "Constanct",
+    title: "Constancy",
     "og:type": "website",
     "twitter:card": "summary",
     "twitter:creator": "@dvargas92495",
@@ -187,6 +188,25 @@ export const links: LinksFunction = () => {
     },
   ];
 };
+
+export function CatchBoundary() {
+  const caught = useCatch();
+  return (
+    <html>
+      <head>
+        <title>Oops!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <h1>
+          {caught.status} {caught.statusText}
+        </h1>
+        <Scripts />
+      </body>
+    </html>
+  );
+}
 
 const RootContainer = styled.div`
   width: 100%;

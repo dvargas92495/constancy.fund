@@ -8,7 +8,6 @@ import Alert from "@mui/material/Alert";
 import type { Handler } from "../../functions/convertkit/post";
 import { useNavigate } from "remix";
 import MainImage from "~/_common/Images/runner.svg";
-import Logo from "~/_common/Images/constancy-logo.svg";
 import { UserButton, useUser } from "@clerk/remix";
 
 const LogoContainer = styled.img`
@@ -112,7 +111,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   return (
     <>
-      <LogoContainer src={Logo} />
+      <LogoContainer src={"/images/constancy-logo.svg"} />
       <MainContentContainer>
         <IntroBox>
           <BigTitle>
