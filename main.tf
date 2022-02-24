@@ -135,7 +135,7 @@ module "aws-serverless-backend_staging" {
 
 module "aws_email" {
   source  = "dvargas92495/email/aws"
-  version = "2.0.5"
+  version = "2.0.11"
 
   domain = "constancy.fund"
   zone_id = module.aws_static_site.route53_zone_id
@@ -143,7 +143,7 @@ module "aws_email" {
 
 module "aws_email_staging" {
   source  = "dvargas92495/email/aws"
-  version = "2.0.5"
+  version = "2.0.11"
 
   domain = "staging.constancy.fund"
   zone_id = module.aws_static_site_staging.route53_zone_id
