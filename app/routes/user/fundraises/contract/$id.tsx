@@ -213,6 +213,7 @@ const IconContainer = styled.div`
 const StagePill = styled.div<{ color: string }>`
   height: 30px;
   width: 30px;
+  min-width: 30px;
   border-radius: 50px;
   background: ${(props) => props.color}20;
   color: ${(props) => props.color};
@@ -337,8 +338,8 @@ const AgreementRow = (
       <TableCell>
         <StatusRow>
           <StagePill color={STAGE_COLORS[row.status]}>
-            {row.status === 3 && "🎉"}
-            {row.status === 2 && (
+            {CONTRACT_STAGES[row.status] === 'CONTRACTS_SIGNED' && "🎉"}
+            {CONTRACT_STAGES[row.status] === 'CONFIRM_NEW_BACKER' && (
               <Icon name={"edit"} heightAndWidth="14px" color="purple" />
             )}
           </StagePill>
@@ -376,10 +377,21 @@ const UserFundraisesContract = () => {
       (Number(fundraiseData.details.frequency) || 1),
     [fundraiseData]
   );
-  const progress = useMemo(
+  const rowsToSign = useMemo(
     () =>
-      rows.filter((row) => row.status === 3).reduce((p, c) => p + c.amount, 0),
+      rows.filter(
+        (row) => CONTRACT_STAGES[row.status] === "CONFIRM_NEW_BACKER"
+      ),
     [rows]
+  );
+  const rowsConfirmed = useMemo(
+    () =>
+      rows.filter((row) => CONTRACT_STAGES[row.status] === "CONTRACTS_SIGNED"),
+    [rows]
+  );
+  const progress = useMemo(
+    () => rowsConfirmed.reduce((p, c) => p + c.amount, 0),
+    [rowsConfirmed]
   );
 
   const onDelete = useCallback(
@@ -387,24 +399,19 @@ const UserFundraisesContract = () => {
     [setRows, rows]
   );
 
-  const getProgressPercentage = () => {
-    if (fundraiseData.details.supportType === "monthly") {
-      return Math.round((Number(progress) / Number(total)) * 100);
-    } else {
-      return Math.round((Number(progress) / Number(total)) * 100);
-    }
-  };
+  const progressPercentage = useMemo(
+    () => Math.round((Number(progress) / Number(total)) * 100),
+    [progress, total]
+  );
   return (
     <>
       <TopBar>
         <InfoArea>
           <PageTitle>My Fundraise</PageTitle>
           <UpdatePill>
-            {rows.filter((row) => row.status === 2).length > 0 && (
-              <span>🎉 </span>
-            )}
+            {rowsToSign.length > 0 && <span>🎉 </span>}
             <span>
-              <b>{rows.filter((row) => row.status === 2).length}</b> New
+              <b>{rowsToSign.length}</b> New
             </span>
           </UpdatePill>
         </InfoArea>
@@ -445,7 +452,7 @@ const UserFundraisesContract = () => {
               </ProgressPill>
             </TitleTopBox>
             <Spacer height={"20px"} />
-            <ProgressBar progress={getProgressPercentage()} />
+            <ProgressBar progress={progressPercentage} />
           </Section>
           <ConditionsContainer>
             <ConditionsBox>
@@ -482,7 +489,10 @@ const UserFundraisesContract = () => {
               <ConditionsContent>
                 <ConditionsSubTitle>Pays Back</ConditionsSubTitle>
                 <ConditionsTitle>
-                  ${formatAmount((total * Number(fundraiseData.details.return || 0)) / 100)}
+                  $
+                  {formatAmount(
+                    (total * Number(fundraiseData.details.return || 0)) / 100
+                  )}
                   <SmallConditionsText>
                     {" "}
                     {fundraiseData.details.return}%
@@ -496,7 +506,9 @@ const UserFundraisesContract = () => {
               </SectionCircle>
               <ConditionsContent>
                 <ConditionsSubTitle>Shares Revenue</ConditionsSubTitle>
-                <ConditionsTitle>12%</ConditionsTitle>
+                <ConditionsTitle>
+                  {fundraiseData.details.share || 0}%
+                </ConditionsTitle>
               </ConditionsContent>
             </ConditionsBox>
             <ConditionsBox>
@@ -522,14 +534,12 @@ const UserFundraisesContract = () => {
             </ConditionsBox>
           </ConditionsContainer>
 
-          {/* // {FUNDRAISE_NAMES_BY_IDS[type]} */}
           <Section>
             <TitleTopBoxSmall>
               <SectionTitle margin={"0px"}>Your Backers</SectionTitle>
               <ProgressPillSmall>
                 <ProgressPillProgress>
-                  Confirmed:{" "}
-                  <b>{rows.filter((row) => row.status === 3).length}</b>
+                  Confirmed: <b>{rowsConfirmed.length}</b>
                 </ProgressPillProgress>
               </ProgressPillSmall>
             </TitleTopBoxSmall>

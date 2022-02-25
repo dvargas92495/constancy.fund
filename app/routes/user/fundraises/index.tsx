@@ -144,7 +144,7 @@ const FundraiseContentRow = ({
       <TableCell>{row.type}</TableCell>
       <TableCell sx={{ width: "320px" }}>
         <DetailComponent
-          {...Object.fromEntries(row.details.map((d) => [d.label, d.value]))}
+          {...row.details}
         />
       </TableCell>
       <TableCell>{row.progress}</TableCell>
@@ -319,7 +319,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       },
     })
     .then((r) => {
-      if (!r.data.completed) {
+      if (!r.data.completed || new URL(request.url).searchParams.has("stay")) {
         return r.data;
       } else if (r.data.fundraises.length) {
         return redirect(

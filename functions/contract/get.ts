@@ -14,8 +14,7 @@ const logic = ({ uuid, user: { id } }: { uuid: string; user: User }) =>
    LEFT JOIN agreement a ON a.contractUuid = c.uuid
    INNER JOIN contractdetail cd ON c.uuid = cd.contractUuid
    LEFT JOIN eversigndocument e ON e.agreementUuid = a.uuid
-   WHERE c.uuid = ?
-   LIMIT 10`,
+   WHERE c.uuid = ?`,
     [uuid]
   ).then(async (results) => {
     const fundraise = results as {
@@ -73,12 +72,15 @@ const logic = ({ uuid, user: { id } }: { uuid: string; user: User }) =>
       }
       details[f.label] = f.value;
     });
+
     return {
       type: FUNDRAISE_TYPES[fundraise[0].type].id,
-      agreements: Object.entries(agreements).map(([uuid, a]) => ({
-        uuid,
-        ...a,
-      })),
+      agreements: Object.entries(agreements)
+        .map(([uuid, a]) => ({
+          uuid,
+          ...a,
+        }))
+        .sort((a, b) => b.status - a.status),
       details,
     };
   });

@@ -5,15 +5,15 @@ import { users, User } from "@clerk/clerk-sdk-node";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
 
 const logic = ({ user: { id } }: { user: User }) => {
-  return users.getUser(id || '').then((u) => {
+  return users.getUser(id || "").then((u) => {
     if (!u.publicMetadata.completed) {
       return {
         fundraises: [],
         completed: false,
-      }
+      };
     }
     return execute(
-      `SELECT c.type, c.uuid, a.uuid as agreementUuid, cd.label, cd.value, cd.uuid as cdUuid
+      `SELECT c.type, c.uuid, a.uuid as agreementUuid, cd.label, cd.value
      FROM contract c
      LEFT JOIN agreement a ON a.contractUuid = c.uuid
      INNER JOIN contractdetail cd ON cd.contractUuid = c.uuid
@@ -25,7 +25,7 @@ const logic = ({ user: { id } }: { user: User }) => {
         {
           type: number;
           agreements: Set<string>;
-          details: Record<string, { label: string; value: string }>;
+          details: Record<string, string>;
         }
       > = {};
       (
@@ -35,15 +35,11 @@ const logic = ({ user: { id } }: { user: User }) => {
           agreementUuid: string;
           label: string;
           value: string;
-          cdUuid: string;
         }[]
       ).forEach((r) => {
         if (fundraises[r.uuid]) {
           fundraises[r.uuid].type = r.type;
-          fundraises[r.uuid].details[r.cdUuid] = {
-            label: r.label,
-            value: r.value,
-          };
+          fundraises[r.uuid].details[r.label] = r.value;
           if (r.agreementUuid)
             fundraises[r.uuid].agreements.add(r.agreementUuid);
         } else {
@@ -52,19 +48,17 @@ const logic = ({ user: { id } }: { user: User }) => {
             agreements: r.agreementUuid
               ? new Set([r.agreementUuid])
               : new Set(),
-            details: { [r.cdUuid]: { label: r.label, value: r.value } },
+            details: { [r.label]: r.value },
           };
         }
       });
+
       return {
         fundraises: Object.entries(fundraises).map(([uuid, result]) => ({
           uuid,
           type: FUNDRAISE_TYPES[result.type].id,
           investorCount: result.agreements.size,
-          details: Object.entries(result.details).map(([uuid, det]) => ({
-            ...det,
-            uuid,
-          })),
+          details: result.details,
           progress: 0,
         })),
         completed: true,

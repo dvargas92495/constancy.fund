@@ -5,7 +5,7 @@ const STAGES = [
   "CONTRACTS_SIGNED",
   "REJECTED",
   "ARCHIVED",
-];
+] as const;
 
 export const dbIdByStatusName = Object.fromEntries(
   STAGES.map((s, i) => [s, i])
