@@ -173,7 +173,7 @@ const SocialProfile = React.memo(
 );
 
 const UserProfile = () => {
-  const {isSignedIn, user} = useUser();
+  const { isSignedIn, user } = useUser();
   if (!user || !isSignedIn) {
     throw new Error(`Somehow tried to load a non-logged in User profile`);
   }
@@ -311,16 +311,6 @@ const UserProfile = () => {
                 fontSize={"16px"}
               />
             )}
-            <Snackbar
-              open={snackbarOpen}
-              autoHideDuration={5000}
-              onClose={() => setSnackbarOpen(false)}
-              color="success"
-            >
-              <Alert severity="success" sx={{ width: "100%" }}>
-                Successfully Saved Profile!
-              </Alert>
-            </Snackbar>
             <span color={"darkred"}>{error}</span>
           </ActionButton>
         </InfoArea>
@@ -557,7 +547,8 @@ const UserProfile = () => {
             <SubSection>
               <SubSectionTitle>Legal Representative</SubSectionTitle>
               <InfoText>
-                The person who is authorized to raise funds on behalf of the company.
+                The person who is authorized to raise funds on behalf of the
+                company.
               </InfoText>
               <TextFieldBox>
                 <TextFieldDescription required>First Name</TextFieldDescription>
@@ -569,9 +560,7 @@ const UserProfile = () => {
                 </TextInputContainer>
               </TextFieldBox>
               <TextFieldBox>
-                <TextFieldDescription>
-                  Last Name
-                </TextFieldDescription>
+                <TextFieldDescription>Last Name</TextFieldDescription>
                 <TextInputContainer width={"350px"}>
                   <TextInputOneLine
                     value={middleNameValue}
@@ -580,9 +569,7 @@ const UserProfile = () => {
                 </TextInputContainer>
               </TextFieldBox>
               <TextFieldBox>
-                <TextFieldDescription>
-                  Contact Email
-                </TextFieldDescription>
+                <TextFieldDescription>Contact Email</TextFieldDescription>
                 <TextInputContainer width={"350px"}>
                   <TextInputOneLine
                     value={contactEmailValue}
@@ -658,6 +645,16 @@ const UserProfile = () => {
           </Box>
         </Section>
       </ContentContainer>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={5000}
+        onClose={() => setSnackbarOpen(false)}
+        color="success"
+      >
+        <Alert severity="success" sx={{ width: "100%" }}>
+          Successfully Saved Profile!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

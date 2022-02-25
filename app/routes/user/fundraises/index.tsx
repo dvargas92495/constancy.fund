@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { UserButton, useUser } from "@clerk/remix";
+import { LoaderFunction, useNavigate, redirect, useLoaderData } from "remix";
 import Box from "@mui/material/Box";
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
@@ -18,7 +19,6 @@ import ListItemIcon from "~/_common/ListItemIcon";
 import ListItemText from "~/_common/ListItemText";
 import type { Handler as DeleteHandler } from "../../../../functions/contract/delete";
 import type { Handler as GetHandler } from "../../../../functions/fundraises/get";
-import { LoaderFunction, useNavigate } from "remix";
 import Icon from "~/_common/Icon";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import TopBar from "~/_common/TopBar";
@@ -212,30 +212,14 @@ const UserFundraiseIndex = () => {
   if (!user || !isSignedIn) {
     throw new Error(`Somehow tried to load a non-logged in User profile`);
   }
-  const {
-    publicMetadata: { completed = false },
-  } = user;
-  const [error] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [rows, setRows] = useState<Fundraises>([]);
-  const getFundraises = useAuthenticatedHandler<GetHandler>({
-    path: "fundraises",
-    method: "GET",
-  });
+  const data = useLoaderData<Awaited<ReturnType<GetHandler>>>();
+  const [rows, setRows] = useState<Fundraises>(data.fundraises);
   const onDeleteSuccess = useCallback(
     (uuid: string) => {
       setRows(rows.filter((r) => r.uuid !== uuid));
     },
     [setRows, rows]
   );
-  useEffect(() => {
-    if (completed) {
-      setLoading(true);
-      getFundraises()
-        .then((r) => setRows(r.fundraises))
-        .finally(() => setLoading(false));
-    }
-  }, [getFundraises, setRows, setLoading, completed]);
   const navigate = useNavigate();
   return (
     <>
@@ -243,24 +227,22 @@ const UserFundraiseIndex = () => {
         <InfoArea>
           <PageTitle>My Fundraise</PageTitle>
           <ActionButton>
-            {!completed && (
+            {!data.completed && (
               <PrimaryAction
                 onClick={() => navigate(`/user`)}
-                isLoading={loading}
                 label={"Fill Profile"}
                 height={"40px"}
                 width={"130px"}
                 fontSize={"16px"}
               />
             )}
-            <span color={"darkred"}>{error}</span>
           </ActionButton>
         </InfoArea>
         <UserButton />
       </TopBar>
       <ContentContainer>
         <Section>
-          {!completed && (
+          {!data.completed && (
             <NotCompletedMessageContainer>
               <SectionCircle>
                 <Icon
@@ -278,7 +260,6 @@ const UserFundraiseIndex = () => {
               </InfoText>
               <PrimaryAction
                 onClick={() => navigate(`/user`)}
-                isLoading={loading}
                 label={"Get Started"}
                 height={"40px"}
                 width={"130px"}
@@ -286,40 +267,41 @@ const UserFundraiseIndex = () => {
               />
             </NotCompletedMessageContainer>
           )}
-          {rows.length ? (
-            <FundraisingContainer>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Details</TableCell>
-                    <TableCell>Progress</TableCell>
-                    <TableCell># Investors</TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows.map((row) => (
-                    <FundraiseContentRow
-                      key={row.uuid}
-                      {...row}
-                      onDeleteSuccess={onDeleteSuccess}
-                    />
-                  ))}
-                </TableBody>
-              </Table>
-            </FundraisingContainer>
-          ) : (
-            <Box sx={{ mt: 4 }} textAlign={"center"}>
-              <H4>Set up your first fundraise</H4>
-              <Button
-                variant={"contained"}
-                onClick={() => navigate(`/user/fundraises/setup`)}
-              >
-                Start New Fundraise
-              </Button>
-            </Box>
-          )}
+          {data.completed &&
+            (rows.length ? (
+              <FundraisingContainer>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Type</TableCell>
+                      <TableCell>Details</TableCell>
+                      <TableCell>Progress</TableCell>
+                      <TableCell># Investors</TableCell>
+                      <TableCell></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows.map((row) => (
+                      <FundraiseContentRow
+                        key={row.uuid}
+                        {...row}
+                        onDeleteSuccess={onDeleteSuccess}
+                      />
+                    ))}
+                  </TableBody>
+                </Table>
+              </FundraisingContainer>
+            ) : (
+              <Box sx={{ mt: 4 }} textAlign={"center"}>
+                <H4>Set up your first fundraise</H4>
+                <Button
+                  variant={"contained"}
+                  onClick={() => navigate(`/user/fundraises/setup`)}
+                >
+                  Start New Fundraise
+                </Button>
+              </Box>
+            ))}
         </Section>
       </ContentContainer>
     </>
@@ -336,7 +318,17 @@ export const loader: LoaderFunction = async ({ request }) => {
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((r) => r.data)
+    .then((r) => {
+      if (!r.data.completed) {
+        return r.data;
+      } else if (r.data.fundraises.length) {
+        return redirect(
+          `/user/fundraises/contract/${r.data.fundraises[0].uuid}`
+        );
+      } else {
+        return redirect(`/user/fundraises/setup`);
+      }
+    })
     .catch((e) => {
       console.error(e);
       return {};
