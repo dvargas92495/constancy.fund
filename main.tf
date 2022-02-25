@@ -154,7 +154,7 @@ module "aws_clerk" {
   version  = "1.0.4"
 
   zone_id  = module.aws_static_site.route53_zone_id
-  clerk_id = "cs5j97s3jadv"
+  clerk_id = "v9c58hxcw6jy"
 }
 
 resource "github_actions_secret" "deploy_aws_access_key" {
