@@ -6,6 +6,7 @@ export const handler = createRequestHandler({
   originPaths: [
     "favicon.ico",
     /^\/build\/.*/,
+    /^\/images\/.*/,
     /^\/payment-options\/.*/,
     /^\/_contracts\/.*/,
   ],

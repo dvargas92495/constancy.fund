@@ -1,9 +1,9 @@
 import sendEmail from "aws-sdk-plus/dist/sendEmail";
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import { execute } from "../../app/data/mysql";
-import React from "react";
 import { users } from "@clerk/clerk-sdk-node";
-import EmailLayout from "../../app/emails/EmailLayout";
+import { render as renderInvestorSigned } from "../../app/emails/InvestorSigned";
+import { render as renderCreatorSigned } from "../../app/emails/CreatorSigned";
 import FUNDRAISE_TYPES from "../../db/fundraise_types";
 import eversign from "../_common/eversign";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
@@ -53,52 +53,23 @@ const logic = ({ agreementUuid }: { agreementUuid: string }) => {
           to: r.userEmail,
           replyTo: r.investorEmail,
           subject: `${r.investorName} has signed the agreement!`,
-          body: React.createElement(
-            EmailLayout,
-            {},
-            React.createElement("p", {}, `Hi ${r.userName},`),
-            React.createElement(
-              "p",
-              {},
-              `Congratulations! ${r.investorName} has signed the ${r.contractType} between the two of you.`,
-              React.createElement(
-                "a",
-                {
-                  href: `${process.env.HOST}/contract?uuid=${agreementUuid}&signer=2`,
-                },
-                "Click here"
-              ),
-              ` to sign the agreement.`
-            ),
-            React.createElement("hr"),
-            React.createElement(
-              "p",
-              {},
-              `You could ask the investor any questions by directly replying to this email.`
-            )
-          ),
+          body: renderInvestorSigned({
+            investorName: r.investorName,
+            creatorName: r.userName,
+            contractType: r.contractType,
+            agreementUuid,
+          }),
         });
       } else if (numSigners === 2) {
         return sendEmail({
           to: r.investorEmail,
           replyTo: r.userEmail,
           subject: `${r.userName} has signed the agreement!`,
-          body: React.createElement(
-            EmailLayout,
-            {},
-            React.createElement("p", {}, `Hi ${r.investorName},`),
-            React.createElement(
-              "p",
-              {},
-              `Congratulations! Both you and ${r.userName} have signed the ${r.contractType}! You may begin sending them funds.`
-            ),
-            React.createElement("hr"),
-            React.createElement(
-              "p",
-              {},
-              `You could ask the creator any questions by directly replying to this email.`
-            )
-          ),
+          body: renderCreatorSigned({
+            investorName: r.investorName,
+            creatorName: r.userName,
+            contractType: r.contractType,
+          }),
         });
       } else {
         throw new MethodNotAllowedError(`No one has actually signed`);
