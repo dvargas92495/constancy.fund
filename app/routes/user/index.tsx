@@ -152,6 +152,8 @@ const SocialProfile = React.memo(
           placeholder="https://"
           defaultValue={defaultValue}
           name={"socialProfiles"}
+          pattern="https://.*"
+          title="URL must begin with https:// protocol"
         />
       </TextInputContainer>
     </SocialProfileRow>
@@ -183,12 +185,15 @@ const UserProfile = () => {
   } = loaderData;
   const [isChanges, setIsChanges] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [error, setError] = useState("");
   const changes = useRef(new Set<HTMLElement>());
   useEffect(() => {
     if (actionData?.success) {
       setSnackbarOpen(true);
       changes.current.clear();
       setIsChanges(false);
+    } else if (actionData?.error) {
+      setError(actionData.error);
     }
   }, [setSnackbarOpen, actionData, setIsChanges, changes.current]);
   return (
@@ -275,11 +280,12 @@ const UserProfile = () => {
             <QuestionaireBox>
               {QUESTIONAIRES.map(({ q }, i) => (
                 <TextFieldBox key={i}>
-                  <TextFieldDescription>{q}</TextFieldDescription>
+                  <TextFieldDescription required>{q}</TextFieldDescription>
                   <TextInputContainer width={"600px"}>
                     <TextInputMultiLine
                       key={i}
                       name={"questionaires"}
+                      required
                       defaultValue={questionaires[i]}
                     />
                   </TextInputContainer>
@@ -315,14 +321,7 @@ const UserProfile = () => {
           <SectionCircle>
             <Icon name={"dollar"} heightAndWidth="24px" color="purple" />
           </SectionCircle>
-          <SectionTitle>Payment Preferences</SectionTitle>
-          <InfoText>
-            Which payment channels do you support for receiving and sending
-            funds?
-          </InfoText>
-          <TextFieldBox>
             <PaymentPreferences defaultValue={paymentPreference} />
-          </TextFieldBox>
         </Section>
 
         <Section>
@@ -454,7 +453,7 @@ const UserProfile = () => {
                 </TextInputContainer>
               </TextFieldBox>
               <TextFieldBox>
-                <TextFieldDescription>Contact Email</TextFieldDescription>
+                <TextFieldDescription required>Contact Email</TextFieldDescription>
                 <TextInputContainer width={"350px"}>
                   <TextInputOneLine
                     defaultValue={contactEmail}
@@ -526,10 +525,18 @@ const UserProfile = () => {
         open={snackbarOpen}
         autoHideDuration={5000}
         onClose={() => setSnackbarOpen(false)}
-        color="success"
       >
         <Alert severity="success" sx={{ width: "100%" }}>
           Successfully Saved Profile!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={!!error}
+        autoHideDuration={5000}
+        onClose={() => setError("")}
+      >
+        <Alert severity="error" sx={{ width: "100%" }}>
+          {error}
         </Alert>
       </Snackbar>
     </UserProfileForm>
@@ -546,19 +553,21 @@ export const loader = async ({ request }: Parameters<LoaderFunction>[0]) => {
 };
 
 export const action: ActionFunction = ({ request }) => {
-  return getAuth(request).then(async ({ userId }) => {
-    if (!userId) {
-      return new Response("No valid user found", { status: 401 });
-    }
-    const formData = await request.formData();
-    const data = Object.fromEntries(
-      Array.from(formData.keys()).map((k) => [
-        k,
-        formData.getAll(k).map((v) => v as string),
-      ])
-    );
-    return saveUserProfile(userId, data).then(() => ({ success: true }));
-  });
+  return getAuth(request)
+    .then(async ({ userId }) => {
+      if (!userId) {
+        return new Response("No valid user found", { status: 401 });
+      }
+      const formData = await request.formData();
+      const data = Object.fromEntries(
+        Array.from(formData.keys()).map((k) => [
+          k,
+          formData.getAll(k).map((v) => v as string),
+        ])
+      );
+      return saveUserProfile(userId, data).then(() => ({ success: true }));
+    })
+    .catch((e) => ({ success: false, error: e.message }));
 };
 
 export default UserProfile;

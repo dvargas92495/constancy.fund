@@ -198,7 +198,7 @@ const EnterDetails = () => {
   const [company, setCompany] = useState("");
   const [companyType, setCompanyType] = useState("");
   const [address, setAddress] = useState("");
-  const [paymentPreference, setPaymentPreference] = useState({ type: "" });
+  const [paymentPreference] = useState({ type: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const putHandler = useHandler<PutHandler>({
@@ -571,14 +571,8 @@ const EnterDetails = () => {
           </TextFieldBox>
         </Section>
         <Section>
-          <SectionTitle>Payment Preferences</SectionTitle>
-          <InfoText>
-            Which payment options do have available for sending and receiving
-            funds?
-          </InfoText>
           <PaymentPreference
-            value={paymentPreference}
-            setValue={setPaymentPreference}
+            defaultValue={paymentPreference}
           />
         </Section>
         <BottomBar>
