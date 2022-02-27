@@ -41,6 +41,8 @@ const TYPES = [
   // },
 ] as const;
 
+export type FundraiseId = (typeof TYPES)[number]['id'];
+
 export const dbIdByTypeId = Object.fromEntries(TYPES.map(({ id }, i) => [id, i]));
 
 export default TYPES;

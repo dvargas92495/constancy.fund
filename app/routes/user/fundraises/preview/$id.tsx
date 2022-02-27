@@ -14,7 +14,6 @@ import {
   LinksFunction,
   LoaderFunction,
   useLoaderData,
-  useLocation,
   useNavigate,
   useParams,
 } from "remix";
@@ -108,6 +107,10 @@ const LoadingBox = styled.div`
   align-items: center;
 `;
 
+const Container = styled.div`
+  max-width: 1000px;
+`;
+
 type FundraiseData = Awaited<ReturnType<GetContractHandler>>;
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -135,7 +138,6 @@ const UserFundraisePreview = () => {
   const threshold = Number(data.details.threshold || 0);
   const totalAmount = paymentAmount * frequency;
   const navigate = useNavigate();
-  const state = useLocation().state as { initialCreate?: boolean };
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const refreshPreview = useAuthenticatedHandler<ContractRefreshHandler>({
     method: "PUT",
@@ -145,7 +147,7 @@ const UserFundraisePreview = () => {
     method: "GET",
     path: "contract-refresh",
   });
-  const [loading, setLoading] = useState(state?.initialCreate);
+  const [loading, setLoading] = useState(true);
   const onRefresh = useCallback(() => {
     setLoading(true);
     refreshPreview({ uuid: id }).then(() => setLoading(false));
@@ -156,13 +158,12 @@ const UserFundraisePreview = () => {
         onRefresh();
       }
     };
-    if (state?.initialCreate)
-      getRefresh({ uuid: id }).then(() => setLoading(false));
+    getRefresh({ uuid: id }).then(() => setLoading(false));
     document.addEventListener("keydown", listener);
     return () => document.removeEventListener("keydown", listener);
-  }, [onRefresh, state?.initialCreate, getRefresh, id, setLoading]);
+  }, [onRefresh, getRefresh, id, setLoading]);
   return (
-    <>
+    <Container>
       <TopBar>
         <InfoArea>
           <PageTitle>Preview Contract {"&"} Confirm Terms</PageTitle>
@@ -251,9 +252,9 @@ const UserFundraisePreview = () => {
                 <ExplainTitle>When you pay back</ExplainTitle>
                 <ExplainText>
                   I acknowledge that I only have to pay my investors when I
-                  reach ${formatAmount(threshold / 12)}/year or on average ${formatAmount(threshold)}/month. My dividends are
-                  then paid from my total income, including from pre-existing
-                  assets.
+                  reach ${formatAmount(threshold / 12)}/year or on average $
+                  {formatAmount(threshold)}/month. My dividends are then paid
+                  from my total income, including from pre-existing assets.
                 </ExplainText>
               </ExplainContent>
               <CheckBox />
@@ -325,7 +326,7 @@ const UserFundraisePreview = () => {
           </EversignEmbedContainer>
         </Section>
       </ContentContainer>
-    </>
+    </Container>
   );
 };
 

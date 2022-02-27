@@ -15,8 +15,7 @@ import formatAmount from "../db/util/formatAmount";
 const contentByType = {
   isa: isa,
   loan: {},
-  saft: {},
-  safe: {},
+  custom: {},
 };
 
 const DEFAULT_FONT = "Helvetica";

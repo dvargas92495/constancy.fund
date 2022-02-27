@@ -1,0 +1,354 @@
+import { useState } from "react";
+import styled from "styled-components";
+import _H1 from "@dvargas92495/ui/dist/components/H1";
+import _H4 from "@dvargas92495/ui/dist/components/H4";
+import RadioGroup from "@mui/material/RadioGroup";
+import Radio from "@mui/material/Radio";
+import formatAmount from "../../../../../db/util/formatAmount";
+import Icon from "~/_common/Icon";
+import TextInputContainer from "~/_common/TextInputContainer";
+import TextInputOneLine from "~/_common/TextInputOneLine";
+import Section from "~/_common/Section";
+import SectionCircle from "~/_common/SectionCircle";
+import InfoText from "~/_common/InfoText";
+import TextFieldBox from "~/_common/TextFieldBox";
+import TextFieldDescription from "~/_common/TextFieldDescription";
+import SubSectionTitle from "~/_common/SubSectionTitle";
+import TextInputMultiLine from "~/_common/TextInputMultiLine";
+
+const ISA_SUPPORT_TYPES = [
+  {
+    label: "Monthly Stipend",
+    description: "Get a monthly payout & cancel anytime",
+    value: "monthly",
+  },
+  {
+    label: "One-time Payout",
+    description: "Get a one-time payment from your supporters",
+    value: "once",
+  },
+];
+
+const SupportTypeCard = styled.div<{ active?: boolean }>`
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: row !important;
+  border: ${(props) =>
+    props.active
+      ? "1px solid" + props.theme.palette.color.purple
+      : "1px solid" + props.theme.palette.color.lightgrey};
+  border-radius: 8px;
+  padding: 15px 20px;
+  grid-gap: 15px;
+`;
+
+const SupportTypeContentBox = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  grid-gap: 5px;
+  flex: 1;
+`;
+
+const SupportTypeTitle = styled.div`
+  display: flex;
+  color: ${(props) => props.theme.palette.text.primary};
+  font-weight: bold;
+  font-size: 16px;
+`;
+
+const SupportTypeDescription = styled.div`
+  display: flex;
+  color: ${(props) => props.theme.palette.text.secondary};
+  font-weight: 300;
+  font-size: 14px;
+`;
+
+const InputMetrix = styled.span`
+  white-space: nowrap;
+  width: 100px;
+  color: ${(props) => props.theme.palette.text.tertiary};
+  font-size: 14px;
+  text-align: center;
+  padding: 0 10px;
+`;
+
+const HowMuchSubSection = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  & > div {
+    grid-gap: 10px;
+    flex-wrap: nowrap;
+  }
+`;
+
+const HowMuchSetValuesSection = styled.div`
+  margin: 40px 0px;
+`;
+
+const InfoPillTitle = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  color: ${(props) => props.theme.palette.color.primary};
+`;
+
+const InfoPillInfo = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: ${(props) => props.theme.palette.color.purple};
+`;
+
+const InfoPill = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: ${(props) =>
+    props.theme.palette.color.backgroundColorDarkerDarker};
+  padding: 0px 20px;
+  height: 40px;
+  width: fit-content;
+  border-radius: 50px;
+  grid-gap: 5px;
+`;
+
+const ContainerWithInfo = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  grid-gap: 20px;
+`;
+
+const ThresholdField = () => {
+  const [threshold, setThreshold] = useState(0);
+  return (
+    <TextFieldBox>
+      <TextFieldDescription required>
+        Income/Revenue Payback Threshold
+      </TextFieldDescription>
+      <ContainerWithInfo>
+        <TextInputContainer width={"350px"}>
+          <TextInputOneLine
+            type={"number"}
+            required
+            name={"threshold"}
+            onChange={(e) => setThreshold(Number(e.target.value) || 0)}
+          />
+          {<InputMetrix>$</InputMetrix>}
+        </TextInputContainer>
+        <InfoPill>
+          <InfoPillTitle>ø per month</InfoPillTitle>
+          <InfoPillInfo>${formatAmount(threshold / 12)} / month</InfoPillInfo>
+        </InfoPill>
+      </ContainerWithInfo>
+    </TextFieldBox>
+  );
+};
+
+const ISADetailForm = () => {
+  const [supportType, setSupportType] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [frequency, setFrequency] = useState(1);
+  const [maxReturn, setMaxReturn] = useState(0);
+  const total = amount * frequency;
+  return (
+    <>
+      <Section>
+        <SubSectionTitle>How do you want to raise?</SubSectionTitle>
+        <HowMuchSubSection>
+          <RadioGroup
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+            }}
+            name="supportType"
+            onChange={(e) => setSupportType(e.target.value)}
+          >
+            {ISA_SUPPORT_TYPES.map(({ label, value, description }) => (
+              <Radio
+                key={value}
+                value={value}
+                disableRipple
+                required
+                sx={{
+                  "&:hover": {
+                    background: "none",
+                  },
+                  "& .MuiTouchRipple": {
+                    display: "none",
+                  },
+                  "& .Mui-checked": {
+                    borderStyle: "solid",
+                    borderWidth: "1px",
+                    borderColor: "black",
+                  },
+                  width: "50%",
+                  padding: 0,
+                }}
+                checkedIcon={
+                  <SupportTypeCard active={true}>
+                    <SectionCircle margin={"0"} width={"40px"} height={"40px"}>
+                      <Icon
+                        name={"home"}
+                        heightAndWidth="18px"
+                        color="purple"
+                      />
+                    </SectionCircle>
+                    <SupportTypeContentBox>
+                      <SupportTypeTitle>{label}</SupportTypeTitle>
+                      <SupportTypeDescription>
+                        {description}
+                      </SupportTypeDescription>
+                    </SupportTypeContentBox>
+                  </SupportTypeCard>
+                }
+                icon={
+                  <SupportTypeCard>
+                    <SectionCircle margin={"0"} width={"40px"}>
+                      <Icon
+                        name={"home"}
+                        heightAndWidth="18px"
+                        color="darkerText"
+                      />
+                    </SectionCircle>
+                    <SupportTypeContentBox>
+                      <SupportTypeTitle>{label}</SupportTypeTitle>
+                      <SupportTypeDescription>
+                        {description}
+                      </SupportTypeDescription>
+                    </SupportTypeContentBox>
+                  </SupportTypeCard>
+                }
+              />
+            ))}
+          </RadioGroup>
+        </HowMuchSubSection>
+
+        <HowMuchSetValuesSection>
+          {supportType && (
+            <TextFieldBox>
+              <TextFieldDescription required>
+                Amount you'd like to raise
+              </TextFieldDescription>
+              <TextInputContainer>
+                <TextInputOneLine
+                  type={"number"}
+                  name={"amount"}
+                  min={100}
+                  required
+                  onChange={(e) => setAmount(Number(e.target.value) || 0)}
+                />
+                {supportType === "monthly" ? (
+                  <InputMetrix>$ per month</InputMetrix>
+                ) : (
+                  <InputMetrix>$</InputMetrix>
+                )}
+              </TextInputContainer>
+            </TextFieldBox>
+          )}
+          {supportType === "monthly" && (
+            <>
+              <TextFieldBox>
+                <TextFieldDescription required>
+                  For how many months?
+                </TextFieldDescription>
+                <TextInputContainer>
+                  <TextInputOneLine
+                    required
+                    type={"number"}
+                    name={"frequency"}
+                    min={12}
+                    onChange={(e) => setFrequency(Number(e.target.value) || 1)}
+                  />
+                </TextInputContainer>
+              </TextFieldBox>
+            </>
+          )}
+        </HowMuchSetValuesSection>
+        {amount > 0 && (
+          <TextFieldBox>
+            <InfoPill>
+              <InfoPillTitle>Total Funding Request</InfoPillTitle>
+              <InfoPillInfo>
+                ${formatAmount(amount * frequency)}
+                .00
+              </InfoPillInfo>
+            </InfoPill>
+          </TextFieldBox>
+        )}
+      </Section>
+      <Section>
+        <SubSectionTitle>How do you want to raise?</SubSectionTitle>
+        <TextFieldBox>
+          <TextFieldDescription required>
+            Maximum return for investors
+          </TextFieldDescription>
+          <ContainerWithInfo>
+            <TextInputContainer width={"350px"}>
+              <TextInputOneLine
+                type={"number"}
+                name={"return"}
+                required
+                onChange={(e) => setMaxReturn(Number(e.target.value) || 0)}
+                min={100}
+              />
+              {<InputMetrix>%</InputMetrix>}
+            </TextInputContainer>
+            <InfoPill>
+              <InfoPillTitle>Maximum Return</InfoPillTitle>
+              <InfoPillInfo>
+                ${formatAmount((maxReturn / 100) * total)}
+              </InfoPillInfo>
+            </InfoPill>
+          </ContainerWithInfo>
+        </TextFieldBox>
+        <ThresholdField />
+        <TextFieldBox>
+          <TextFieldDescription required>
+            Share of revenue used for payback
+          </TextFieldDescription>
+          <TextInputContainer>
+            <TextInputOneLine
+              type={"number"}
+              name={"share"}
+              required
+              min={1}
+              max={100}
+            />
+            {<InputMetrix>%</InputMetrix>}
+          </TextInputContainer>
+        </TextFieldBox>
+        <TextFieldBox>
+          <TextFieldDescription required>Time Cap</TextFieldDescription>
+          <TextInputContainer>
+            <TextInputOneLine type={"number"} name={"cap"} required min={1} />
+            {<InputMetrix>years</InputMetrix>}
+          </TextInputContainer>
+        </TextFieldBox>
+      </Section>
+      <Section>
+        <SubSectionTitle>Additional Contract Clauses</SubSectionTitle>
+        <InfoText>
+          Do you have any special requirements in this contract that you'd like
+          to add? It is <b>strongly</b> advised to cross-check these terms with
+          a legal professional.
+        </InfoText>
+        <TextInputContainer width={"600px"}>
+          <TextInputMultiLine name={"clauses"} />
+        </TextInputContainer>
+      </Section>
+    </>
+  );
+};
+
+export default ISADetailForm;

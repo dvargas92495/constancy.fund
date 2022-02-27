@@ -13,6 +13,10 @@ import Section from "~/_common/Section";
 import InfoText from "~/_common/InfoText";
 import SubSectionTitle from "~/_common/SubSectionTitle";
 
+const Container = styled.div`
+  max-width: 1000px;
+`
+
 const FundraisingTypeTopRow = styled.div`
   display: flex;
   flex-direction: row;
@@ -46,7 +50,7 @@ const FundraisingTypeHelpBox = styled.div`
 const UserFundraisesSetup = () => {
   const navigate = useNavigate();
   return (
-    <>
+    <Container>
       <TopBar>
         <InfoArea>
           <PageTitle>Choose your fundraising type</PageTitle>
@@ -64,11 +68,7 @@ const UserFundraisesSetup = () => {
                 <PrimaryAction
                   label={enabled ? "Select" : "Coming Soon"}
                   disabled={enabled ? false : true}
-                  onClick={() =>
-                    navigate("/user/fundraises/details", {
-                      state: { id },
-                    })
-                  }
+                  onClick={() => navigate(`/user/fundraises/details/${id}`)}
                 />
               </FundraisingTypeTopRow>
               <FundraisingTypeHelpBox>
@@ -83,7 +83,7 @@ const UserFundraisesSetup = () => {
           </Section>
         ))}
       </ContentContainer>
-    </>
+    </Container>
   );
 };
 

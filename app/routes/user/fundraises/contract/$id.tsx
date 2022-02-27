@@ -338,8 +338,8 @@ const AgreementRow = (
       <TableCell>
         <StatusRow>
           <StagePill color={STAGE_COLORS[row.status]}>
-            {CONTRACT_STAGES[row.status] === 'CONTRACTS_SIGNED' && "🎉"}
-            {CONTRACT_STAGES[row.status] === 'CONFIRM_NEW_BACKER' && (
+            {CONTRACT_STAGES[row.status] === "CONTRACTS_SIGNED" && "🎉"}
+            {CONTRACT_STAGES[row.status] === "CONFIRM_NEW_BACKER" && (
               <Icon name={"edit"} heightAndWidth="14px" color="purple" />
             )}
           </StagePill>
@@ -364,6 +364,10 @@ const AgreementRow = (
     </TableRow>
   );
 };
+
+const Container = styled.div`
+  max-width: 1000px;
+`;
 
 type FundraiseData = Awaited<ReturnType<GetContractHandler>>;
 
@@ -404,7 +408,7 @@ const UserFundraisesContract = () => {
     [progress, total]
   );
   return (
-    <>
+    <Container>
       <TopBar>
         <InfoArea>
           <PageTitle>My Fundraise</PageTitle>
@@ -569,7 +573,7 @@ const UserFundraisesContract = () => {
           </Section>
         </ProfileBottomContainer>
       </ContentContainer>
-    </>
+    </Container>
   );
 };
 

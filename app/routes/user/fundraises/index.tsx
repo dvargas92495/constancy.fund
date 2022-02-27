@@ -42,6 +42,10 @@ const NotCompletedMessageContainer = styled.div`
   flex-direction: column;
 `;
 
+const Container = styled.div`
+  max-width: 1000px;
+`;
+
 const FundraisingContainer = styled.div``;
 
 const H4 = (props: Parameters<typeof _H4>[0]) => (
@@ -143,9 +147,7 @@ const FundraiseContentRow = ({
     <TableRow>
       <TableCell>{row.type}</TableCell>
       <TableCell sx={{ width: "320px" }}>
-        <DetailComponent
-          {...row.details}
-        />
+        <DetailComponent {...row.details} />
       </TableCell>
       <TableCell>{row.progress}</TableCell>
       <TableCell>{row.investorCount}</TableCell>
@@ -222,7 +224,7 @@ const UserFundraiseIndex = () => {
   );
   const navigate = useNavigate();
   return (
-    <>
+    <Container>
       <TopBar>
         <InfoArea>
           <PageTitle>My Fundraise</PageTitle>
@@ -304,7 +306,7 @@ const UserFundraiseIndex = () => {
             ))}
         </Section>
       </ContentContainer>
-    </>
+    </Container>
   );
 };
 

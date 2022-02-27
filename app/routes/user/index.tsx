@@ -40,6 +40,7 @@ import TextFieldBox from "~/_common/TextFieldBox";
 import TextFieldDescription from "~/_common/TextFieldDescription";
 import SubSectionTitle from "~/_common/SubSectionTitle";
 import TextInputMultiLine from "~/_common/TextInputMultiLine";
+import ErrorSnackbar from "~/_common/ErrorSnackbar";
 
 const SubSection = styled.div`
   margin-top: 60px;
@@ -185,15 +186,12 @@ const UserProfile = () => {
   } = loaderData;
   const [isChanges, setIsChanges] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [error, setError] = useState("");
   const changes = useRef(new Set<HTMLElement>());
   useEffect(() => {
     if (actionData?.success) {
       setSnackbarOpen(true);
       changes.current.clear();
       setIsChanges(false);
-    } else if (actionData?.error) {
-      setError(actionData.error);
     }
   }, [setSnackbarOpen, actionData, setIsChanges, changes.current]);
   return (
@@ -321,7 +319,7 @@ const UserProfile = () => {
           <SectionCircle>
             <Icon name={"dollar"} heightAndWidth="24px" color="purple" />
           </SectionCircle>
-            <PaymentPreferences defaultValue={paymentPreference} />
+          <PaymentPreferences defaultValue={paymentPreference} />
         </Section>
 
         <Section>
@@ -453,7 +451,9 @@ const UserProfile = () => {
                 </TextInputContainer>
               </TextFieldBox>
               <TextFieldBox>
-                <TextFieldDescription required>Contact Email</TextFieldDescription>
+                <TextFieldDescription required>
+                  Contact Email
+                </TextFieldDescription>
                 <TextInputContainer width={"350px"}>
                   <TextInputOneLine
                     defaultValue={contactEmail}
@@ -530,15 +530,7 @@ const UserProfile = () => {
           Successfully Saved Profile!
         </Alert>
       </Snackbar>
-      <Snackbar
-        open={!!error}
-        autoHideDuration={5000}
-        onClose={() => setError("")}
-      >
-        <Alert severity="error" sx={{ width: "100%" }}>
-          {error}
-        </Alert>
-      </Snackbar>
+      <ErrorSnackbar />
     </UserProfileForm>
   );
 };
