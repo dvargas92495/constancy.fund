@@ -1,19 +1,24 @@
-import React, { useState } from "react";
-import { UserButton, useUser } from "@clerk/remix";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  ActionFunction,
+  Form,
+  LoaderFunction,
+  useActionData,
+  useLoaderData,
+} from "remix";
+import { getAuth } from "@clerk/remix/ssr.server";
+import getUserProfile from "~/data/getUserProfile.server";
+import saveUserProfile from "~/data/saveUserProfile.server";
 import Box from "@mui/material/Box";
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
-import useAuthenticatedHandler from "@dvargas92495/ui/dist/useAuthenticatedHandler";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import ExternalLink from "@dvargas92495/ui/dist/components/ExternalLink";
 import CountryRegionData from "country-region-data";
-import type { Handler as ProfileHandler } from "../../../functions/creator-profile/put";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import PaymentPreferences, {
-  PaymentPreferenceValue,
-} from "~/_common/PaymentPreferences";
+import PaymentPreferences from "~/_common/PaymentPreferences";
 import QUESTIONAIRES from "~/_common/questionaires";
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
@@ -121,26 +126,9 @@ const SocialProfileRow = styled.div`
   justify-content: flex-start;
 `;
 
-const deepEqual = (a: unknown, b: unknown): boolean => {
-  if (a === null || b === null) {
-    return false;
-  } else if (typeof a === "string" && typeof b === "string") {
-    return a === b;
-  } else if (typeof a === "object" && typeof b === "object") {
-    const aentries = Object.entries(a).sort((k1, k2) =>
-      k1[0].localeCompare(k2[0])
-    );
-    const bentries = Object.entries(b).sort((k1, k2) =>
-      k1[0].localeCompare(k2[0])
-    );
-    return (
-      aentries.length === bentries.length &&
-      aentries.every(([, v], i) => deepEqual(v, bentries[i][1]))
-    );
-  } else {
-    return false;
-  }
-};
+const UserProfileForm = styled(Form)`
+  max-width: 800px;
+`;
 
 const SOCIAL_PROFILES = [
   { iconName: "twitter" },
@@ -152,20 +140,18 @@ const SOCIAL_PROFILES = [
 const SocialProfile = React.memo(
   ({
     iconName,
-    val = "",
-    setVal,
+    defaultValue = "",
   }: {
     iconName: typeof SOCIAL_PROFILES[number]["iconName"];
-    val?: string;
-    setVal: (s: string) => void;
+    defaultValue: string;
   }) => (
     <SocialProfileRow>
       <Icon name={iconName} />
       <TextInputContainer>
         <TextInputOneLine
           placeholder="https://"
-          value={val}
-          onChange={(e) => setVal(e.target.value)}
+          defaultValue={defaultValue}
+          name={"socialProfiles"}
         />
       </TextInputContainer>
     </SocialProfileRow>
@@ -173,27 +159,20 @@ const SocialProfile = React.memo(
 );
 
 const UserProfile = () => {
-  const { isSignedIn, user } = useUser();
-  if (!user || !isSignedIn) {
-    throw new Error(`Somehow tried to load a non-logged in User profile`);
-  }
+  const loaderData =
+    useLoaderData<Awaited<ReturnType<typeof getUserProfile>>>();
+  const actionData = useActionData();
+
   const {
     id,
-    update,
+    completed,
     firstName,
     lastName,
-    emailAddresses,
-    primaryEmailAddressId,
-    publicMetadata: { completed = false, ...publicMetadata } = {},
-  } = user;
-  const {
-    middleName,
-    contactEmail = emailAddresses.find((e) => e.id === primaryEmailAddressId)
-      ?.emailAddress,
+    companyName,
+    contactEmail,
     socialProfiles,
     questionaires,
     attachDeck,
-    companyName,
     registeredCountry,
     companyRegistrationNumber,
     companyAddressStreet,
@@ -201,83 +180,34 @@ const UserProfile = () => {
     companyAddressCity,
     companyAddressZip,
     paymentPreference,
-  } = publicMetadata;
-  const profileHandler = useAuthenticatedHandler<ProfileHandler>({
-    path: "creator-profile",
-    method: "PUT",
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [firstNameValue, setFirstNameValue] = useState(firstName || "");
-  const [middleNameValue, setMiddleNameValue] = useState(
-    (middleName as string) || ""
-  );
-  const [lastNameValue, setLastNameValue] = useState(lastName || "");
-  const [contactEmailValue, setContactEmailValue] = useState(
-    (contactEmail as string) || ""
-  );
-  const [socialProfileValues, setSocialProfileValues] = useState(
-    (socialProfiles as string[]) || SOCIAL_PROFILES.map(() => "")
-  );
-  const [questionaireValues, setQuestionaireValues] = useState(
-    (questionaires as string[]) || QUESTIONAIRES.map(() => "")
-  );
-  const [attachDeckValue, setAttachDeckValue] = useState(
-    (attachDeck as string) || ""
-  );
-  const [companyNameValue, setCompanyNameValue] = useState(
-    (companyName as string) || ""
-  );
-  const [registeredCountryValue, setRegisteredCountryValue] = useState(
-    (registeredCountry as string) || ""
-  );
-  const [companyRegistrationNumberValue, setCompanyRegistrationNumberValue] =
-    useState((companyRegistrationNumber as string) || "");
-  const [companyAddressStreetValue, setCompanyAddressStreetValue] = useState(
-    (companyAddressStreet as string) || ""
-  );
-  const [companyAddressNumberValue, setCompanyAddressNumberValue] = useState(
-    (companyAddressNumber as string) || ""
-  );
-  const [companyAddressCityValue, setCompanyAddressCityValue] = useState(
-    (companyAddressCity as string) || ""
-  );
-  const [companyAddressZipValue, setCompanyAddressZipValue] = useState(
-    (companyAddressZip as string) || ""
-  );
-  const [paymentPreferenceValue, setPaymentPreferenceValue] =
-    useState<PaymentPreferenceValue>(
-      typeof paymentPreference === "object" && paymentPreference
-        ? (paymentPreference as PaymentPreferenceValue)
-        : { type: "" }
-    );
+  } = loaderData;
+  const [isChanges, setIsChanges] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const profileBody = {
-    firstName: firstNameValue,
-    lastName: lastNameValue,
-    publicMetadata: {
-      middleName: middleNameValue,
-      contactEmail: contactEmailValue,
-      socialProfiles: socialProfileValues,
-      questionaires: questionaireValues,
-      attachDeck: attachDeckValue,
-      companyName: companyNameValue,
-      registeredCountry: registeredCountryValue,
-      companyRegistrationNumber: companyRegistrationNumberValue,
-      companyAddressNumber: companyAddressNumberValue,
-      companyAddressStreet: companyAddressStreetValue,
-      companyAddressCity: companyAddressCityValue,
-      companyAddressZip: companyAddressZipValue,
-      paymentPreference: paymentPreferenceValue,
-    },
-  };
-  const isChanges = !deepEqual(profileBody, {
-    firstName,
-    lastName,
-    publicMetadata,
-  });
+  const changes = useRef(new Set<HTMLElement>());
+  useEffect(() => {
+    if (actionData?.success) {
+      setSnackbarOpen(true);
+      changes.current.clear();
+      setIsChanges(false);
+    }
+  }, [setSnackbarOpen, actionData, setIsChanges, changes.current]);
   return (
-    <Box sx={{ maxWidth: "800px" }}>
+    <UserProfileForm
+      method="put"
+      onChange={(e) => {
+        const el = e.target as HTMLInputElement | HTMLTextAreaElement;
+        if (el.value === el.defaultValue) {
+          changes.current.delete(el);
+        } else {
+          changes.current.add(el);
+        }
+        if (changes.current.size && !isChanges) {
+          setIsChanges(true);
+        } else if (!changes.current.size && isChanges) {
+          setIsChanges(false);
+        }
+      }}
+    >
       <TopBar>
         <InfoArea>
           <PageTitle>Your Profile</PageTitle>
@@ -293,28 +223,17 @@ const UserProfile = () => {
             )}
             {isChanges && (
               <PrimaryAction
-                onClick={() => {
-                  setLoading(true);
-                  profileHandler(profileBody)
-                    .then(() => {
-                      setSnackbarOpen(true);
-                      return update({});
-                    })
-                    .catch((e) => setError(e.message))
-                    .finally(() => setLoading(false));
-                }}
-                isLoading={loading}
                 disabled={!isChanges}
                 label={"Save Edits"}
                 height={"40px"}
                 width={"130px"}
                 fontSize={"16px"}
+                type={"submit"}
               />
             )}
-            <span color={"darkred"}>{error}</span>
           </ActionButton>
         </InfoArea>
-        <UserButton />
+        {/* <UserButton /> */}
       </TopBar>
       <ContentContainer>
         <Section>
@@ -327,13 +246,13 @@ const UserProfile = () => {
             <NameAreaBox>
               <TextFieldBox>
                 <TextFieldDescription required>
-                  Name of you, your company or research project.
+                  Name of your company or research project.
                 </TextFieldDescription>
                 <TextInputContainer width={"350px"}>
                   <TextInputOneLine
-                    value={firstNameValue}
-                    onChange={(e) => setFirstNameValue(e.target.value)}
+                    name={"companyName"}
                     required
+                    defaultValue={companyName}
                   />
                 </TextInputContainer>
               </TextFieldBox>
@@ -360,14 +279,8 @@ const UserProfile = () => {
                   <TextInputContainer width={"600px"}>
                     <TextInputMultiLine
                       key={i}
-                      value={questionaireValues[i]}
-                      onChange={(e) =>
-                        setQuestionaireValues(
-                          questionaireValues.map((oldValue, j) =>
-                            i === j ? e.target.value : oldValue
-                          )
-                        )
-                      }
+                      name={"questionaires"}
+                      defaultValue={questionaires[i]}
                     />
                   </TextInputContainer>
                 </TextFieldBox>
@@ -381,14 +294,7 @@ const UserProfile = () => {
                 <SocialProfile
                   key={i}
                   iconName={iconName}
-                  val={socialProfileValues[i]}
-                  setVal={(newValue) =>
-                    setSocialProfileValues(
-                      socialProfileValues.map((oldValue, j) =>
-                        i === j ? newValue : oldValue
-                      )
-                    )
-                  }
+                  defaultValue={socialProfiles[i]}
                 />
               ))}
             </QuestionaireBox>
@@ -397,9 +303,9 @@ const UserProfile = () => {
             <SubSectionTitle>Attach a deck or demo video</SubSectionTitle>
             <TextInputContainer width={"350px"}>
               <TextInputOneLine
-                value={attachDeckValue}
-                onChange={(e) => setAttachDeckValue(e.target.value)}
+                defaultValue={attachDeck}
                 placeholder="https://"
+                name={"attachDeck"}
               />
             </TextInputContainer>
           </SubSection>
@@ -411,14 +317,11 @@ const UserProfile = () => {
           </SectionCircle>
           <SectionTitle>Payment Preferences</SectionTitle>
           <InfoText>
-            Which payment channels do yo support for receiving and sending
+            Which payment channels do you support for receiving and sending
             funds?
           </InfoText>
           <TextFieldBox>
-            <PaymentPreferences
-              value={paymentPreferenceValue}
-              setValue={setPaymentPreferenceValue}
-            />
+            <PaymentPreferences defaultValue={paymentPreference} />
           </TextFieldBox>
         </Section>
 
@@ -436,27 +339,17 @@ const UserProfile = () => {
           </InfoText>
           <Box>
             <TextFieldBox>
-              <TextFieldDescription>Company Name</TextFieldDescription>
-              <TextInputContainer>
-                <TextInputOneLine
-                  value={companyNameValue}
-                  onChange={(e) => setCompanyNameValue(e.target.value)}
-                  required
-                />
-              </TextInputContainer>
-            </TextFieldBox>
-            <TextFieldBox>
               <TextFieldDescription required>
                 Registered Country
               </TextFieldDescription>
               <TextInputContainer>
                 <Select
-                  value={registeredCountryValue}
+                  defaultValue={registeredCountry}
                   maxRows={10}
                   MenuProps={{ sx: { maxHeight: 200 } }}
-                  onChange={(e) => setRegisteredCountryValue(e.target.value)}
                   fullWidth
                   required
+                  name={"registeredCountry"}
                 >
                   {CountryRegionData.map((c) => (
                     <MenuItem value={c.countryName} key={c.countryShortCode}>
@@ -472,11 +365,9 @@ const UserProfile = () => {
               </TextFieldDescription>
               <TextInputContainer>
                 <TextInputOneLine
-                  value={companyRegistrationNumberValue}
-                  onChange={(e) =>
-                    setCompanyRegistrationNumberValue(e.target.value)
-                  }
+                  defaultValue={companyRegistrationNumber}
                   required
+                  name={"companyRegistrationNumber"}
                 />
               </TextInputContainer>
             </TextFieldBox>
@@ -489,11 +380,9 @@ const UserProfile = () => {
                   </TextFieldDescription>
                   <TextInputContainer width={"300px"}>
                     <TextInputOneLine
-                      value={companyAddressStreetValue}
-                      onChange={(e) =>
-                        setCompanyAddressStreetValue(e.target.value)
-                      }
+                      defaultValue={companyAddressStreet}
                       required
+                      name={"companyAddressStreet"}
                     />
                   </TextInputContainer>
                 </TextFieldBox>
@@ -503,11 +392,9 @@ const UserProfile = () => {
                   </TextFieldDescription>
                   <TextInputContainer>
                     <TextInputOneLine
-                      value={companyAddressCityValue}
-                      onChange={(e) =>
-                        setCompanyAddressCityValue(e.target.value)
-                      }
+                      defaultValue={companyAddressCity}
                       required
+                      name={"companyAddressCity"}
                     />
                   </TextInputContainer>
                 </TextFieldBox>
@@ -519,11 +406,9 @@ const UserProfile = () => {
                   </TextFieldDescription>
                   <TextInputContainer>
                     <TextInputOneLine
-                      value={companyAddressNumberValue}
-                      onChange={(e) =>
-                        setCompanyAddressNumberValue(e.target.value)
-                      }
+                      defaultValue={companyAddressNumber}
                       required
+                      name={"companyAddressNumber"}
                     />
                   </TextInputContainer>
                 </TextFieldBox>
@@ -533,11 +418,9 @@ const UserProfile = () => {
                   </TextFieldDescription>
                   <TextInputContainer>
                     <TextInputOneLine
-                      value={companyAddressZipValue}
-                      onChange={(e) =>
-                        setCompanyAddressZipValue(e.target.value)
-                      }
+                      defaultValue={companyAddressZip}
                       required
+                      name={"companyAddressZip"}
                     />
                   </TextInputContainer>
                 </TextFieldBox>
@@ -554,17 +437,19 @@ const UserProfile = () => {
                 <TextFieldDescription required>First Name</TextFieldDescription>
                 <TextInputContainer width={"350px"}>
                   <TextInputOneLine
-                    value={lastNameValue}
-                    onChange={(e) => setLastNameValue(e.target.value)}
+                    name={"firstName"}
+                    required
+                    defaultValue={firstName}
                   />
                 </TextInputContainer>
               </TextFieldBox>
               <TextFieldBox>
-                <TextFieldDescription>Last Name</TextFieldDescription>
+                <TextFieldDescription required>Last Name</TextFieldDescription>
                 <TextInputContainer width={"350px"}>
                   <TextInputOneLine
-                    value={middleNameValue}
-                    onChange={(e) => setMiddleNameValue(e.target.value)}
+                    name={"lastName"}
+                    required
+                    defaultValue={lastName}
                   />
                 </TextInputContainer>
               </TextFieldBox>
@@ -572,9 +457,9 @@ const UserProfile = () => {
                 <TextFieldDescription>Contact Email</TextFieldDescription>
                 <TextInputContainer width={"350px"}>
                   <TextInputOneLine
-                    value={contactEmailValue}
-                    onChange={(e) => setContactEmailValue(e.target.value)}
+                    defaultValue={contactEmail}
                     required
+                    name={"contactEmail"}
                   />
                 </TextInputContainer>
               </TextFieldBox>
@@ -587,11 +472,9 @@ const UserProfile = () => {
                     </TextFieldDescription>
                     <TextInputContainer width={"300px"}>
                       <TextInputOneLine
-                        value={companyAddressStreetValue}
-                        onChange={(e) =>
-                          setCompanyAddressStreetValue(e.target.value)
-                        }
+                        defaultValue={companyAddressStreet}
                         required
+                        name={"companyAddressStreet"}
                       />
                     </TextInputContainer>
                   </TextFieldBox>
@@ -601,11 +484,9 @@ const UserProfile = () => {
                     </TextFieldDescription>
                     <TextInputContainer>
                       <TextInputOneLine
-                        value={companyAddressCityValue}
-                        onChange={(e) =>
-                          setCompanyAddressCityValue(e.target.value)
-                        }
+                        defaultValue={companyAddressCity}
                         required
+                        name={"companyAddressCity"}
                       />
                     </TextInputContainer>
                   </TextFieldBox>
@@ -617,11 +498,9 @@ const UserProfile = () => {
                     </TextFieldDescription>
                     <TextInputContainer>
                       <TextInputOneLine
-                        value={companyAddressNumberValue}
-                        onChange={(e) =>
-                          setCompanyAddressNumberValue(e.target.value)
-                        }
+                        defaultValue={companyAddressNumber}
                         required
+                        name={"companyAddressNumber"}
                       />
                     </TextInputContainer>
                   </TextFieldBox>
@@ -631,11 +510,9 @@ const UserProfile = () => {
                     </TextFieldDescription>
                     <TextInputContainer>
                       <TextInputOneLine
-                        value={companyAddressZipValue}
-                        onChange={(e) =>
-                          setCompanyAddressZipValue(e.target.value)
-                        }
+                        defaultValue={companyAddressZip}
                         required
+                        name={"companyAddressZip"}
                       />
                     </TextInputContainer>
                   </TextFieldBox>
@@ -655,8 +532,33 @@ const UserProfile = () => {
           Successfully Saved Profile!
         </Alert>
       </Snackbar>
-    </Box>
+    </UserProfileForm>
   );
+};
+
+export const loader = async ({ request }: Parameters<LoaderFunction>[0]) => {
+  return getAuth(request).then(async ({ userId }) => {
+    if (!userId) {
+      return new Response("No valid user found", { status: 401 });
+    }
+    return getUserProfile(userId);
+  });
+};
+
+export const action: ActionFunction = ({ request }) => {
+  return getAuth(request).then(async ({ userId }) => {
+    if (!userId) {
+      return new Response("No valid user found", { status: 401 });
+    }
+    const formData = await request.formData();
+    const data = Object.fromEntries(
+      Array.from(formData.keys()).map((k) => [
+        k,
+        formData.getAll(k).map((v) => v as string),
+      ])
+    );
+    return saveUserProfile(userId, data).then(() => ({ success: true }));
+  });
 };
 
 export default UserProfile;

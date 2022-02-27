@@ -12,8 +12,8 @@ import {
   useLoaderData,
 } from "remix";
 import { ExternalScripts } from "remix-utils";
-import { ClerkProvider } from "@clerk/remix";
-import { rootAuthLoader, WithClerkState } from "@clerk/remix/ssr.server";
+import { ConnectClerk } from "@clerk/remix";
+import { rootAuthLoader } from "@clerk/remix/ssr.server";
 import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 import getEmotionCache, { emotionCache } from "./_common/getEmotionCache";
 import { CacheProvider } from "@emotion/react";
@@ -217,55 +217,51 @@ const RootContainer = styled.div`
   min-height: fit-content;
 `;
 
-export default function App() {
-  const { data, clerkState } =
-    useLoaderData<WithClerkState<{ ENV: Record<string, string> }>>();
+const App = () => {
+  const data = useLoaderData<{ ENV: Record<string, string> }>();
   return (
-    <ClerkProvider
-      frontendApi={data?.ENV?.CLERK_FRONTEND_API}
-      clerkState={clerkState}
-    >
-      <html lang="en">
-        <head>
-          <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width,initial-scale=1" />
-          <Meta />
-          <Links />
-          {typeof document === "undefined" ? "__STYLES__" : null}
-          {typeof document === "undefined" ? "__STYLES2__" : null}
-        </head>
-        <body>
-          <ThemeProvider theme={themeProps}>
-            <GlobalStyle />
-            <CacheProvider
-              value={
-                typeof document === "undefined"
-                  ? emotionCache
-                  : getEmotionCache()
-              }
-            >
-              <MuiThemeProvider {...themeProps}>
-                <RootContainer id="root">
-                  <Outlet />
-                </RootContainer>
-              </MuiThemeProvider>
-            </CacheProvider>
-          </ThemeProvider>
-          {/* blocked on https://github.com/remix-run/remix/pull/936
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <Meta />
+        <Links />
+        {typeof document === "undefined" ? "__STYLES__" : null}
+        {typeof document === "undefined" ? "__STYLES2__" : null}
+      </head>
+      <body>
+        <ThemeProvider theme={themeProps}>
+          <GlobalStyle />
+          <CacheProvider
+            value={
+              typeof document === "undefined" ? emotionCache : getEmotionCache()
+            }
+          >
+            <MuiThemeProvider {...themeProps}>
+              <RootContainer id="root">
+                <Outlet />
+              </RootContainer>
+            </MuiThemeProvider>
+          </CacheProvider>
+        </ThemeProvider>
+        {/* blocked on https://github.com/remix-run/remix/pull/936
         <ScrollRestoration />
         */}
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `window.process = {
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.process = {
   env: ${JSON.stringify(data?.ENV || {})}
 };`,
-            }}
-          />
-          <Scripts />
-          <ExternalScripts />
-          {process.env.NODE_ENV === "development" && <LiveReload />}
-        </body>
-      </html>
-    </ClerkProvider>
+          }}
+        />
+        <Scripts />
+        <ExternalScripts />
+        {process.env.NODE_ENV === "development" && <LiveReload />}
+      </body>
+    </html>
   );
-}
+};
+
+export default ConnectClerk(App, {
+  frontendApi: process.env.CLERK_FRONTEND_API || "",
+});

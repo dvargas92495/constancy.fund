@@ -6,7 +6,12 @@ import List from "@mui/material/List";
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
 import GlobalStyles from "@mui/material/GlobalStyles";
-import { Link as RemixLink, LoaderFunction, Outlet, redirect } from "remix";
+import {
+  Link as RemixLink,
+  LoaderFunction,
+  Outlet,
+  redirect
+} from "remix";
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
 import ListItemIcon from "~/_common/ListItemIcon";
@@ -142,7 +147,6 @@ const UserPage = (): React.ReactElement => (
 
 export const loader: LoaderFunction = ({ request }) => {
   return getAuth(request).then((authData) => {
-    console.log('Was user found', !!authData.userId, !!request.headers.get('cookie'));
     if (!authData.userId) {
       return redirect("/login");
     }
