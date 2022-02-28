@@ -79,10 +79,11 @@ provider "github" {
 
 module "aws_static_site" {
   source  = "dvargas92495/static-site/aws"
-  version = "3.2.7"
+  version = "3.3.0"
 
   domain = "constancy.fund"
   secret = var.secret
+  origin_timeout = 20
   tags = {
       Application = "constancy-fund"
   }
@@ -100,17 +101,15 @@ module "aws-serverless-backend" {
   sizes = {
     "create-contract-pdf": 5120
   }
-  timeouts = {
-    "agreement/put": 20
-  }
 }
 
 module "aws_static_site_staging" {
   source  = "dvargas92495/static-site/aws"
-  version = "3.2.7"
+  version = "3.3.0"
 
   domain = "staging.constancy.fund"
   secret = var.secret
+  origin_timeout = 20
   tags = {
       Application = "constancy-fund"
   }
@@ -127,9 +126,6 @@ module "aws-serverless-backend_staging" {
   api_name = "staging-constancy-fund"
   sizes = {
     "create-contract-pdf": 5120
-  }
-  timeouts = {
-    "agreement/put": 20
   }
 }
 

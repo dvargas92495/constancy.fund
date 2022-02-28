@@ -12,6 +12,7 @@ const getUserProfile = (userId: string) =>
       "",
     firstName: u.firstName || "",
     lastName: u.lastName || "",
+    middleName: (u.publicMetadata?.middleName as string) || "",
     companyName: (u.publicMetadata?.companyName as string) || "",
     questionaires: (u.publicMetadata?.questionaires as string[]) || [],
     socialProfiles: (u.publicMetadata?.socialProfiles as string[]) || [],

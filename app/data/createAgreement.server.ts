@@ -163,7 +163,9 @@ const createAgreement = ({
         custom_requester_email: creatorEmail,
         custom_requester_name: creatorName,
         embeddedSigningEnabled: true,
-        ...(process.env.EVERSIGN_SANDBOX ? { sandbox: true } : {}),
+        ...(!process.env.IS_PRODUCTION || process.env.EVERSIGN_SANDBOX
+          ? { sandbox: true }
+          : {}),
       });
 
       document.appendFile(file);
@@ -171,7 +173,6 @@ const createAgreement = ({
       document.appendSigner(creatorSigner);
 
       return eversign.createDocument(document).then((r) => {
-        console.log("eversign generated");
         return { ...contract, id: r.getDocumentHash() };
       });
     })
