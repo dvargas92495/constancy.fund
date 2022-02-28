@@ -1,21 +1,21 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import Box from "@mui/material/Box";
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
-import useAuthenticatedHandler from "@dvargas92495/ui/dist/useAuthenticatedHandler";
 import CheckBox from "@mui/material/Checkbox";
-import type { Handler as ContractRefreshHandler } from "../../../../../functions/contract-refresh/put";
-import type { Handler as GetRefreshHandler } from "../../../../../functions/contract-refresh/get";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import pdfViewerCore from "@react-pdf-viewer/core/lib/styles/index.css";
 import pdfViewerLayout from "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import {
+  ActionFunction,
+  Form,
   LinksFunction,
   LoaderFunction,
+  redirect,
   useLoaderData,
-  useNavigate,
   useParams,
+  useFetcher,
 } from "remix";
 import formatAmount from "../../../../../db/util/formatAmount";
 import styled from "styled-components";
@@ -33,6 +33,8 @@ import { LoadingIndicator } from "~/_common/LoadingIndicator";
 import cookie from "cookie";
 import axios from "axios";
 import type { Handler as GetContractHandler } from "../../../../../functions/contract/get";
+import { getAuth } from "@clerk/remix/ssr.server";
+import ErrorSnackbar from "~/_common/ErrorSnackbar";
 
 const ExplainTitle = styled.div`
   font-size: 18px;
@@ -107,7 +109,7 @@ const LoadingBox = styled.div`
   align-items: center;
 `;
 
-const Container = styled.div`
+const Container = styled(Form)`
   max-width: 1000px;
 `;
 
@@ -117,16 +119,63 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const cookieHeader = request.headers.get("cookie") || "";
   const cookieObj = cookie.parse(cookieHeader);
   const token = cookieObj.__session;
+  const opts = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
   return axios
-    .get<FundraiseData>(`${process.env.API_URL}/contract?uuid=${params.id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((r) => r.data)
+    .get<FundraiseData>(
+      `${process.env.API_URL}/contract?uuid=${params.id}`,
+      opts
+    )
+    .then((r) =>
+      axios
+        .get(`${process.env.API_URL}/contract-refresh?uuid=${params.id}`, opts)
+        .then(() => r.data)
+    )
     .catch((e) => {
       console.error(e);
       return {};
+    });
+};
+
+export const action: ActionFunction = ({ request, params }) => {
+  return getAuth(request)
+    .then(async ({ userId, getToken }) => {
+      if (!userId) {
+        return new Response("No valid user found", { status: 401 });
+      }
+      if (request.method === "POST") {
+        // Do we need any backend validation? My sense says no.
+        return redirect(`/user/fundraises/contract/${params.id}`);
+      } else if (request.method === "PUT") {
+        const formData = await request.formData();
+        const uuid = formData.get("uuid");
+        if (!uuid) return new Error("`uuid` is required.");
+        return getToken()
+          .then((token) =>
+            axios.put(
+              `${process.env.API_URL}/contract-refresh?uuid=${params.id}`,
+              { uuid },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            )
+          )
+          .then(() => ({ success: true }));
+      } else {
+        return {
+          error: `Unsupported method: ${request.method}`,
+          success: false,
+        };
+      }
+    })
+    .catch((e) => {
+      console.log(e);
+      return { success: false, error: e.message };
     });
 };
 
@@ -137,44 +186,26 @@ const UserFundraisePreview = () => {
   const frequency = Number(data.details.frequency || 1);
   const threshold = Number(data.details.threshold || 0);
   const totalAmount = paymentAmount * frequency;
-  const navigate = useNavigate();
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
-  const refreshPreview = useAuthenticatedHandler<ContractRefreshHandler>({
-    method: "PUT",
-    path: "contract-refresh",
-  });
-  const getRefresh = useAuthenticatedHandler<GetRefreshHandler>({
-    method: "GET",
-    path: "contract-refresh",
-  });
-  const [loading, setLoading] = useState(true);
+  const fetcher = useFetcher();
   const onRefresh = useCallback(() => {
-    setLoading(true);
-    refreshPreview({ uuid: id }).then(() => setLoading(false));
-  }, [setLoading, id, refreshPreview]);
+    fetcher.submit({ uuid: id }, { method: "put" });
+  }, [id, fetcher]);
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
       if (e.shiftKey && e.ctrlKey && e.metaKey && e.altKey && e.key === "R") {
         onRefresh();
       }
     };
-    getRefresh({ uuid: id }).then(() => setLoading(false));
     document.addEventListener("keydown", listener);
     return () => document.removeEventListener("keydown", listener);
-  }, [onRefresh, getRefresh, id, setLoading]);
+  }, [onRefresh]);
   return (
-    <Container>
+    <Container method="post">
       <TopBar>
         <InfoArea>
           <PageTitle>Preview Contract {"&"} Confirm Terms</PageTitle>
-          <PrimaryAction
-            onClick={() =>
-              navigate(`/user/fundraises/contract/${id}`, {
-                state: { isOpen: true },
-              })
-            }
-            label={"Confirm Terms"}
-          />
+          <PrimaryAction type={"submit"} label={"Confirm Terms"} />
         </InfoArea>
       </TopBar>
       <ContentContainer>
@@ -198,7 +229,7 @@ const UserFundraisePreview = () => {
                   {frequency} months.
                 </ExplainText>
               </ExplainContent>
-              <CheckBox />
+              <CheckBox name={"term"} required />
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
               <ExplainContent>
@@ -211,7 +242,7 @@ const UserFundraisePreview = () => {
                   to my investors
                 </ExplainText>
               </ExplainContent>
-              <CheckBox />
+              <CheckBox name={"term"} required />
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
               <ExplainContent>
@@ -224,7 +255,7 @@ const UserFundraisePreview = () => {
                   investors. Includes revenue from preexisting assets.
                 </ExplainText>
               </ExplainContent>
-              <CheckBox />
+              <CheckBox name={"term"} required />
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
               <ExplainContent>
@@ -234,7 +265,7 @@ const UserFundraisePreview = () => {
                   income and to provide my tax returns yearly.
                 </ExplainText>
               </ExplainContent>
-              <CheckBox />
+              <CheckBox name={"term"} required />
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
               <ExplainContent>
@@ -244,7 +275,7 @@ const UserFundraisePreview = () => {
                   after I hit my revenue treshold.
                 </ExplainText>
               </ExplainContent>
-              <CheckBox />
+              <CheckBox name={"term"} required />
             </ExplainMeLikeIamFiveContainer>
 
             <ExplainMeLikeIamFiveContainer>
@@ -257,7 +288,7 @@ const UserFundraisePreview = () => {
                   from my total income, including from pre-existing assets.
                 </ExplainText>
               </ExplainContent>
-              <CheckBox />
+              <CheckBox name={"term"} required />
             </ExplainMeLikeIamFiveContainer>
           </ExplainContainer>
 
@@ -274,7 +305,7 @@ const UserFundraisePreview = () => {
                   contributions.
                 </ExplainText>
               </ExplainContent>
-              <CheckBox />
+              <CheckBox name={"term"} required />
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
               <ExplainContent>
@@ -285,7 +316,7 @@ const UserFundraisePreview = () => {
                   not are still liable according to its terms){" "}
                 </ExplainText>
               </ExplainContent>
-              <CheckBox />
+              <CheckBox name={"term"} required />
             </ExplainMeLikeIamFiveContainer>
           </ExplainContainer>
         </Section>
@@ -300,10 +331,7 @@ const UserFundraisePreview = () => {
             <SectionTitle>Full Legal Agreement</SectionTitle>
             {process.env.NODE_ENV === "development" && (
               <SecondaryAction
-                onClick={() => {
-                  setLoading(true);
-                  refreshPreview({ uuid: id }).then(() => setLoading(false));
-                }}
+                onClick={onRefresh}
                 label={"Refresh PDF Preview"}
                 height={"40px"}
               />
@@ -311,7 +339,7 @@ const UserFundraisePreview = () => {
           </Box>
           <SubSectionTitle></SubSectionTitle>
           <EversignEmbedContainer>
-            {loading ? (
+            {fetcher.state === "submitting" ? (
               <LoadingBox>
                 <LoadingIndicator />
               </LoadingBox>
@@ -326,6 +354,7 @@ const UserFundraisePreview = () => {
           </EversignEmbedContainer>
         </Section>
       </ContentContainer>
+      <ErrorSnackbar />
     </Container>
   );
 };

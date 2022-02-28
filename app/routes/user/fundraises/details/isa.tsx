@@ -15,6 +15,11 @@ import TextFieldBox from "~/_common/TextFieldBox";
 import TextFieldDescription from "~/_common/TextFieldDescription";
 import SubSectionTitle from "~/_common/SubSectionTitle";
 import TextInputMultiLine from "~/_common/TextInputMultiLine";
+import ErrorSnackbar from "~/_common/ErrorSnackbar";
+import { redirect, ActionFunction } from "remix";
+import { getAuth } from "@clerk/remix/ssr.server";
+import createFundraise from "~/data/createFundraise.server";
+import type { FundraiseId } from "../../../../../db/fundraise_types";
 
 const ISA_SUPPORT_TYPES = [
   {
@@ -347,8 +352,62 @@ const ISADetailForm = () => {
           <TextInputMultiLine name={"clauses"} />
         </TextInputContainer>
       </Section>
+      <ErrorSnackbar />
     </>
   );
+};
+
+export const action: ActionFunction = ({ request }) => {
+  return getAuth(request)
+    .then(async ({ userId }) => {
+      if (!userId) {
+        return new Response("No valid user found", { status: 401 });
+      }
+      const formData = await request.formData();
+      const data = Object.fromEntries(
+        Array.from(formData.keys()).map((k) => [
+          k,
+          formData.getAll(k).map((v) => v as string),
+        ])
+      );
+      if (!data.supportType[0]) throw new Error("`supportType` is required");
+      else if (!data.amount[0]) throw new Error("`amount` is required");
+      else if (Number(data.amount[0]) < 100)
+        throw new Error("`amount` must be at least $100");
+      else if (data.supportType[0] === "monthly" && !data.frequency[0])
+        throw new Error(
+          "`frequency` is required when `supportType` is monthly."
+        );
+      else if (
+        data.supportType[0] === "monthly" &&
+        Number(data.frequency[0]) < 12
+      )
+        throw new Error(
+          "`frequency` must be at least 12 months when `supportType` is monthly."
+        );
+      else if (!data.return[0]) throw new Error("`total` is required");
+      else if (Number(data.return[0]) < 100)
+        throw new Error("`return` must be at least 100% ot the amount raised.");
+      else if (!data.share[0]) throw new Error("`share` is required");
+      else if (Number(data.share[0]) < 1)
+        throw new Error("`share` must be at least 1%");
+      else if (Number(data.share[0]) > 100)
+        throw new Error("`share` must be at most 100%");
+      else if (!data.cap[0]) throw new Error("`cap` is required");
+      else if (Number(data.cap[0]) < 1)
+        throw new Error("`cap` must be at least 1 year");
+      return createFundraise({
+        userId,
+        data,
+        id: new URL(request.url).pathname
+          .split("/")
+          .slice(-1)[0] as FundraiseId,
+      }).then((uuid) => redirect(`/user/fundraises/preview/${uuid}`));
+    })
+    .catch((e) => {
+      console.error(e);
+      return { success: false, error: e.message };
+    });
 };
 
 export default ISADetailForm;
