@@ -1,8 +1,7 @@
-import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import { BadRequestError, NotFoundError } from "aws-sdk-plus/dist/errors";
-import { execute } from "../../app/data/mysql";
+import { execute } from "./mysql";
 
-const logic = ({
+const getAgreement = ({
   agreement,
   fundraise,
   userId,
@@ -74,5 +73,4 @@ const logic = ({
   });
 };
 
-export const handler = createAPIGatewayProxyHandler(logic);
-export type Handler = typeof logic;
+export default getAgreement;

@@ -1,17 +1,18 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import getMeta from "~/_common/getMeta";
-import useHandler from "@dvargas92495/ui/dist/useHandler";
 import PaymentPreference from "~/_common/PaymentPreferences";
-import type { Handler as PutHandler } from "../../../../functions/agreement/put";
-import type { Handler as GetHandler } from "../../../../functions/agreement/get";
+import getAgreement from "~/data/getAgreement.server";
 import {
+  ActionFunction,
   Form,
+  Link,
   LoaderFunction,
   MetaFunction,
+  redirect,
+  useActionData,
   useLoaderData,
-  useNavigate,
+  useTransition,
 } from "remix";
-import axios from "axios";
 import CheckBox from "@mui/material/Checkbox";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -31,16 +32,15 @@ import TextInputContainer from "~/_common/TextInputContainer";
 import TextInputOneLine from "~/_common/TextInputOneLine";
 import TextFieldBox from "~/_common/TextFieldBox";
 import TextFieldDescription from "~/_common/TextFieldDescription";
-import {
-  IconContent,
-  ProfileTitle,
-  TopBarProfile,
-} from "../$id";
+import { IconContent, ProfileTitle, TopBarProfile } from "../$id";
 import formatAmount from "../../../../db/util/formatAmount";
+import createAgreement from "~/data/createAgreement.server";
+import { getAuth } from "@clerk/remix/ssr.server";
+import ErrorSnackbar from "~/_common/ErrorSnackbar";
 
-type Data = Awaited<ReturnType<GetHandler>>;
+type Data = Awaited<ReturnType<typeof getAgreement>>;
 
-const ProfileBottomContainer = styled(Form)<{ paddingTop: string }>`
+const ProfileBottomContainer = styled.div<{ paddingTop: string }>`
   width: 800px;
   padding-top: ${(props) => props.paddingTop};
   height: fit-content;
@@ -138,55 +138,53 @@ const BottomBar = styled.div`
   grid-gap: 10px;
 `;
 
-const ErrorBox = styled.div`
-  background: ${(props) => props.theme.palette.warning.main};
-  border-radius: 8px;
-  width: fit-content;
-  padding: 5px 15px;
-  color: white;
-  height: 30px;
-  display: flex;
-  align-items: center;
-`;
-
-
 const TextfieldHorizontalBox = styled.div`
   justify-content: flex-start;
   grid-gap: 10px;
   display: flex;
   align-items: flex-end;
-`
+`;
 
 const InfoPillTitle = styled.div`
-display: flex;
-justify-content: center;
-align-items: center;
-font-weight: 600;
-font-size: 14px;
-white-space: nowrap;
-color: ${(props) => props.theme.palette.color.primary};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  color: ${(props) => props.theme.palette.color.primary};
 `;
 
 const InfoPillInfo = styled.div`
-display: flex;
-justify-content: center;
-align-items: center;
-font-size: 14px;
-font-weight: 700;
-color: ${(props) => props.theme.palette.color.purple};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: ${(props) => props.theme.palette.color.purple};
 `;
 
 const InfoPill = styled.div`
-display: flex;
-justify-content: center;
-align-items: center;
-background: ${(props) =>
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: ${(props) =>
     props.theme.palette.color.backgroundColorDarkerDarker};
-padding: 0px 20px;
-height: 40px;
-width: fit-content;
-border-radius: 50px;
-grid-gap: 5px;
+  padding: 0px 20px;
+  height: 40px;
+  width: fit-content;
+  border-radius: 50px;
+  grid-gap: 5px;
+`;
+
+const ProfileContainer = styled(Form)`
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  margin: auto;
+  background: ${(props) => props.theme.palette.color.backgroundColorDarker};
 `;
 
 const ContainerWithInfo = styled.div`
@@ -196,79 +194,41 @@ const ContainerWithInfo = styled.div`
   grid-gap: 20px;
 `;
 
+const InvestorPrimaryAction = () => {
+  const actionData = useActionData();
+  return (
+    <PrimaryAction
+      label={
+        <IconContent>
+          <Icon heightAndWidth={"20px"} name={"edit"} color={"white"} />
+          <span>{actionData?.error || "Read and Sign Term Sheet"}</span>
+        </IconContent>
+      }
+      type={"submit"}
+      height={"44px"}
+      fontSize={"16px"}
+    />
+  );
+};
+
 const EnterDetails = () => {
   const state = useLoaderData<Data>();
-  const navigate = useNavigate();
-  const [name, setName] = useState(state.name || "");
-  const [email, setEmail] = useState(state.email || "");
-  const [amount, setAmount] = useState(state.amount || "");
-  const [company, setCompany] = useState("");
-  const [companyType, setCompanyType] = useState("");
-  const [address, setAddress] = useState("");
-  const [paymentPreference] = useState({ type: "" });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const putHandler = useHandler<PutHandler>({
-    path: "agreement",
-    method: "PUT",
-  });
-  const onSign = useCallback(() => {
-    setLoading(true);
-    setError("");
-    putHandler({
-      name,
-      email,
-      amount: Number(amount),
-      uuid: state.uuid,
-      contractUuid: state.contractUuid || "",
-      investorAddress: address,
-      investorCompany: company,
-      investorCompanyType: companyType,
-    })
-      .then(({ uuid }) => navigate(`/contract?uuid=${uuid}&signer=1`))
-      .catch((e) => {
-        setError(e.message);
-        setLoading(false);
-      });
-  }, [
-    name,
-    email,
-    amount,
-    state,
-    setError,
-    setLoading,
-    address,
-    company,
-    companyType,
-    navigate,
-  ]);
+  const [amount, setAmount] = useState(state.amount);
+  const transition = useTransition();
+  console.log(transition);
 
   return (
-    <>
-      <BackButton onClick={() => navigate(`/creator/${state.userId}`)}>
-        <Icon heightAndWidth={"20px"} name={"backArrow"} />
-        Go Back
-      </BackButton>
+    <ProfileContainer method={"post"}>
+      <Link to={`/creator/${state.userId}`}>
+        <BackButton>
+          <Icon heightAndWidth={"20px"} name={"backArrow"} />
+          Go Back
+        </BackButton>
+      </Link>
       <TopBarProfile>
         <TermSheetTitleBox>
           <ProfileTitle>Summary {"&"} Your Details</ProfileTitle>
-          <PrimaryAction
-            label={
-              <IconContent>
-                <Icon
-                  heightAndWidth={"20px"}
-                  name={error ? "repeat" : "edit"}
-                  color={"white"}
-                />
-                <span>{error ? error : "Read and Sign Term Sheet"}</span>
-              </IconContent>
-            }
-            onClick={onSign}
-            height={"44px"}
-            fontSize={"16px"}
-            isLoading={loading}
-            bgColor={error && "warning"}
-          />
+          <InvestorPrimaryAction />
         </TermSheetTitleBox>
       </TopBarProfile>
       <ProfileBottomContainer paddingTop={"20px"}>
@@ -284,21 +244,26 @@ const EnterDetails = () => {
             <ExplainMeLikeIamFiveContainer>
               <ExplainBox>
                 <ExplainContent>
-                  <ExplainTitle>How much you back this project with</ExplainTitle>
+                  <ExplainTitle>
+                    How much you back this project with
+                  </ExplainTitle>
                   <ExplainText>
                     I agree to contribute{" "}
                     <b>
                       $
                       {formatAmount(
-                        Number(amount) / (Number(state.details.frequency) || 1)
+                        amount / Number(state.details.frequency || 1)
                       )}
                     </b>{" "}
-                    {state.details.supportType === 'monthly' && (
-                      <>paid out as a monthly stipend for{" "}
+                    {state.details.supportType === "monthly" && (
+                      <>
+                        paid out as a monthly stipend for{" "}
                         <b>
                           {state.details.frequency || 1} month
                           {state.details.frequency === "1" ? "" : "s"}
-                        </b></>)}
+                        </b>
+                      </>
+                    )}
                     .
                   </ExplainText>
                 </ExplainContent>
@@ -308,23 +273,32 @@ const EnterDetails = () => {
                   <TextInputContainer width={"350px"}>
                     {<InputMetrix>$</InputMetrix>}
                     <TextInputOneLine
-                      value={amount}
+                      defaultValue={amount}
                       onChange={(e) => setAmount(Number(e.target.value))}
                       type={"number"}
                       placeholder={"100"}
+                      name={"amount"}
+                      min={100}
+                      // TODO set max
                     />
                   </TextInputContainer>
                   <InfoPill>
                     <InfoPillTitle>what you'll make</InfoPillTitle>
                     <InfoPillInfo>
-                      ${formatAmount(Math.floor(Number(amount) * Number(state.details.return || 0) / 100))}
+                      $
+                      {formatAmount(
+                        Math.floor(
+                          (Number(amount) * Number(state.details.return || 0)) /
+                            100
+                        )
+                      )}
                     </InfoPillInfo>
                   </InfoPill>
                 </ContainerWithInfo>
               </TextFieldBox>
             </ExplainMeLikeIamFiveContainer>
 
-            {state.details.supportType === 'monthly' && (
+            {state.details.supportType === "monthly" && (
               <ExplainMeLikeIamFiveContainer>
                 <ExplainBox>
                   <ExplainContent>
@@ -338,7 +312,7 @@ const EnterDetails = () => {
                       payments and are not obliged to pay dividends on those.
                     </ExplainText>
                   </ExplainContent>
-                  <CheckBox />
+                  <CheckBox name={"term"} required />
                 </ExplainBox>
               </ExplainMeLikeIamFiveContainer>
             )}
@@ -352,20 +326,26 @@ const EnterDetails = () => {
                 <ExplainContent>
                   <ExplainTitle>How much they raise</ExplainTitle>
                   <ExplainText>
-                    They agree to request a total of <b>${formatAmount(
-                      Number(state.details.amount))}</b>{' '}from all their backers{' '}
-                    {state.details.supportType === 'monthly' ? (<>, paid out as a monthly
-                      stipend of $
-                      {formatAmount(
-                        Number(amount) / (Number(state.details.frequency) || 1)
-                      )}{" "}
-                      per month for {Number(state.details.frequency) || 1} months.
-                      {state.details.frequency === "1" ? "" : "s"}.</>) : (
+                    They agree to request a total of{" "}
+                    <b>${formatAmount(Number(state.details.amount))}</b> from
+                    all their backers{" "}
+                    {state.details.supportType === "monthly" ? (
+                      <>
+                        , paid out as a monthly stipend of $
+                        {formatAmount(
+                          Number(amount) /
+                            (Number(state.details.frequency) || 1)
+                        )}{" "}
+                        per month for {Number(state.details.frequency) || 1}{" "}
+                        months.
+                        {state.details.frequency === "1" ? "" : "s"}.
+                      </>
+                    ) : (
                       <>paid out as a one-time payment.</>
                     )}
                   </ExplainText>
                 </ExplainContent>
-                <CheckBox />
+                <CheckBox name={"term"} required />
               </ExplainBox>
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
@@ -374,22 +354,29 @@ const EnterDetails = () => {
                   <ExplainTitle>How much they pay back</ExplainTitle>
                   <ExplainText>
                     They agreed to pay back{" "}
-                    <b>{formatAmount(state.details.return)}%</b>, or a total of <b>$
+                    <b>{formatAmount(state.details.return)}%</b>, or a total of{" "}
+                    <b>
+                      $
                       {formatAmount(
                         (Number(state.details.amount) *
                           (Number(state.details.frequency) || 1) *
                           Number(state.details.return)) /
-                        100
-                      )}</b>{" "}
-                    to their backers. By contributing a total of <b>${amount ? Number(amount) : '_____'}</b>,
-                    you’ll receive a maximum amount of <b>$
+                          100
+                      )}
+                    </b>{" "}
+                    to their backers. By contributing a total of{" "}
+                    <b>${amount ? Number(amount) : "_____"}</b>, you’ll receive
+                    a maximum amount of{" "}
+                    <b>
+                      $
                       {formatAmount(
                         (Number(amount) * Number(state.details.return)) / 100
-                      )}</b>
+                      )}
+                    </b>
                     .
                   </ExplainText>
                 </ExplainContent>
-                <CheckBox />
+                <CheckBox name={"term"} required />
               </ExplainBox>
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
@@ -397,22 +384,35 @@ const EnterDetails = () => {
                 <ExplainContent>
                   <ExplainTitle>What they pay back</ExplainTitle>
                   <ExplainText>
-                    They agreed to take <b>{formatAmount(state.details.share)}%</b> of
-                    all their total revenue, including from pre-existing assets, once
-                    they hit <b>$
-                      {formatAmount(Math.floor(Number(state.details.threshold) / 12))} per
-                      month</b> or <b>${formatAmount(Number(state.details.threshold))}{" "}
-                      per year</b>. Your share of these <b>{state.details.share}%</b> is
+                    They agreed to take{" "}
+                    <b>{formatAmount(state.details.share)}%</b> of all their
+                    total revenue, including from pre-existing assets, once they
+                    hit{" "}
+                    <b>
+                      $
+                      {formatAmount(
+                        Math.floor(Number(state.details.threshold) / 12)
+                      )}{" "}
+                      per month
+                    </b>{" "}
+                    or{" "}
+                    <b>
+                      ${formatAmount(Number(state.details.threshold))} per year
+                    </b>
+                    . Your share of these <b>{state.details.share}%</b> is
                     proportional to the contributed amount:{" "}
-                    <b>{formatAmount(
-                      (Number(state.details.share) * Number(amount)) /
-                      (Number(state.details.amount) *
-                        (Number(state.details.frequency) || 1))
-                    )}
-                      %</b>.
+                    <b>
+                      {formatAmount(
+                        (Number(state.details.share) * Number(amount)) /
+                          (Number(state.details.amount) *
+                            (Number(state.details.frequency) || 1))
+                      )}
+                      %
+                    </b>
+                    .
                   </ExplainText>
                 </ExplainContent>
-                <CheckBox />
+                <CheckBox name={"term"} required />
               </ExplainBox>
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
@@ -420,13 +420,13 @@ const EnterDetails = () => {
                 <ExplainContent>
                   <ExplainTitle>How long they pay back</ExplainTitle>
                   <ExplainText>
-                    This agreement is valid for{" "}<b>
-                      {formatAmount(state.details.cap)} years</b>. Any amount that has
-                    not been paid back until then, does not have to be paid back
-                    anymore.
+                    This agreement is valid for{" "}
+                    <b>{formatAmount(state.details.cap)} years</b>. Any amount
+                    that has not been paid back until then, does not have to be
+                    paid back anymore.
                   </ExplainText>
                 </ExplainContent>
-                <CheckBox />
+                <CheckBox name={"term"} required />
               </ExplainBox>
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
@@ -434,11 +434,12 @@ const EnterDetails = () => {
                 <ExplainContent>
                   <ExplainTitle>How they inform</ExplainTitle>
                   <ExplainText>
-                    They agree to update their backers <b>on a monthly basis</b> about
-                    their income and to <b>provide their tax returns yearly</b>.
+                    They agree to update their backers <b>on a monthly basis</b>{" "}
+                    about their income and to{" "}
+                    <b>provide their tax returns yearly</b>.
                   </ExplainText>
                 </ExplainContent>
-                <CheckBox />
+                <CheckBox name={"term"} required />
               </ExplainBox>
             </ExplainMeLikeIamFiveContainer>
             <ExplainMeLikeIamFiveContainer>
@@ -446,11 +447,11 @@ const EnterDetails = () => {
                 <ExplainContent>
                   <ExplainTitle>When they pay back</ExplainTitle>
                   <ExplainText>
-                    They agree to start paying back my backers latest <b>3 months</b>{' '}
-                    after they hit their revenue treshold.
+                    They agree to start paying back my backers latest{" "}
+                    <b>3 months</b> after they hit their revenue treshold.
                   </ExplainText>
                 </ExplainContent>
-                <CheckBox />
+                <CheckBox name={"term"} required />
               </ExplainBox>
             </ExplainMeLikeIamFiveContainer>
           </ExplainContainer>
@@ -462,9 +463,9 @@ const EnterDetails = () => {
             <TextFieldDescription required>Your Name</TextFieldDescription>
             <TextInputContainer width={"350px"}>
               <TextInputOneLine
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                defaultValue={state.name}
                 required
+                name={"name"}
               />
             </TextInputContainer>
           </TextFieldBox>
@@ -472,9 +473,9 @@ const EnterDetails = () => {
             <TextFieldDescription required>Email Address</TextFieldDescription>
             <TextInputContainer width={"350px"}>
               <TextInputOneLine
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                defaultValue={state.email}
                 required
+                name={"email"}
               />
             </TextInputContainer>
           </TextFieldBox>
@@ -486,11 +487,7 @@ const EnterDetails = () => {
                 Street
               </TextFieldDescription>
               <TextInputContainer width={"270px"}>
-                <TextInputOneLine
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  required
-                />
+                <TextInputOneLine required name={"investorAddressStreet"} />
               </TextInputContainer>
             </TextFieldBox>
             <TextFieldBox>
@@ -498,11 +495,7 @@ const EnterDetails = () => {
                 No
               </TextFieldDescription>
               <TextInputContainer width={"80px"}>
-                <TextInputOneLine
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  required
-                />
+                <TextInputOneLine name={"investorAddressNumber"} required />
               </TextInputContainer>
             </TextFieldBox>
           </TextfieldHorizontalBox>
@@ -510,61 +503,27 @@ const EnterDetails = () => {
             <TextFieldBox>
               <TextFieldDescription $small>City</TextFieldDescription>
               <TextInputContainer width={"270px"}>
-                <TextInputOneLine
-                  value={companyType}
-                  onChange={(e) => setCompanyType(e.target.value)}
-                  required
-                />
+                <TextInputOneLine name={"investorAddressCity"} required />
               </TextInputContainer>
             </TextFieldBox>
             <TextFieldBox>
               <TextFieldDescription $small>ZIP</TextFieldDescription>
               <TextInputContainer width={"80px"}>
-                <TextInputOneLine
-                  value={companyType}
-                  onChange={(e) => setCompanyType(e.target.value)}
-                  required
-                />
+                <TextInputOneLine name={"investorAddressZip"} required />
               </TextInputContainer>
             </TextFieldBox>
           </TextfieldHorizontalBox>
           <TextFieldBox>
-            <TextFieldDescription>Address</TextFieldDescription>
-            <TextFieldDescription $small required>
-              Street
-            </TextFieldDescription>
-            <TextInputContainer width={"350px"}>
-              <TextInputOneLine
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-                required
-              />
-            </TextInputContainer>
-          </TextFieldBox>
-          <TextFieldBox>
-            <TextFieldDescription $small>City & ZIP</TextFieldDescription>
-            <TextInputContainer width={"350px"}>
-              <TextInputOneLine
-                value={companyType}
-                onChange={(e) => setCompanyType(e.target.value)}
-                required
-              />
-            </TextInputContainer>
-          </TextFieldBox>
-          <TextFieldBox>
             <TextFieldDescription $small required>
               Registered Country
             </TextFieldDescription>
-            <TextInputContainer
-              width={"350px"}
-            >
+            <TextInputContainer width={"350px"}>
               <Select
-                value={address}
                 maxRows={10}
                 MenuProps={{ sx: { maxHeight: 200 } }}
-                onChange={(e) => setAddress(e.target.value)}
                 fullWidth
                 required
+                name={"investorAddressCountry"}
               >
                 {CountryRegionData.map((c) => (
                   <MenuItem value={c.countryName} key={c.countryShortCode}>
@@ -576,37 +535,91 @@ const EnterDetails = () => {
           </TextFieldBox>
         </Section>
         <Section>
-          <PaymentPreference
-            defaultValue={paymentPreference}
-          />
+          <PaymentPreference />
         </Section>
         <BottomBar>
-          {error && <ErrorBox>{error}</ErrorBox>}
-          <PrimaryAction
-            label={
-              <IconContent>
-                <Icon heightAndWidth={"20px"} name={"edit"} color={"white"} />{" "}
-                <span>Read and Sign Term Sheet</span>
-              </IconContent>
-            }
-            onClick={onSign}
-            height={"44px"}
-            fontSize={"16px"}
-            isLoading={loading}
-          />
+          <InvestorPrimaryAction />
         </BottomBar>
       </ProfileBottomContainer>
-    </>
+      <ErrorSnackbar />
+    </ProfileContainer>
   );
 };
 
-export const loader: LoaderFunction = ({ params, request }) =>
-  axios
-    .get<Data>(
-      `${process.env.API_URL}/agreement${new URL(request.url).search}&userId=${params["id"]
-      }`
-    )
-    .then((r) => r.data);
+export const loader: LoaderFunction = ({ params, request }) => {
+  const searchParams = new URL(request.url).searchParams;
+  return getAgreement({
+    userId: params["id"] || "",
+    fundraise: searchParams.get("fundraise") || undefined,
+    agreement: searchParams.get("agreement") || undefined,
+  });
+};
+
+export const action: ActionFunction = ({ params, request }) => {
+  return getAuth(request)
+    .then(async ({ userId }) => {
+      if (!userId) {
+        return new Response("No valid user found", { status: 401 });
+      }
+      const formData = await request.formData();
+      const data = Object.fromEntries(
+        Array.from(formData.keys()).map((k) => [
+          k,
+          formData.getAll(k).map((v) => v as string),
+        ])
+      );
+      if (!data.name?.[0]) throw new Error("`name` is required");
+      else if (!data.email?.[0]) throw new Error("`email` is required");
+      else if (!data.amount?.[0]) throw new Error("`amount` is required");
+      else if (Number(data.amount[0]) < 100)
+        throw new Error("`amount` must be at least $100");
+      else if (!data.investorAddressStreet?.[0])
+        throw new Error("`investorAddressNumber` is required");
+      else if (!data.investorAddressNumber?.[0])
+        throw new Error("`investorAddressNumber` is required");
+      else if (!data.investorAddressCity?.[0])
+        throw new Error("`investorAddressCity` is required");
+      else if (!data.investorAddressZip?.[0])
+        throw new Error("`investorAddressZip` is required");
+      else if (!data.investorAddressCountry?.[0])
+        throw new Error("`investorAddressCountry` is required");
+      else if (!data.paymentPreferenceType?.[0])
+        throw new Error("`paymentPreferenceType` is required.");
+      const searchParams = new URL(request.url).searchParams;
+
+      return createAgreement({
+        name: data.name[0],
+        amount: Number(data.amount[0]),
+        email: data.email[0],
+        uuid: searchParams.get("agreement") || undefined,
+        contractUuid: searchParams.get("fundraise") || undefined,
+        userId: params.id ||'',
+        investorAddressStreet: data.investorAddressStreet[0],
+        investorAddressNumber: data.investorAddressNumber[0],
+        investorAddressCity: data.investorAddressCity[0],
+        investorAddressZip: data.investorAddressZip[0],
+        investorAddressCountry: data.investorAddressCountry[0],
+        paymentPreference: {
+          type: data.paymentPreferenceType[0],
+          ...Object.fromEntries(
+            Object.keys(data)
+              .filter((k) => k.startsWith("paymentPreference"))
+              .map((k) => {
+                const newKey = k.replace(/^paymentPreference/, "");
+                return [
+                  `${newKey.slice(0, 1).toLowerCase()}${newKey.slice(1)}`,
+                  data[k][0],
+                ];
+              })
+          ),
+        },
+      }).then(({ uuid }) => redirect(`/contract?uuid=${uuid}&signer=1`));
+    })
+    .catch((e) => {
+      console.error(e);
+      return { success: false, error: e.message };
+    });
+};
 
 export const meta: MetaFunction = (args) =>
   getMeta({

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useTransition } from "remix";
+import { useActionData, useTransition } from "remix";
 import styled from "styled-components";
 import { LoadingIndicator } from "./LoadingIndicator";
 
@@ -89,6 +89,7 @@ export const PrimaryAction = ({
   fontWeight?: string;
   type?: React.ButtonHTMLAttributes<HTMLButtonElement>["type"];
 }) => {
+  const actionData = useActionData();
   const transition = useTransition();
   const loading = useMemo(
     () => transition.state === "submitting",
@@ -102,7 +103,7 @@ export const PrimaryAction = ({
       onKeyPress={(e) => (e.key === "Enter" ? onClick?.(e) : false)}
       height={height}
       width={width}
-      bgColor={bgColor}
+      bgColor={!!actionData?.error ? "warning" : bgColor}
       type={type}
     >
       {loading || isLoading ? (

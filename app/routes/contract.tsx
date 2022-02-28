@@ -214,7 +214,7 @@ const ContractPage = (): React.ReactElement => {
         </Body>
         <Snackbar
           open={snackbarOpen}
-          autoHideDuration={5000}
+          autoHideDuration={10000}
           onClose={() => setSnackbarOpen(false)}
           color="success"
           anchorOrigin={{ vertical: "top", horizontal: "center" }}

@@ -246,6 +246,16 @@ const ProfileImageContainer = styled.div<{ scroll?: number }>`
 
 const SectionInnerContent = styled.div``;
 
+const ProfileContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  margin: auto;
+  background: ${(props) => props.theme.palette.color.backgroundColorDarker};
+`;
+
 const CreatorProfile = (): React.ReactElement => {
   const props = useLoaderData<Props>();
   const navigate = useNavigate();
@@ -261,7 +271,7 @@ const CreatorProfile = (): React.ReactElement => {
   const scrollPosition = useScroll();
 
   return (
-    <>
+    <ProfileContainer>
       <TopBarContainerMinified scroll={scrollPosition}>
         <TopBarMainBox scroll={scrollPosition}>
           <ProfileImageContainer scroll={scrollPosition}>
@@ -481,7 +491,7 @@ const CreatorProfile = (): React.ReactElement => {
           </Section>
         </ProfileBottomContainer>
       )}
-    </>
+    </ProfileContainer>
   );
 };
 

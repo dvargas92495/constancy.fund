@@ -254,8 +254,8 @@ const App = () => {
 };`,
           }}
         />
-        <Scripts />
         <ExternalScripts />
+        <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}
       </body>
     </html>

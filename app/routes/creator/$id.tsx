@@ -22,16 +22,6 @@ export const ProfileTitle = styled.div<{ scroll?: number }>`
   overflow: hidden;
 `;
 
-const ProfileContainer = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: column;
-  margin: auto;
-  background: ${(props) => props.theme.palette.color.backgroundColorDarker};
-`;
-
 const CreatorPublicContainer = styled.div`
   width: 100%;
 `;
@@ -46,9 +36,7 @@ export const IconContent = styled.div`
 const CreatorPage = (): React.ReactElement => {
   return (
     <CreatorPublicContainer>
-      <ProfileContainer>
-        <Outlet />
-      </ProfileContainer>
+      <Outlet />
     </CreatorPublicContainer>
   );
 };

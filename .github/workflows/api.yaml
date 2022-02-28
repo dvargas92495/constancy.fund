@@ -19,6 +19,7 @@ env:
   EVERSIGN_API_KEY: ${{ secrets.EVERSIGN_API_KEY }}
   FE_DIR_PREFIX: /tmp
   HOST: https://constancy.fund
+  IS_PRODUCTION: 1
   STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
 jobs:

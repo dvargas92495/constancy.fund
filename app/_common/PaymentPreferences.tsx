@@ -27,9 +27,9 @@ const paymentFieldsById = Object.fromEntries(
 export type PaymentPreferenceValue = { type: string; [f: string]: string };
 
 const PaymentPreferences = ({
-  defaultValue,
+  defaultValue = {type: ''},
 }: {
-  defaultValue: PaymentPreferenceValue;
+  defaultValue?: PaymentPreferenceValue;
 }) => {
   const [radioType, setRadioType] = useState(defaultValue.type);
   return (

@@ -107,7 +107,7 @@ export default {
     {
       method: "text",
       argument:
-        '"), and {investor_company}, a company registered and organized under the laws of {investor_location}, and its successors and assigns (the "',
+        '"), and {investor}, a company registered at {investor_location}, and its successors and assigns (the "',
       options: {
         continued: true,
       },
@@ -2270,7 +2270,7 @@ export default {
     {
       method: "text",
       argument:
-        "), by and among {full_name} and {investor_company}, a {investor_company_type} (the ",
+        "), by and among {full_name} and {investor} (the ",
       options: { continued: true },
     },
     {
