@@ -32,13 +32,6 @@ const ProfileContainer = styled.div`
   background: ${(props) => props.theme.palette.color.backgroundColorDarker};
 `;
 
-export const ProfileBottomContainer = styled.div<{ paddingTop: string }>`
-  width: 800px;
-  padding-top: ${(props) => props.paddingTop};
-  height: fit-content;
-  padding-bottom: 100px;
-`;
-
 const CreatorPublicContainer = styled.div`
   width: 100%;
 `;

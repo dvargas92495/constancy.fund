@@ -9,8 +9,6 @@ import {
   useNavigate,
   useParams,
 } from "remix";
-import type { Handler as GetPropsHandler } from "../../../../functions/creator-profile/get";
-import axios from "axios";
 
 import Icon from "~/_common/Icon";
 import styled, { keyframes, css } from "styled-components";
@@ -20,16 +18,12 @@ import Spacer from "~/_common/Spacer";
 
 import Section from "~/_common/Section";
 import SectionTitle from "~/_common/SectionTitle";
-import {
-  IconContent,
-  ProfileTitle,
-  ProfileBottomContainer,
-  TopBarProfile,
-} from "../$id";
+import { IconContent, ProfileTitle, TopBarProfile } from "../$id";
 import CompanyLogo from "~/_common/Images/memexlogo.png";
 import formatAmount from "../../../../db/util/formatAmount";
+import getPublicUserProfile from "~/data/getPublicUserProfile.server";
 
-type Props = Awaited<ReturnType<GetPropsHandler>>;
+type Props = Awaited<ReturnType<typeof getPublicUserProfile>>;
 
 function useScroll() {
   const [scrollPosition, setScrollPosition] = useState(
@@ -66,6 +60,13 @@ const icons = [
 ] as const;
 
 const TopBarMoving = keyframes`0% { top: '-100px' } 100% { top: '100px'}`;
+
+const ProfileBottomContainer = styled.div<{ paddingTop: string }>`
+  width: 800px;
+  padding-top: ${(props) => props.paddingTop};
+  height: fit-content;
+  padding-bottom: 100px;
+`;
 
 const TopBarContainerMinified = styled.div<{ scroll?: number }>`
   display: ${(props) => (props.scroll && props.scroll > 200 ? "flex" : "none")};
@@ -484,10 +485,8 @@ const CreatorProfile = (): React.ReactElement => {
   );
 };
 
-export const loader: LoaderFunction = ({ params }) => {
-  return axios
-    .get<Props>(`${process.env.API_URL}/creator-profile?id=${params["id"]}`)
-    .then((r) => r.data);
+export const loader = async ({ params }: Parameters<LoaderFunction>[0]) => {
+  return getPublicUserProfile(params.id || "");
 };
 
 export const meta: MetaFunction = (args) =>

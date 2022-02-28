@@ -5,6 +5,7 @@ import PaymentPreference from "~/_common/PaymentPreferences";
 import type { Handler as PutHandler } from "../../../../functions/agreement/put";
 import type { Handler as GetHandler } from "../../../../functions/agreement/get";
 import {
+  Form,
   LoaderFunction,
   MetaFunction,
   useLoaderData,
@@ -32,13 +33,19 @@ import TextFieldBox from "~/_common/TextFieldBox";
 import TextFieldDescription from "~/_common/TextFieldDescription";
 import {
   IconContent,
-  ProfileBottomContainer,
   ProfileTitle,
   TopBarProfile,
 } from "../$id";
 import formatAmount from "../../../../db/util/formatAmount";
 
 type Data = Awaited<ReturnType<GetHandler>>;
+
+const ProfileBottomContainer = styled(Form)<{ paddingTop: string }>`
+  width: 800px;
+  padding-top: ${(props) => props.paddingTop};
+  height: fit-content;
+  padding-bottom: 100px;
+`;
 
 const TermSheetTitleBox = styled.div`
   display: flex;
@@ -235,8 +242,6 @@ const EnterDetails = () => {
     companyType,
     navigate,
   ]);
-
-  console.log(state)
 
   return (
     <>
