@@ -11,7 +11,6 @@ import {
   redirect,
   useActionData,
   useLoaderData,
-  useTransition,
 } from "remix";
 import CheckBox from "@mui/material/Checkbox";
 import Select from "@mui/material/Select";
@@ -214,12 +213,10 @@ const InvestorPrimaryAction = () => {
 const EnterDetails = () => {
   const state = useLoaderData<Data>();
   const [amount, setAmount] = useState(state.amount);
-  const transition = useTransition();
-  console.log(transition);
 
   return (
     <ProfileContainer method={"post"}>
-      <Link to={`/creator/${state.userId}`}>
+      <Link to={`/creator/${state.user.id}`}>
         <BackButton>
           <Icon heightAndWidth={"20px"} name={"backArrow"} />
           Go Back
@@ -593,7 +590,7 @@ export const action: ActionFunction = ({ params, request }) => {
         email: data.email[0],
         uuid: searchParams.get("agreement") || undefined,
         contractUuid: searchParams.get("fundraise") || undefined,
-        userId: params.id ||'',
+        userId: params.id || "",
         investorAddressStreet: data.investorAddressStreet[0],
         investorAddressNumber: data.investorAddressNumber[0],
         investorAddressCity: data.investorAddressCity[0],

@@ -1,4 +1,5 @@
 import { BadRequestError, NotFoundError } from "aws-sdk-plus/dist/errors";
+import getUserProfile from "./getUserProfile.server";
 import { execute } from "./mysql";
 
 const getAgreement = ({
@@ -61,15 +62,15 @@ const getAgreement = ({
     const details: Record<string, string> = Object.fromEntries(
       fundraises.map((f) => [f.label, f.value])
     );
-    return {
+    return getUserProfile(fundraises[0].userId).then((user) => ({
       details,
-      userId: fundraises[0].userId,
+      user,
       name: fundraises[0].name || "",
       email: fundraises[0].email || "",
       amount: fundraises[0].amount || 0,
       uuid: fundraises[0].uuid || "",
       contractUuid: fundraises[0].contractUuid,
-    };
+    }));
   });
 };
 
