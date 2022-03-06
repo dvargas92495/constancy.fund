@@ -8,7 +8,7 @@ import {
   Outlet,
   Scripts,
   useCatch,
-  // ScrollRestoration,
+  ScrollRestoration,
   useLoaderData,
 } from "remix";
 import { ExternalScripts } from "remix-utils";
@@ -244,9 +244,7 @@ const App = () => {
             </MuiThemeProvider>
           </CacheProvider>
         </ThemeProvider>
-        {/* blocked on https://github.com/remix-run/remix/pull/936
         <ScrollRestoration />
-        */}
         <script
           dangerouslySetInnerHTML={{
             __html: `window.process = {
