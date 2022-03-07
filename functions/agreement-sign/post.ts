@@ -1,11 +1,11 @@
 import sendEmail from "aws-sdk-plus/dist/sendEmail";
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
-import { execute } from "../../app/data/mysql";
+import { execute } from "../../app/data/mysql.server";
 import { users } from "@clerk/clerk-sdk-node";
 import { render as renderInvestorSigned } from "../../app/emails/InvestorSigned";
 import { render as renderCreatorSigned } from "../../app/emails/CreatorSigned";
-import FUNDRAISE_TYPES from "../../db/fundraise_types";
-import eversign from "../_common/eversign";
+import FUNDRAISE_TYPES from "../../app/enums/fundraiseTypes";
+import eversign from "../../app/data/eversign.server";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 
 const logic = ({ agreementUuid }: { agreementUuid: string }) => {

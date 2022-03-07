@@ -19,7 +19,7 @@ import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import { redirect, ActionFunction } from "remix";
 import { getAuth } from "@clerk/remix/ssr.server";
 import createFundraise from "~/data/createFundraise.server";
-import type { FundraiseId } from "../../../../../db/fundraise_types";
+import type { FundraiseId } from "../../../../enums/fundraiseTypes";
 
 const ISA_SUPPORT_TYPES = [
   {

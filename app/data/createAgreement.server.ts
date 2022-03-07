@@ -1,11 +1,11 @@
-import { execute } from "../../app/data/mysql";
+import { execute } from "./mysql.server";
 import { users } from "@clerk/clerk-sdk-node";
 import {
   MethodNotAllowedError,
   InternalServorError,
   BadRequestError,
 } from "aws-sdk-plus/dist/errors";
-import FUNDRAISE_TYPES from "../../db/fundraise_types";
+import FUNDRAISE_TYPES from "../enums/fundraiseTypes";
 import { FE_PUBLIC_DIR } from "fuegojs/dist/common";
 import path from "path";
 import invokeDirect from "@dvargas92495/api/invokeDirect";

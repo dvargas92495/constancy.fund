@@ -1,7 +1,7 @@
-import { execute } from "./mysql";
-import { dbIdByTypeId } from "../../db/fundraise_types";
+import { execute } from "./mysql.server";
+import { dbIdByTypeId } from "../enums/fundraiseTypes";
 import { v4 } from "uuid";
-import type { FundraiseId } from "../../db/fundraise_types";
+import type { FundraiseId } from "../enums/fundraiseTypes";
 import invokeAsync from "@dvargas92495/api/invokeAsync";
 import type { Handler as AsyncHandler } from "../../functions/create-contract-pdf";
 

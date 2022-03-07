@@ -17,7 +17,8 @@
     "publish": "fuego publish",
     "precompile": "prisma generate",
     "start": "concurrently \"npm:api\" \"npm:dev\"",
-    "postinstall": "fuego postinstall \"@mui/material\" \"pdfjs-dist\""
+    "postinstall": "fuego postinstall \"@mui/material\" \"pdfjs-dist\"",
+    "staging": "mysqlsh --host vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com --port 5432 --database staging_constancy_fund --user staging_constancy_fund"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.85",

@@ -1,9 +1,9 @@
 import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
-import { execute } from "../../app/data/mysql";
+import { execute } from "../../app/data/mysql.server";
 import type { User } from "@clerk/clerk-sdk-node";
-import FUNDRAISE_TYPES from "../../db/fundraise_types";
+import FUNDRAISE_TYPES from "../../app/enums/fundraiseTypes";
 import { Client } from "@dvargas92495/eversign";
 const eversign = new Client(process.env.EVERSIGN_API_KEY || "", 398320);
 

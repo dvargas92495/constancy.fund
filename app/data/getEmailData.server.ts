@@ -1,6 +1,6 @@
 import { users } from "@clerk/clerk-sdk-node";
-import { execute } from "./mysql";
-import FUNDRAISE_TYPES from "../../db/fundraise_types";
+import { execute } from "./mysql.server";
+import FUNDRAISE_TYPES from "../enums/fundraiseTypes";
 
 const loader = () => {
   return Promise.all([

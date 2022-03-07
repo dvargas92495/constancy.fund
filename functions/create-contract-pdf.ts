@@ -1,5 +1,5 @@
-import FUNDRAISE_TYPES from "../db/fundraise_types";
-import { execute } from "../app/data/mysql";
+import FUNDRAISE_TYPES from "../app/enums/fundraiseTypes";
+import { execute } from "../app/data/mysql.server";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";

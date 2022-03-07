@@ -1,6 +1,6 @@
 import { BadRequestError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import getUserProfile from "./getUserProfile.server";
-import { execute } from "./mysql";
+import { execute } from "./mysql.server";
 
 const getAgreement = ({
   agreement,

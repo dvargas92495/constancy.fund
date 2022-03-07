@@ -1,4 +1,4 @@
-import { execute } from "./mysql";
+import { execute } from "./mysql.server";
 import getUserProfile from "./getUserProfile.server";
 
 const getPublicUserProfile = (id: string) => {

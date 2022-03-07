@@ -1,8 +1,8 @@
 import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
-import { execute } from "../../app/data/mysql";
+import { execute } from "../../app/data/mysql.server";
 import { users, User } from "@clerk/clerk-sdk-node";
-import FUNDRAISE_TYPES from "../../db/fundraise_types";
+import FUNDRAISE_TYPES from "../../app/enums/fundraiseTypes";
 
 const logic = ({ user: { id } }: { user: User }) => {
   return users.getUser(id || "").then((u) => {

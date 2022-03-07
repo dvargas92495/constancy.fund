@@ -5,7 +5,6 @@ import Body from "@dvargas92495/ui/dist/components/Body";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import React, { useEffect, useState } from "react";
-import type { Handler as GetHandler } from "../../functions/eversign/get";
 import type { Handler as PostHandler } from "../../functions/agreement-sign/post";
 import useHandler from "@dvargas92495/ui/dist/useHandler";
 import type { ExternalScriptsFunction } from "remix-utils";
@@ -15,7 +14,7 @@ import styled from "styled-components";
 import Section from "~/_common/Section";
 import { LoadingIndicator } from "~/_common/LoadingIndicator";
 import { LoaderFunction, useLoaderData, useParams } from "remix";
-import axios from "axios";
+import getContract from "../data/getContract.server";
 
 const ProfileContainer = styled.div`
   width: 100%;
@@ -154,7 +153,7 @@ const EversignEmbed = ({
   );
 };
 
-type Data = Awaited<ReturnType<GetHandler>>;
+type Data = Awaited<ReturnType<typeof getContract>>;
 
 const ContractPage = (): React.ReactElement => {
   const { contractUuid, userId, url, agreementUuid } = useLoaderData<Data>();
@@ -230,10 +229,8 @@ const ContractPage = (): React.ReactElement => {
   );
 };
 
-export const loader: LoaderFunction = ({ request }) =>
-  axios
-    .get<Data>(`${process.env.API_URL}/eversign${new URL(request.url).search}`)
-    .then((r) => r.data);
+export const loader: LoaderFunction = ({ params }) =>
+  getContract({ uuid: params.uuid || "", signer: params.signer || "" });
 
 export const meta = getMeta({
   title: "Contract",

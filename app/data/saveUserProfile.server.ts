@@ -1,68 +1,182 @@
 import { users } from "@clerk/clerk-sdk-node";
+import PAYMENT_PREFERENCES, { dbTypeById } from "~/enums/paymentPreferences";
+import { execute } from "./mysql.server";
+import getPaymentPreferences from "./getPaymentPreferences.server";
+import { v4 } from "uuid";
 
 const saveUserProfile = (userId: string, data: Record<string, string[]>) => {
-  if (!data.firstName[0]) {
+  if (!data.firstName?.[0]) {
     throw new Error("`firstName` is required.");
-  } else if (!data.lastName[0]) {
+  } else if (!data.lastName?.[0]) {
     throw new Error("`lastName` is required.");
-  } else if (!data.companyName[0]) {
+  } else if (!data.companyName?.[0]) {
     throw new Error("`companyName` is required.");
-  } else if (!data.contactEmail[0]) {
+  } else if (!data.contactEmail?.[0]) {
     throw new Error("`contactEmail` is required.");
-  } else if (!data.registeredCountry[0]) {
+  } else if (!data.registeredCountry?.[0]) {
     throw new Error("`registeredCountry` is required.");
-  } else if (!data.companyRegistrationNumber[0]) {
+  } else if (!data.companyRegistrationNumber?.[0]) {
     throw new Error("`companyRegistrationNumber` is required.");
-  } else if (!data.companyAddressStreet[0]) {
+  } else if (!data.companyAddressStreet?.[0]) {
     throw new Error("`companyAddressStreet` is required.");
-  } else if (!data.companyAddressCity[0]) {
+  } else if (!data.companyAddressCity?.[0]) {
     throw new Error("`companyAddressCity` is required.");
-  } else if (!data.companyAddressNumber[0]) {
+  } else if (!data.companyAddressNumber?.[0]) {
     throw new Error("`companyAddressNumber` is required.");
-  } else if (!data.companyAddressZip[0]) {
+  } else if (!data.companyAddressZip?.[0]) {
     throw new Error("`companyAddressZip` is required.");
-  } else if (!data.paymentPreferenceType[0]) {
-    throw new Error("`paymentPreferenceType` is required.");
   } else if (
-    !data.socialProfiles.every((sp) => !sp || sp.startsWith("https://"))
+    !(data.socialProfiles || []).every((sp) => !sp || sp.startsWith("https://"))
   ) {
     throw new Error("One of your social profiles have an invalid URL");
   }
-  return users.getUser(userId).then((user) =>
-    users.updateUser(userId, {
-      firstName: data.firstName[0],
-      lastName: data.lastName[0],
-      publicMetadata: {
-        ...user.publicMetadata,
-        companyName: data.companyName[0],
-        completed: true,
-        contactEmail: data.contactEmail[0],
-        questionaires: data.questionaires,
-        socialProfiles: data.socialProfiles,
-        attachDeck: data.attachDeck[0],
-        registeredCountry: data.registeredCountry[0],
-        companyRegistrationNumber: data.companyRegistrationNumber[0],
-        companyAddressStreet: data.companyAddressStreet[0],
-        companyAddressCity: data.companyAddressCity[0],
-        companyAddressNumber: data.companyAddressNumber[0],
-        companyAddressZip: data.companyAddressZip[0],
-        paymentPreference: {
-          type: data.paymentPreferenceType[0],
-          ...Object.fromEntries(
-            Object.keys(data)
-              .filter((k) => k.startsWith("paymentPreference"))
-              .map((k) => {
-                const newKey = k.replace(/^paymentPreference/, "");
-                return [
-                  `${newKey.slice(0, 1).toLowerCase()}${newKey.slice(1)}`,
-                  data[k][0],
-                ];
-              })
+  const paymentPreferences = PAYMENT_PREFERENCES.filter(
+    ({ id }) => data[`paymentPreference.${id}`]?.[0] === "on"
+  ).map(
+    ({ id, fields }) =>
+      [
+        id,
+        fields
+          .map((f) => f.replace(/\s/g, ""))
+          .map(
+            (field) =>
+              [field, data[`paymentPreference.${id}.${field}`]?.[0]] as const
           ),
-        },
-      },
-    })
+      ] as const
   );
+  if (!paymentPreferences.length) {
+    throw new Error("Must have at least one payment preference set");
+  } else if (
+    paymentPreferences.some(([, fields]) => fields.some(([, value]) => !value))
+  ) {
+    throw new Error(
+      "All sub fields of a selected payment preference are required"
+    );
+  }
+  return Promise.all([
+    users.getUser(userId),
+    getPaymentPreferences(userId),
+  ]).then(([user, oldPP]) => {
+    const updatedPP = Object.fromEntries(
+      paymentPreferences.map(([k, v]) => [k, Object.fromEntries(v)])
+    );
+    const paymentPreferencesToDelete = Object.keys(oldPP).filter(
+      (key) => !updatedPP[key]
+    );
+    const paymentPreferencesToInsert = Object.keys(updatedPP)
+      .filter((key) => !oldPP[key])
+      .map((key) => ({
+        type: dbTypeById[key].toString(),
+        uuid: v4(),
+        fields: updatedPP[key],
+      }));
+    const paymentPreferencesToUpdate = Object.keys(updatedPP)
+      .filter((key) => !!oldPP[key])
+      .map((key) => ({
+        type: dbTypeById[key].toString(),
+        fields: updatedPP[key],
+      }));
+    return Promise.all([
+      users.updateUser(userId, {
+        firstName: data.firstName[0],
+        lastName: data.lastName[0],
+        publicMetadata: {
+          ...user.publicMetadata,
+          companyName: data.companyName[0],
+          completed: true,
+          contactEmail: data.contactEmail[0],
+          questionaires: data.questionaires,
+          socialProfiles: data.socialProfiles,
+          attachDeck: data.attachDeck[0],
+          registeredCountry: data.registeredCountry[0],
+          companyRegistrationNumber: data.companyRegistrationNumber[0],
+          companyAddressStreet: data.companyAddressStreet[0],
+          companyAddressCity: data.companyAddressCity[0],
+          companyAddressNumber: data.companyAddressNumber[0],
+          companyAddressZip: data.companyAddressZip[0],
+        },
+      }),
+      ...(paymentPreferencesToDelete.length
+        ? [
+            execute(
+              `DELETE FROM paymentpreferencedetail d
+        INNER JOIN paymentpreference p ON p.uuid = d.paymentPreferenceUuid
+        WHERE p.type IN (${paymentPreferencesToDelete
+          .map(() => "?")
+          .join(",")}) AND p.userId = ?`,
+              paymentPreferencesToDelete
+                .map((key) => dbTypeById[key].toString())
+                .concat(userId)
+            ).then(() =>
+              execute(
+                `DELETE FROM paymentpreference 
+            WHERE p.type IN (${paymentPreferencesToDelete
+              .map(() => "?")
+              .join(",")}) AND p.userId = ?`,
+                paymentPreferencesToDelete
+                  .map((key) => dbTypeById[key].toString())
+                  .concat(userId)
+              )
+            ),
+          ]
+        : []),
+      ...(paymentPreferencesToInsert.length
+        ? [
+            execute(
+              `INSERT INTO paymentpreference (uuid, type, userId)
+              VALUES ${paymentPreferencesToInsert.map(() => `(?,?,?)`)}`,
+              paymentPreferencesToInsert.flatMap(({ type, uuid }) => [
+                uuid,
+                type,
+                userId,
+              ])
+            ).then(() =>
+              execute(
+                `INSERT INTO paymentpreferencedetail (uuid, label, value, paymentPreferenceUuid)
+                VALUES ${paymentPreferencesToInsert
+                  .flatMap(({ fields }) =>
+                    Object.keys(fields).map(() => `(UUID(),?,?,?)`)
+                  )
+                  .join(",")}`,
+                paymentPreferencesToInsert
+                  .flatMap(({ uuid, fields }) =>
+                    Object.entries(fields).map((e) => e.concat([uuid]))
+                  )
+                  .flat()
+              )
+            ),
+          ]
+        : []),
+      ...(paymentPreferencesToUpdate.length
+        ? [
+            execute(
+              `UPDATE paymentpreferencedetail d
+                    INNER JOIN paymentpreference p ON d.paymentPreferenceUuid = p.uuid
+                    SET value = (case ${paymentPreferencesToUpdate.flatMap(
+                      ({ fields }) =>
+                        Object.keys(fields).map(
+                          () => "WHEN d.label = ? AND p.type = ? THEN ?"
+                        )
+                    )} end)
+                    WHERE p.type IN (${paymentPreferencesToUpdate
+                      .map(() => "?")
+                      .join(",")}) AND p.userId = ?`,
+              paymentPreferencesToUpdate
+                .flatMap(({ fields, type }) =>
+                  Object.entries(fields).map(([label, value]) => [
+                    label,
+                    type,
+                    value,
+                  ])
+                )
+                .flat()
+                .concat(paymentPreferencesToUpdate.map((p) => p.type))
+                .concat([userId])
+            ),
+          ]
+        : []),
+    ]);
+  });
 };
 
 export default saveUserProfile;

@@ -46,6 +46,7 @@ model PaymentPreference {
   userId String
   type Int
   paymentPreferenceDetails PaymentPreferenceDetail[]
+  @@unique([userId, type])
 }
 
 model PaymentPreferenceDetail {
@@ -54,4 +55,5 @@ model PaymentPreferenceDetail {
   value String
   paymentPreferenceUuid String
   paymentPreference PaymentPreference @relation(fields: [paymentPreferenceUuid], references: [uuid])
+  @@unique([paymentPreferenceUuid, label])
 }

@@ -182,7 +182,7 @@ const UserProfile = () => {
     companyAddressNumber,
     companyAddressCity,
     companyAddressZip,
-    paymentPreference,
+    paymentPreferences,
   } = loaderData;
   const [isChanges, setIsChanges] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -319,7 +319,7 @@ const UserProfile = () => {
           <SectionCircle>
             <Icon name={"dollar"} heightAndWidth="24px" color="purple" />
           </SectionCircle>
-          <PaymentPreferences defaultValue={paymentPreference} />
+          <PaymentPreferences defaultValue={paymentPreferences} />
         </Section>
 
         <Section>
