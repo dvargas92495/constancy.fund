@@ -23,5 +23,5 @@ export const loader: LoaderFunction = ({ request }) => {
   });
 }
 
-export const Head = getMeta({ title: "Sign up" });
+export const meta = getMeta({ title: "Sign up" });
 export default Signup;

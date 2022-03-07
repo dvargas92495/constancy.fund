@@ -40,3 +40,18 @@ model EversignDocument {
   agreementUuid String
   agreement Agreement @relation(fields: [agreementUuid], references: [uuid])
 }
+
+model PaymentPreference {
+  uuid String @id @default(uuid())
+  userId String
+  type Int
+  paymentPreferenceDetails PaymentPreferenceDetail[]
+}
+
+model PaymentPreferenceDetail {
+  uuid String @id @default(uuid())
+  label String
+  value String
+  paymentPreferenceUuid String
+  paymentPreference PaymentPreference @relation(fields: [paymentPreferenceUuid], references: [uuid])
+}

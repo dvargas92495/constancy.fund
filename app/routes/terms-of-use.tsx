@@ -6,6 +6,5 @@ const TermsOfUsePage: React.FC = () => (
   <TermsOfUse name={"constancy-fund"} domain={"constancy.fund"} />
 );
 
-export const Head = getMeta({ title: "Terms of Use" });
-
+export const meta = getMeta({ title: "Terms of Use" });
 export default TermsOfUsePage;
