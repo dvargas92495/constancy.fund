@@ -12,9 +12,44 @@ import invokeDirect from "@dvargas92495/api/invokeDirect";
 import type { Handler as ContractHandler } from "../../functions/create-contract-pdf";
 import { Client, Document, File, Signer } from "@dvargas92495/eversign";
 import { v4 } from "uuid";
-import type { PaymentPreferenceValue } from "~/_common/PaymentPreferences";
+import { Id, dbTypeById } from "~/enums/paymentPreferences";
 
 const eversign = new Client(process.env.EVERSIGN_API_KEY || "", 398320);
+
+const createPaymentPreferences = ({
+  userId,
+  paymentPreferences,
+}: {
+  userId: string;
+  paymentPreferences: (readonly [Id, (readonly [string, string])[]])[];
+}) => {
+  const paymentPreferenceRecords = paymentPreferences.map(
+    ([type, fields]) => ({
+      uuid: v4(),
+      type: dbTypeById[type],
+      fields: fields.map(([label, value]) => ({
+        label,
+        value,
+        uuid: v4(),
+      })),
+    })
+  );
+  return execute(
+    `INSERT INTO paymentpreference (uuid, type, userId) VALUES ${paymentPreferenceRecords
+      .map(() => "(?,?,?)")
+      .join(",")}`,
+    paymentPreferenceRecords.map((r) => [r.uuid, r.type, userId]).flat()
+  ).then(() =>
+    execute(
+      `INSERT INTO paymentpreference (uuid, label, value, paymentPreferenceUuid) VALUES ${paymentPreferenceRecords
+        .map(() => "(?,?,?,?)")
+        .join(",")}`,
+      paymentPreferenceRecords
+        .flatMap((r) => r.fields.map((f) => [f.uuid, f.label, f.value, r.uuid]))
+        .flat()
+    )
+  );
+};
 
 const createAgreement = ({
   uuid,
@@ -28,6 +63,7 @@ const createAgreement = ({
   investorAddressCity,
   investorAddressZip,
   investorAddressCountry,
+  paymentPreferences,
 }: {
   name: string;
   amount: number;
@@ -40,17 +76,18 @@ const createAgreement = ({
   investorAddressCity: string;
   investorAddressZip: string;
   investorAddressCountry: string;
-  paymentPreference: PaymentPreferenceValue;
+  paymentPreferences: (readonly [Id, (readonly [string, string])[]])[];
 }) => {
   return (
     uuid
       ? execute(
-          `UPDATE agreement 
-           SET name=?, email=?, amount=?
-           WHERE uuid=?`,
+          `UPDATE investor i
+           INNER JOIN agreement a ON a.investorUuid = i.uuid 
+           SET i.name=?, i.email=?, a.amount=?
+           WHERE a.uuid=?`,
           [name, email, amount, uuid]
         ).then(() => uuid)
-      : Promise.resolve(v4()).then((u) =>
+      : Promise.resolve(v4()).then((agreementUuid) =>
           (contractUuid
             ? Promise.resolve(contractUuid)
             : execute(
@@ -59,13 +96,27 @@ const createAgreement = ({
                 WHERE c.userId = ?`,
                 [userId]
               ).then((res) => (res as { uuid: string }[])[0]?.uuid)
-          ).then((contractUuid) =>
-            execute(
-              `INSERT INTO agreement (uuid, name, email, amount, contractUuid, stage)
+          ).then((contractUuid) => {
+            const investorUuid = v4();
+            return execute(
+              `INSERT INTO investor (uuid, name, email) VALUES (?, ?, ?)`,
+              [investorUuid, name, email]
+            )
+              .then(() =>
+                Promise.all([
+                  execute(
+                    `INSERT INTO agreement (uuid, amount, contractUuid, investorUuid)
            VALUES (?, ?, ?, ?, ?, 0)`,
-              [u, name, email, amount, contractUuid]
-            ).then(() => u)
-          )
+                    [agreementUuid, amount, contractUuid, investorUuid]
+                  ),
+                  createPaymentPreferences({
+                    paymentPreferences,
+                    userId: investorUuid,
+                  }),
+                ])
+              )
+              .then(() => agreementUuid);
+          })
         )
   )
     .then((agreementUuid) => {

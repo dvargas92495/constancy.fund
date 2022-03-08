@@ -5,7 +5,6 @@ import getEmailData from "../data/getEmailData.server";
 import TextFieldDescription from "../_common/TextFieldDescription";
 import TextFieldBox from "../_common/TextFieldBox";
 import TextInputContainer from "../_common/TextInputContainer";
-import TextInputOneLine from "../_common/TextInputOneLine";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 
@@ -30,7 +29,6 @@ const EmailsRoute = () => {
   const data = useLoaderData<
     { development: boolean } & Awaited<ReturnType<typeof getEmailData>>
   >();
-  const [investorName, setInvestorName] = useState("");
   const [user, setUser] = useState(0);
   const [agreement, setAgreement] = useState(0);
   const isRoot = useMatches().slice(-1)[0].id === "routes/emails/index";
@@ -52,15 +50,6 @@ const EmailsRoute = () => {
         {!isRoot && (
           <div>
             <h1>Config</h1>
-            <TextFieldBox>
-              <TextFieldDescription>Investor Name</TextFieldDescription>
-              <TextInputContainer width={"350px"}>
-                <TextInputOneLine
-                  value={investorName}
-                  onChange={(e) => setInvestorName(e.target.value)}
-                />
-              </TextInputContainer>
-            </TextFieldBox>
             <TextFieldBox>
               <TextFieldDescription>Creator</TextFieldDescription>
               <TextInputContainer width={"350px"}>
@@ -108,7 +97,7 @@ const EmailsRoute = () => {
           <PreviewBoundary>
             <Outlet
               context={{
-                investorName: investorName,
+                investorName: data.ids[agreement].investor.name,
                 creatorId: data.users[user].id,
                 creatorName: data.users[user].name,
                 creatorPaymentPreferences: data.users[user].paymentPreferences,

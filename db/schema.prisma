@@ -26,12 +26,11 @@ model ContractDetail {
 
 model Agreement {
   uuid String @id @default(uuid())
-  name String
-  email String
   amount Int
   contractUuid String
-  investorUuid String? @default(uuid())
   contract Contract @relation(fields: [contractUuid], references: [uuid])
+  investorUuid String @default(uuid())
+  investor Investor @relation(fields: [investorUuid], references: [uuid])
   eversign EversignDocument?
 }
 
@@ -62,4 +61,5 @@ model Investor {
   uuid String @id @default(uuid())
   name String
   email String
+  agreements Agreement[]
 }

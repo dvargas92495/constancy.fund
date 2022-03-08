@@ -36,6 +36,7 @@ import formatAmount from "../../../../db/util/formatAmount";
 import createAgreement from "~/data/createAgreement.server";
 import { getAuth } from "@clerk/remix/ssr.server";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
+import validatePaymentPreferences from "~/data/validatePaymentPreferences";
 
 type Data = Awaited<ReturnType<typeof getAgreement>>;
 
@@ -580,8 +581,8 @@ export const action: ActionFunction = ({ params, request }) => {
         throw new Error("`investorAddressZip` is required");
       else if (!data.investorAddressCountry?.[0])
         throw new Error("`investorAddressCountry` is required");
-      else if (!data.paymentPreferenceType?.[0])
-        throw new Error("`paymentPreferenceType` is required.");
+
+      const paymentPreferences = validatePaymentPreferences(data);
       const searchParams = new URL(request.url).searchParams;
 
       return createAgreement({
@@ -596,20 +597,7 @@ export const action: ActionFunction = ({ params, request }) => {
         investorAddressCity: data.investorAddressCity[0],
         investorAddressZip: data.investorAddressZip[0],
         investorAddressCountry: data.investorAddressCountry[0],
-        paymentPreference: {
-          type: data.paymentPreferenceType[0],
-          ...Object.fromEntries(
-            Object.keys(data)
-              .filter((k) => k.startsWith("paymentPreference"))
-              .map((k) => {
-                const newKey = k.replace(/^paymentPreference/, "");
-                return [
-                  `${newKey.slice(0, 1).toLowerCase()}${newKey.slice(1)}`,
-                  data[k][0],
-                ];
-              })
-          ),
-        },
+        paymentPreferences,
       }).then(({ uuid }) => redirect(`/contract?uuid=${uuid}&signer=1`));
     })
     .catch((e) => {

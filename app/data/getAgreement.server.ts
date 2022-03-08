@@ -14,8 +14,9 @@ const getAgreement = ({
   return (
     agreement
       ? execute(
-          `SELECT a.name, a.email, a.amount, a.uuid, cd.label, cd.value, c.userId, c.uuid as contractUuid
+          `SELECT i.name, i.email, a.amount, a.uuid, cd.label, cd.value, c.userId, c.uuid as contractUuid
      FROM agreement a
+     INNER JOIN investor i ON a.investorUuid = i.uuid
      INNER JOIN contract c ON a.contractUuid = c.uuid
      INNER JOIN contractdetail cd ON cd.contractUuid = c.uuid
      WHERE a.uuid = ?`,

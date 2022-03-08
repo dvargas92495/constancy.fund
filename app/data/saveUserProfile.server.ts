@@ -1,5 +1,6 @@
 import { users } from "@clerk/clerk-sdk-node";
-import PAYMENT_PREFERENCES, { dbTypeById } from "~/enums/paymentPreferences";
+import { dbTypeById } from "~/enums/paymentPreferences";
+import validatePaymentPreferences from "~/data/validatePaymentPreferences";
 import { execute } from "./mysql.server";
 import getPaymentPreferences from "./getPaymentPreferences.server";
 import { v4 } from "uuid";
@@ -30,29 +31,7 @@ const saveUserProfile = (userId: string, data: Record<string, string[]>) => {
   ) {
     throw new Error("One of your social profiles have an invalid URL");
   }
-  const paymentPreferences = PAYMENT_PREFERENCES.filter(
-    ({ id }) => data[`paymentPreference.${id}`]?.[0] === "on"
-  ).map(
-    ({ id, fields }) =>
-      [
-        id,
-        fields
-          .map((f) => f.replace(/\s/g, ""))
-          .map(
-            (field) =>
-              [field, data[`paymentPreference.${id}.${field}`]?.[0]] as const
-          ),
-      ] as const
-  );
-  if (!paymentPreferences.length) {
-    throw new Error("Must have at least one payment preference set");
-  } else if (
-    paymentPreferences.some(([, fields]) => fields.some(([, value]) => !value))
-  ) {
-    throw new Error(
-      "All sub fields of a selected payment preference are required"
-    );
-  }
+  const paymentPreferences = validatePaymentPreferences(data);
   return Promise.all([
     users.getUser(userId),
     getPaymentPreferences(userId),

@@ -2,11 +2,12 @@ import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
 import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import type { User } from "@clerk/clerk-sdk-node";
-import prisma from "../_common/prisma";
+import { execute } from "./mysql.server";
 import sendEmail from "aws-sdk-plus/dist/sendEmail";
-import { render } from "../../app/emails/InvitationToFund";
+import { render } from "../emails/InvitationToFund";
+import { v4 } from "uuid";
 
-const logic = ({
+const inviteInvestor = ({
   user,
   uuid,
   name,
@@ -19,26 +20,28 @@ const logic = ({
   email: string;
   amount: number;
 }) => {
-  return prisma.contract
-    .findFirst({ where: { uuid } })
-    .then((fundraise) => {
+  return execute(`SELECT c.userId FROM contract c WHERE c.uuid = ?`, [uuid])
+    .then((results) => {
+      const [fundraise] = results as { userId: string }[];
       if (!fundraise)
         throw new NotFoundError(`Could not find contract with id ${uuid}`);
       if (user.id !== fundraise.userId)
         throw new MethodNotAllowedError(
           `Could not find contract with id ${uuid}`
         );
-      return prisma.agreement.create({
-        data: {
-          name,
-          email,
-          amount,
-          contractUuid: uuid,
-          stage: 0,
-        },
+      const investorUuid = v4();
+      return execute(
+        `INSERT INTO investor (uuid, name, email) VALUES (?, ?, ?)`,
+        [investorUuid, name, email]
+      ).then(() => {
+        const agreementUuid = v4();
+        return execute(
+          `INSERT INTO agreement (uuid, amount, contractUuid, investorUuid) VALUES (?, ?, ?, ?)`,
+          [agreementUuid, amount, uuid, investorUuid]
+        ).then(() => agreementUuid);
       });
     })
-    .then((agreement) =>
+    .then((agreementUuid) =>
       sendEmail({
         to: email,
         replyTo:
@@ -49,13 +52,10 @@ const logic = ({
           investorName: name,
           creatorName: `${user.firstName} ${user.lastName}`,
           creatorId: user.id || "",
-          agreementUuid: agreement.uuid,
+          agreementUuid,
         }),
-      }).then(() => ({ uuid: agreement.uuid }))
+      }).then(() => ({ uuid: agreementUuid }))
     );
 };
 
-export const handler = clerkAuthenticateLambda(
-  createAPIGatewayProxyHandler(logic)
-);
-export type Handler = typeof logic;
+export default inviteInvestor;
