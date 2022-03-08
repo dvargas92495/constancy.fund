@@ -135,12 +135,12 @@ const saveUserProfile = (userId: string, data: Record<string, string[]>) => {
                 `INSERT INTO paymentpreferencedetail (uuid, label, value, paymentPreferenceUuid)
                 VALUES ${paymentPreferencesToInsert
                   .flatMap(({ fields }) =>
-                    Object.keys(fields).map(() => `(UUID(),?,?,?)`)
+                    Object.keys(fields).map(() => `(?,?,?,?)`)
                   )
                   .join(",")}`,
                 paymentPreferencesToInsert
                   .flatMap(({ uuid, fields }) =>
-                    Object.entries(fields).map((e) => e.concat([uuid]))
+                    Object.entries(fields).map(([label, value]) => [v4(), label, value, uuid])
                   )
                   .flat()
               )

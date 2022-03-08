@@ -30,6 +30,7 @@ model Agreement {
   email String
   amount Int
   contractUuid String
+  investorUuid String? @default(uuid())
   contract Contract @relation(fields: [contractUuid], references: [uuid])
   eversign EversignDocument?
 }
