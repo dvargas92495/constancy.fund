@@ -111,7 +111,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   return (
     <>
-      <LogoContainer src={"/images/constancy-logo.svg"} />
+      <LogoContainer src={"/svgs/constancy-logo.svg"} />
       <MainContentContainer>
         <IntroBox>
           <BigTitle>

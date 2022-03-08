@@ -10,6 +10,7 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import InfoIcon from "@mui/icons-material/Info";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import MoneyIcon from "@mui/icons-material/Money";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import NoteIcon from "@mui/icons-material/Note";
 import PreviewIcon from "@mui/icons-material/Preview";
@@ -57,6 +58,7 @@ const Icon = ({
     | "Instagram"
     | "linkedIn"
     | "mail"
+    | "money"
     | "more-vert"
     | "note"
     | "personFine"
@@ -116,6 +118,8 @@ const Icon = ({
       return <LinkedInIcon {...muiProps} />;
     case "mail":
       return <StyledIcon {...props} icon={MailSvg} />;
+    case "money":
+      return <MoneyIcon {...muiProps} />;
     case "more-vert":
       return <MoreVertIcon {...muiProps} />;
     case "note":

@@ -22,6 +22,7 @@ import { IconContent, ProfileTitle, TopBarProfile } from "../$id";
 import CompanyLogo from "~/_common/Images/memexlogo.png";
 import formatAmount from "../../../../db/util/formatAmount";
 import getPublicUserProfile from "~/data/getPublicUserProfile.server";
+import { Id as PaymentPreferenceId } from "~/enums/paymentPreferences";
 
 type Props = Awaited<ReturnType<typeof getPublicUserProfile>>;
 
@@ -124,6 +125,11 @@ const ProfileLowerBar = styled.div<{ scroll?: number }>`
 `;
 
 const ProfileSocialBar = styled.div<{ scroll?: number }>`
+  display: flex;
+  grid-gap: 20px;
+`;
+
+const ProfilePaymentPreferenceBar = styled.div<{ scroll?: number }>`
   display: flex;
   grid-gap: 20px;
 `;
@@ -256,6 +262,17 @@ const ProfileContainer = styled.div`
   background: ${(props) => props.theme.palette.color.backgroundColorDarker};
 `;
 
+const paymentIconsById: Record<
+  PaymentPreferenceId,
+  string | number | React.ReactElement
+> = {
+  paypal: <img height={24} src={`/svgs/payment-options/paypal.svg`} />,
+  bank: <Icon name={"money"} height={24} />,
+  ethereum: <img height={24} src={`/svgs/payment-options/ethereum.svg`} />,
+  bitcoin: <img height={24} src={`/svgs/payment-options/bitcoin.svg`} />,
+  near: <img height={24} src={`/svgs/payment-options/near.svg`} />,
+};
+
 const CreatorProfile = (): React.ReactElement => {
   const props = useLoaderData<Props>();
   const navigate = useNavigate();
@@ -265,6 +282,7 @@ const CreatorProfile = (): React.ReactElement => {
     socialProfiles = [],
     questionaires = [],
     fundraises = [],
+    paymentPreferences = [],
   } = props;
   const agreementUuid = useParams()["agreement"];
 
@@ -300,6 +318,9 @@ const CreatorProfile = (): React.ReactElement => {
                   );
                 })}
               </ProfileSocialBar>
+              <ProfilePaymentPreferenceBar scroll={scrollPosition}>
+                {paymentPreferences.map((s) => paymentIconsById[s])}
+              </ProfilePaymentPreferenceBar>
               <PrimaryAction
                 label={
                   <IconContent>
@@ -356,6 +377,9 @@ const CreatorProfile = (): React.ReactElement => {
                   );
                 })}
               </ProfileSocialBar>
+              <ProfilePaymentPreferenceBar scroll={scrollPosition}>
+                {paymentPreferences.map((s) => paymentIconsById[s])}
+              </ProfilePaymentPreferenceBar>
               <PrimaryAction
                 label={
                   <IconContent>
@@ -462,7 +486,10 @@ const CreatorProfile = (): React.ReactElement => {
             </ContractExplainerTitle>
             <ContractExplainerInfo>
               The creator will start paying back a loan with interests once they
-              reach their income threshold of $30.000 yearly. Then, 12% of their
+              reach their income threshold of $
+              {formatAmount(Number(fundraises[0].details.threshold || 0))}{" "}
+              yearly. Then,{" "}
+              {formatAmount(Number(fundraises[0].details.share || 0))}% of their
               income is used to pay back investors.
             </ContractExplainerInfo>
           </ContractExplainerContainer>

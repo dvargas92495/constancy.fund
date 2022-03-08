@@ -111,6 +111,7 @@ const EmailsRoute = () => {
                 investorName: investorName,
                 creatorId: data.users[user].id,
                 creatorName: data.users[user].name,
+                creatorPaymentPreferences: data.users[user].paymentPreferences,
                 agreementUuid: data.ids[agreement].uuid,
                 contractType: data.ids[agreement].type,
               }}

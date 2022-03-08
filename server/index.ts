@@ -7,7 +7,7 @@ export const handler = createRequestHandler({
     "favicon.ico",
     /^\/build\/.*/,
     /^\/images\/.*/,
-    /^\/payment-options\/.*/,
+    /^\/svgs\/.*/,
     /^\/_contracts\/.*/,
   ],
   onError: (e) => console.log("Send email to me", e),

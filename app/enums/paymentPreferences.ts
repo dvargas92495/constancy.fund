@@ -7,6 +7,9 @@ const PAYMENT_PREFERENCES = [
     id: "bank",
     fields: ["Routing Number", "Account Number"],
   },
+  { id: "ethereum", fields: ["Address"] },
+  { id: "bitcoin", fields: ["Address"] },
+  { id: "near", fields: ["Address"] },
 ] as const;
 
 export const dbTypeById = Object.fromEntries(

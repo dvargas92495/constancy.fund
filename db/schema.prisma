@@ -30,7 +30,6 @@ model Agreement {
   email String
   amount Int
   contractUuid String
-  stage Int
   contract Contract @relation(fields: [contractUuid], references: [uuid])
   eversign EversignDocument?
 }
@@ -56,4 +55,10 @@ model PaymentPreferenceDetail {
   paymentPreferenceUuid String
   paymentPreference PaymentPreference @relation(fields: [paymentPreferenceUuid], references: [uuid])
   @@unique([paymentPreferenceUuid, label])
+}
+
+model Investor {
+  uuid String @id @default(uuid())
+  name String
+  email String
 }

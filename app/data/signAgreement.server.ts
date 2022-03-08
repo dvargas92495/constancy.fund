@@ -7,6 +7,7 @@ import { render as renderCreatorSigned } from "../../app/emails/CreatorSigned";
 import FUNDRAISE_TYPES from "../../app/enums/fundraiseTypes";
 import eversign from "../../app/data/eversign.server";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
+import getPaymentPreferences from "../../app/data/getPaymentPreferences.server";
 
 const logic = ({ agreementUuid }: { agreementUuid: string }) => {
   return execute(
@@ -44,7 +45,8 @@ const logic = ({ agreementUuid }: { agreementUuid: string }) => {
           userName: `${u.firstName} ${u.lastName}`,
           documentId: doc.id,
           contractType: FUNDRAISE_TYPES[doc.type || 0].name,
-        })),
+          id: u.id,
+        }))
       ]);
     })
     .then(([numSigners, r]) => {
@@ -61,7 +63,7 @@ const logic = ({ agreementUuid }: { agreementUuid: string }) => {
           }),
         });
       } else if (numSigners === 2) {
-        return sendEmail({
+        return getPaymentPreferences(r.id).then((creatorPaymentPreferences) => sendEmail({
           to: r.investorEmail,
           replyTo: r.userEmail,
           subject: `${r.userName} has signed the agreement!`,
@@ -69,8 +71,9 @@ const logic = ({ agreementUuid }: { agreementUuid: string }) => {
             investorName: r.investorName,
             creatorName: r.userName,
             contractType: r.contractType,
+            creatorPaymentPreferences,
           }),
-        });
+        }));
       } else {
         throw new MethodNotAllowedError(`No one has actually signed`);
       }

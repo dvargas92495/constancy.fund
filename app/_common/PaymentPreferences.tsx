@@ -8,18 +8,11 @@ import SectionTitle from "./SectionTitle";
 import TextFieldBox from "./TextFieldBox";
 import InfoText from "./InfoText";
 import PAYMENT_PREFERENCES, { Id } from "../enums/paymentPreferences";
+import paymentLabelsById from "../_common/PaymentLabelsById";
 
 const paymentFieldsById = Object.fromEntries(
   PAYMENT_PREFERENCES.map(({ id, fields }) => [id, fields])
 );
-
-const paymentLabelsById: Record<
-  typeof PAYMENT_PREFERENCES[number]["id"],
-  string | number | React.ReactElement
-> = {
-  paypal: <img src={"/payment-options/PayPalLabel.png"} />,
-  bank: "Bank Transfer",
-};
 
 const PaymentPreference = ({
   id,

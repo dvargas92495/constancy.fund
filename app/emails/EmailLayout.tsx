@@ -18,7 +18,7 @@ const EmailLayout: React.FC = ({ children }) => (
         textAlign: "center",
       }}
     >
-      <img height={40} src={`${process.env.HOST}/images/constancy-logo.svg`}></img>
+      <img height={40} src={`${process.env.HOST}/svgs/constancy-logo.svg`}></img>
     </div>
     <div
       style={{
