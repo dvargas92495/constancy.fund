@@ -11,8 +11,9 @@ import getPaymentPreferences from "../../app/data/getPaymentPreferences.server";
 
 const logic = ({ agreementUuid }: { agreementUuid: string }) => {
   return execute(
-    `SELECT e.id, a.name, a.email, c.userId, c.type
+    `SELECT e.id, i.uuid, i.name, i.email, c.userId, c.type
      FROM agreement a
+     INNER JOIN investor i ON i.uuid = a.investorUuid
      INNER JOIN eversigndocument e ON a.uuid = e.agreementUuid
      INNER JOIN contract c ON c.uuid = a.contractUuid
      WHERE a.uuid = ?`,
@@ -21,6 +22,7 @@ const logic = ({ agreementUuid }: { agreementUuid: string }) => {
     .then((results) => {
       const [doc] = results as {
         id: string;
+        uuid: string;
         name: string;
         email: string;
         userId: string;
@@ -39,6 +41,7 @@ const logic = ({ agreementUuid }: { agreementUuid: string }) => {
         users.getUser(doc.userId).then((u) => ({
           investorEmail: doc.email,
           investorName: doc.name,
+          investorUuid: doc.uuid,
           userEmail:
             u.emailAddresses.find((e) => e.id === u.primaryEmailAddressId)
               ?.emailAddress || "",
@@ -46,34 +49,40 @@ const logic = ({ agreementUuid }: { agreementUuid: string }) => {
           documentId: doc.id,
           contractType: FUNDRAISE_TYPES[doc.type || 0].name,
           id: u.id,
-        }))
+        })),
       ]);
     })
     .then(([numSigners, r]) => {
       if (numSigners === 1) {
-        return sendEmail({
-          to: r.userEmail,
-          replyTo: r.investorEmail,
-          subject: `${r.investorName} has signed the agreement!`,
-          body: renderInvestorSigned({
-            investorName: r.investorName,
-            creatorName: r.userName,
-            contractType: r.contractType,
-            agreementUuid,
-          }),
-        });
+        return getPaymentPreferences(r.investorUuid).then(
+          (investorPaymentPreferences) =>
+            sendEmail({
+              to: r.userEmail,
+              replyTo: r.investorEmail,
+              subject: `${r.investorName} has signed the agreement!`,
+              body: renderInvestorSigned({
+                investorName: r.investorName,
+                investorPaymentPreferences,
+                creatorName: r.userName,
+                contractType: r.contractType,
+                agreementUuid,
+              }),
+            })
+        );
       } else if (numSigners === 2) {
-        return getPaymentPreferences(r.id).then((creatorPaymentPreferences) => sendEmail({
-          to: r.investorEmail,
-          replyTo: r.userEmail,
-          subject: `${r.userName} has signed the agreement!`,
-          body: renderCreatorSigned({
-            investorName: r.investorName,
-            creatorName: r.userName,
-            contractType: r.contractType,
-            creatorPaymentPreferences,
-          }),
-        }));
+        return getPaymentPreferences(r.id).then((creatorPaymentPreferences) =>
+          sendEmail({
+            to: r.investorEmail,
+            replyTo: r.userEmail,
+            subject: `${r.userName} has signed the agreement!`,
+            body: renderCreatorSigned({
+              investorName: r.investorName,
+              creatorName: r.userName,
+              contractType: r.contractType,
+              creatorPaymentPreferences,
+            }),
+          })
+        );
       } else {
         throw new MethodNotAllowedError(`No one has actually signed`);
       }

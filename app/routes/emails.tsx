@@ -98,6 +98,7 @@ const EmailsRoute = () => {
             <Outlet
               context={{
                 investorName: data.ids[agreement].investor.name,
+                investorPaymentPreferences: data.ids[agreement].investor.paymentPreferences,
                 creatorId: data.users[user].id,
                 creatorName: data.users[user].name,
                 creatorPaymentPreferences: data.users[user].paymentPreferences,

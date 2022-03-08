@@ -7,7 +7,7 @@ const loader = () => {
   return Promise.all([
     users.getUserList(),
     execute(`
-      SELECT a.uuid, c.type, i.name 
+      SELECT a.uuid, c.type, i.name, i.uuid as investor 
       FROM agreement a
       INNER JOIN investor i ON a.investorUuid = i.uuid
       INNER JOIN contract c ON a.contractUuid = c.uuid
@@ -40,12 +40,25 @@ const loader = () => {
           return prev;
         }, {} as Record<string, Record<string, string>>),
     })),
-    ids: (ids as { uuid: string; type: number, name: string }[]).map(({ uuid, type, name }) => ({
+    ids: (
+      ids as { uuid: string; type: number; name: string; investor: string }[]
+    ).map(({ uuid, type, name, investor }) => ({
       uuid,
       type: FUNDRAISE_TYPES[type].name,
       investor: {
-        name
-      }
+        name,
+        paymentPreferences: p
+          .filter(({ userId }) => investor === userId)
+          .reduce((prev, { type, label, value }) => {
+            const id = PAYMENT_PREFERENCES[type].id;
+            if (prev[id]) {
+              prev[id][label] = value;
+            } else {
+              prev[id] = { [label]: value };
+            }
+            return prev;
+          }, {} as Record<string, Record<string, string>>),
+      },
     })),
   }));
 };
