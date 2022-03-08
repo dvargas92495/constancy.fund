@@ -19,6 +19,7 @@ const getUserProfile = (userId: string) =>
         questionaires: (u.publicMetadata?.questionaires as string[]) || [],
         socialProfiles: (u.publicMetadata?.socialProfiles as string[]) || [],
         attachDeck: (u.publicMetadata?.attachDeck as string) || "",
+        demoVideo: (u.publicMetadata?.demoVideo as string) || "",
         registeredCountry:
           (u.publicMetadata?.registeredCountry as string) || "",
         companyRegistrationNumber:

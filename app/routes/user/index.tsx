@@ -176,6 +176,7 @@ const UserProfile = () => {
     socialProfiles,
     questionaires,
     attachDeck,
+    demoVideo,
     registeredCountry,
     companyRegistrationNumber,
     companyAddressStreet,
@@ -304,7 +305,17 @@ const UserProfile = () => {
             </QuestionaireBox>
           </SubSection>
           <SubSection>
-            <SubSectionTitle>Attach a deck or demo video</SubSectionTitle>
+            <SubSectionTitle>Attach a demo video</SubSectionTitle>
+            <TextInputContainer width={"350px"}>
+              <TextInputOneLine
+                defaultValue={demoVideo}
+                placeholder="https://"
+                name={"demoVideo"}
+              />
+            </TextInputContainer>
+          </SubSection>
+          <SubSection>
+            <SubSectionTitle>Attach a slide deck</SubSectionTitle>
             <TextInputContainer width={"350px"}>
               <TextInputOneLine
                 defaultValue={attachDeck}

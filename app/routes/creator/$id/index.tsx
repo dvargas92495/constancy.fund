@@ -279,6 +279,7 @@ const CreatorProfile = (): React.ReactElement => {
   const {
     userId,
     fullName,
+    demoVideo,
     socialProfiles = [],
     questionaires = [],
     fundraises = [],
@@ -498,7 +499,7 @@ const CreatorProfile = (): React.ReactElement => {
           <Spacer height={"20px"} />
           <Section>
             <VideoEmbed
-              src="https://www.youtube.com/embed/PBNXY1Ud_Is"
+              src={demoVideo || "https://www.youtube.com/embed/PBNXY1Ud_Is"}
               title="YouTube video player"
               allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
