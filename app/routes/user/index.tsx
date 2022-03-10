@@ -147,7 +147,7 @@ const SocialProfile = React.memo(
     defaultValue: string;
   }) => (
     <SocialProfileRow>
-      <Icon name={iconName} />
+      <Icon name={iconName} heightAndWidth="20px" color="purple" />
       <TextInputContainer>
         <TextInputOneLine
           placeholder="https://"
@@ -305,7 +305,7 @@ const UserProfile = () => {
             </QuestionaireBox>
           </SubSection>
           <SubSection>
-            <SubSectionTitle>Attach a demo video</SubSectionTitle>
+            <SubSectionTitle><Icon name={"youtube"} heightAndWidth="20px" color="purple" />Attach a demo video</SubSectionTitle>
             <TextInputContainer width={"350px"}>
               <TextInputOneLine
                 defaultValue={demoVideo}
@@ -315,7 +315,7 @@ const UserProfile = () => {
             </TextInputContainer>
           </SubSection>
           <SubSection>
-            <SubSectionTitle>Attach a slide deck</SubSectionTitle>
+            <SubSectionTitle><Icon name={"monitor"} heightAndWidth="20px" color="purple" />Attach a slide deck</SubSectionTitle>
             <TextInputContainer width={"350px"}>
               <TextInputOneLine
                 defaultValue={attachDeck}

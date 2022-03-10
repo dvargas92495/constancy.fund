@@ -4,20 +4,17 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EmailIcon from "@mui/icons-material/Email";
 import FacebookIcon from "@mui/icons-material/Facebook";
-import GitHubIcon from "@mui/icons-material/GitHub";
+import GitHubIcon from "./Icons/github.svg";
 import InfoIcon from "@mui/icons-material/Info";
 import InstagramIcon from "@mui/icons-material/Instagram";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import MoneyIcon from "@mui/icons-material/Money";
+import LinkedInIcon from "./Icons/linkedin.svg";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import NoteIcon from "@mui/icons-material/Note";
 import PreviewIcon from "@mui/icons-material/Preview";
-import PublicIcon from "@mui/icons-material/Public";
+import PublicIcon from "./Icons/globe.svg";
 import RedditIcon from "@mui/icons-material/Reddit";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import YoutubeIcon from "@mui/icons-material/YouTube";
+import TwitterIcon from "./Icons/twitter.svg";
 
 import BookSvg from "./Icons/book.svg";
 import DollarSvg from "./Icons/dollar.svg";
@@ -33,6 +30,8 @@ import TrendingUp from "./Icons/trendingUp.svg";
 import Remove from "./Icons/close.svg";
 import BackArrow from "./Icons/backArrow.svg";
 import Edit from "./Icons/edit.svg";
+import Monitor from "./Icons/monitor.svg";
+import Youtube from "./Icons/youtube.svg";
 
 const Icon = ({
   name,
@@ -42,40 +41,41 @@ const Icon = ({
   heightAndWidth?: string;
   color?: string;
   name:
-    | "arrow-drop-down"
-    | "arrow-right"
-    | "book"
-    | "check"
-    | "delete"
-    | "dollar"
-    | "email"
-    | "facebook"
-    | "fundraise"
-    | "github"
-    | "globe"
-    | "home"
-    | "info"
-    | "Instagram"
-    | "linkedIn"
-    | "mail"
-    | "money"
-    | "more-vert"
-    | "note"
-    | "personFine"
-    | "preview"
-    | "public"
-    | "reddit"
-    | "repeat"
-    | "settings"
-    | "split"
-    | "thumbsUp"
-    | "trendingUp"
-    | "twitter"
-    | "webIcon"
-    | "youtube"
-    | "remove"
-    | "backArrow"
-    | "edit";
+  | "arrow-drop-down"
+  | "arrow-right"
+  | "book"
+  | "check"
+  | "delete"
+  | "dollar"
+  | "email"
+  | "facebook"
+  | "fundraise"
+  | "github"
+  | "globe"
+  | "home"
+  | "info"
+  | "Instagram"
+  | "linkedIn"
+  | "mail"
+  | "money"
+  | "more-vert"
+  | "note"
+  | "personFine"
+  | "preview"
+  | "public"
+  | "reddit"
+  | "repeat"
+  | "settings"
+  | "split"
+  | "thumbsUp"
+  | "trendingUp"
+  | "twitter"
+  | "webIcon"
+  | "remove"
+  | "backArrow"
+  | "edit"
+  | "monitor"
+  | "youtube";
 } & Pick<SvgIconProps, "height" | "width">) => {
   const muiProps = {
     ...inputProps,
@@ -87,51 +87,51 @@ const Icon = ({
   };
   switch (name) {
     case "arrow-drop-down":
-      return <ArrowDropDownIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={ArrowDropDownIcon} />;
     case "arrow-right":
-      return <ArrowRightIcon {...muiProps} />;
+      return <StyledIcon  {...props} icon={ArrowRightIcon} />;
     case "book":
       return <StyledIcon {...props} icon={BookSvg} />;
     case "check":
-      return <CheckIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={CheckIcon} />;
     case "delete":
-      return <DeleteIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={DeleteIcon} />;
     case "dollar":
       return <StyledIcon {...props} icon={DollarSvg} />;
     case "email":
-      return <EmailIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={MailSvg} />;
     case "facebook":
-      return <FacebookIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={FacebookIcon} />;
     case "fundraise":
       return <StyledIcon {...props} icon={RocketSvg} />;
     case "github":
-      return <GitHubIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={GitHubIcon} />;
     case "globe":
       return <StyledIcon {...props} icon={Globe} />;
     case "home":
       return <StyledIcon {...props} icon={PersonFineSvg} />;
     case "info":
-      return <InfoIcon {...muiProps} />;
+      return <StyledIcon  {...props} icon={InfoIcon} />;
     case "Instagram":
-      return <InstagramIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={InstagramIcon} />;
     case "linkedIn":
-      return <LinkedInIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={LinkedInIcon} />;
     case "mail":
       return <StyledIcon {...props} icon={MailSvg} />;
     case "money":
-      return <MoneyIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={DollarSvg} />;
     case "more-vert":
-      return <MoreVertIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={MoreVertIcon} />;
     case "note":
-      return <NoteIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={NoteIcon} />;
     case "personFine":
       return <StyledIcon {...props} icon={PersonFineSvg} />;
     case "preview":
-      return <PreviewIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={PreviewIcon} />;
     case "public":
-      return <PublicIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={PublicIcon} />;
     case "reddit":
-      return <RedditIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={RedditIcon} />;
     case "repeat":
       return <StyledIcon {...props} icon={Repeat} />;
     case "settings":
@@ -143,17 +143,19 @@ const Icon = ({
     case "trendingUp":
       return <StyledIcon {...props} icon={TrendingUp} />;
     case "twitter":
-      return <TwitterIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={TwitterIcon} />;
     case "webIcon":
-      return <PublicIcon {...muiProps} />;
-    case "youtube":
-      return <YoutubeIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={Globe} />;
     case "remove":
       return <StyledIcon {...props} icon={Remove} />;
     case "backArrow":
       return <StyledIcon {...props} icon={BackArrow} />;
     case "edit":
       return <StyledIcon {...props} icon={Edit} />;
+    case "monitor":
+      return <StyledIcon {...props} icon={Monitor} />;
+    case "youtube":
+      return <StyledIcon {...props} icon={Youtube} />;
     default:
       return <SvgIcon {...muiProps} />;
   }

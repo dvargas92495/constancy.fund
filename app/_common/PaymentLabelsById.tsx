@@ -5,7 +5,7 @@ const paymentLabelsById: Record<Id, string | number | React.ReactElement> = {
   bank: "Bank Transfer",
   ethereum: "Ethereum",
   bitcoin: "Bitcoin",
-  near: "Near",
+  near: "NEAR",
 };
 
 export default paymentLabelsById;

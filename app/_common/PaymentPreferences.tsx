@@ -35,7 +35,7 @@ const PaymentPreference = ({
         label={paymentLabelsById[id]}
       />
       {checked && (
-        <Box sx={{ width: "50%", marginLeft: "64px" }}>
+        <Box sx={{ width: "50%", marginLeft: "31px" }}>
           {(paymentFieldsById[id] || []).map((f) => {
             const key = f.replace(/ /g, "");
             const name = `paymentPreference.${id}.${key}`;
@@ -70,7 +70,7 @@ const PaymentPreferences = ({
         funds?
       </InfoText>
       <TextFieldBox>
-        <Box sx={{ marginTop: "16px", width: "100%" }}>
+        <Box sx={{ width: "100%" }}>
           <Box display={"flex"} sx={{ minHeight: "160px", width: "100%" }}>
             <FormGroup sx={{ width: "100%" }}>
               {PAYMENT_PREFERENCES.map(({ id }) => (

@@ -277,17 +277,17 @@ const EnterDetails = () => {
                       placeholder={"100"}
                       name={"amount"}
                       min={100}
-                      // TODO set max
+                    // TODO set max
                     />
                   </TextInputContainer>
                   <InfoPill>
-                    <InfoPillTitle>what you'll make</InfoPillTitle>
+                    <InfoPillTitle>Your maximium return</InfoPillTitle>
                     <InfoPillInfo>
                       $
                       {formatAmount(
                         Math.floor(
                           (Number(amount) * Number(state.details.return || 0)) /
-                            100
+                          100
                         )
                       )}
                     </InfoPillInfo>
@@ -332,7 +332,7 @@ const EnterDetails = () => {
                         , paid out as a monthly stipend of $
                         {formatAmount(
                           Number(amount) /
-                            (Number(state.details.frequency) || 1)
+                          (Number(state.details.frequency) || 1)
                         )}{" "}
                         per month for {Number(state.details.frequency) || 1}{" "}
                         months.
@@ -359,7 +359,7 @@ const EnterDetails = () => {
                         (Number(state.details.amount) *
                           (Number(state.details.frequency) || 1) *
                           Number(state.details.return)) /
-                          100
+                        100
                       )}
                     </b>{" "}
                     to their backers. By contributing a total of{" "}
@@ -402,8 +402,8 @@ const EnterDetails = () => {
                     <b>
                       {formatAmount(
                         (Number(state.details.share) * Number(amount)) /
-                          (Number(state.details.amount) *
-                            (Number(state.details.frequency) || 1))
+                        (Number(state.details.amount) *
+                          (Number(state.details.frequency) || 1))
                       )}
                       %
                     </b>

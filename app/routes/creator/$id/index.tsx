@@ -279,6 +279,7 @@ const CreatorProfile = (): React.ReactElement => {
   const {
     userId,
     fullName,
+    companyName,
     demoVideo,
     socialProfiles = [],
     questionaires = [],
@@ -303,7 +304,7 @@ const CreatorProfile = (): React.ReactElement => {
             </ProfileImage>
           </ProfileImageContainer>
           <ProfileContentBox scroll={scrollPosition}>
-            <ProfileTitle scroll={scrollPosition}>{fullName}</ProfileTitle>
+            <ProfileTitle scroll={scrollPosition}>{companyName}</ProfileTitle>
             <ProfileLowerBar scroll={scrollPosition}>
               <ProfileSocialBar scroll={scrollPosition}>
                 {socialProfiles.map((s, i) => {
@@ -335,10 +336,9 @@ const CreatorProfile = (): React.ReactElement => {
                 }
                 onClick={() => {
                   navigate(
-                    `/creator/${userId}/invest${
-                      agreementUuid
-                        ? `?agreement=${agreementUuid}`
-                        : `?fundraise=${fundraises[0].uuid}`
+                    `/creator/${userId}/invest${agreementUuid
+                      ? `?agreement=${agreementUuid}`
+                      : `?fundraise=${fundraises[0].uuid}`
                     }`
                   );
                 }}
@@ -362,7 +362,7 @@ const CreatorProfile = (): React.ReactElement => {
             </ProfileImage>
           </ProfileImageContainer>
           <ProfileContentBox>
-            <ProfileTitle>{fullName}</ProfileTitle>
+            <ProfileTitle>{companyName}</ProfileTitle>
             <ProfileLowerBar>
               <ProfileSocialBar>
                 {socialProfiles.map((s, i) => {
@@ -394,10 +394,9 @@ const CreatorProfile = (): React.ReactElement => {
                 }
                 onClick={() => {
                   navigate(
-                    `/creator/${userId}/invest${
-                      agreementUuid
-                        ? `?agreement=${agreementUuid}`
-                        : `?fundraise=${fundraises[0].uuid}`
+                    `/creator/${userId}/invest${agreementUuid
+                      ? `?agreement=${agreementUuid}`
+                      : `?fundraise=${fundraises[0].uuid}`
                     }`
                   );
                 }}
@@ -444,7 +443,7 @@ const CreatorProfile = (): React.ReactElement => {
                     (Number(fundraises[0].details.return || 0) *
                       Number(fundraises[0].details.frequency || 1) *
                       Number(fundraises[0].details.amount || 0)) /
-                      100
+                    100
                   )}
                   <SmallConditionsText>
                     {" "}
