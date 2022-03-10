@@ -122,7 +122,7 @@ const SectionSubTitle = styled.div`
     display: flex;
     align-items: center;
     color: ${(props) => props.theme.palette.color.lighterText};
-    font-size: 16px;
+    font-size: 14px;
     grid-gap: 20px;
     margin-top: 20px;
 `
@@ -209,6 +209,12 @@ const ConditionsSubTitle = styled.div`
   font-size: 12px;
 `;
 
+const RaisesWith = styled.span`
+  color: ${(props) => props.theme.palette.text.tertiary};
+  margin-right: 10px;
+  font-weight: 500;
+`
+
 const ContractExplainerContainer = styled.div`
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
   padding: 40px;
@@ -218,7 +224,7 @@ const ContractExplainerContainer = styled.div`
   justify-content: center;
   background: white;
   border-radius: 8px;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   grid-gap: 10px;
 `;
 
@@ -411,7 +417,25 @@ const CreatorProfile = (): React.ReactElement => {
         </TopBarMainBox>
       </TopBarProfile>
       {fundraises[0] && (
-        <ProfileBottomContainer paddingTop={"150px"}>
+        <ProfileBottomContainer paddingTop={"110px"}>
+          <ContractExplainerContainer>
+            <ContractExplainerTitle>
+              <RaisesWith>Raises with:</RaisesWith> Revenue Sharing Agreement
+            </ContractExplainerTitle>
+            <ContractExplainerInfo>
+              The creator will start paying back a loan with interests once they
+              reach their revenue threshold of $
+              {formatAmount(Number(fundraises[0].details.threshold || 0))}{" "}
+              yearly. Then,{" "}
+              {formatAmount(Number(fundraises[0].details.share || 0))}% of their
+              income is used to pay back investors. {formatAmount(Number(fundraises[0].details.cap)) && <>The agreement runs out after {formatAmount(Number(fundraises[0].details.cap))} years.</>}
+            </ContractExplainerInfo>
+            <SectionSubTitle>
+              Accepts Payments in:  <ProfilePaymentPreferenceBar scroll={scrollPosition}>
+                {paymentPreferences.map((s) => paymentIconsById[s])}
+              </ProfilePaymentPreferenceBar>
+            </SectionSubTitle>
+          </ContractExplainerContainer>
           <ConditionsContainer>
             <ConditionsBox>
               <SectionCircle width={"30px"} margin={"0"}>
@@ -483,24 +507,6 @@ const CreatorProfile = (): React.ReactElement => {
               </ConditionsContent>
             </ConditionsBox>
           </ConditionsContainer>
-          <ContractExplainerContainer>
-            <ContractExplainerTitle>
-              Income Sharing Agreement
-            </ContractExplainerTitle>
-            <ContractExplainerInfo>
-              The creator will start paying back a loan with interests once they
-              reach their income threshold of $
-              {formatAmount(Number(fundraises[0].details.threshold || 0))}{" "}
-              yearly. Then,{" "}
-              {formatAmount(Number(fundraises[0].details.share || 0))}% of their
-              income is used to pay back investors.
-            </ContractExplainerInfo>
-            <SectionSubTitle>
-              Accepts Payments in:  <ProfilePaymentPreferenceBar scroll={scrollPosition}>
-                {paymentPreferences.map((s) => paymentIconsById[s])}
-              </ProfilePaymentPreferenceBar>
-            </SectionSubTitle>
-          </ContractExplainerContainer>
           <Spacer height={"40px"} />
           <SectionTitle>About the Project</SectionTitle>
           <Spacer height={"20px"} />
