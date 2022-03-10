@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import getMeta from "~/_common/getMeta";
 import styled from "styled-components";
 import { PrimaryAction } from "~/_common/PrimaryAction";
-import useHandler from "@dvargas92495/ui/dist/useHandler";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import type { Handler } from "../../functions/convertkit/post";
-import { useNavigate } from "remix";
+import axios from 'axios';
+import { Form, useNavigate } from "remix";
 import MainImage from "~/_common/Images/runner.svg";
 import { UserButton, useUser } from "@clerk/remix";
 
@@ -67,7 +67,7 @@ const SubTitle = styled.div`
   font-weight: 300;
 `;
 
-const SignupBox = styled.div`
+const SignupBox = styled(Form)`
   margin-top: 30px;
   display: flex;
   align-items: center;
@@ -102,12 +102,7 @@ const MainImageContainer = styled.img`
 
 const Home: React.FC = () => {
   const { isSignedIn } = useUser();
-  const convertKit = useHandler<Handler>({
-    path: "convertkit",
-    method: "POST",
-  });
   const [subscribed, setSubscribed] = useState(false);
-  const [email, setEmail] = useState("");
   const navigate = useNavigate();
   return (
     <>
@@ -124,19 +119,14 @@ const Home: React.FC = () => {
           </SubTitle>
           <SignupBox>
             <SignupFieldContainer
+              name="email"
               placeholder="Your Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
             />
             <PrimaryAction
               height="60px"
               width="150px"
               label={<ButtonInnerDiv>JOIN ONBOARDING QUEUE</ButtonInnerDiv>}
-              onClick={() =>
-                convertKit({ id: "2823917", email }).then(() =>
-                  setSubscribed(true)
-                )
-              }
+              type={"submit"}
               fontWeight={"600"}
             />
             <Snackbar
@@ -166,6 +156,21 @@ const Home: React.FC = () => {
     </>
   );
 };
+
+export const action: ActionFunction = async ({request}) => {
+  const formData = await request.formData();
+  const email = formData.get("email");
+  if (!email) return new Response(400, 'Email is required');
+  return axios
+    .post<{ subscription: { subscriber: { id: string } } }>(
+      `https://api.convertkit.com/v3/forms/${id}/subscribe`,
+      {
+        api_key: process.env.CONVERTKIT_API_KEY,
+        email,
+      }
+    )
+    .then(() => ({ success: true }));
+}
 
 export const meta = getMeta({ title: "Home" });
 
