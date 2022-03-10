@@ -32,6 +32,11 @@ import BackArrow from "./Icons/backArrow.svg";
 import Edit from "./Icons/edit.svg";
 import Monitor from "./Icons/monitor.svg";
 import Youtube from "./Icons/youtube.svg";
+import bank from "./Icons/bank.svg";
+import ethereum from "./Icons/ethereum.svg";
+import bitcoin from "./Icons/bitcoin.svg";
+import paypalSmall from "./Icons/paypalSmall.svg";
+import near from "./Icons/near.svg";
 
 const Icon = ({
   name,
@@ -75,6 +80,11 @@ const Icon = ({
   | "backArrow"
   | "edit"
   | "monitor"
+  | "ethereum"
+  | "near"
+  | "bitcoin"
+  | "bank"
+  | "paypalSmall"
   | "youtube";
 } & Pick<SvgIconProps, "height" | "width">) => {
   const muiProps = {
@@ -156,6 +166,16 @@ const Icon = ({
       return <StyledIcon {...props} icon={Monitor} />;
     case "youtube":
       return <StyledIcon {...props} icon={Youtube} />;
+    case "near":
+      return <StyledIcon {...props} icon={near} />;
+    case "bank":
+      return <StyledIcon {...props} icon={bank} />;
+    case "paypalSmall":
+      return <StyledIcon {...props} icon={paypalSmall} />;
+    case "bitcoin":
+      return <StyledIcon {...props} icon={bitcoin} />;
+    case "ethereum":
+      return <StyledIcon {...props} icon={ethereum} />;
     default:
       return <SvgIcon {...muiProps} />;
   }

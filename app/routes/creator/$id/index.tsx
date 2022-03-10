@@ -118,6 +118,15 @@ const ProfileContentBox = styled.div<{ scroll?: number }>`
     `}
 `;
 
+const SectionSubTitle = styled.div`
+    display: flex;
+    align-items: center;
+    color: ${(props) => props.theme.palette.color.lighterText};
+    font-size: 16px;
+    grid-gap: 20px;
+    margin-top: 20px;
+`
+
 const ProfileLowerBar = styled.div<{ scroll?: number }>`
   display: flex;
   align-items: center;
@@ -266,11 +275,11 @@ const paymentIconsById: Record<
   PaymentPreferenceId,
   string | number | React.ReactElement
 > = {
-  paypal: <img height={24} src={`/svgs/payment-options/paypal.svg`} />,
-  bank: <Icon name={"money"} height={24} />,
-  ethereum: <img height={24} src={`/svgs/payment-options/ethereum.svg`} />,
-  bitcoin: <img height={24} src={`/svgs/payment-options/bitcoin.svg`} />,
-  near: <img height={24} src={`/svgs/payment-options/near.svg`} />,
+  paypal: <Icon heightAndWidth={'24px'} color="purple" name={'paypalSmall'} />,
+  bank: <Icon name={"bank"} color="purple" width={'100px'} />,
+  ethereum: <Icon heightAndWidth={'24px'} color="purple" name={'ethereum'} />,
+  bitcoin: <Icon heightAndWidth={'24px'} color="purple" name={'bitcoin'} />,
+  near: <Icon heightAndWidth={'24px'} color="purple" name={'near'} />,
 };
 
 const CreatorProfile = (): React.ReactElement => {
@@ -320,9 +329,6 @@ const CreatorProfile = (): React.ReactElement => {
                   );
                 })}
               </ProfileSocialBar>
-              <ProfilePaymentPreferenceBar scroll={scrollPosition}>
-                {paymentPreferences.map((s) => paymentIconsById[s])}
-              </ProfilePaymentPreferenceBar>
               <PrimaryAction
                 label={
                   <IconContent>
@@ -378,9 +384,6 @@ const CreatorProfile = (): React.ReactElement => {
                   );
                 })}
               </ProfileSocialBar>
-              <ProfilePaymentPreferenceBar scroll={scrollPosition}>
-                {paymentPreferences.map((s) => paymentIconsById[s])}
-              </ProfilePaymentPreferenceBar>
               <PrimaryAction
                 label={
                   <IconContent>
@@ -492,6 +495,11 @@ const CreatorProfile = (): React.ReactElement => {
               {formatAmount(Number(fundraises[0].details.share || 0))}% of their
               income is used to pay back investors.
             </ContractExplainerInfo>
+            <SectionSubTitle>
+              Accepts Payments in:  <ProfilePaymentPreferenceBar scroll={scrollPosition}>
+                {paymentPreferences.map((s) => paymentIconsById[s])}
+              </ProfilePaymentPreferenceBar>
+            </SectionSubTitle>
           </ContractExplainerContainer>
           <Spacer height={"40px"} />
           <SectionTitle>About the Project</SectionTitle>
