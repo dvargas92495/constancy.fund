@@ -1,12 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import getMeta from "~/_common/getMeta";
 import styled from "styled-components";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import type { Handler } from "../../functions/convertkit/post";
-import axios from 'axios';
-import { Form, useNavigate } from "remix";
+import axios from "axios";
+import { ActionFunction, Form, useActionData, useNavigate } from "remix";
 import MainImage from "~/_common/Images/runner.svg";
 import { UserButton, useUser } from "@clerk/remix";
 
@@ -102,8 +101,12 @@ const MainImageContainer = styled.img`
 
 const Home: React.FC = () => {
   const { isSignedIn } = useUser();
+  const actionData = useActionData();
   const [subscribed, setSubscribed] = useState(false);
   const navigate = useNavigate();
+  useEffect(() => {
+    if (actionData?.success) setSubscribed(true);
+  }, [actionData?.success])
   return (
     <>
       <LogoContainer src={"/svgs/constancy-logo.svg"} />
@@ -117,11 +120,8 @@ const Home: React.FC = () => {
             Crowdfunding for people and organisations that don’t want to sell
             equity.
           </SubTitle>
-          <SignupBox>
-            <SignupFieldContainer
-              name="email"
-              placeholder="Your Email"
-            />
+          <SignupBox method="post">
+            <SignupFieldContainer name="email" placeholder="Your Email" />
             <PrimaryAction
               height="60px"
               width="150px"
@@ -138,7 +138,7 @@ const Home: React.FC = () => {
             >
               <Alert severity="success" sx={{ width: "100%" }}>
                 {
-                  "Thanks for signing up for our waitlist! Be sure to check your inbox to confirm the subscription"
+                  "Thanks for signing up for our waitlist! Be sure to check your inbox to confirm the email subscription"
                 }
               </Alert>
             </Snackbar>
@@ -157,20 +157,20 @@ const Home: React.FC = () => {
   );
 };
 
-export const action: ActionFunction = async ({request}) => {
+export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const email = formData.get("email");
-  if (!email) return new Response(400, 'Email is required');
+  if (!email) return new Response("Email is required", { status: 400 });
   return axios
     .post<{ subscription: { subscriber: { id: string } } }>(
-      `https://api.convertkit.com/v3/forms/${id}/subscribe`,
+      `https://api.convertkit.com/v3/forms/2823917/subscribe`,
       {
         api_key: process.env.CONVERTKIT_API_KEY,
         email,
       }
     )
     .then(() => ({ success: true }));
-}
+};
 
 export const meta = getMeta({ title: "Home" });
 
