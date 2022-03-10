@@ -182,9 +182,9 @@ export const action: ActionFunction = ({ request, params }) => {
 const UserFundraisePreview = () => {
   const { id = "" } = useParams();
   const data = useLoaderData<FundraiseData>();
-  const paymentAmount = Number(data.details.amount || 0);
-  const frequency = Number(data.details.frequency || 1);
-  const threshold = Number(data.details.threshold || 0);
+  const paymentAmount = Number(data.details?.amount || 0);
+  const frequency = Number(data.details?.frequency || 1);
+  const threshold = Number(data.details?.threshold || 0);
   const totalAmount = paymentAmount * frequency;
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const fetcher = useFetcher();
@@ -237,7 +237,7 @@ const UserFundraisePreview = () => {
                 <ExplainText>
                   I agree to pay back a maximum total of $
                   {formatAmount(
-                    (totalAmount * Number(data.details.return)) / 100
+                    (totalAmount * Number(data.details?.return)) / 100
                   )}{" "}
                   to my investors
                 </ExplainText>
@@ -248,10 +248,10 @@ const UserFundraisePreview = () => {
               <ExplainContent>
                 <ExplainTitle>What you pay back</ExplainTitle>
                 <ExplainText>
-                  I agree to take {formatAmount(data.details.share)}% of all my
+                  I agree to take {formatAmount(data.details?.share)}% of all my
                   revenue once I hit ${formatAmount(threshold / 12)} per month
                   or ${formatAmount(threshold)} per year in the next{" "}
-                  {Number(data.details.cap || 0)} years in order to pay back my
+                  {Number(data.details?.cap || 0)} years in order to pay back my
                   investors. Includes revenue from preexisting assets.
                 </ExplainText>
               </ExplainContent>
