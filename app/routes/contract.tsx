@@ -6,7 +6,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import React, { useEffect, useState } from "react";
 import signAgreement from "~/data/signAgreement.server";
-import type { ExternalScriptsFunction } from "remix-utils";
+import eversign from "../external/eversign";
 
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
@@ -15,7 +15,6 @@ import { LoadingIndicator } from "~/_common/LoadingIndicator";
 import {
   ActionFunction,
   LoaderFunction,
-  useActionData,
   useFetcher,
   useLoaderData,
   useParams,
@@ -103,24 +102,13 @@ const LoadingBox = styled.div`
   align-items: center;
 `;
 
-declare global {
+/*declare global {
   interface Window {
     eversign: {
-      open: (params: {
-        url: string;
-        containerID: string;
-        width?: number | string;
-        height?: number | string;
-        events?: {
-          loaded?: () => void;
-          signed?: () => void;
-          declined?: () => void;
-          error?: (a: unknown) => void;
-        };
-      }) => void;
+      open: (params: ) => void;
     };
   }
-}
+}*/
 
 const CONTAINER_ID = "eversign-embed";
 const EversignEmbed = ({
@@ -134,7 +122,7 @@ const EversignEmbed = ({
   useEffect(() => {
     if (url) {
       setLoading(false);
-      window.eversign.open({
+      eversign.open({
         url,
         containerID: CONTAINER_ID,
         width: "100%",
@@ -167,13 +155,12 @@ const ContractPage = (): React.ReactElement => {
   const [signed, setSigned] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const fetcher = useFetcher();
-  const actionData = useActionData();
   useEffect(() => {
-    if (actionData?.success) {
+    if (fetcher.data?.success) {
       setSigned(true);
       setSnackbarOpen(true);
     }
-  }, [actionData?.success]);
+  }, [fetcher.data?.success]);
   return (
     <ProfileContainer>
       <BackButton
@@ -256,15 +243,5 @@ export const action: ActionFunction = async ({ request }) => {
 export const meta = getMeta({
   title: "Contract",
 });
-
-const scripts: ExternalScriptsFunction = () => {
-  return [
-    {
-      src: "https://static.eversign.com/js/embedded-signing.js",
-    },
-  ];
-};
-
-export const handle = { scripts };
 
 export default ContractPage;

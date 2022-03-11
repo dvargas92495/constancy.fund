@@ -23,17 +23,15 @@ const createPaymentPreferences = ({
   userId: string;
   paymentPreferences: (readonly [Id, (readonly [string, string])[]])[];
 }) => {
-  const paymentPreferenceRecords = paymentPreferences.map(
-    ([type, fields]) => ({
+  const paymentPreferenceRecords = paymentPreferences.map(([type, fields]) => ({
+    uuid: v4(),
+    type: dbTypeById[type],
+    fields: fields.map(([label, value]) => ({
+      label,
+      value,
       uuid: v4(),
-      type: dbTypeById[type],
-      fields: fields.map(([label, value]) => ({
-        label,
-        value,
-        uuid: v4(),
-      })),
-    })
-  );
+    })),
+  }));
   return execute(
     `INSERT INTO paymentpreference (uuid, type, userId) VALUES ${paymentPreferenceRecords
       .map(() => "(?,?,?)")
@@ -42,7 +40,7 @@ const createPaymentPreferences = ({
   ).then(() =>
     execute(
       `INSERT INTO paymentpreferencedetail (uuid, label, value, paymentPreferenceUuid) VALUES ${paymentPreferenceRecords
-        .map(() => "(?,?,?,?)")
+        .flatMap((p) => p.fields.map(() => "(?,?,?,?)"))
         .join(",")}`,
       paymentPreferenceRecords
         .flatMap((r) => r.fields.map((f) => [f.uuid, f.label, f.value, r.uuid]))

@@ -33,6 +33,7 @@ The application's logic is all contained within the `/app` directory. This direc
 1. `/data` - This stores all of our backend logic.
 1. `/emails` - This stores our email templates.
 1. `/enum` - This stores all hardcoded data.
+1. `/external` - Third party scripts that we are integrating directly instead of loading in the script tag.
 1. `/routes` - This stores all of our frontend pages mapped to URL routes.
 
 The rest of the files here are part of Remix's boilerplate. There are three additional directories that should rarely see changes:

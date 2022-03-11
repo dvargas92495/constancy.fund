@@ -119,13 +119,13 @@ const ProfileContentBox = styled.div<{ scroll?: number }>`
 `;
 
 const SectionSubTitle = styled.div`
-    display: flex;
-    align-items: center;
-    color: ${(props) => props.theme.palette.color.lighterText};
-    font-size: 14px;
-    grid-gap: 20px;
-    margin-top: 20px;
-`
+  display: flex;
+  align-items: center;
+  color: ${(props) => props.theme.palette.color.lighterText};
+  font-size: 14px;
+  grid-gap: 20px;
+  margin-top: 20px;
+`;
 
 const ProfileLowerBar = styled.div<{ scroll?: number }>`
   display: flex;
@@ -213,7 +213,7 @@ const RaisesWith = styled.span`
   color: ${(props) => props.theme.palette.text.tertiary};
   margin-right: 10px;
   font-weight: 500;
-`
+`;
 
 const ContractExplainerContainer = styled.div`
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
@@ -281,11 +281,11 @@ const paymentIconsById: Record<
   PaymentPreferenceId,
   string | number | React.ReactElement
 > = {
-  paypal: <Icon heightAndWidth={'24px'} color="purple" name={'paypalSmall'} />,
-  bank: <Icon name={"bank"} color="purple" width={'100px'} />,
-  ethereum: <Icon heightAndWidth={'24px'} color="purple" name={'ethereum'} />,
-  bitcoin: <Icon heightAndWidth={'24px'} color="purple" name={'bitcoin'} />,
-  near: <Icon heightAndWidth={'24px'} color="purple" name={'near'} />,
+  paypal: <Icon heightAndWidth={"24px"} color="purple" name={"paypalSmall"} />,
+  bank: <Icon name={"bank"} color="purple" width={"100px"} />,
+  ethereum: <Icon heightAndWidth={"24px"} color="purple" name={"ethereum"} />,
+  bitcoin: <Icon heightAndWidth={"24px"} color="purple" name={"bitcoin"} />,
+  near: <Icon heightAndWidth={"24px"} color="purple" name={"near"} />,
 };
 
 const CreatorProfile = (): React.ReactElement => {
@@ -293,7 +293,7 @@ const CreatorProfile = (): React.ReactElement => {
   const navigate = useNavigate();
   const {
     userId,
-    fullName,
+    // fullName,
     companyName,
     demoVideo,
     socialProfiles = [],
@@ -348,9 +348,10 @@ const CreatorProfile = (): React.ReactElement => {
                 }
                 onClick={() => {
                   navigate(
-                    `/creator/${userId}/invest${agreementUuid
-                      ? `?agreement=${agreementUuid}`
-                      : `?fundraise=${fundraises[0].uuid}`
+                    `/creator/${userId}/invest${
+                      agreementUuid
+                        ? `?agreement=${agreementUuid}`
+                        : `?fundraise=${fundraises[0].uuid}`
                     }`
                   );
                 }}
@@ -403,9 +404,10 @@ const CreatorProfile = (): React.ReactElement => {
                 }
                 onClick={() => {
                   navigate(
-                    `/creator/${userId}/invest${agreementUuid
-                      ? `?agreement=${agreementUuid}`
-                      : `?fundraise=${fundraises[0].uuid}`
+                    `/creator/${userId}/invest${
+                      agreementUuid
+                        ? `?agreement=${agreementUuid}`
+                        : `?fundraise=${fundraises[0].uuid}`
                     }`
                   );
                 }}
@@ -428,11 +430,20 @@ const CreatorProfile = (): React.ReactElement => {
               {formatAmount(Number(fundraises[0].details.threshold || 0))}{" "}
               yearly. Then,{" "}
               {formatAmount(Number(fundraises[0].details.share || 0))}% of their
-              income is used to pay back investors. {formatAmount(Number(fundraises[0].details.cap)) && <>The agreement runs out after {formatAmount(Number(fundraises[0].details.cap))} years.</>}
+              income is used to pay back investors.{" "}
+              {formatAmount(Number(fundraises[0].details.cap)) && (
+                <>
+                  The agreement runs out after{" "}
+                  {formatAmount(Number(fundraises[0].details.cap))} years.
+                </>
+              )}
             </ContractExplainerInfo>
             <SectionSubTitle>
-              Accepts Payments in:  <ProfilePaymentPreferenceBar scroll={scrollPosition}>
-                {paymentPreferences.map((s) => paymentIconsById[s])}
+              Accepts Payments in:{" "}
+              <ProfilePaymentPreferenceBar scroll={scrollPosition}>
+                {paymentPreferences.map((s, i) => (
+                  <React.Fragment key={i}>{paymentIconsById[s]}</React.Fragment>
+                ))}
               </ProfilePaymentPreferenceBar>
             </SectionSubTitle>
           </ContractExplainerContainer>
@@ -470,7 +481,7 @@ const CreatorProfile = (): React.ReactElement => {
                     (Number(fundraises[0].details.return || 0) *
                       Number(fundraises[0].details.frequency || 1) *
                       Number(fundraises[0].details.amount || 0)) /
-                    100
+                      100
                   )}
                   <SmallConditionsText>
                     {" "}

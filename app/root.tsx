@@ -12,7 +12,7 @@ import {
   useLoaderData,
 } from "remix";
 import { ExternalScripts } from "remix-utils";
-import { ConnectClerk } from "@clerk/remix";
+import { ConnectClerk, ConnectClerkCatchBoundary } from "@clerk/remix";
 import { rootAuthLoader } from "@clerk/remix/ssr.server";
 import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 import getEmotionCache, { emotionCache } from "./_common/getEmotionCache";
@@ -190,7 +190,7 @@ export const links: LinksFunction = () => {
   ];
 };
 
-export function CatchBoundary() {
+export const CatchBoundary = () => ConnectClerkCatchBoundary(() => {
   const caught = useCatch();
   return (
     <html>
@@ -207,7 +207,7 @@ export function CatchBoundary() {
       </body>
     </html>
   );
-}
+})();
 
 const RootContainer = styled.div`
   width: 100%;
@@ -260,6 +260,4 @@ const App = () => {
   );
 };
 
-export default ConnectClerk(App, {
-  frontendApi: process.env.CLERK_FRONTEND_API || "",
-});
+export default () => ConnectClerk(App)();
