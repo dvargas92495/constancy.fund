@@ -42,6 +42,7 @@ import TextFieldDescription from "~/_common/TextFieldDescription";
 import SubSectionTitle from "~/_common/SubSectionTitle";
 import TextInputMultiLine from "~/_common/TextInputMultiLine";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
+import { ConnectClerkCatchBoundary } from "@clerk/remix";
 
 const SubSection = styled.div`
   margin-top: 60px;
@@ -588,10 +589,10 @@ export const action: ActionFunction = ({ request }) => {
     .catch((e) => ({ success: false, error: e.message }));
 };
 
-export const CatchBoundary = () => {
+export const CatchBoundary = ConnectClerkCatchBoundary(() => {
   const { data } = useCatch();
   console.error('used a catch boundary');
   return <div>{data}</div>;
-};
+});
 
 export default UserProfile;
