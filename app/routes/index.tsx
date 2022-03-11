@@ -5,7 +5,7 @@ import { PrimaryAction } from "~/_common/PrimaryAction";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import axios from "axios";
-import { ActionFunction, Form, useActionData, useNavigate } from "remix";
+import { ActionFunction, Form, useActionData, useCatch, useNavigate } from "remix";
 import MainImage from "~/_common/Images/runner.svg";
 import { UserButton, useUser } from "@clerk/remix";
 
@@ -120,7 +120,7 @@ const Home: React.FC = () => {
             Crowdfunding for people and organisations that don’t want to sell
             equity.
           </SubTitle>
-          <SignupBox method="post">
+          <SignupBox method="post" action="/">
             <SignupFieldContainer name="email" placeholder="Your Email" />
             <PrimaryAction
               height="60px"
@@ -173,5 +173,11 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const meta = getMeta({ title: "Home" });
+
+export const CatchBoundary = () => {
+  const { data } = useCatch();
+  console.error('used a catch boundary');
+  return <div>{data}</div>;
+};
 
 export default Home;
