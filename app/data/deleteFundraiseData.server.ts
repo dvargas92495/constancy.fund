@@ -15,11 +15,11 @@ const deleteFundraiseData = ({
       if (userId !== contract.userId)
         throw new MethodNotAllowedError(`Not authorized to delete ${uuid}`);
       return Promise.all([
-        execute(`DELETE FROM contractdetail d WHERE d.contractUuid = ?`, [
+        execute(`DELETE FROM contractdetail WHERE contractUuid = ?`, [
           uuid,
         ]),
-        execute(`DELETE FROM agreement a WHERE a.contractUuid = ?`, [uuid]),
-      ]).then(() => execute(`DELETE FROM contract c WHERE c.uuid = ?`, [uuid]));
+        execute(`DELETE FROM agreement WHERE contractUuid = ?`, [uuid]),
+      ]).then(() => execute(`DELETE FROM contract WHERE uuid = ?`, [uuid]));
     })
     .then(() => ({ success: true }));
 

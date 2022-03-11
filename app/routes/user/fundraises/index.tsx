@@ -143,7 +143,10 @@ const FundraiseContentRow = ({
   }, [navigate, row.uuid]);
   const DetailComponent = DetailComponentById[row.type];
   const onDelete = useCallback(() => {
-    fetcher.submit({ uuid: row.uuid }, { method: "delete" });
+    fetcher.submit(
+      { uuid: row.uuid },
+      { method: "delete", action: "/user/fundraises?index" }
+    );
   }, [row.uuid, fetcher]);
   return (
     <TableRow>
@@ -331,12 +334,12 @@ export const loader: LoaderFunction = createAuthenticatedLoader(
 );
 
 export const action: ActionFunction = async ({ request }) => {
+  console.log("ufi");
   return getAuth(request).then(async ({ userId }) => {
     if (!userId) {
       return new Response("Unauthorized", { status: 401 });
     }
     const formData = await request.formData();
-    console.log('lee', request.method);
     if (request.method === "DELETE") {
       const uuid = formData.get("uuid");
       if (!uuid) return new Response("`uuid` is required", { status: 400 });

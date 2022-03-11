@@ -41,7 +41,7 @@ const createPaymentPreferences = ({
     paymentPreferenceRecords.map((r) => [r.uuid, r.type, userId]).flat()
   ).then(() =>
     execute(
-      `INSERT INTO paymentpreference (uuid, label, value, paymentPreferenceUuid) VALUES ${paymentPreferenceRecords
+      `INSERT INTO paymentpreferencedetail (uuid, label, value, paymentPreferenceUuid) VALUES ${paymentPreferenceRecords
         .map(() => "(?,?,?,?)")
         .join(",")}`,
       paymentPreferenceRecords
@@ -106,7 +106,7 @@ const createAgreement = ({
                 Promise.all([
                   execute(
                     `INSERT INTO agreement (uuid, amount, contractUuid, investorUuid)
-           VALUES (?, ?, ?, ?, ?, 0)`,
+           VALUES (?, ?, ?, ?)`,
                     [agreementUuid, amount, contractUuid, investorUuid]
                   ),
                   createPaymentPreferences({

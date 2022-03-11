@@ -169,11 +169,11 @@ const ContractPage = (): React.ReactElement => {
   const fetcher = useFetcher();
   const actionData = useActionData();
   useEffect(() => {
-    if (actionData.success) {
+    if (actionData?.success) {
       setSigned(true);
       setSnackbarOpen(true);
     }
-  }, [actionData]);
+  }, [actionData?.success]);
   return (
     <ProfileContainer>
       <BackButton
@@ -235,16 +235,22 @@ const ContractPage = (): React.ReactElement => {
   );
 };
 
-export const loader: LoaderFunction = ({ params }) =>
-  getContract({ uuid: params.uuid || "", signer: params.signer || "" });
+export const loader: LoaderFunction = ({ request }) => {
+  const searchParams = new URL(request.url).searchParams;
+  return getContract({
+    uuid: searchParams.get("uuid") || "",
+    signer: searchParams.get("signer") || "",
+  });
+};
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const agreementUuid = formData.get("agreementUuid");
-  if (!agreementUuid) return new Response("`agreementUuid` is required", { status: 400 });
+  if (!agreementUuid)
+    return new Response("`agreementUuid` is required", { status: 400 });
   if (typeof agreementUuid !== "string")
     return new Response("`agreementUuid` must be a string", { status: 400 });
-  return signAgreement({agreementUuid});
+  return signAgreement({ agreementUuid });
 };
 
 export const meta = getMeta({
