@@ -197,6 +197,7 @@ const UserProfile = () => {
       setIsChanges(false);
     }
   }, [setSnackbarOpen, actionData, setIsChanges, changes.current]);
+  console.log("loading user components");
   return (
     <UserProfileForm
       method="put"
@@ -555,8 +556,10 @@ const UserProfile = () => {
 };
 
 export const loader = async ({ request }: Parameters<LoaderFunction>[0]) => {
+  console.log("loading user page");
   return getAuth(request).then(async ({ userId }) => {
     if (!userId) {
+      console.error("Cannot access private page while not authenticated");
       throw new Response("Cannot access private page while not authenticated", {
         status: 401,
       });
@@ -588,6 +591,7 @@ export const action: ActionFunction = ({ request }) => {
 
 export const CatchBoundary: CatchBoundaryComponent = () => {
   const { data } = useCatch();
+  console.error('used a catch boundary');
   return <div>{data}</div>;
 };
 
