@@ -1,10 +1,16 @@
 import React, { useState, useCallback } from "react";
 import { UserButton, useUser } from "@clerk/remix";
-import { LoaderFunction, useNavigate, redirect, useLoaderData } from "remix";
+import {
+  LoaderFunction,
+  useNavigate,
+  redirect,
+  useLoaderData,
+  ActionFunction,
+  useFetcher,
+} from "remix";
 import Box from "@mui/material/Box";
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
-import useAuthenticatedHandler from "@dvargas92495/ui/dist/useAuthenticatedHandler";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -17,8 +23,8 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "~/_common/ListItemIcon";
 import ListItemText from "~/_common/ListItemText";
-import type { Handler as DeleteHandler } from "../../../../functions/contract/delete";
 import type { Handler as GetHandler } from "../../../../functions/fundraises/get";
+import deleteFundraiseData from "~/data/deleteFundraiseData.server";
 import Icon from "~/_common/Icon";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import TopBar from "~/_common/TopBar";
@@ -32,8 +38,9 @@ import InfoText from "~/_common/InfoText";
 import SubSectionTitle from "~/_common/SubSectionTitle";
 import styled from "styled-components";
 import formatAmount from "../../../../db/util/formatAmount";
-import cookie from "cookie";
-import axios from "axios";
+import getFundraises from "~/data/getFundraises.server";
+import { getAuth } from "@clerk/remix/ssr.server";
+import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
 
 const NotCompletedMessageContainer = styled.div`
   display: flex;
@@ -128,21 +135,16 @@ const FundraiseContentRow = ({
   onDeleteSuccess,
   ...row
 }: Fundraises[number] & { onDeleteSuccess: (uuid: string) => void }) => {
+  const fetcher = useFetcher();
   const [isOpen, setIsOpen] = useState<HTMLButtonElement | undefined>();
-  const deleteHandler = useAuthenticatedHandler<DeleteHandler>({
-    method: "DELETE",
-    path: "contract",
-  });
-  const onDelete = useCallback(() => {
-    deleteHandler({
-      uuid: row.uuid,
-    }).then(() => onDeleteSuccess(row.uuid));
-  }, [row]);
   const navigate = useNavigate();
   const onPreview = useCallback(() => {
     navigate(`/user/fundraises/preview/${row.uuid}`);
   }, [navigate, row.uuid]);
   const DetailComponent = DetailComponentById[row.type];
+  const onDelete = useCallback(() => {
+    fetcher.submit({ uuid: row.uuid }, { method: "delete" });
+  }, [row.uuid, fetcher]);
   return (
     <TableRow>
       <TableCell>{row.type}</TableCell>
@@ -310,31 +312,41 @@ const UserFundraiseIndex = () => {
   );
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const cookieHeader = request.headers.get("cookie") || "";
-  const cookieObj = cookie.parse(cookieHeader);
-  const token = cookieObj.__session;
-  return axios
-    .get<Data>(`${process.env.API_URL}/fundraises`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((r) => {
-      if (!r.data.completed || new URL(request.url).searchParams.has("stay")) {
-        return r.data;
-      } else if (r.data.fundraises.length) {
-        return redirect(
-          `/user/fundraises/contract/${r.data.fundraises[0].uuid}`
-        );
-      } else {
-        return redirect(`/user/fundraises/setup`);
-      }
-    })
-    .catch((e) => {
-      console.error(e);
+export const loader: LoaderFunction = createAuthenticatedLoader(
+  (userId, params) =>
+    getFundraises({ userId })
+      .then((r) => {
+        if (!r.completed || params["stay"]) {
+          return r;
+        } else if (r.fundraises.length) {
+          return redirect(`/user/fundraises/contract/${r.fundraises[0].uuid}`);
+        } else {
+          return redirect(`/user/fundraises/setup`);
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+        return {};
+      })
+);
+
+export const action: ActionFunction = async ({ request }) => {
+  return getAuth(request).then(async ({ userId }) => {
+    if (!userId) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+    const formData = await request.formData();
+    console.log('lee', request.method);
+    if (request.method === "DELETE") {
+      const uuid = formData.get("uuid");
+      if (!uuid) return new Response("`uuid` is required", { status: 400 });
+      if (typeof uuid !== "string")
+        return new Response("`uuid` must be a string", { status: 400 });
+      return deleteFundraiseData({ uuid, userId });
+    } else {
       return {};
-    });
+    }
+  });
 };
 
 export default UserFundraiseIndex;

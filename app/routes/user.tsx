@@ -7,10 +7,11 @@ import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import {
+  ActionFunction,
   Link as RemixLink,
   LoaderFunction,
   Outlet,
-  redirect
+  redirect,
 } from "remix";
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
@@ -153,6 +154,8 @@ export const loader: LoaderFunction = ({ request }) => {
     return {};
   });
 };
+
+export const action: ActionFunction = () => ({});
 
 export const meta = getMeta({ title: "User" });
 

@@ -7,8 +7,8 @@ const createAuthenticatedLoader =
       userId: string,
       params: Record<string, string>
     ) => Promise<unknown>
-  ) =>
-  async ({ request, params }: Parameters<LoaderFunction>[0]) => {
+  ): LoaderFunction =>
+  async ({ request, params }) => {
     return getAuth(request).then(async ({ userId }) => {
       if (!userId) {
         return new Response("No valid user found", { status: 401 });

@@ -11,7 +11,6 @@ import {
   ActionFunction,
   Form,
   LinksFunction,
-  LoaderFunction,
   redirect,
   useLoaderData,
   useParams,
@@ -30,11 +29,12 @@ import SectionTitle from "~/_common/SectionTitle";
 import InfoText from "~/_common/InfoText";
 import SubSectionTitle from "~/_common/SubSectionTitle";
 import { LoadingIndicator } from "~/_common/LoadingIndicator";
-import cookie from "cookie";
-import axios from "axios";
-import type { Handler as GetContractHandler } from "../../../../../functions/contract/get";
+import getFundraiseData from "~/data/getFundraiseData.server";
+import waitForContractDraft from "~/data/waitForContractDraft.server";
 import { getAuth } from "@clerk/remix/ssr.server";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
+import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
+import refreshContractDraft from "~/data/refreshContractDraft.server";
 
 const ExplainTitle = styled.div`
   font-size: 18px;
@@ -113,36 +113,17 @@ const Container = styled(Form)`
   max-width: 1000px;
 `;
 
-type FundraiseData = Awaited<ReturnType<GetContractHandler>>;
+type FundraiseData = Awaited<ReturnType<typeof getFundraiseData>>;
 
-export const loader: LoaderFunction = async ({ request, params }) => {
-  const cookieHeader = request.headers.get("cookie") || "";
-  const cookieObj = cookie.parse(cookieHeader);
-  const token = cookieObj.__session;
-  const opts = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  return axios
-    .get<FundraiseData>(
-      `${process.env.API_URL}/contract?uuid=${params.id}`,
-      opts
-    )
-    .then((r) =>
-      axios
-        .get(`${process.env.API_URL}/contract-refresh?uuid=${params.id}`, opts)
-        .then(() => r.data)
-    )
-    .catch((e) => {
-      console.error(e);
-      return {};
-    });
-};
+export const loader = createAuthenticatedLoader((userId, params) => {
+  return getFundraiseData({ uuid: params.id || "", userId }).then((r) =>
+    waitForContractDraft(params.id || "").then(() => r)
+  );
+});
 
 export const action: ActionFunction = ({ request, params }) => {
   return getAuth(request)
-    .then(async ({ userId, getToken }) => {
+    .then(async ({ userId }) => {
       if (!userId) {
         return new Response("No valid user found", { status: 401 });
       }
@@ -153,19 +134,9 @@ export const action: ActionFunction = ({ request, params }) => {
         const formData = await request.formData();
         const uuid = formData.get("uuid");
         if (!uuid) return new Error("`uuid` is required.");
-        return getToken()
-          .then((token) =>
-            axios.put(
-              `${process.env.API_URL}/contract-refresh?uuid=${params.id}`,
-              { uuid },
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            )
-          )
-          .then(() => ({ success: true }));
+        return refreshContractDraft({ uuid: params.id || "" }).then(() => ({
+          success: true,
+        }));
       } else {
         return {
           error: `Unsupported method: ${request.method}`,

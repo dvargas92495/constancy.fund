@@ -1,5 +1,4 @@
 import sendEmail from "aws-sdk-plus/dist/sendEmail";
-import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import { execute } from "../../app/data/mysql.server";
 import { users } from "@clerk/clerk-sdk-node";
 import { render as renderInvestorSigned } from "../../app/emails/InvestorSigned";
@@ -9,7 +8,7 @@ import eversign from "../../app/data/eversign.server";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import getPaymentPreferences from "../../app/data/getPaymentPreferences.server";
 
-const logic = ({ agreementUuid }: { agreementUuid: string }) => {
+const signAgreement = ({ agreementUuid }: { agreementUuid: string }) => {
   return execute(
     `SELECT e.id, i.uuid, i.name, i.email, c.userId, c.type
      FROM agreement a
@@ -70,7 +69,7 @@ const logic = ({ agreementUuid }: { agreementUuid: string }) => {
             })
         );
       } else if (numSigners === 2) {
-        return getPaymentPreferences(r.id).then((creatorPaymentPreferences) =>
+        return getPaymentPreferences(r.id || '').then((creatorPaymentPreferences) =>
           sendEmail({
             to: r.investorEmail,
             replyTo: r.userEmail,
@@ -90,5 +89,4 @@ const logic = ({ agreementUuid }: { agreementUuid: string }) => {
     .then(() => ({ success: true }));
 };
 
-export const handler = createAPIGatewayProxyHandler(logic);
-export type Handler = typeof logic;
+export default signAgreement;

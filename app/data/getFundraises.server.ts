@@ -1,11 +1,9 @@
-import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
-import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
-import { execute } from "../../app/data/mysql.server";
-import { users, User } from "@clerk/clerk-sdk-node";
-import FUNDRAISE_TYPES from "../../app/enums/fundraiseTypes";
+import { execute } from "./mysql.server";
+import { users } from "@clerk/clerk-sdk-node";
+import FUNDRAISE_TYPES from "../enums/fundraiseTypes";
 
-const logic = ({ user: { id } }: { user: User }) => {
-  return users.getUser(id || "").then((u) => {
+const getFundraises = ({ userId }: { userId: string }) => {
+  return users.getUser(userId).then((u) => {
     if (!u.publicMetadata.completed) {
       return {
         fundraises: [],
@@ -18,7 +16,7 @@ const logic = ({ user: { id } }: { user: User }) => {
      LEFT JOIN agreement a ON a.contractUuid = c.uuid
      INNER JOIN contractdetail cd ON cd.contractUuid = c.uuid
      WHERE c.userId = ?`,
-      [id || ""]
+      [userId]
     ).then((results) => {
       const fundraises: Record<
         string,
@@ -67,7 +65,4 @@ const logic = ({ user: { id } }: { user: User }) => {
   });
 };
 
-export const handler = clerkAuthenticateLambda(
-  createAPIGatewayProxyHandler(logic)
-);
-export type Handler = typeof logic;
+export default getFundraises;

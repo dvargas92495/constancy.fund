@@ -4,14 +4,15 @@ import { UserButton } from "@clerk/remix";
 
 import _H1 from "@dvargas92495/ui/dist/components/H1";
 import _H4 from "@dvargas92495/ui/dist/components/H4";
-import useAuthenticatedHandler from "@dvargas92495/ui/dist/useAuthenticatedHandler";
-import type { Handler as GetContractHandler } from "../../../../../functions/contract/get";
-import type { Handler as DeleteAgreementHandler } from "../../../../../functions/agreement/delete";
 import CONTRACT_STAGES from "../../../../../db/contract_stages";
-import { LoaderFunction, useLoaderData, useParams } from "remix";
+import {
+  ActionFunction,
+  LoaderFunction,
+  useFetcher,
+  useLoaderData,
+  useParams,
+} from "remix";
 import formatAmount from "../../../../../db/util/formatAmount";
-import cookie from "cookie";
-import axios from "axios";
 import TopBar from "~/_common/TopBar";
 import InfoArea from "~/_common/InfoArea";
 import PageTitle from "~/_common/PageTitle";
@@ -25,6 +26,10 @@ import SectionTitle from "~/_common/SectionTitle";
 import ProgressBar from "~/_common/ProgressBar";
 import { LoadingIndicator } from "~/_common/LoadingIndicator";
 import { PrimaryAction } from "~/_common/PrimaryAction";
+import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
+import getFundraiseData from "~/data/getFundraiseData.server";
+import deleteAgreement from "~/data/deleteAgreement.server";
+import { getAuth } from "@clerk/remix/ssr.server";
 
 const ConditionsContainer = styled.div`
   display: flex;
@@ -258,7 +263,8 @@ const TitleTopBoxSmall = styled.div`
   margin-bottom: 20px;
 `;
 
-type Agreements = Awaited<ReturnType<GetContractHandler>>["agreements"];
+type FundraiseData = Awaited<ReturnType<typeof getFundraiseData>>;
+type Agreements = FundraiseData["agreements"];
 const STAGE_COLORS = [
   "#48cae4",
   "#0096c7",
@@ -273,21 +279,15 @@ const STAGE_ACTIONS: ((a: {
   onDelete: (uuid: string) => void;
 }) => React.ReactElement)[] = [
   (row) => {
-    const deleteHandler = useAuthenticatedHandler<DeleteAgreementHandler>({
-      path: "agreement",
-      method: "DELETE",
-    });
-    const [loading, setLoading] = useState(false);
+    const fetcher = useFetcher();
     return (
       <>
-        {!loading ? (
+        {fetcher.state === "idle" ? (
           <>
             <IconContainer
               onClick={() => {
-                setLoading(true);
-                deleteHandler({ uuid: row.uuid })
-                  .then(() => row.onDelete(row.uuid))
-                  .finally(() => setLoading(false));
+                fetcher
+                  .submit({ uuid: row.uuid }, { method: "delete" })
               }}
             >
               <Icon name="remove" heightAndWidth={"16px"} />
@@ -368,8 +368,6 @@ const AgreementRow = (
 const Container = styled.div`
   max-width: 1000px;
 `;
-
-type FundraiseData = Awaited<ReturnType<GetContractHandler>>;
 
 const UserFundraisesContract = () => {
   const { id = "" } = useParams();
@@ -577,21 +575,26 @@ const UserFundraisesContract = () => {
   );
 };
 
-export const loader: LoaderFunction = async ({ request, params }) => {
-  const cookieHeader = request.headers.get("cookie") || "";
-  const cookieObj = cookie.parse(cookieHeader);
-  const token = cookieObj.__session;
-  return axios
-    .get<FundraiseData>(`${process.env.API_URL}/contract?uuid=${params.id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((r) => r.data)
-    .catch((e) => {
-      console.error(e);
+export const loader: LoaderFunction = createAuthenticatedLoader(
+  (userId, params) => getFundraiseData({ uuid: params.id || "", userId })
+);
+
+export const action: ActionFunction = async ({ request }) => {
+  return getAuth(request).then(async ({ userId }) => {
+    if (!userId) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+    const formData = await request.formData();
+    if (request.method === "DELETE") {
+      const uuid = formData.get("uuid");
+      if (!uuid) return new Response("`uuid` is required", { status: 400 });
+      if (typeof uuid !== "string")
+        return new Response("`uuid` must be a string", { status: 400 });
+      return deleteAgreement({ uuid, userId });
+    } else {
       return {};
-    });
+    }
+  });
 };
 
 export default UserFundraisesContract;

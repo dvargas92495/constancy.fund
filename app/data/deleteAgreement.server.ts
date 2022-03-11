@@ -1,10 +1,7 @@
-import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
-import { createAPIGatewayProxyHandler } from "aws-sdk-plus";
-import type { User } from "@clerk/clerk-sdk-node";
 import { execute } from "../../app/data/mysql.server";
 import { NotFoundError, MethodNotAllowedError } from "aws-sdk-plus/dist/errors";
 
-const logic = ({ uuid, user: { id: userId } }: { uuid: string; user: User }) =>
+const deleteAgreement = ({ uuid, userId }: { uuid: string; userId: string }) =>
   Promise.all([
     execute(
       `SELECT c.userId 
@@ -41,7 +38,4 @@ const logic = ({ uuid, user: { id: userId } }: { uuid: string; user: User }) =>
     })
     .then(() => ({ success: true }));
 
-export const handler = clerkAuthenticateLambda(
-  createAPIGatewayProxyHandler(logic)
-);
-export type Handler = typeof logic;
+export default deleteAgreement;

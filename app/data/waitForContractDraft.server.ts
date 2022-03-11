@@ -1,6 +1,3 @@
-import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
-import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
-import {InternalServorError} from "aws-sdk-plus/dist/errors";
 import fs from "fs";
 import path from "path";
 import { FE_PUBLIC_DIR } from "fuegojs/dist/common";
@@ -12,7 +9,9 @@ const doesContractExist =
   process.env.NODE_ENV === "development"
     ? (uuid: string) =>
         Promise.resolve(
-          fs.existsSync(path.join(FE_PUBLIC_DIR, `_contracts/${uuid}/draft.pdf`))
+          fs.existsSync(
+            path.join(FE_PUBLIC_DIR, `_contracts/${uuid}/draft.pdf`)
+          )
         )
     : (uuid: string) =>
         s3
@@ -24,7 +23,7 @@ const doesContractExist =
           .then(() => true)
           .catch(() => false);
 
-export const waitForContract = (uuid: string, trial = 0): Promise<boolean> =>
+const waitForContract = (uuid: string, trial = 0): Promise<boolean> =>
   doesContractExist(uuid).then((exists) => {
     if (exists) {
       return true;
@@ -37,20 +36,4 @@ export const waitForContract = (uuid: string, trial = 0): Promise<boolean> =>
     }
   });
 
-const logic = ({ uuid }: { uuid: string }) =>
-  waitForContract(uuid).then((success) => {
-    if (success) {
-      return {
-        success,
-      };
-    } else {
-      throw new InternalServorError(
-        `Timed out waiting for contract ${uuid} to finish generating`
-      );
-    }
-  });
-
-export const handler = clerkAuthenticateLambda(
-  createAPIGatewayProxyHandler(logic)
-);
-export type Handler = typeof logic;
+export default waitForContract;

@@ -1,17 +1,15 @@
-import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
-import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
-import { execute } from "../../app/data/mysql.server";
-import type { User } from "@clerk/clerk-sdk-node";
+import { execute } from "./mysql.server";
 import FUNDRAISE_TYPES from "../../app/enums/fundraiseTypes";
 import { Client } from "@dvargas92495/eversign";
 const eversign = new Client(process.env.EVERSIGN_API_KEY || "", 398320);
 
-const logic = ({ uuid, user: { id } }: { uuid: string; user: User }) =>
+const getFundraiseData = ({ uuid, userId }: { uuid: string; userId: string }) =>
   execute(
-    `SELECT c.type, c.userId, a.uuid, a.amount, a.name, a.email, e.id, cd.label, cd.value
+    `SELECT c.type, c.userId, a.uuid, a.amount, i.name, i.email, e.id, cd.label, cd.value
    FROM contract c
    LEFT JOIN agreement a ON a.contractUuid = c.uuid
+   LEFT JOIN investor i ON i.uuid = a.investorUuid
    INNER JOIN contractdetail cd ON c.uuid = cd.contractUuid
    LEFT JOIN eversigndocument e ON e.agreementUuid = a.uuid
    WHERE c.uuid = ?`,
@@ -30,7 +28,7 @@ const logic = ({ uuid, user: { id } }: { uuid: string; user: User }) =>
     }[];
     if (!fundraise.length)
       throw new NotFoundError(`Could not find contract with id ${uuid}`);
-    if (id !== fundraise[0].userId)
+    if (userId !== fundraise[0].userId)
       throw new MethodNotAllowedError(
         `User not authorized to view agreements in contract ${uuid}`
       );
@@ -85,7 +83,4 @@ const logic = ({ uuid, user: { id } }: { uuid: string; user: User }) =>
     };
   });
 
-export const handler = clerkAuthenticateLambda(
-  createAPIGatewayProxyHandler(logic)
-);
-export type Handler = typeof logic;
+export default getFundraiseData;

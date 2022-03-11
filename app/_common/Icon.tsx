@@ -5,23 +5,23 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FacebookIcon from "@mui/icons-material/Facebook";
-import GitHubIcon from "./Icons/github.svg";
 import InfoIcon from "@mui/icons-material/Info";
 import InstagramIcon from "@mui/icons-material/Instagram";
-import LinkedInIcon from "./Icons/linkedin.svg";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import NoteIcon from "@mui/icons-material/Note";
 import PreviewIcon from "@mui/icons-material/Preview";
-import PublicIcon from "./Icons/globe.svg";
 import RedditIcon from "@mui/icons-material/Reddit";
-import TwitterIcon from "./Icons/twitter.svg";
 
 import BookSvg from "./Icons/book.svg";
 import DollarSvg from "./Icons/dollar.svg";
+import GitHubSvg from "./Icons/github.svg";
 import Globe from "./Icons/globe.svg";
+import LinkedInSvg from "./Icons/linkedin.svg";
 import PersonFineSvg from "./Icons/personFine.svg";
 import MailSvg from "./Icons/mail.svg";
 import RocketSvg from "./Icons/rocket.svg";
+import PublicSvg from "./Icons/globe.svg";
+import TwitterSvg from "./Icons/twitter.svg";
 import SettingsSvg from "./Icons/settings.svg";
 import ThumbsUp from "./Icons/thumbsUp.svg";
 import Repeat from "./Icons/repeat.svg";
@@ -46,46 +46,46 @@ const Icon = ({
   heightAndWidth?: string;
   color?: string;
   name:
-  | "arrow-drop-down"
-  | "arrow-right"
-  | "book"
-  | "check"
-  | "delete"
-  | "dollar"
-  | "email"
-  | "facebook"
-  | "fundraise"
-  | "github"
-  | "globe"
-  | "home"
-  | "info"
-  | "Instagram"
-  | "linkedIn"
-  | "mail"
-  | "money"
-  | "more-vert"
-  | "note"
-  | "personFine"
-  | "preview"
-  | "public"
-  | "reddit"
-  | "repeat"
-  | "settings"
-  | "split"
-  | "thumbsUp"
-  | "trendingUp"
-  | "twitter"
-  | "webIcon"
-  | "remove"
-  | "backArrow"
-  | "edit"
-  | "monitor"
-  | "ethereum"
-  | "near"
-  | "bitcoin"
-  | "bank"
-  | "paypalSmall"
-  | "youtube";
+    | "arrow-drop-down"
+    | "arrow-right"
+    | "book"
+    | "check"
+    | "delete"
+    | "dollar"
+    | "email"
+    | "facebook"
+    | "fundraise"
+    | "github"
+    | "globe"
+    | "home"
+    | "info"
+    | "Instagram"
+    | "linkedIn"
+    | "mail"
+    | "money"
+    | "more-vert"
+    | "note"
+    | "personFine"
+    | "preview"
+    | "public"
+    | "reddit"
+    | "repeat"
+    | "settings"
+    | "split"
+    | "thumbsUp"
+    | "trendingUp"
+    | "twitter"
+    | "webIcon"
+    | "remove"
+    | "backArrow"
+    | "edit"
+    | "monitor"
+    | "ethereum"
+    | "near"
+    | "bitcoin"
+    | "bank"
+    | "paypalSmall"
+    | "youtube";
 } & Pick<SvgIconProps, "height" | "width">) => {
   const muiProps = {
     ...inputProps,
@@ -97,51 +97,51 @@ const Icon = ({
   };
   switch (name) {
     case "arrow-drop-down":
-      return <StyledIcon {...props} icon={ArrowDropDownIcon} />;
+      return <ArrowDropDownIcon {...muiProps} />;
     case "arrow-right":
-      return <StyledIcon  {...props} icon={ArrowRightIcon} />;
+      return <ArrowRightIcon {...muiProps} />;
     case "book":
       return <StyledIcon {...props} icon={BookSvg} />;
     case "check":
-      return <StyledIcon {...props} icon={CheckIcon} />;
+      return <CheckIcon {...muiProps} />;
     case "delete":
-      return <StyledIcon {...props} icon={DeleteIcon} />;
+      return <DeleteIcon {...muiProps} />;
     case "dollar":
       return <StyledIcon {...props} icon={DollarSvg} />;
     case "email":
       return <StyledIcon {...props} icon={MailSvg} />;
     case "facebook":
-      return <StyledIcon {...props} icon={FacebookIcon} />;
+      return <FacebookIcon {...muiProps} />;
     case "fundraise":
       return <StyledIcon {...props} icon={RocketSvg} />;
     case "github":
-      return <StyledIcon {...props} icon={GitHubIcon} />;
+      return <StyledIcon {...props} icon={GitHubSvg} />;
     case "globe":
       return <StyledIcon {...props} icon={Globe} />;
     case "home":
       return <StyledIcon {...props} icon={PersonFineSvg} />;
     case "info":
-      return <StyledIcon  {...props} icon={InfoIcon} />;
+      return <InfoIcon {...muiProps} />;
     case "Instagram":
-      return <StyledIcon {...props} icon={InstagramIcon} />;
+      return <InstagramIcon {...muiProps} />;
     case "linkedIn":
-      return <StyledIcon {...props} icon={LinkedInIcon} />;
+      return <StyledIcon {...props} icon={LinkedInSvg} />;
     case "mail":
       return <StyledIcon {...props} icon={MailSvg} />;
     case "money":
       return <StyledIcon {...props} icon={DollarSvg} />;
     case "more-vert":
-      return <StyledIcon {...props} icon={MoreVertIcon} />;
+      return <MoreVertIcon {...muiProps} />;
     case "note":
-      return <StyledIcon {...props} icon={NoteIcon} />;
+      return <NoteIcon {...muiProps} />;
     case "personFine":
       return <StyledIcon {...props} icon={PersonFineSvg} />;
     case "preview":
-      return <StyledIcon {...props} icon={PreviewIcon} />;
+      return <PreviewIcon {...muiProps} />;
     case "public":
-      return <StyledIcon {...props} icon={PublicIcon} />;
+      return <StyledIcon {...props} icon={PublicSvg} />;
     case "reddit":
-      return <StyledIcon {...props} icon={RedditIcon} />;
+      return <RedditIcon {...muiProps} />;
     case "repeat":
       return <StyledIcon {...props} icon={Repeat} />;
     case "settings":
@@ -153,7 +153,7 @@ const Icon = ({
     case "trendingUp":
       return <StyledIcon {...props} icon={TrendingUp} />;
     case "twitter":
-      return <StyledIcon {...props} icon={TwitterIcon} />;
+      return <StyledIcon {...props} icon={TwitterSvg} />;
     case "webIcon":
       return <StyledIcon {...props} icon={Globe} />;
     case "remove":

@@ -5,15 +5,21 @@ import Body from "@dvargas92495/ui/dist/components/Body";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import React, { useEffect, useState } from "react";
-import type { Handler as PostHandler } from "../../functions/agreement-sign/post";
-import useHandler from "@dvargas92495/ui/dist/useHandler";
+import signAgreement from "~/data/signAgreement.server";
 import type { ExternalScriptsFunction } from "remix-utils";
 
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
 import Section from "~/_common/Section";
 import { LoadingIndicator } from "~/_common/LoadingIndicator";
-import { LoaderFunction, useLoaderData, useParams } from "remix";
+import {
+  ActionFunction,
+  LoaderFunction,
+  useActionData,
+  useFetcher,
+  useLoaderData,
+  useParams,
+} from "remix";
 import getContract from "../data/getContract.server";
 
 const ProfileContainer = styled.div`
@@ -160,11 +166,14 @@ const ContractPage = (): React.ReactElement => {
   const isInvestor = Number(useParams().signer) === 1;
   const [signed, setSigned] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const signAgreement = useHandler<PostHandler>({
-    path: "agreement-sign",
-    method: "POST",
-  });
-
+  const fetcher = useFetcher();
+  const actionData = useActionData();
+  useEffect(() => {
+    if (actionData.success) {
+      setSigned(true);
+      setSnackbarOpen(true);
+    }
+  }, [actionData]);
   return (
     <ProfileContainer>
       <BackButton
@@ -188,10 +197,7 @@ const ContractPage = (): React.ReactElement => {
             <EversignEmbed
               url={url}
               onSign={() => {
-                signAgreement({ agreementUuid }).then(() => {
-                  setSigned(true);
-                  setSnackbarOpen(true);
-                });
+                fetcher.submit({ agreementUuid }, { method: "post" });
               }}
             />
           </EversignEmbedContainer>
@@ -231,6 +237,15 @@ const ContractPage = (): React.ReactElement => {
 
 export const loader: LoaderFunction = ({ params }) =>
   getContract({ uuid: params.uuid || "", signer: params.signer || "" });
+
+export const action: ActionFunction = async ({ request }) => {
+  const formData = await request.formData();
+  const agreementUuid = formData.get("agreementUuid");
+  if (!agreementUuid) return new Response("`agreementUuid` is required", { status: 400 });
+  if (typeof agreementUuid !== "string")
+    return new Response("`agreementUuid` must be a string", { status: 400 });
+  return signAgreement({agreementUuid});
+};
 
 export const meta = getMeta({
   title: "Contract",
