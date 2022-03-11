@@ -4,6 +4,7 @@ import {
   Form,
   LoaderFunction,
   useActionData,
+  useCatch,
   useLoaderData,
 } from "remix";
 import { getAuth } from "@clerk/remix/ssr.server";
@@ -41,6 +42,7 @@ import TextFieldDescription from "~/_common/TextFieldDescription";
 import SubSectionTitle from "~/_common/SubSectionTitle";
 import TextInputMultiLine from "~/_common/TextInputMultiLine";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
+import { CatchBoundaryComponent } from "@remix-run/react/routeModules";
 
 const SubSection = styled.div`
   margin-top: 60px;
@@ -305,7 +307,10 @@ const UserProfile = () => {
             </QuestionaireBox>
           </SubSection>
           <SubSection>
-            <SubSectionTitle><Icon name={"youtube"} heightAndWidth="20px" color="purple" />Attach a demo video</SubSectionTitle>
+            <SubSectionTitle>
+              <Icon name={"youtube"} heightAndWidth="20px" color="purple" />
+              Attach a demo video
+            </SubSectionTitle>
             <TextInputContainer width={"350px"}>
               <TextInputOneLine
                 defaultValue={demoVideo}
@@ -315,7 +320,10 @@ const UserProfile = () => {
             </TextInputContainer>
           </SubSection>
           <SubSection>
-            <SubSectionTitle><Icon name={"monitor"} heightAndWidth="20px" color="purple" />Attach a slide deck</SubSectionTitle>
+            <SubSectionTitle>
+              <Icon name={"monitor"} heightAndWidth="20px" color="purple" />
+              Attach a slide deck
+            </SubSectionTitle>
             <TextInputContainer width={"350px"}>
               <TextInputOneLine
                 defaultValue={attachDeck}
@@ -549,7 +557,9 @@ const UserProfile = () => {
 export const loader = async ({ request }: Parameters<LoaderFunction>[0]) => {
   return getAuth(request).then(async ({ userId }) => {
     if (!userId) {
-      return new Response("No valid user found", { status: 401 });
+      throw new Response("Cannot access private page while not authenticated", {
+        status: 401,
+      });
     }
     return getUserProfile(userId);
   });
@@ -559,7 +569,10 @@ export const action: ActionFunction = ({ request }) => {
   return getAuth(request)
     .then(async ({ userId }) => {
       if (!userId) {
-        return new Response("No valid user found", { status: 401 });
+        throw new Response(
+          "Cannot access private page while not authenticated",
+          { status: 401 }
+        );
       }
       const formData = await request.formData();
       const data = Object.fromEntries(
@@ -571,6 +584,11 @@ export const action: ActionFunction = ({ request }) => {
       return saveUserProfile(userId, data).then(() => ({ success: true }));
     })
     .catch((e) => ({ success: false, error: e.message }));
+};
+
+export const CatchBoundary: CatchBoundaryComponent = () => {
+  const { data } = useCatch();
+  return <div>{data}</div>;
 };
 
 export default UserProfile;

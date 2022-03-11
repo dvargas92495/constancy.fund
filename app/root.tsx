@@ -10,6 +10,7 @@ import {
   useCatch,
   ScrollRestoration,
   useLoaderData,
+  ErrorBoundaryComponent,
 } from "remix";
 import { ExternalScripts } from "remix-utils";
 import { ConnectClerk, ConnectClerkCatchBoundary } from "@clerk/remix";
@@ -190,13 +191,14 @@ export const links: LinksFunction = () => {
   ];
 };
 
-export const CatchBoundary = () => ConnectClerkCatchBoundary(() => {
+export const CatchBoundary = ConnectClerkCatchBoundary(() => {
   const caught = useCatch();
   return (
     <html>
       <head>
-        <title>Oops!</title>
-        <Meta />
+        <title>Caught an Error</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Links />
       </head>
       <body>
@@ -207,7 +209,45 @@ export const CatchBoundary = () => ConnectClerkCatchBoundary(() => {
       </body>
     </html>
   );
-})();
+});
+
+export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
+  // using inline-styles instead of styled components for now due to hydration issues
+  return (
+    <html>
+      <head>
+        <title>Error!</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <Links />
+      </head>
+      <body>
+        <main
+          style={{
+            fontFamily: "system-ui, sans-serif",
+            padding: "2rem",
+          }}
+        >
+          <h1 style={{ fontSize: 24 }}>Application Error</h1>
+          <h3 style={{ fontSize: 18 }}>
+            Please email support@constancy.fund for assistance
+          </h3>
+          <pre
+            style={{
+              padding: "2rem",
+              background: "rgba(191, 85, 64, 0.1)",
+              color: "red",
+              overflow: "auto",
+            }}
+          >
+            {error.stack}
+          </pre>
+        </main>
+        <Scripts />
+      </body>
+    </html>
+  );
+};
 
 const RootContainer = styled.div`
   width: 100%;
@@ -260,4 +300,4 @@ const App = () => {
   );
 };
 
-export default () => ConnectClerk(App)();
+export default ConnectClerk(App);
