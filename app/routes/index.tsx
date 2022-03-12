@@ -120,7 +120,7 @@ const Home: React.FC = () => {
             Crowdfunding for people and organisations that don’t want to sell
             equity.
           </SubTitle>
-          <SignupBox method="post">
+          <SignupBox method="post" action={"/?index"}>
             <SignupFieldContainer name="email" placeholder="Your Email" />
             <PrimaryAction
               height="60px"
