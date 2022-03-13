@@ -50,6 +50,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGINGL_AWS_ACCESS_SECRET }}
           FE_DIR_PREFIX: /tmp
       - name: build fe
-        run: npm run build
+        run: npm run build -- --readable
       - name: deploy fe
         run: npm run deploy -- --domain staging.constancy.fund

@@ -1,8 +1,9 @@
 import { createRequestHandler } from "@dvargas92495/remix-lambda-at-edge";
+import * as build from "@remix-run/dev/server-build";
 // import sendEmail from "aws-sdk-plus/dist/sendEmail";
 
 export const handler = createRequestHandler({
-  build: require("./build"),
+  build,
   originPaths: [
     "favicon.ico",
     /^\/build\/.*/,
