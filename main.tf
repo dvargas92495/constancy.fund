@@ -79,7 +79,7 @@ provider "github" {
 
 module "aws_static_site" {
   source  = "dvargas92495/static-site/aws"
-  version = "3.3.0"
+  version = "3.3.1"
 
   domain = "constancy.fund"
   secret = var.secret
@@ -105,7 +105,7 @@ module "aws-serverless-backend" {
 
 module "aws_static_site_staging" {
   source  = "dvargas92495/static-site/aws"
-  version = "3.3.0"
+  version = "3.3.1"
 
   domain = "staging.constancy.fund"
   secret = var.secret
