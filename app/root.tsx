@@ -165,8 +165,14 @@ export const meta: MetaFunction = () => {
   };
 };
 
-export const loader: LoaderFunction = (args) =>
-  rootAuthLoader(
+export const loader: LoaderFunction = (args) => {
+  console.log("--- serialised request ----");
+  console.log(args.request);
+  console.log(JSON.stringify(args.request.url));
+  console.log(JSON.stringify(args.request.referrer));
+  console.log(JSON.stringify([...args.request.headers]));
+  console.log("--- serialised request end ----");
+  return rootAuthLoader(
     args,
     () => ({
       ENV: {
@@ -179,6 +185,7 @@ export const loader: LoaderFunction = (args) =>
     }),
     { loadUser: true }
   );
+};
 
 export const links: LinksFunction = () => {
   return [
