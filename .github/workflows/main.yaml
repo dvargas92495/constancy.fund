@@ -16,6 +16,7 @@ env:
   CLERK_API_KEY: ${{ secrets.CLERK_API_KEY }}
   CLERK_FRONTEND_API: clerk.constancy.fund
   CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+  CONVERTKIT_API_KEY: ${{ secrets.CONVERTKIT_API_KEY }}
   DATABASE_URL: mysql://constancy_fund:${{ secrets.MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/constancy_fund
   EVERSIGN_API_KEY: ${{ secrets.EVERSIGN_API_KEY }}
   HOST: https://constancy.fund
