@@ -557,7 +557,6 @@ const UserProfile = () => {
 export const loader = async ({ request }: Parameters<LoaderFunction>[0]) => {
   return getAuth(request).then(async ({ userId }) => {
     if (!userId) {
-      console.error("Cannot access private page while not authenticated");
       throw new Response("Cannot access private page while not authenticated", {
         status: 401,
       });
