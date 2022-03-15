@@ -256,6 +256,7 @@ const SubscribeConfirmBox = styled.div`
   display: flex;
   align-items: center;
   grid-gap: 10px;
+  height: 60px;
 `
 
 const SubscribeBox = () => {
