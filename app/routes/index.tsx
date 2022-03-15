@@ -162,7 +162,13 @@ font-weight: 800;
 font-size: 20px;
 color: ${(props) => props.theme.palette.color.purple};
 `
-const UseCaseExampleDescription = styled.div``
+const UseCaseExampleDescription = styled.div`
+  font-weight: 400;
+  font-size: 16px;
+  color: ${(props) => props.theme.palette.color.lighterText};
+`
+
+
 const SuperpowerContainer = styled.div`
   display: flex;
   align-items: center;
