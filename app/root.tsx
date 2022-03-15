@@ -63,6 +63,7 @@ const themeProps = {
       darkhover: "#E5F0FF",
       darkerText: "#292C38",
       lighterText: "#96A0B5",
+      normalText: "#73778B",
       backgroundColor: "#F8FBFF",
       backgroundColorDarker: "#e5f0ff70",
       backgroundColorDarkerDarker: "#E5F0FF",
@@ -141,18 +142,18 @@ const GlobalStyle = createGlobalStyle<{ theme: typeof themeProps }>`
 
         &:hover {
           background: ${(props) =>
-            props.theme.palette.color.backgroundColorDarker} !important;
+    props.theme.palette.color.backgroundColorDarker} !important;
         }
     }
 
     & .Mui-selected {
         background: ${(props) =>
-          props.theme.palette.color.backgroundHighlight} !important;
+    props.theme.palette.color.backgroundHighlight} !important;
     }
 
     & .Mui-focusVisible {
         background: ${(props) =>
-          props.theme.palette.color.backgroundColorDarker} !important;
+    props.theme.palette.color.backgroundColorDarker} !important;
     }
 `;
 
