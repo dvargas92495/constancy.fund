@@ -555,9 +555,6 @@ const UserProfile = () => {
 };
 
 export const loader = async ({ request }: Parameters<LoaderFunction>[0]) => {
-  console.log("loading user page");
-  console.log("cookie", request.headers.get("cookie"));
-  console.log("Cookie", request.headers.get("Cookie"));
   return getAuth(request).then(async ({ userId }) => {
     if (!userId) {
       console.error("Cannot access private page while not authenticated");
