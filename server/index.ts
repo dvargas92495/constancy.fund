@@ -1,8 +1,8 @@
 import { createRequestHandler } from "@dvargas92495/remix-lambda-at-edge";
-import { CloudFrontRequestHandler } from "aws-lambda";
+import type { CloudFrontRequestHandler } from "aws-lambda";
 // import * as build from "@remix-run/dev/server-build";
 // import sendEmail from "aws-sdk-plus/dist/sendEmail";
-
+console.log('Loading handler...');
 const originPaths = [
   "favicon.ico",
   /^\/build\/.*/,
@@ -22,4 +22,7 @@ const requestHandler = createRequestHandler({
   }),*/
 });
 
-export const handler: CloudFrontRequestHandler = requestHandler;
+export const handler: CloudFrontRequestHandler = (e, c, cb) => {
+  console.log('HANDLING', e.Records[0].cf.request.uri, e.Records[0].cf.request.method)
+  return requestHandler(e, c, cb);
+}
