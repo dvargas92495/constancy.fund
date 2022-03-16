@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@clerk/remix": "0.1.0-alpha.6",
-    "@dvargas92495/api": "^0.7.1",
+    "@dvargas92495/api": "^0.7.0",
     "@dvargas92495/eversign": "^1.9.5",
     "@dvargas92495/ui": "^0.46.3",
     "@prisma/client": "^3.6.0",
