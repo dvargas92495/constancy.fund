@@ -11,8 +11,20 @@ const originPaths = [
   /^\/_contracts\/.*/,
 ];
 
+const requestHandler = createRequestHandler({
+  build: require("./build"),
+  originPaths,
+  onError: (e) => console.log("Send email to me", e),
+  /*sendEmail({
+    to: "support@constancy.fund",
+    subject: "Remix Origin Error",
+    body: e.message,
+  }),*/
+});
+
 export const handler: CloudFrontRequestHandler = (e, c, cb) => {
   // TODO: Remove this block when clientUat bug is resolved
+  console.log('Entered request handler');
   const cloudfrontRequest = e.Records[0].cf.request;
   const originPathRegexes = originPaths.map((s) =>
     typeof s === "string" ? new RegExp(s) : s
@@ -26,14 +38,6 @@ export const handler: CloudFrontRequestHandler = (e, c, cb) => {
   }
   // END TODO
 
-  return createRequestHandler({
-    build: require("./build"),
-    originPaths,
-    onError: (e) => console.log("Send email to me", e),
-    /*sendEmail({
-      to: "support@constancy.fund",
-      subject: "Remix Origin Error",
-      body: e.message,
-    }),*/
-  })(e, c, cb);
+  console.log('Entering core handler');
+  return requestHandler(e, c, cb);
 };
