@@ -8,7 +8,6 @@ import {
 import FUNDRAISE_TYPES from "../enums/fundraiseTypes";
 import { FE_PUBLIC_DIR } from "fuegojs/dist/common";
 import path from "path";
-import invokeDirect from "@dvargas92495/api/invokeDirect";
 import type { Handler as ContractHandler } from "../../functions/create-contract-pdf";
 import { Client, Document, File, Signer } from "@dvargas92495/eversign";
 import { v4 } from "uuid";
@@ -151,20 +150,26 @@ const createAgreement = ({
         }
         return Promise.all([
           users.getUser(c.userId),
-          invokeDirect<Parameters<ContractHandler>[0]>({
-            path: "create-contract-pdf",
-            data: {
-              uuid: c.uuid,
-              outfile: agreementUuid,
-              inputData: {
-                investor: name,
-                investor_location: `${investorAddressNumber} ${investorAddressStreet} ${investorAddressCity}, ${investorAddressCountry}, ${investorAddressZip}`,
-                amount: (Number(detailData.amount) * investorShare).toString(),
-                share: (Number(detailData.share) * investorShare).toString(),
-                return: (Number(detailData.return) * investorShare).toString(),
+          import("@dvargas92495/api/invokeDirect").then((invokeDirect) =>
+            invokeDirect.default<Parameters<ContractHandler>[0]>({
+              path: "create-contract-pdf",
+              data: {
+                uuid: c.uuid,
+                outfile: agreementUuid,
+                inputData: {
+                  investor: name,
+                  investor_location: `${investorAddressNumber} ${investorAddressStreet} ${investorAddressCity}, ${investorAddressCountry}, ${investorAddressZip}`,
+                  amount: (
+                    Number(detailData.amount) * investorShare
+                  ).toString(),
+                  share: (Number(detailData.share) * investorShare).toString(),
+                  return: (
+                    Number(detailData.return) * investorShare
+                  ).toString(),
+                },
               },
-            },
-          }),
+            })
+          ),
         ]).then(([user]) => ({
           user,
           type: FUNDRAISE_TYPES[c.type].name,
