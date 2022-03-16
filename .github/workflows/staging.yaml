@@ -52,5 +52,7 @@ jobs:
           FE_DIR_PREFIX: /tmp
       - name: build fe
         run: npm run build -- --readable
+      - name: monitor
+        run: npm run monitor
       - name: deploy fe
         run: npm run deploy -- --domain staging.constancy.fund
