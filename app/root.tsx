@@ -20,6 +20,8 @@ import { CacheProvider } from "@emotion/react";
 import MuiThemeProvider from "@mui/material/styles/ThemeProvider";
 import CssBaseline from "@mui/material/CssBaseline";
 import GlobalStyles from "@mui/material/GlobalStyles";
+import createTheme from "@mui/material/styles/createTheme";
+import { useMemo } from "react";
 
 const themeProps = {
   palette: {
@@ -40,6 +42,10 @@ const themeProps = {
       primary: "#292C38",
       secondary: "#73778B",
       tertiary: "#96A0B5",
+    },
+    divider: "#333333",
+    common: {
+      white: "#fff",
     },
     // All custom fields
     color: {
@@ -110,6 +116,80 @@ const themeProps = {
       fontSize: "1.25rem",
     },
   },
+  components: {
+    MuiBreadcrumbs: {
+      styleOverrides: {
+        root: {
+          margin: 0,
+        },
+      },
+    },
+    MuiCardHeader: {
+      styleOverrides: {
+        subheader: {
+          margin: 0,
+        },
+        title: {
+          margin: 0,
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          minWidth: 400,
+        },
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          "& h2": {
+            margin: 0,
+          },
+        },
+      },
+    },
+    MuiFormControlLabel: {
+      styleOverrides: {
+        label: {
+          margin: 0,
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          margin: 0,
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          margin: 0,
+        },
+      },
+    },
+    MuiListItem: {
+      styleOverrides: {
+        root: {
+          display: "list-item",
+          fontSize: 16,
+          "& .MuiTypography-root": {
+            margin: 0,
+          },
+        },
+      },
+    },
+    MuiListItemText: {
+      styleOverrides: {
+        primary: {
+          margin: 0,
+        },
+      },
+    },
+  },
 };
 
 const GlobalStyle = createGlobalStyle<{ theme: typeof themeProps }>`
@@ -168,7 +248,7 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader: LoaderFunction = (args) => {
-  return import("@clerk/remix/ssr.server").then((clerk) =>
+  return import("@clerk/remix/ssr.server.js").then((clerk) =>
     clerk.rootAuthLoader(
       args,
       () => ({
@@ -264,6 +344,7 @@ const RootContainer = styled.div`
 
 const App = () => {
   const data = useLoaderData<{ ENV: Record<string, string> }>();
+  const theme = useMemo(() => createTheme(themeProps), []);
   return (
     <html lang="en">
       <head>
@@ -275,18 +356,18 @@ const App = () => {
         {typeof document === "undefined" ? "__STYLES2__" : null}
       </head>
       <body>
-        <ThemeProvider theme={themeProps}>
+        <ThemeProvider theme={theme}>
           <GlobalStyle />
           <CacheProvider
             value={
               typeof document === "undefined" ? emotionCache : getEmotionCache()
             }
           >
-            <MuiThemeProvider theme={themeProps}>
+            <MuiThemeProvider theme={theme}>
               <CssBaseline />
               <GlobalStyles
                 styles={{
-                  body: { background: themeProps.palette?.background?.default },
+                  body: { background: themeProps.palette.background.default },
                 }}
               />
               <RootContainer id="root">

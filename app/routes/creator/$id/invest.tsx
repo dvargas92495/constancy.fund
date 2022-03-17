@@ -553,7 +553,7 @@ export const loader: LoaderFunction = ({ params, request }) => {
 };
 
 export const action: ActionFunction = ({ params, request }) => {
-  return import("@clerk/remix/ssr.server")
+  return import("@clerk/remix/ssr.server.js")
     .then((clerk) => clerk.getAuth(request))
     .then(async ({ userId }) => {
       if (!userId) {

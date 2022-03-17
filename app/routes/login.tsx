@@ -15,7 +15,7 @@ const LoginPage: React.FC = () => (
 );
 
 export const loader: LoaderFunction = ({ request }) => {
-  return import("@clerk/remix/ssr.server")
+  return import("@clerk/remix/ssr.server.js")
     .then((clerk) => clerk.getAuth(request))
     .then((authData) => {
       if (!!authData.userId) {

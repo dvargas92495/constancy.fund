@@ -578,7 +578,7 @@ export const loader: LoaderFunction = createAuthenticatedLoader(
 );
 
 export const action: ActionFunction = async ({ request }) => {
-  return import("@clerk/remix/ssr.server")
+  return import("@clerk/remix/ssr.server.js")
     .then((clerk) => clerk.getAuth(request))
     .then(async ({ userId }) => {
       if (!userId) {

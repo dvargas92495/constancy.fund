@@ -8,7 +8,7 @@ const createAuthenticatedLoader =
     ) => Promise<unknown>
   ): LoaderFunction =>
   async ({ request, params }) => {
-    return import("@clerk/remix/ssr.server")
+    return import("@clerk/remix/ssr.server.js")
       .then((clerk) => clerk.getAuth(request))
       .then(async ({ userId }) => {
         if (!userId) {
