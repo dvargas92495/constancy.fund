@@ -1,4 +1,3 @@
-import sendEmail from "aws-sdk-plus/dist/sendEmail";
 import getMysql from "./mysql.server";
 import { users } from "@clerk/clerk-sdk-node";
 import { render as renderInvestorSigned } from "../emails/InvestorSigned";
@@ -56,32 +55,37 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) => {
       if (numSigners === 1) {
         return getPaymentPreferences(r.investorUuid, execute).then(
           (investorPaymentPreferences) =>
-            sendEmail({
-              to: r.userEmail,
-              replyTo: r.investorEmail,
-              subject: `${r.investorName} has signed the agreement!`,
-              body: renderInvestorSigned({
-                investorName: r.investorName,
-                investorPaymentPreferences,
-                creatorName: r.userName,
-                contractType: r.contractType,
-                agreementUuid,
-              }),
-            })
+            import("aws-sdk-plus/dist/sendEmail").then((sendEmail) =>
+              sendEmail.default({
+                to: r.userEmail,
+                replyTo: r.investorEmail,
+                subject: `${r.investorName} has signed the agreement!`,
+                body: renderInvestorSigned({
+                  investorName: r.investorName,
+                  investorPaymentPreferences,
+                  creatorName: r.userName,
+                  contractType: r.contractType,
+                  agreementUuid,
+                }),
+              })
+            )
         );
       } else if (numSigners === 2) {
-        return getPaymentPreferences(r.id || '', execute).then((creatorPaymentPreferences) =>
-          sendEmail({
-            to: r.investorEmail,
-            replyTo: r.userEmail,
-            subject: `${r.userName} has signed the agreement!`,
-            body: renderCreatorSigned({
-              investorName: r.investorName,
-              creatorName: r.userName,
-              contractType: r.contractType,
-              creatorPaymentPreferences,
-            }),
-          })
+        return getPaymentPreferences(r.id || "", execute).then(
+          (creatorPaymentPreferences) =>
+            import("aws-sdk-plus/dist/sendEmail").then((sendEmail) =>
+              sendEmail.default({
+                to: r.investorEmail,
+                replyTo: r.userEmail,
+                subject: `${r.userName} has signed the agreement!`,
+                body: renderCreatorSigned({
+                  investorName: r.investorName,
+                  creatorName: r.userName,
+                  contractType: r.contractType,
+                  creatorPaymentPreferences,
+                }),
+              })
+            )
         );
       } else {
         throw new MethodNotAllowedError(`No one has actually signed`);

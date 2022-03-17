@@ -1,7 +1,6 @@
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import type { User } from "@clerk/clerk-sdk-node";
 import getMysql from "./mysql.server";
-import sendEmail from "aws-sdk-plus/dist/sendEmail";
 import { render } from "../emails/InvitationToFund";
 import { v4 } from "uuid";
 
@@ -42,19 +41,24 @@ const inviteInvestor = ({
     })
     .then((agreementUuid) => {
       destroy();
-      return sendEmail({
-        to: email,
-        replyTo:
-          user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId)
-            ?.emailAddress || undefined,
-        subject: `Invitation to fund ${user.firstName} ${user.lastName}`,
-        body: render({
-          investorName: name,
-          creatorName: `${user.firstName} ${user.lastName}`,
-          creatorId: user.id || "",
-          agreementUuid,
-        }),
-      }).then(() => ({ uuid: agreementUuid }));
+      return import("aws-sdk-plus/dist/sendEmail")
+        .then((sendEmail) =>
+          sendEmail.default({
+            to: email,
+            replyTo:
+              user.emailAddresses.find(
+                (e) => e.id === user.primaryEmailAddressId
+              )?.emailAddress || undefined,
+            subject: `Invitation to fund ${user.firstName} ${user.lastName}`,
+            body: render({
+              investorName: name,
+              creatorName: `${user.firstName} ${user.lastName}`,
+              creatorId: user.id || "",
+              agreementUuid,
+            }),
+          })
+        )
+        .then(() => ({ uuid: agreementUuid }));
     });
 };
 
