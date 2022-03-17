@@ -1,5 +1,4 @@
-import getMysql from "./mysql.server";
-import { users } from "@clerk/clerk-sdk-node";
+import getMysql, { Execute } from "./mysql.server";
 import {
   MethodNotAllowedError,
   InternalServorError,
@@ -22,7 +21,7 @@ const createPaymentPreferences = ({
 }: {
   userId: string;
   paymentPreferences: (readonly [Id, (readonly [string, string])[]])[];
-  execute: ReturnType<typeof getMysql>["execute"];
+  execute: Execute;
 }) => {
   const paymentPreferenceRecords = paymentPreferences.map(([type, fields]) => ({
     uuid: v4(),
@@ -76,179 +75,181 @@ const createAgreement = ({
   investorAddressZip: string;
   investorAddressCountry: string;
   paymentPreferences: (readonly [Id, (readonly [string, string])[]])[];
-}) => {
-  const { execute, destroy } = getMysql();
-  return (
-    uuid
-      ? execute(
-          `UPDATE investor i
+}) =>
+  getMysql().then(({ execute, destroy }) => {
+    return (
+      uuid
+        ? execute(
+            `UPDATE investor i
            INNER JOIN agreement a ON a.investorUuid = i.uuid 
            SET i.name=?, i.email=?, a.amount=?
            WHERE a.uuid=?`,
-          [name, email, amount, uuid]
-        ).then(() => uuid)
-      : Promise.resolve(v4()).then((agreementUuid) =>
-          (contractUuid
-            ? Promise.resolve(contractUuid)
-            : execute(
-                `SELECT c.uuid
+            [name, email, amount, uuid]
+          ).then(() => uuid)
+        : Promise.resolve(v4()).then((agreementUuid) =>
+            (contractUuid
+              ? Promise.resolve(contractUuid)
+              : execute(
+                  `SELECT c.uuid
                 FROM contract c
                 WHERE c.userId = ?`,
-                [userId]
-              ).then((res) => (res as { uuid: string }[])[0]?.uuid)
-          ).then((contractUuid) => {
-            const investorUuid = v4();
-            return execute(
-              `INSERT INTO investor (uuid, name, email) VALUES (?, ?, ?)`,
-              [investorUuid, name, email]
-            )
-              .then(() =>
-                Promise.all([
-                  execute(
-                    `INSERT INTO agreement (uuid, amount, contractUuid, investorUuid)
-           VALUES (?, ?, ?, ?)`,
-                    [agreementUuid, amount, contractUuid, investorUuid]
-                  ),
-                  createPaymentPreferences({
-                    paymentPreferences,
-                    userId: investorUuid,
-                    execute,
-                  }),
-                ])
+                  [userId]
+                ).then((res) => (res as { uuid: string }[])[0]?.uuid)
+            ).then((contractUuid) => {
+              const investorUuid = v4();
+              return execute(
+                `INSERT INTO investor (uuid, name, email) VALUES (?, ?, ?)`,
+                [investorUuid, name, email]
               )
-              .then(() => agreementUuid);
-          })
-        )
-  )
-    .then((agreementUuid) => {
-      return execute(
-        `SELECT c.userId, c.type, c.uuid, d.label, d.value
+                .then(() =>
+                  Promise.all([
+                    execute(
+                      `INSERT INTO agreement (uuid, amount, contractUuid, investorUuid)
+           VALUES (?, ?, ?, ?)`,
+                      [agreementUuid, amount, contractUuid, investorUuid]
+                    ),
+                    createPaymentPreferences({
+                      paymentPreferences,
+                      userId: investorUuid,
+                      execute,
+                    }),
+                  ])
+                )
+                .then(() => agreementUuid);
+            })
+          )
+    )
+      .then((agreementUuid) => {
+        return execute(
+          `SELECT c.userId, c.type, c.uuid, d.label, d.value
           FROM contract c
           INNER JOIN agreement a ON a.contractUuid = c.uuid
           INNER JOIN contractdetail d ON d.contractUuid = c.uuid
           WHERE a.uuid = ?`,
-        [agreementUuid]
-      ).then(async (results) => {
-        const details = results as {
-          uuid: string;
-          type: number;
-          userId: string;
-          label: string;
-          value: string;
-        }[];
-        const [c] = details;
-        if (!c)
-          throw new MethodNotAllowedError(
-            `Cannot find fundraise tied to agreement ${agreementUuid}`
+          [agreementUuid]
+        ).then(async (results) => {
+          const details = results as {
+            uuid: string;
+            type: number;
+            userId: string;
+            label: string;
+            value: string;
+          }[];
+          const [c] = details;
+          if (!c)
+            throw new MethodNotAllowedError(
+              `Cannot find fundraise tied to agreement ${agreementUuid}`
+            );
+          const detailData = Object.fromEntries(
+            details.map(({ label, value }) => [label, value])
           );
-        const detailData = Object.fromEntries(
-          details.map(({ label, value }) => [label, value])
-        );
-        const capSpace =
-          Number(detailData.amount) * Number(detailData.frequency);
-        const investorShare = amount / capSpace;
-        if (investorShare > 1) {
-          throw new BadRequestError(
-            `Cannot request to invest more than the available cap space ${capSpace}`
-          );
-        }
-        return Promise.all([
-          users.getUser(c.userId),
-          import("@dvargas92495/api/invokeDirect").then((invokeDirect) =>
-            invokeDirect.default<Parameters<ContractHandler>[0]>({
-              path: "create-contract-pdf",
-              data: {
-                uuid: c.uuid,
-                outfile: agreementUuid,
-                inputData: {
-                  investor: name,
-                  investor_location: `${investorAddressNumber} ${investorAddressStreet} ${investorAddressCity}, ${investorAddressCountry}, ${investorAddressZip}`,
-                  amount: (
-                    Number(detailData.amount) * investorShare
-                  ).toString(),
-                  share: (Number(detailData.share) * investorShare).toString(),
-                  return: (
-                    Number(detailData.return) * investorShare
-                  ).toString(),
+          const capSpace =
+            Number(detailData.amount) * Number(detailData.frequency);
+          const investorShare = amount / capSpace;
+          if (investorShare > 1) {
+            throw new BadRequestError(
+              `Cannot request to invest more than the available cap space ${capSpace}`
+            );
+          }
+          return Promise.all([
+            import("@clerk/clerk-sdk-node").then(clerk => clerk.users.getUser(c.userId)),
+            import("@dvargas92495/api/invokeDirect").then((invokeDirect) =>
+              invokeDirect.default<Parameters<ContractHandler>[0]>({
+                path: "create-contract-pdf",
+                data: {
+                  uuid: c.uuid,
+                  outfile: agreementUuid,
+                  inputData: {
+                    investor: name,
+                    investor_location: `${investorAddressNumber} ${investorAddressStreet} ${investorAddressCity}, ${investorAddressCountry}, ${investorAddressZip}`,
+                    amount: (
+                      Number(detailData.amount) * investorShare
+                    ).toString(),
+                    share: (
+                      Number(detailData.share) * investorShare
+                    ).toString(),
+                    return: (
+                      Number(detailData.return) * investorShare
+                    ).toString(),
+                  },
                 },
-              },
-            })
-          ),
-        ]).then(([user]) => ({
-          user,
-          type: FUNDRAISE_TYPES[c.type].name,
-          uuid: c.uuid,
-          agreementUuid,
-        }));
-      });
-    })
-    .then((contract) => {
-      const filePath = `_contracts/${contract.uuid}/${contract.agreementUuid}.pdf`;
-      const creatorName = `${contract.user.firstName} ${contract.user.lastName}`;
-      const creatorEmail =
-        contract.user.emailAddresses.find(
-          (e) => e.id === contract.user.primaryEmailAddressId
-        )?.emailAddress || "";
-
-      const file = new File(
-        process.env.NODE_ENV === "development"
-          ? {
-              name: "contract",
-              filePath: path.join(FE_PUBLIC_DIR, filePath),
-            }
-          : {
-              name: "contract",
-              fileUrl: `${process.env.HOST}/${filePath}`,
-            }
-      );
-
-      const investorSigner = new Signer({
-        id: 1,
-        name,
-        email,
-        deliverEmail: false,
-      });
-      const creatorSigner = new Signer({
-        id: 2,
-        name: creatorName,
-        email: creatorEmail,
-        deliverEmail: false,
-      });
-
-      const document = new Document({
-        reminders: true,
-        requireAllSigners: true,
-        custom_requester_email: creatorEmail,
-        custom_requester_name: creatorName,
-        embeddedSigningEnabled: true,
-        ...(!process.env.IS_PRODUCTION || process.env.EVERSIGN_SANDBOX
-          ? { sandbox: true }
-          : {}),
-      });
-
-      document.appendFile(file);
-      document.appendSigner(investorSigner);
-      document.appendSigner(creatorSigner);
-
-      return eversign.createDocument(document).then((r) => {
-        return { ...contract, id: r.getDocumentHash() };
-      });
-    })
-    .then((r) =>
-      execute(
-        `INSERT INTO eversigndocument (id, agreementUuid)
-        VALUES (?,?)`,
-        [r.id, r.agreementUuid]
-      ).then(() => {
-        destroy();
-        return r.agreementUuid;
+              })
+            ),
+          ]).then(([user]) => ({
+            user,
+            type: FUNDRAISE_TYPES[c.type].name,
+            uuid: c.uuid,
+            agreementUuid,
+          }));
+        });
       })
-    )
-    .then((uuid) => ({ uuid }))
-    .catch((e) => {
-      console.error(e);
-      throw new InternalServorError(e.type || e.message);
-    });
-};
+      .then((contract) => {
+        const filePath = `_contracts/${contract.uuid}/${contract.agreementUuid}.pdf`;
+        const creatorName = `${contract.user.firstName} ${contract.user.lastName}`;
+        const creatorEmail =
+          contract.user.emailAddresses.find(
+            (e) => e.id === contract.user.primaryEmailAddressId
+          )?.emailAddress || "";
+
+        const file = new File(
+          process.env.NODE_ENV === "development"
+            ? {
+                name: "contract",
+                filePath: path.join(FE_PUBLIC_DIR, filePath),
+              }
+            : {
+                name: "contract",
+                fileUrl: `${process.env.HOST}/${filePath}`,
+              }
+        );
+
+        const investorSigner = new Signer({
+          id: 1,
+          name,
+          email,
+          deliverEmail: false,
+        });
+        const creatorSigner = new Signer({
+          id: 2,
+          name: creatorName,
+          email: creatorEmail,
+          deliverEmail: false,
+        });
+
+        const document = new Document({
+          reminders: true,
+          requireAllSigners: true,
+          custom_requester_email: creatorEmail,
+          custom_requester_name: creatorName,
+          embeddedSigningEnabled: true,
+          ...(!process.env.IS_PRODUCTION || process.env.EVERSIGN_SANDBOX
+            ? { sandbox: true }
+            : {}),
+        });
+
+        document.appendFile(file);
+        document.appendSigner(investorSigner);
+        document.appendSigner(creatorSigner);
+
+        return eversign.createDocument(document).then((r) => {
+          return { ...contract, id: r.getDocumentHash() };
+        });
+      })
+      .then((r) =>
+        execute(
+          `INSERT INTO eversigndocument (id, agreementUuid)
+        VALUES (?,?)`,
+          [r.id, r.agreementUuid]
+        ).then(() => {
+          destroy();
+          return r.agreementUuid;
+        })
+      )
+      .then((uuid) => ({ uuid }))
+      .catch((e) => {
+        console.error(e);
+        throw new InternalServorError(e.type || e.message);
+      });
+  });
 
 export default createAgreement;

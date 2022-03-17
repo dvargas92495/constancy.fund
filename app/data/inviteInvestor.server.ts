@@ -16,50 +16,50 @@ const inviteInvestor = ({
   name: string;
   email: string;
   amount: number;
-}) => {
-  const { execute, destroy } = getMysql();
-  return execute(`SELECT c.userId FROM contract c WHERE c.uuid = ?`, [uuid])
-    .then((results) => {
-      const [fundraise] = results as { userId: string }[];
-      if (!fundraise)
-        throw new NotFoundError(`Could not find contract with id ${uuid}`);
-      if (user.id !== fundraise.userId)
-        throw new MethodNotAllowedError(
-          `Could not find contract with id ${uuid}`
-        );
-      const investorUuid = v4();
-      return execute(
-        `INSERT INTO investor (uuid, name, email) VALUES (?, ?, ?)`,
-        [investorUuid, name, email]
-      ).then(() => {
-        const agreementUuid = v4();
+}) =>
+  getMysql().then(({ execute, destroy }) => {
+    return execute(`SELECT c.userId FROM contract c WHERE c.uuid = ?`, [uuid])
+      .then((results) => {
+        const [fundraise] = results as { userId: string }[];
+        if (!fundraise)
+          throw new NotFoundError(`Could not find contract with id ${uuid}`);
+        if (user.id !== fundraise.userId)
+          throw new MethodNotAllowedError(
+            `Could not find contract with id ${uuid}`
+          );
+        const investorUuid = v4();
         return execute(
-          `INSERT INTO agreement (uuid, amount, contractUuid, investorUuid) VALUES (?, ?, ?, ?)`,
-          [agreementUuid, amount, uuid, investorUuid]
-        ).then(() => agreementUuid);
+          `INSERT INTO investor (uuid, name, email) VALUES (?, ?, ?)`,
+          [investorUuid, name, email]
+        ).then(() => {
+          const agreementUuid = v4();
+          return execute(
+            `INSERT INTO agreement (uuid, amount, contractUuid, investorUuid) VALUES (?, ?, ?, ?)`,
+            [agreementUuid, amount, uuid, investorUuid]
+          ).then(() => agreementUuid);
+        });
+      })
+      .then((agreementUuid) => {
+        destroy();
+        return import("aws-sdk-plus/dist/sendEmail")
+          .then((sendEmail) =>
+            sendEmail.default({
+              to: email,
+              replyTo:
+                user.emailAddresses.find(
+                  (e) => e.id === user.primaryEmailAddressId
+                )?.emailAddress || undefined,
+              subject: `Invitation to fund ${user.firstName} ${user.lastName}`,
+              body: render({
+                investorName: name,
+                creatorName: `${user.firstName} ${user.lastName}`,
+                creatorId: user.id || "",
+                agreementUuid,
+              }),
+            })
+          )
+          .then(() => ({ uuid: agreementUuid }));
       });
-    })
-    .then((agreementUuid) => {
-      destroy();
-      return import("aws-sdk-plus/dist/sendEmail")
-        .then((sendEmail) =>
-          sendEmail.default({
-            to: email,
-            replyTo:
-              user.emailAddresses.find(
-                (e) => e.id === user.primaryEmailAddressId
-              )?.emailAddress || undefined,
-            subject: `Invitation to fund ${user.firstName} ${user.lastName}`,
-            body: render({
-              investorName: name,
-              creatorName: `${user.firstName} ${user.lastName}`,
-              creatorId: user.id || "",
-              agreementUuid,
-            }),
-          })
-        )
-        .then(() => ({ uuid: agreementUuid }));
-    });
-};
+  });
 
 export default inviteInvestor;

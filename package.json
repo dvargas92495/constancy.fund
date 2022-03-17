@@ -55,7 +55,6 @@
     "babel": "^6.23.0",
     "babel-plugin-styled-components": "^2.0.2",
     "classnames": "^2.3.1",
-    "country-region-data": "^1.11.0",
     "date-fns": "^2.28.0",
     "eversign": "^1.9.2",
     "history": "^5.1.0",

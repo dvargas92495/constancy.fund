@@ -7,22 +7,23 @@ const deleteFundraiseData = ({
 }: {
   uuid: string;
   userId: string;
-}) => {
-  const { execute, destroy } = getMysql();
-  return execute(`SELECT c.userId FROM contract c WHERE c.uuid = ?`, [uuid])
-    .then((results) => {
-      const [contract] = results as { userId: string }[];
-      if (!contract) throw new NotFoundError(`Could not find contract ${uuid}`);
-      if (userId !== contract.userId)
-        throw new MethodNotAllowedError(`Not authorized to delete ${uuid}`);
-      return Promise.all([
-        execute(`DELETE FROM contractdetail WHERE contractUuid = ?`, [uuid]),
-        execute(`DELETE FROM agreement WHERE contractUuid = ?`, [uuid]),
-      ])
-        .then(() => execute(`DELETE FROM contract WHERE uuid = ?`, [uuid]))
-        .then(destroy);
-    })
-    .then(() => ({ success: true }));
-};
+}) =>
+  getMysql().then(({ execute, destroy }) => {
+    return execute(`SELECT c.userId FROM contract c WHERE c.uuid = ?`, [uuid])
+      .then((results) => {
+        const [contract] = results as { userId: string }[];
+        if (!contract)
+          throw new NotFoundError(`Could not find contract ${uuid}`);
+        if (userId !== contract.userId)
+          throw new MethodNotAllowedError(`Not authorized to delete ${uuid}`);
+        return Promise.all([
+          execute(`DELETE FROM contractdetail WHERE contractUuid = ?`, [uuid]),
+          execute(`DELETE FROM agreement WHERE contractUuid = ?`, [uuid]),
+        ])
+          .then(() => execute(`DELETE FROM contract WHERE uuid = ?`, [uuid]))
+          .then(destroy);
+      })
+      .then(() => ({ success: true }));
+  });
 
 export default deleteFundraiseData;

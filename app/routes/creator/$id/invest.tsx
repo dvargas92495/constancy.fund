@@ -13,9 +13,7 @@ import {
   useLoaderData,
 } from "remix";
 import CheckBox from "@mui/material/Checkbox";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import CountryRegionData from "country-region-data";
+import CountrySelect from "~/_common/CountrySelect";
 
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
@@ -515,19 +513,7 @@ const EnterDetails = () => {
               Registered Country
             </TextFieldDescription>
             <TextInputContainer width={"350px"}>
-              <Select
-                maxRows={10}
-                MenuProps={{ sx: { maxHeight: 200 } }}
-                fullWidth
-                required
-                name={"investorAddressCountry"}
-              >
-                {CountryRegionData.map((c) => (
-                  <MenuItem value={c.countryName} key={c.countryShortCode}>
-                    {c.countryName}
-                  </MenuItem>
-                ))}
-              </Select>
+              <CountrySelect name={"investorAddressCountry"} />
             </TextInputContainer>
           </TextFieldBox>
         </Section>

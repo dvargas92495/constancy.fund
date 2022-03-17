@@ -12,10 +12,8 @@ import saveUserProfile from "~/data/saveUserProfile.server";
 import Box from "@mui/material/Box";
 import _H1 from "@dvargas92495/ui/components/H1";
 import _H4 from "@dvargas92495/ui/components/H4";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 import ExternalLink from "@dvargas92495/ui/components/ExternalLink";
-import CountryRegionData from "country-region-data";
+import CountrySelect from "~/_common/CountrySelect";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import PaymentPreferences from "~/_common/PaymentPreferences";
@@ -358,20 +356,10 @@ const UserProfile = () => {
                 Registered Country
               </TextFieldDescription>
               <TextInputContainer>
-                <Select
+                <CountrySelect
                   defaultValue={registeredCountry}
-                  maxRows={10}
-                  MenuProps={{ sx: { maxHeight: 200 } }}
-                  fullWidth
-                  required
                   name={"registeredCountry"}
-                >
-                  {CountryRegionData.map((c) => (
-                    <MenuItem value={c.countryName} key={c.countryShortCode}>
-                      {c.countryName}
-                    </MenuItem>
-                  ))}
-                </Select>
+                />
               </TextInputContainer>
             </TextFieldBox>
             <TextFieldBox>
