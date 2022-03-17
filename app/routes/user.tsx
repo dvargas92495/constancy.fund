@@ -3,15 +3,14 @@ import React from "react";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
-import _H1 from "@dvargas92495/ui/dist/components/H1";
-import _H4 from "@dvargas92495/ui/dist/components/H4";
+import _H1 from "@dvargas92495/ui/components/H1";
+import _H4 from "@dvargas92495/ui/components/H4";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import { Link as RemixLink, LoaderFunction, Outlet, redirect } from "remix";
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
 import ListItemIcon from "~/_common/ListItemIcon";
 import ListItemText from "~/_common/ListItemText";
-import { getAuth } from "@clerk/remix/ssr.server";
 
 const MenuListItem = styled.div`
   height: 60px;
@@ -141,12 +140,14 @@ const UserPage = (): React.ReactElement => (
 );
 
 export const loader: LoaderFunction = ({ request }) => {
-  return getAuth(request).then((authData) => {
-    if (!authData.userId) {
-      return redirect("/login");
-    }
-    return {};
-  });
+  return import("@clerk/remix/ssr.server")
+    .then((clerk) => clerk.getAuth(request))
+    .then((authData) => {
+      if (!authData.userId) {
+        return redirect("/login");
+      }
+      return {};
+    });
 };
 
 export const meta = getMeta({ title: "User" });

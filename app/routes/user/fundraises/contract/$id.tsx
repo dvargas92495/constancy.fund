@@ -2,8 +2,8 @@ import React, { useState, useCallback, useMemo } from "react";
 import Box from "@mui/material/Box";
 import { UserButton } from "@clerk/remix";
 
-import _H1 from "@dvargas92495/ui/dist/components/H1";
-import _H4 from "@dvargas92495/ui/dist/components/H4";
+import _H1 from "@dvargas92495/ui/components/H1";
+import _H4 from "@dvargas92495/ui/components/H4";
 import CONTRACT_STAGES from "../../../../../db/contract_stages";
 import {
   ActionFunction,
@@ -29,7 +29,6 @@ import { PrimaryAction } from "~/_common/PrimaryAction";
 import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
 import getFundraiseData from "~/data/getFundraiseData.server";
 import deleteAgreement from "~/data/deleteAgreement.server";
-import { getAuth } from "@clerk/remix/ssr.server";
 
 const ConditionsContainer = styled.div`
   display: flex;
@@ -286,8 +285,7 @@ const STAGE_ACTIONS: ((a: {
           <>
             <IconContainer
               onClick={() => {
-                fetcher
-                  .submit({ uuid: row.uuid }, { method: "delete" })
+                fetcher.submit({ uuid: row.uuid }, { method: "delete" });
               }}
             >
               <Icon name="remove" heightAndWidth={"16px"} />
@@ -580,21 +578,23 @@ export const loader: LoaderFunction = createAuthenticatedLoader(
 );
 
 export const action: ActionFunction = async ({ request }) => {
-  return getAuth(request).then(async ({ userId }) => {
-    if (!userId) {
-      return new Response("Unauthorized", { status: 401 });
-    }
-    const formData = await request.formData();
-    if (request.method === "DELETE") {
-      const uuid = formData.get("uuid");
-      if (!uuid) return new Response("`uuid` is required", { status: 400 });
-      if (typeof uuid !== "string")
-        return new Response("`uuid` must be a string", { status: 400 });
-      return deleteAgreement({ uuid, userId });
-    } else {
-      return {};
-    }
-  });
+  return import("@clerk/remix/ssr.server")
+    .then((clerk) => clerk.getAuth(request))
+    .then(async ({ userId }) => {
+      if (!userId) {
+        return new Response("Unauthorized", { status: 401 });
+      }
+      const formData = await request.formData();
+      if (request.method === "DELETE") {
+        const uuid = formData.get("uuid");
+        if (!uuid) return new Response("`uuid` is required", { status: 400 });
+        if (typeof uuid !== "string")
+          return new Response("`uuid` must be a string", { status: 400 });
+        return deleteAgreement({ uuid, userId });
+      } else {
+        return {};
+      }
+    });
 };
 
 export default UserFundraisesContract;

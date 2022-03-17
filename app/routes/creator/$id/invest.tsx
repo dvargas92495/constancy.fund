@@ -34,7 +34,6 @@ import TextFieldDescription from "~/_common/TextFieldDescription";
 import { IconContent, ProfileTitle, TopBarProfile } from "../$id";
 import formatAmount from "../../../../db/util/formatAmount";
 import createAgreement from "~/data/createAgreement.server";
-import { getAuth } from "@clerk/remix/ssr.server";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import validatePaymentPreferences from "~/data/validatePaymentPreferences";
 
@@ -277,7 +276,7 @@ const EnterDetails = () => {
                       placeholder={"100"}
                       name={"amount"}
                       min={100}
-                    // TODO set max
+                      // TODO set max
                     />
                   </TextInputContainer>
                   <InfoPill>
@@ -287,7 +286,7 @@ const EnterDetails = () => {
                       {formatAmount(
                         Math.floor(
                           (Number(amount) * Number(state.details.return || 0)) /
-                          100
+                            100
                         )
                       )}
                     </InfoPillInfo>
@@ -332,7 +331,7 @@ const EnterDetails = () => {
                         , paid out as a monthly stipend of $
                         {formatAmount(
                           Number(amount) /
-                          (Number(state.details.frequency) || 1)
+                            (Number(state.details.frequency) || 1)
                         )}{" "}
                         per month for {Number(state.details.frequency) || 1}{" "}
                         months.
@@ -359,7 +358,7 @@ const EnterDetails = () => {
                         (Number(state.details.amount) *
                           (Number(state.details.frequency) || 1) *
                           Number(state.details.return)) /
-                        100
+                          100
                       )}
                     </b>{" "}
                     to their backers. By contributing a total of{" "}
@@ -402,8 +401,8 @@ const EnterDetails = () => {
                     <b>
                       {formatAmount(
                         (Number(state.details.share) * Number(amount)) /
-                        (Number(state.details.amount) *
-                          (Number(state.details.frequency) || 1))
+                          (Number(state.details.amount) *
+                            (Number(state.details.frequency) || 1))
                       )}
                       %
                     </b>
@@ -554,7 +553,8 @@ export const loader: LoaderFunction = ({ params, request }) => {
 };
 
 export const action: ActionFunction = ({ params, request }) => {
-  return getAuth(request)
+  return import("@clerk/remix/ssr.server")
+    .then((clerk) => clerk.getAuth(request))
     .then(async ({ userId }) => {
       if (!userId) {
         return new Response("No valid user found", { status: 401 });

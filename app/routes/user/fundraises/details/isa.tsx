@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
-import _H1 from "@dvargas92495/ui/dist/components/H1";
-import _H4 from "@dvargas92495/ui/dist/components/H4";
+import _H1 from "@dvargas92495/ui/components/H1";
+import _H4 from "@dvargas92495/ui/components/H4";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
 import formatAmount from "../../../../../db/util/formatAmount";
@@ -17,7 +17,6 @@ import SubSectionTitle from "~/_common/SubSectionTitle";
 import TextInputMultiLine from "~/_common/TextInputMultiLine";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import { redirect, ActionFunction } from "remix";
-import { getAuth } from "@clerk/remix/ssr.server";
 import createFundraise from "~/data/createFundraise.server";
 import type { FundraiseId } from "../../../../enums/fundraiseTypes";
 
@@ -358,7 +357,8 @@ const ISADetailForm = () => {
 };
 
 export const action: ActionFunction = ({ request }) => {
-  return getAuth(request)
+  return import("@clerk/remix/ssr.server")
+    .then((clerk) => clerk.getAuth(request))
     .then(async ({ userId }) => {
       if (!userId) {
         return new Response("No valid user found", { status: 401 });

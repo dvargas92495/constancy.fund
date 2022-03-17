@@ -2,7 +2,6 @@ import React from "react";
 import getMeta from "~/_common/getMeta";
 import { SignUp } from "@clerk/remix";
 import { LoaderFunction, redirect } from "remix";
-import { getAuth } from "@clerk/remix/ssr.server";
 
 const Signup: React.FunctionComponent = () => (
   <>
@@ -15,13 +14,15 @@ const Signup: React.FunctionComponent = () => (
 );
 
 export const loader: LoaderFunction = ({ request }) => {
-  return getAuth(request).then((authData) => {
-    if (!!authData.userId) {
-      return redirect("/user");
-    }
-    return {};
-  });
-}
+  return import("@clerk/remix/ssr.server")
+    .then((clerk) => clerk.getAuth(request))
+    .then((authData) => {
+      if (!!authData.userId) {
+        return redirect("/user");
+      }
+      return {};
+    });
+};
 
 export const meta = getMeta({ title: "Sign up" });
 export default Signup;

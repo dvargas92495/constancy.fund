@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import getMeta from "~/_common/getMeta";
-import ExternalLink from "@dvargas92495/ui/dist/components/ExternalLink";
+import ExternalLink from "@dvargas92495/ui/components/ExternalLink";
 import QUESTIONAIRES from "~/_common/questionaires";
 import {
   LoaderFunction,

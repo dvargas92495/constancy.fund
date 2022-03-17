@@ -9,8 +9,8 @@ import {
   useFetcher,
 } from "remix";
 import Box from "@mui/material/Box";
-import _H1 from "@dvargas92495/ui/dist/components/H1";
-import _H4 from "@dvargas92495/ui/dist/components/H4";
+import _H1 from "@dvargas92495/ui/components/H1";
+import _H4 from "@dvargas92495/ui/components/H4";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -23,7 +23,6 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "~/_common/ListItemIcon";
 import ListItemText from "~/_common/ListItemText";
-import type { Handler as GetHandler } from "../../../../functions/fundraises/get";
 import deleteFundraiseData from "~/data/deleteFundraiseData.server";
 import Icon from "~/_common/Icon";
 import { PrimaryAction } from "~/_common/PrimaryAction";
@@ -39,7 +38,6 @@ import SubSectionTitle from "~/_common/SubSectionTitle";
 import styled from "styled-components";
 import formatAmount from "../../../../db/util/formatAmount";
 import getFundraises from "~/data/getFundraises.server";
-import { getAuth } from "@clerk/remix/ssr.server";
 import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
 
 const NotCompletedMessageContainer = styled.div`
@@ -59,7 +57,7 @@ const H4 = (props: Parameters<typeof _H4>[0]) => (
   <_H4 sx={{ fontSize: 20, mt: 0, ...props.sx }} {...props} />
 );
 
-type Data = Awaited<ReturnType<GetHandler>>;
+type Data = Awaited<ReturnType<typeof getFundraises>>;
 type Fundraises = Data["fundraises"];
 
 const DetailComponentById: Record<
@@ -219,7 +217,7 @@ const UserFundraiseIndex = () => {
   if (!user || !isSignedIn) {
     throw new Error(`Somehow tried to load a non-logged in User profile`);
   }
-  const data = useLoaderData<Awaited<ReturnType<GetHandler>>>();
+  const data = useLoaderData<Data>();
   const [rows, setRows] = useState<Fundraises>(data.fundraises);
   const onDeleteSuccess = useCallback(
     (uuid: string) => {
@@ -334,22 +332,23 @@ export const loader: LoaderFunction = createAuthenticatedLoader(
 );
 
 export const action: ActionFunction = async ({ request }) => {
-  console.log("ufi");
-  return getAuth(request).then(async ({ userId }) => {
-    if (!userId) {
-      return new Response("Unauthorized", { status: 401 });
-    }
-    const formData = await request.formData();
-    if (request.method === "DELETE") {
-      const uuid = formData.get("uuid");
-      if (!uuid) return new Response("`uuid` is required", { status: 400 });
-      if (typeof uuid !== "string")
-        return new Response("`uuid` must be a string", { status: 400 });
-      return deleteFundraiseData({ uuid, userId });
-    } else {
-      return {};
-    }
-  });
+  return import("@clerk/remix/ssr.server")
+    .then((clerk) => clerk.getAuth(request))
+    .then(async ({ userId }) => {
+      if (!userId) {
+        return new Response("Unauthorized", { status: 401 });
+      }
+      const formData = await request.formData();
+      if (request.method === "DELETE") {
+        const uuid = formData.get("uuid");
+        if (!uuid) return new Response("`uuid` is required", { status: 400 });
+        if (typeof uuid !== "string")
+          return new Response("`uuid` must be a string", { status: 400 });
+        return deleteFundraiseData({ uuid, userId });
+      } else {
+        return {};
+      }
+    });
 };
 
 export default UserFundraiseIndex;

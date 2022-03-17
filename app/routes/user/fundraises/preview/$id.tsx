@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from "react";
 import Box from "@mui/material/Box";
-import _H1 from "@dvargas92495/ui/dist/components/H1";
-import _H4 from "@dvargas92495/ui/dist/components/H4";
+import _H1 from "@dvargas92495/ui/components/H1";
+import _H4 from "@dvargas92495/ui/components/H4";
 import CheckBox from "@mui/material/Checkbox";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
@@ -31,7 +31,6 @@ import SubSectionTitle from "~/_common/SubSectionTitle";
 import { LoadingIndicator } from "~/_common/LoadingIndicator";
 import getFundraiseData from "~/data/getFundraiseData.server";
 import waitForContractDraft from "~/data/waitForContractDraft.server";
-import { getAuth } from "@clerk/remix/ssr.server";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
 import refreshContractDraft from "~/data/refreshContractDraft.server";
@@ -122,7 +121,8 @@ export const loader = createAuthenticatedLoader((userId, params) => {
 });
 
 export const action: ActionFunction = ({ request, params }) => {
-  return getAuth(request)
+  return import("@clerk/remix/ssr.server")
+    .then((clerk) => clerk.getAuth(request))
     .then(async ({ userId }) => {
       if (!userId) {
         return new Response("No valid user found", { status: 401 });

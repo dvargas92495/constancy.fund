@@ -1,7 +1,7 @@
 import getMeta from "~/_common/getMeta";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Body from "@dvargas92495/ui/dist/components/Body";
+import Body from "@dvargas92495/ui/components/Body";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import React, { useEffect, useState } from "react";

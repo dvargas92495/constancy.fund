@@ -7,15 +7,14 @@ import {
   useCatch,
   useLoaderData,
 } from "remix";
-import { getAuth } from "@clerk/remix/ssr.server";
 import getUserProfile from "~/data/getUserProfile.server";
 import saveUserProfile from "~/data/saveUserProfile.server";
 import Box from "@mui/material/Box";
-import _H1 from "@dvargas92495/ui/dist/components/H1";
-import _H4 from "@dvargas92495/ui/dist/components/H4";
+import _H1 from "@dvargas92495/ui/components/H1";
+import _H4 from "@dvargas92495/ui/components/H4";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import ExternalLink from "@dvargas92495/ui/dist/components/ExternalLink";
+import ExternalLink from "@dvargas92495/ui/components/ExternalLink";
 import CountryRegionData from "country-region-data";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
@@ -555,18 +554,24 @@ const UserProfile = () => {
 };
 
 export const loader = async ({ request }: Parameters<LoaderFunction>[0]) => {
-  return getAuth(request).then(async ({ userId }) => {
-    if (!userId) {
-      throw new Response("Cannot access private page while not authenticated", {
-        status: 401,
-      });
-    }
-    return getUserProfile(userId);
-  });
+  return import("@clerk/remix/ssr.server")
+    .then((clerk) => clerk.getAuth(request))
+    .then(async ({ userId }) => {
+      if (!userId) {
+        throw new Response(
+          "Cannot access private page while not authenticated",
+          {
+            status: 401,
+          }
+        );
+      }
+      return getUserProfile(userId);
+    });
 };
 
 export const action: ActionFunction = ({ request }) => {
-  return getAuth(request)
+  return import("@clerk/remix/ssr.server")
+    .then((clerk) => clerk.getAuth(request))
     .then(async ({ userId }) => {
       if (!userId) {
         throw new Response(
@@ -588,7 +593,7 @@ export const action: ActionFunction = ({ request }) => {
 
 export const CatchBoundary = ConnectClerkCatchBoundary(() => {
   const { data } = useCatch();
-  console.error('used a catch boundary');
+  console.error("used a catch boundary");
   return <div>{data}</div>;
 });
 

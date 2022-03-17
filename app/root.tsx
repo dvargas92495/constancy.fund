@@ -14,11 +14,12 @@ import {
 } from "remix";
 import { ExternalScripts } from "remix-utils";
 import { ConnectClerk, ConnectClerkCatchBoundary } from "@clerk/remix";
-import { rootAuthLoader } from "@clerk/remix/ssr.server";
 import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 import getEmotionCache, { emotionCache } from "./_common/getEmotionCache";
 import { CacheProvider } from "@emotion/react";
-import MuiThemeProvider from "@dvargas92495/ui/dist/components/ThemeProvider";
+import MuiThemeProvider from "@mui/material/styles/ThemeProvider";
+import CssBaseline from "@mui/material/CssBaseline";
+import GlobalStyles from "@mui/material/GlobalStyles";
 
 const themeProps = {
   palette: {
@@ -142,18 +143,18 @@ const GlobalStyle = createGlobalStyle<{ theme: typeof themeProps }>`
 
         &:hover {
           background: ${(props) =>
-    props.theme.palette.color.backgroundColorDarker} !important;
+            props.theme.palette.color.backgroundColorDarker} !important;
         }
     }
 
     & .Mui-selected {
         background: ${(props) =>
-    props.theme.palette.color.backgroundHighlight} !important;
+          props.theme.palette.color.backgroundHighlight} !important;
     }
 
     & .Mui-focusVisible {
         background: ${(props) =>
-    props.theme.palette.color.backgroundColorDarker} !important;
+          props.theme.palette.color.backgroundColorDarker} !important;
     }
 `;
 
@@ -167,18 +168,20 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader: LoaderFunction = (args) => {
-  return rootAuthLoader(
-    args,
-    () => ({
-      ENV: {
-        API_URL: process.env.API_URL,
-        CLERK_FRONTEND_API: process.env.CLERK_FRONTEND_API,
-        HOST: process.env.HOST,
-        NODE_ENV: process.env.NODE_ENV,
-        STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
-      },
-    }),
-    { loadUser: true }
+  return import("@clerk/remix/ssr.server").then((clerk) =>
+    clerk.rootAuthLoader(
+      args,
+      () => ({
+        ENV: {
+          API_URL: process.env.API_URL,
+          CLERK_FRONTEND_API: process.env.CLERK_FRONTEND_API,
+          HOST: process.env.HOST,
+          NODE_ENV: process.env.NODE_ENV,
+          STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+        },
+      }),
+      { loadUser: true }
+    )
   );
 };
 
@@ -279,7 +282,13 @@ const App = () => {
               typeof document === "undefined" ? emotionCache : getEmotionCache()
             }
           >
-            <MuiThemeProvider {...themeProps}>
+            <MuiThemeProvider theme={themeProps}>
+              <CssBaseline />
+              <GlobalStyles
+                styles={{
+                  body: { background: themeProps.palette?.background?.default },
+                }}
+              />
               <RootContainer id="root">
                 <Outlet />
               </RootContainer>

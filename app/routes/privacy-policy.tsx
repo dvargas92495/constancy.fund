@@ -1,6 +1,6 @@
 import React from "react";
 import getMeta from "~/_common/getMeta";
-import PrivacyPolicy from "@dvargas92495/ui/dist/components/PrivacyPolicy";
+import PrivacyPolicy from "@dvargas92495/ui/components/PrivacyPolicy";
 
 const PrivacyPolicyPage: React.FunctionComponent = () => (
   <PrivacyPolicy name={"constancy-fund"} domain={"constancy.fund"} />

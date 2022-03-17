@@ -1,6 +1,6 @@
 import React from "react";
 import getMeta from "~/_common/getMeta";
-import About from "@dvargas92495/ui/dist/components/About";
+import About from "@dvargas92495/ui/components/About";
 
 const AboutPage: React.FunctionComponent = () => (
   <About title={"About"} subtitle={"Description"} paragraphs={[]} />

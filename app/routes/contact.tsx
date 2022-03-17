@@ -1,6 +1,6 @@
 import React from "react";
 import getMeta from "~/_common/getMeta";
-import Contact from "@dvargas92495/ui/dist/components/Contact";
+import Contact from "@dvargas92495/ui/components/Contact";
 
 const ContactPage: React.FunctionComponent = () => (
   <Contact email={"support@constancy.fund"} />

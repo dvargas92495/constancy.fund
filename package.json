@@ -44,7 +44,7 @@
     "@clerk/remix": "0.1.0-alpha.6",
     "@dvargas92495/api": "^0.7.0",
     "@dvargas92495/eversign": "^1.9.5",
-    "@dvargas92495/ui": "^0.46.3",
+    "@dvargas92495/ui": "^0.50.5",
     "@prisma/client": "^3.6.0",
     "@react-pdf-viewer/core": "^3.0.0",
     "@react-pdf-viewer/default-layout": "^3.0.0",

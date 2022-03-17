@@ -1,6 +1,6 @@
 import React from "react";
 import getMeta from "~/_common/getMeta";
-import TermsOfUse from "@dvargas92495/ui/dist/components/TermsOfUse";
+import TermsOfUse from "@dvargas92495/ui/components/TermsOfUse";
 
 const TermsOfUsePage: React.FC = () => (
   <TermsOfUse name={"constancy-fund"} domain={"constancy.fund"} />
