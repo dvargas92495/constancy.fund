@@ -1,8 +1,6 @@
-import clerkAuthenticateLambda from "@dvargas92495/api/clerkAuthenticateLambda";
-import createAPIGatewayProxyHandler from "aws-sdk-plus/dist/createAPIGatewayProxyHandler";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import type { User } from "@clerk/clerk-sdk-node";
-import { execute } from "./mysql.server";
+import getMysql from "./mysql.server";
 import sendEmail from "aws-sdk-plus/dist/sendEmail";
 import { render } from "../emails/InvitationToFund";
 import { v4 } from "uuid";
@@ -20,6 +18,7 @@ const inviteInvestor = ({
   email: string;
   amount: number;
 }) => {
+  const { execute, destroy } = getMysql();
   return execute(`SELECT c.userId FROM contract c WHERE c.uuid = ?`, [uuid])
     .then((results) => {
       const [fundraise] = results as { userId: string }[];
@@ -41,8 +40,9 @@ const inviteInvestor = ({
         ).then(() => agreementUuid);
       });
     })
-    .then((agreementUuid) =>
-      sendEmail({
+    .then((agreementUuid) => {
+      destroy();
+      return sendEmail({
         to: email,
         replyTo:
           user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId)
@@ -54,8 +54,8 @@ const inviteInvestor = ({
           creatorId: user.id || "",
           agreementUuid,
         }),
-      }).then(() => ({ uuid: agreementUuid }))
-    );
+      }).then(() => ({ uuid: agreementUuid }));
+    });
 };
 
 export default inviteInvestor;

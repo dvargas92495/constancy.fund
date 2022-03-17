@@ -1,8 +1,9 @@
 import { users } from "@clerk/clerk-sdk-node";
 import getPaymentPreferences from "./getPaymentPreferences.server";
+import type { Execute } from "./mysql.server";
 
-const getUserProfile = (userId: string) =>
-  Promise.all([users.getUser(userId), getPaymentPreferences(userId)]).then(
+const getUserProfile = (userId: string, execute?: Execute) =>
+  Promise.all([users.getUser(userId), getPaymentPreferences(userId, execute)]).then(
     ([u, paymentPreferences]) => {
       return {
         id: userId,

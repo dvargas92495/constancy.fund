@@ -1,4 +1,4 @@
-import { execute } from "./mysql.server";
+import getMysql from "./mysql.server";
 import { users } from "@clerk/clerk-sdk-node";
 import FUNDRAISE_TYPES from "../enums/fundraiseTypes";
 
@@ -10,6 +10,7 @@ const getFundraises = ({ userId }: { userId: string }) => {
         completed: false,
       };
     }
+    const { execute, destroy } = getMysql();
     return execute(
       `SELECT c.type, c.uuid, a.uuid as agreementUuid, cd.label, cd.value
      FROM contract c
@@ -18,6 +19,7 @@ const getFundraises = ({ userId }: { userId: string }) => {
      WHERE c.userId = ?`,
       [userId]
     ).then((results) => {
+      destroy();
       const fundraises: Record<
         string,
         {

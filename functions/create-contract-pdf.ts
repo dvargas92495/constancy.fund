@@ -1,5 +1,5 @@
 import FUNDRAISE_TYPES from "../app/enums/fundraiseTypes";
-import { execute } from "../app/data/mysql.server";
+import getMysql from "../app/data/mysql.server";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
@@ -80,6 +80,7 @@ export const handler = ({
     uuid,
     `${outfile}.pdf`
   );
+  const { execute, destroy } = getMysql();
   return Promise.all([
     execute(
       `SELECT type, userId
@@ -104,6 +105,7 @@ export const handler = ({
     ).then((res) => res as { label: string; value: string }[]),
   ])
     .then(([contract, details]) => {
+      destroy();
       const doc = new PDFDocument();
       const dirname = path.dirname(outFile);
       if (!fs.existsSync(dirname)) fs.mkdirSync(dirname, { recursive: true });

@@ -1,4 +1,4 @@
-import { execute } from "./mysql.server";
+import getMysql from "./mysql.server";
 import { dbIdByTypeId } from "../enums/fundraiseTypes";
 import { v4 } from "uuid";
 import type { FundraiseId } from "../enums/fundraiseTypes";
@@ -18,6 +18,7 @@ const createFundraise = ({
   const details = Object.entries(data).flatMap(([k, vs]) =>
     vs.map((v) => ({ k, v }))
   );
+  const { execute, destroy } = getMysql();
   return execute(
     `INSERT INTO contract (uuid, type, userId)
     VALUES (?, ?, ?)
@@ -33,12 +34,13 @@ const createFundraise = ({
         details.flatMap((d) => [d.k, d.v, uuid])
       )
     )
-    .then(() =>
-      invokeAsync<Parameters<AsyncHandler>[0]>({
+    .then(() => {
+      destroy();
+      return invokeAsync<Parameters<AsyncHandler>[0]>({
         path: "create-contract-pdf",
         data: { uuid },
-      })
-    )
+      });
+    })
     .then(() => uuid);
 };
 

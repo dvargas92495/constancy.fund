@@ -1,8 +1,15 @@
-import { execute } from "../../app/data/mysql.server";
+import getMysql from "../../app/data/mysql.server";
 import { NotFoundError, MethodNotAllowedError } from "aws-sdk-plus/dist/errors";
 
-const deleteAgreement = ({ uuid, userId }: { uuid: string; userId: string }) =>
-  Promise.all([
+const deleteAgreement = ({
+  uuid,
+  userId,
+}: {
+  uuid: string;
+  userId: string;
+}) => {
+  const { execute, destroy } = getMysql();
+  return Promise.all([
     execute(
       `SELECT c.userId 
      FROM agreement a
@@ -34,8 +41,9 @@ const deleteAgreement = ({ uuid, userId }: { uuid: string; userId: string }) =>
         `DELETE FROM agreement
         WHERE uuid = ?`,
         [uuid]
-      );
+      ).then(() => destroy());
     })
     .then(() => ({ success: true }));
+};
 
 export default deleteAgreement;

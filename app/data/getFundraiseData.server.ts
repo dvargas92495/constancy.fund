@@ -1,11 +1,18 @@
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
-import { execute } from "./mysql.server";
+import getMysql from "./mysql.server";
 import FUNDRAISE_TYPES from "../../app/enums/fundraiseTypes";
 import { Client } from "@dvargas92495/eversign";
 const eversign = new Client(process.env.EVERSIGN_API_KEY || "", 398320);
 
-const getFundraiseData = ({ uuid, userId }: { uuid: string; userId: string }) =>
-  execute(
+const getFundraiseData = ({
+  uuid,
+  userId,
+}: {
+  uuid: string;
+  userId: string;
+}) => {
+  const { execute, destroy } = getMysql();
+  return execute(
     `SELECT c.type, c.userId, a.uuid, a.amount, i.name, i.email, e.id, cd.label, cd.value
    FROM contract c
    LEFT JOIN agreement a ON a.contractUuid = c.uuid
@@ -15,6 +22,7 @@ const getFundraiseData = ({ uuid, userId }: { uuid: string; userId: string }) =>
    WHERE c.uuid = ?`,
     [uuid]
   ).then(async (results) => {
+    destroy();
     const fundraise = results as {
       type: number;
       userId: string;
@@ -82,5 +90,6 @@ const getFundraiseData = ({ uuid, userId }: { uuid: string; userId: string }) =>
       details,
     };
   });
+};
 
 export default getFundraiseData;

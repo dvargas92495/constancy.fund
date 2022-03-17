@@ -1,14 +1,15 @@
 import sendEmail from "aws-sdk-plus/dist/sendEmail";
-import { execute } from "../../app/data/mysql.server";
+import getMysql from "./mysql.server";
 import { users } from "@clerk/clerk-sdk-node";
-import { render as renderInvestorSigned } from "../../app/emails/InvestorSigned";
-import { render as renderCreatorSigned } from "../../app/emails/CreatorSigned";
-import FUNDRAISE_TYPES from "../../app/enums/fundraiseTypes";
-import eversign from "../../app/data/eversign.server";
+import { render as renderInvestorSigned } from "../emails/InvestorSigned";
+import { render as renderCreatorSigned } from "../emails/CreatorSigned";
+import FUNDRAISE_TYPES from "../enums/fundraiseTypes";
+import eversign from "./eversign.server";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
-import getPaymentPreferences from "../../app/data/getPaymentPreferences.server";
+import getPaymentPreferences from "./getPaymentPreferences.server";
 
 const signAgreement = ({ agreementUuid }: { agreementUuid: string }) => {
+  const { execute, destroy } = getMysql();
   return execute(
     `SELECT e.id, i.uuid, i.name, i.email, c.userId, c.type
      FROM agreement a
@@ -53,7 +54,7 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) => {
     })
     .then(([numSigners, r]) => {
       if (numSigners === 1) {
-        return getPaymentPreferences(r.investorUuid).then(
+        return getPaymentPreferences(r.investorUuid, execute).then(
           (investorPaymentPreferences) =>
             sendEmail({
               to: r.userEmail,
@@ -69,7 +70,7 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) => {
             })
         );
       } else if (numSigners === 2) {
-        return getPaymentPreferences(r.id || '').then((creatorPaymentPreferences) =>
+        return getPaymentPreferences(r.id || '', execute).then((creatorPaymentPreferences) =>
           sendEmail({
             to: r.investorEmail,
             replyTo: r.userEmail,
@@ -86,6 +87,7 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) => {
         throw new MethodNotAllowedError(`No one has actually signed`);
       }
     })
+    .then(destroy)
     .then(() => ({ success: true }));
 };
 

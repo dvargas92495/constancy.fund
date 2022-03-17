@@ -1,7 +1,7 @@
 import { users } from "@clerk/clerk-sdk-node";
 import { dbTypeById } from "~/enums/paymentPreferences";
 import validatePaymentPreferences from "~/data/validatePaymentPreferences";
-import { execute } from "./mysql.server";
+import getMysql from "./mysql.server";
 import getPaymentPreferences from "./getPaymentPreferences.server";
 import { v4 } from "uuid";
 
@@ -32,9 +32,10 @@ const saveUserProfile = (userId: string, data: Record<string, string[]>) => {
     throw new Error("One of your social profiles have an invalid URL");
   }
   const paymentPreferences = validatePaymentPreferences(data);
+  const { execute, destroy } = getMysql();
   return Promise.all([
     users.getUser(userId),
-    getPaymentPreferences(userId),
+    getPaymentPreferences(userId, execute),
   ]).then(([user, oldPP]) => {
     const updatedPP = Object.fromEntries(
       paymentPreferences.map(([k, v]) => [k, Object.fromEntries(v)])
@@ -119,7 +120,12 @@ const saveUserProfile = (userId: string, data: Record<string, string[]>) => {
                   .join(",")}`,
                 paymentPreferencesToInsert
                   .flatMap(({ uuid, fields }) =>
-                    Object.entries(fields).map(([label, value]) => [v4(), label, value, uuid])
+                    Object.entries(fields).map(([label, value]) => [
+                      v4(),
+                      label,
+                      value,
+                      uuid,
+                    ])
                   )
                   .flat()
               )
@@ -154,7 +160,7 @@ const saveUserProfile = (userId: string, data: Record<string, string[]>) => {
             ),
           ]
         : []),
-    ]);
+    ]).then(destroy);
   });
 };
 

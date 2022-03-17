@@ -1,8 +1,9 @@
-import { execute } from "./mysql.server";
+import getMysql from "./mysql.server";
 import getUserProfile from "./getUserProfile.server";
 import { Id as PaymentPreferenceId } from "~/enums/paymentPreferences";
 
 const getPublicUserProfile = (id: string) => {
+  const { execute, destroy } = getMysql();
   return Promise.all([
     getUserProfile(id),
     execute(
@@ -33,6 +34,7 @@ const getPublicUserProfile = (id: string) => {
           };
         }
       });
+      destroy();
       return fundraises;
     }),
   ]).then(([{ id, ...u }, fundraises]) => {

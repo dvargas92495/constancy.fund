@@ -1,6 +1,6 @@
 import { BadRequestError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import getUserProfile from "./getUserProfile.server";
-import { execute } from "./mysql.server";
+import getMysql from "./mysql.server";
 
 const getAgreement = ({
   agreement,
@@ -11,6 +11,7 @@ const getAgreement = ({
   agreement?: string;
   fundraise?: string;
 }) => {
+  const { execute, destroy } = getMysql();
   return (
     agreement
       ? execute(
@@ -63,15 +64,18 @@ const getAgreement = ({
     const details: Record<string, string> = Object.fromEntries(
       fundraises.map((f) => [f.label, f.value])
     );
-    return getUserProfile(fundraises[0].userId).then((user) => ({
-      details,
-      user,
-      name: fundraises[0].name || "",
-      email: fundraises[0].email || "",
-      amount: fundraises[0].amount || 0,
-      uuid: fundraises[0].uuid || "",
-      contractUuid: fundraises[0].contractUuid,
-    }));
+    return getUserProfile(fundraises[0].userId, execute).then((user) => {
+      destroy();
+      return {
+        details,
+        user,
+        name: fundraises[0].name || "",
+        email: fundraises[0].email || "",
+        amount: fundraises[0].amount || 0,
+        uuid: fundraises[0].uuid || "",
+        contractUuid: fundraises[0].contractUuid,
+      };
+    });
   });
 };
 

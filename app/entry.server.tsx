@@ -11,14 +11,12 @@ export default function handleRequest(
   responseHeaders: Headers,
   remixContext: EntryContext
 ) {
-  console.log("entered request");
   const sheet = new ServerStyleSheet();
   const markup = renderToString(
     sheet.collectStyles(
       <RemixServer context={remixContext} url={request.url} />
     )
   );
-  console.log("created markup");
 
   // Inject MUI
   const { extractCriticalToChunks, constructStyleTagsFromChunks } =
@@ -32,7 +30,6 @@ export default function handleRequest(
   const finalMarkup = postMuiMarkup.replace("__STYLES2__", styleTags);
 
   responseHeaders.set("Content-Type", "text/html");
-  console.log("headers set");
 
   return new Response("<!DOCTYPE html>" + finalMarkup, {
     status: responseStatusCode,

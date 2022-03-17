@@ -1,4 +1,4 @@
-import { execute } from "./mysql.server";
+import getMysql from "./mysql.server";
 import { users } from "@clerk/clerk-sdk-node";
 import {
   MethodNotAllowedError,
@@ -18,9 +18,11 @@ const eversign = new Client(process.env.EVERSIGN_API_KEY || "", 398320);
 const createPaymentPreferences = ({
   userId,
   paymentPreferences,
+  execute,
 }: {
   userId: string;
   paymentPreferences: (readonly [Id, (readonly [string, string])[]])[];
+  execute: ReturnType<typeof getMysql>["execute"];
 }) => {
   const paymentPreferenceRecords = paymentPreferences.map(([type, fields]) => ({
     uuid: v4(),
@@ -75,6 +77,7 @@ const createAgreement = ({
   investorAddressCountry: string;
   paymentPreferences: (readonly [Id, (readonly [string, string])[]])[];
 }) => {
+  const { execute, destroy } = getMysql();
   return (
     uuid
       ? execute(
@@ -109,6 +112,7 @@ const createAgreement = ({
                   createPaymentPreferences({
                     paymentPreferences,
                     userId: investorUuid,
+                    execute,
                   }),
                 ])
               )
@@ -236,6 +240,7 @@ const createAgreement = ({
         VALUES (?,?)`,
         [r.id, r.agreementUuid]
       ).then(() => {
+        destroy();
         return r.agreementUuid;
       })
     )

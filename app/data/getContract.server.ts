@@ -1,10 +1,11 @@
-import { execute } from "./mysql.server";
+import getMysql from "./mysql.server";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import eversign from "./eversign.server";
 import FUNDRAISE_TYPES from "../enums/fundraiseTypes";
 
-const getContract = ({ uuid, signer }: { uuid: string; signer: string }) =>
-  execute(
+const getContract = ({ uuid, signer }: { uuid: string; signer: string }) => {
+  const { execute, destroy } = getMysql();
+  return execute(
     `SELECT e.id
     FROM eversigndocument e
     WHERE e.agreementUuid = ?`,
@@ -32,6 +33,7 @@ const getContract = ({ uuid, signer }: { uuid: string; signer: string }) =>
           WHERE a.uuid = ?`,
           [uuid]
         ).then(async (c) => {
+          destroy();
           const results = c as { userId: string; type: number; uuid: string }[];
           if (!results.length)
             throw new MethodNotAllowedError(
@@ -47,5 +49,6 @@ const getContract = ({ uuid, signer }: { uuid: string; signer: string }) =>
         })
       );
   });
+};
 
 export default getContract;

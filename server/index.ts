@@ -12,6 +12,7 @@ const originPaths = [
 const requestHandler = createRequestHandler({
   getBuild: () => require("./build"),
   originPaths,
+  debug: !process.env.IS_PRODUCTION,
   onError: (e) => console.log("Send email to me", e),
   /*sendEmail({
     to: "support@constancy.fund",

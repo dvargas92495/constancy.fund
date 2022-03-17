@@ -1,9 +1,10 @@
 import { users } from "@clerk/clerk-sdk-node";
-import { execute } from "./mysql.server";
+import getMysql from "./mysql.server";
 import FUNDRAISE_TYPES from "../enums/fundraiseTypes";
 import PAYMENT_PREFERENCES from "~/enums/paymentPreferences";
 
 const loader = () => {
+  const { execute, destroy } = getMysql();
   return Promise.all([
     users.getUserList(),
     execute(`
@@ -24,31 +25,14 @@ const loader = () => {
         userId: string;
       }[];
     }),
-  ]).then(([users, ids, p]) => ({
-    users: users.map((u) => ({
-      id: u.id,
-      name: `${u.firstName} ${u.lastName}`,
-      paymentPreferences: p
-        .filter(({ userId }) => u.id === userId)
-        .reduce((prev, { type, label, value }) => {
-          const id = PAYMENT_PREFERENCES[type].id;
-          if (prev[id]) {
-            prev[id][label] = value;
-          } else {
-            prev[id] = { [label]: value };
-          }
-          return prev;
-        }, {} as Record<string, Record<string, string>>),
-    })),
-    ids: (
-      ids as { uuid: string; type: number; name: string; investor: string }[]
-    ).map(({ uuid, type, name, investor }) => ({
-      uuid,
-      type: FUNDRAISE_TYPES[type].name,
-      investor: {
-        name,
+  ]).then(([users, ids, p]) => {
+    destroy();
+    return {
+      users: users.map((u) => ({
+        id: u.id,
+        name: `${u.firstName} ${u.lastName}`,
         paymentPreferences: p
-          .filter(({ userId }) => investor === userId)
+          .filter(({ userId }) => u.id === userId)
           .reduce((prev, { type, label, value }) => {
             const id = PAYMENT_PREFERENCES[type].id;
             if (prev[id]) {
@@ -58,9 +42,29 @@ const loader = () => {
             }
             return prev;
           }, {} as Record<string, Record<string, string>>),
-      },
-    })),
-  }));
+      })),
+      ids: (
+        ids as { uuid: string; type: number; name: string; investor: string }[]
+      ).map(({ uuid, type, name, investor }) => ({
+        uuid,
+        type: FUNDRAISE_TYPES[type].name,
+        investor: {
+          name,
+          paymentPreferences: p
+            .filter(({ userId }) => investor === userId)
+            .reduce((prev, { type, label, value }) => {
+              const id = PAYMENT_PREFERENCES[type].id;
+              if (prev[id]) {
+                prev[id][label] = value;
+              } else {
+                prev[id] = { [label]: value };
+              }
+              return prev;
+            }, {} as Record<string, Record<string, string>>),
+        },
+      })),
+    };
+  });
 };
 
 export default loader;
