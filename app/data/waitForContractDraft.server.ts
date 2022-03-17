@@ -1,9 +1,6 @@
 import fs from "fs";
 import path from "path";
 import { FE_PUBLIC_DIR } from "fuegojs/dist/common";
-import AWS from "aws-sdk";
-
-const s3 = new AWS.S3();
 
 const doesContractExist =
   process.env.NODE_ENV === "development"
@@ -14,12 +11,16 @@ const doesContractExist =
           )
         )
     : (uuid: string) =>
-        s3
-          .headObject({
-            Bucket: (process.env.HOST || "").replace(/^https?:\/\//, ""),
-            Key: `_contracts/${uuid}/draft.pdf`,
-          })
-          .promise()
+        import("aws-sdk")
+          .then((AWS) => new AWS.S3())
+          .then((s3) =>
+            s3
+              .headObject({
+                Bucket: (process.env.HOST || "").replace(/^https?:\/\//, ""),
+                Key: `_contracts/${uuid}/draft.pdf`,
+              })
+              .promise()
+          )
           .then(() => true)
           .catch(() => false);
 
