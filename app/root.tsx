@@ -12,14 +12,11 @@ import {
   useLoaderData,
   ErrorBoundaryComponent,
 } from "remix";
-import { ExternalScripts } from "remix-utils";
 import { ConnectClerk, ConnectClerkCatchBoundary } from "@clerk/remix";
 import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 import getEmotionCache, { emotionCache } from "./_common/getEmotionCache";
 import { CacheProvider } from "@emotion/react";
 import MuiThemeProvider from "@mui/material/styles/ThemeProvider";
-import CssBaseline from "@mui/material/CssBaseline";
-import GlobalStyles from "@mui/material/GlobalStyles";
 import createTheme from "@mui/material/styles/createTheme";
 import { useMemo } from "react";
 
@@ -79,6 +76,7 @@ const themeProps = {
     },
   },
   typography: {
+    fontWeightBold: 600,
     fontFamily: ["Inter", "sans-serif"].join(","),
     title: {
       fontSize: "30px",
@@ -193,16 +191,39 @@ const themeProps = {
 };
 
 const GlobalStyle = createGlobalStyle<{ theme: typeof themeProps }>`
-  * {
+    * {
       font-family: "Inter" !important;
-    } 
+    }
 
-    html { font-family: "Inter", "system-ui" !important; }
+    *, *::before, *::after {
+      box-sizing: inherit;
+    }
+
+    html { 
+      font-family: "Inter", "system-ui" !important;
+      --webkit-font-smoothing: antialiased;
+      --moz-osx-font-smoothing: grayscale;
+      box-sizing: border-box;
+      --webkit-text-size-adjust: 100%;
+    }
 
     html, body { height: 100%; }
 
+    body {
+      margin: 0,
+      backgroundColor: ${(props) => props.theme.palette.background.default};
+    }
+
+    body::backdrop {
+      backgroundColor: ${(props) => props.theme.palette.background.default};
+    }
+
     @supports (font-variation-settings: normal) {
       html { font-family: "Inter", "system-ui" !important; }
+    }
+
+    strong, b {
+      fontWeight: ${(props) => props.theme.typography.fontWeightBold};
     }
 
     & .MuiPopover-paper {
@@ -364,12 +385,6 @@ const App = () => {
             }
           >
             <MuiThemeProvider theme={theme}>
-              <CssBaseline />
-              <GlobalStyles
-                styles={{
-                  body: { background: themeProps.palette.background.default },
-                }}
-              />
               <RootContainer id="root">
                 <Outlet />
               </RootContainer>
@@ -384,7 +399,6 @@ const App = () => {
 };`,
           }}
         />
-        <ExternalScripts />
         <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}
       </body>

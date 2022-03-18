@@ -5,7 +5,7 @@ const DATABASE_URL_REGEX =
 const matches = DATABASE_URL_REGEX.exec(process.env.DATABASE_URL || "");
 
 export const getConnection = () => {
-  if (!matches) throw new Error(`Error parsing Database URL`);
+  if (!matches) return Promise.reject(`Error parsing Database URL`);
   return import("mysql2")
     .then((mysql) =>
       mysql.createConnection({

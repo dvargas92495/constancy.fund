@@ -1,14 +1,16 @@
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
+import Box from "@mui/material/Box";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { useState } from "react";
+import TextInputOneLine from "./TextInputOneLine";
+import TextInputContainer from "./TextInputContainer";
+import TextFieldDescription from "./TextFieldDescription";
 import SectionTitle from "./SectionTitle";
 import TextFieldBox from "./TextFieldBox";
 import InfoText from "./InfoText";
 import PAYMENT_PREFERENCES, { Id } from "../enums/paymentPreferences";
-import paymentLabelsById from "../_common/PaymentLabelsById";
+import paymentLabelsById from "./PaymentLabelsById";
 
 const paymentFieldsById = Object.fromEntries(
   PAYMENT_PREFERENCES.map(({ id, fields }) => [id, fields])
@@ -40,15 +42,16 @@ const PaymentPreference = ({
             const key = f.replace(/ /g, "");
             const name = `paymentPreference.${id}.${key}`;
             return (
-              <TextField
-                sx={{ mb: 2 }}
-                required
-                fullWidth
-                label={f}
-                defaultValue={defaultValue?.[key] || ""}
-                key={key}
-                name={name}
-              />
+              <TextFieldBox key={key}>
+                <TextFieldDescription required>{f}</TextFieldDescription>
+                <TextInputContainer width={"350px"}>
+                  <TextInputOneLine
+                    name={name}
+                    required
+                    defaultValue={defaultValue?.[key] || ""}
+                  />
+                </TextInputContainer>
+              </TextFieldBox>
             );
           })}
         </Box>

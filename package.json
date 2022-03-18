@@ -63,7 +63,6 @@
     "pdfkit": "^0.13.0",
     "remix": "^1.2.3",
     "remix-lambda-at-edge": "^0.4.0",
-    "remix-utils": "^2.4.0",
     "stripe": "^8.191.0",
     "styled-components": "^5.3.3",
     "webfontloader": "^1.6.28"

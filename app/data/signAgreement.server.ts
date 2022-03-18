@@ -1,9 +1,8 @@
 import getMysql from "./mysql.server";
-import { users } from "@clerk/clerk-sdk-node";
 import { render as renderInvestorSigned } from "../emails/InvestorSigned";
 import { render as renderCreatorSigned } from "../emails/CreatorSigned";
 import FUNDRAISE_TYPES from "../enums/fundraiseTypes";
-import eversign from "./eversign.server";
+import getEversign from "./eversign.server";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import getPaymentPreferences from "./getPaymentPreferences.server";
 
@@ -32,23 +31,25 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
             `Could not find eversign document associated with agreement ${agreementUuid}`
           );
         return Promise.all([
-          eversign
-            .getDocumentByHash(doc.id)
+          getEversign()
+            .then((eversign) => eversign.getDocumentByHash(doc.id))
             .then((r) =>
               r.getSigners().reduce((p, c) => (c.getSigned() ? p + 1 : p), 0)
             ),
-          users.getUser(doc.userId).then((u) => ({
-            investorEmail: doc.email,
-            investorName: doc.name,
-            investorUuid: doc.uuid,
-            userEmail:
-              u.emailAddresses.find((e) => e.id === u.primaryEmailAddressId)
-                ?.emailAddress || "",
-            userName: `${u.firstName} ${u.lastName}`,
-            documentId: doc.id,
-            contractType: FUNDRAISE_TYPES[doc.type || 0].name,
-            id: u.id,
-          })),
+          import("@clerk/clerk-sdk-node")
+            .then((clerk) => clerk.users.getUser(doc.userId))
+            .then((u) => ({
+              investorEmail: doc.email,
+              investorName: doc.name,
+              investorUuid: doc.uuid,
+              userEmail:
+                u.emailAddresses.find((e) => e.id === u.primaryEmailAddressId)
+                  ?.emailAddress || "",
+              userName: `${u.firstName} ${u.lastName}`,
+              documentId: doc.id,
+              contractType: FUNDRAISE_TYPES[doc.type || 0].name,
+              id: u.id,
+            })),
         ]);
       })
       .then(([numSigners, r]) => {
