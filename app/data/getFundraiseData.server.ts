@@ -1,8 +1,7 @@
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import getMysql from "./mysql.server";
 import FUNDRAISE_TYPES from "../../app/enums/fundraiseTypes";
-import { Client } from "@dvargas92495/eversign";
-const eversign = new Client(process.env.EVERSIGN_API_KEY || "", 398320);
+import getEversign from "./eversign.server";
 
 const getFundraiseData = ({ uuid, userId }: { uuid: string; userId: string }) =>
   getMysql().then(({ execute, destroy }) => {
@@ -38,8 +37,8 @@ const getFundraiseData = ({ uuid, userId }: { uuid: string; userId: string }) =>
         Array.from(new Set(fundraise.map(({ id }) => id)))
           .filter((id) => !!id)
           .map((id) =>
-            eversign
-              .getDocumentByHash(id!)
+            getEversign()
+              .then((eversign) => eversign.getDocumentByHash(id!))
               .then((r) =>
                 r.getSigners().every((s) => s.getSigned())
                   ? 3

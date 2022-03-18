@@ -8,11 +8,8 @@ import FUNDRAISE_TYPES from "../enums/fundraiseTypes";
 import { FE_PUBLIC_DIR } from "fuegojs/dist/common";
 import path from "path";
 import type { Handler as ContractHandler } from "../../functions/create-contract-pdf";
-import { Client, Document, File, Signer } from "@dvargas92495/eversign";
 import { v4 } from "uuid";
 import { Id, dbTypeById } from "~/enums/paymentPreferences";
-
-const eversign = new Client(process.env.EVERSIGN_API_KEY || "", 398320);
 
 const createPaymentPreferences = ({
   userId,
@@ -152,7 +149,9 @@ const createAgreement = ({
             );
           }
           return Promise.all([
-            import("@clerk/clerk-sdk-node").then(clerk => clerk.users.getUser(c.userId)),
+            import("@clerk/clerk-sdk-node").then((clerk) =>
+              clerk.users.getUser(c.userId)
+            ),
             import("@dvargas92495/api/invokeDirect").then((invokeDirect) =>
               invokeDirect.default<Parameters<ContractHandler>[0]>({
                 path: "create-contract-pdf",
@@ -183,7 +182,8 @@ const createAgreement = ({
           }));
         });
       })
-      .then((contract) => {
+      .then(async (contract) => {
+        const eversign = await import("@dvargas92495/eversign");
         const filePath = `_contracts/${contract.uuid}/${contract.agreementUuid}.pdf`;
         const creatorName = `${contract.user.firstName} ${contract.user.lastName}`;
         const creatorEmail =
@@ -191,7 +191,7 @@ const createAgreement = ({
             (e) => e.id === contract.user.primaryEmailAddressId
           )?.emailAddress || "";
 
-        const file = new File(
+        const file = new eversign.File(
           process.env.NODE_ENV === "development"
             ? {
                 name: "contract",
@@ -203,20 +203,20 @@ const createAgreement = ({
               }
         );
 
-        const investorSigner = new Signer({
+        const investorSigner = new eversign.Signer({
           id: 1,
           name,
           email,
           deliverEmail: false,
         });
-        const creatorSigner = new Signer({
+        const creatorSigner = new eversign.Signer({
           id: 2,
           name: creatorName,
           email: creatorEmail,
           deliverEmail: false,
         });
 
-        const document = new Document({
+        const document = new eversign.Document({
           reminders: true,
           requireAllSigners: true,
           custom_requester_email: creatorEmail,
@@ -231,7 +231,11 @@ const createAgreement = ({
         document.appendSigner(investorSigner);
         document.appendSigner(creatorSigner);
 
-        return eversign.createDocument(document).then((r) => {
+        const client = new eversign.Client(
+          process.env.EVERSIGN_API_KEY || "",
+          398320
+        );
+        return client.createDocument(document).then((r) => {
           return { ...contract, id: r.getDocumentHash() };
         });
       })
