@@ -421,7 +421,7 @@ export const action: ActionFunction = async ({ request }) => {
   if (!email) return new Response("Email is required", { status: 400 });
   return axios
     .post<{ subscription: { subscriber: { id: string } } }>(
-      `https://api.convertkit.com/v3/forms/2823917/subscribe`,
+      `https://api.convertkit.com/v3/forms/3108950/subscribe`,
       {
         api_key: process.env.CONVERTKIT_API_KEY,
         email,
