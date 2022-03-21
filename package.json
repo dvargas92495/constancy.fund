@@ -18,11 +18,13 @@
     "precompile": "prisma generate",
     "start": "concurrently \"npm:api\" \"npm:dev\"",
     "postinstall": "fuego postinstall \"@mui/material\" \"pdfjs-dist\"",
-    "staging": "mysqlsh --host vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com --port 5432 --database staging_constancy_fund --user staging_constancy_fund"
+    "staging": "mysqlsh --host vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com --port 5432 --database staging_constancy_fund --user staging_constancy_fund",
+    "test": "jest"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.85",
     "@types/classnames": "^2.3.1",
+    "@types/jest": "^27.4.1",
     "@types/node": "^16.11.11",
     "@types/pdfkit": "^0.12.3",
     "@types/react": "^17.0.37",
@@ -31,8 +33,11 @@
     "@typescript-eslint/eslint-plugin": "^5.5.0",
     "@typescript-eslint/parser": "^5.5.0",
     "concurrently": "^6.4.0",
+    "cross-spawn": "^7.0.3",
+    "esbuild-jest": "^0.5.0",
     "eslint": "^8.4.0",
     "fuegojs": "^0.22.14",
+    "jest": "^27.5.1",
     "prettier": "^2.5.1",
     "prisma": "^3.6.0",
     "ts-node": "^10.4.0",
@@ -95,5 +100,17 @@
         ]
       ]
     }
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "esbuild-jest"
+    },
+    "testRegex": "/tests/.*\\.test\\.tsx?$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx"
+    ]
   }
 }

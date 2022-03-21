@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import getMeta from "~/_common/getMeta";
 import styled from "styled-components";
 import { PrimaryAction } from "~/_common/PrimaryAction";
-import Snackbar from "@mui/material/Snackbar";
 import axios from "axios";
 import {
   ActionFunction,
@@ -291,14 +290,6 @@ const SubscribeBox = () => {
         label={<ButtonInnerDiv>GET UPDATES</ButtonInnerDiv>}
         type={"submit"}
         fontWeight={"600"}
-      />
-
-      <Snackbar
-        open={subscribed}
-        autoHideDuration={5000}
-        onClose={() => setSubscribed(false)}
-        color="success"
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       />
     </SignupBox>
   );
