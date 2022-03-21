@@ -68,7 +68,7 @@ This runs both the front end and the back end locally so you could connect to th
 
 When looking to make edits to a file, the best place to start is to go to the file in `/routes` the matches the path in the URL. From there, you could inspect elements to find the matching JSX elements in the file.
 
-The project is built on top of [Material UI](https://mui.com). Most components that come out of `@dvargas92495/ui` are simply higher level abstractions on Material. I'm not currently sold on using this library long term, and am happy to look for alternatives once we have designs. In any case, styling a MUI component is as easy as adding a `sx` prop on the component of interest, and adding the desired style attributes. 
+The project is built on [Styled](https://https://styled-components.com). There are some built on top of [Material UI](https://mui.com), but we are currently migrating away from those components due to performance concerns, both in developer and user experience.
 
 ### Back End
 

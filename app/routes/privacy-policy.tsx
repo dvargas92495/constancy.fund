@@ -12,9 +12,9 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
   <Container>
     <h1>Privacy Policy for Constancy</h1>
     <p>
-      At Constancy, one of our main priorities is the privacy of our
-      visitors. This Privacy Policy document contains types of information that
-      is collected and recorded by Constancy and how it is used.
+      At Constancy, one of our main priorities is the privacy of our visitors.
+      This Privacy Policy document contains types of information that is
+      collected and recorded by Constancy and how it is used.
     </p>
     <p>
       If you have additional questions or require more information about our
@@ -24,10 +24,10 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
     <p>
       This Privacy Policy applies only to our online activities and is valid for
       visitors to our websites with regards to the information that they shared
-      and/or collect in Constancy. This policy is not applicable
-      to any information collected offline or via channels other than these
-      websites. Our Privacy Policy was created with the help of the Free Privacy
-      Policy Generator.
+      and/or collect in Constancy. This policy is not applicable to any
+      information collected offline or via channels other than these websites.
+      Our Privacy Policy was created with the help of the Free Privacy Policy
+      Generator.
     </p>
     <h2>Consent</h2>
     <p>
@@ -52,9 +52,7 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
       including items such as name, email address, and telephone number.
     </p>
     <h2>How we use your information</h2>
-    <p>
-      We use the information we collect in various ways, including to:
-    </p>
+    <p>We use the information we collect in various ways, including to:</p>
     <ul>
       <li>Provide, operate, and maintain our websites</li>
       <li>Improve, personalize, and expand our websites</li>
@@ -71,8 +69,8 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
     </ul>
     <h2>Log Files</h2>
     <p>
-      Constancy follows a standard procedure of using log files. These files
-      log visitors when they visit websites. All hosting companies do this and a
+      Constancy follows a standard procedure of using log files. These files log
+      visitors when they visit websites. All hosting companies do this and a
       part of hosting services' analytics. The information collected by log
       files include internet protocol (IP) addresses, browser type, Internet
       Service Provider (ISP), date and time stamp, referring/exit pages, and
