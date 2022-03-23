@@ -19,7 +19,6 @@ import Spacer from "~/_common/Spacer";
 import Section from "~/_common/Section";
 import SectionTitle from "~/_common/SectionTitle";
 import { IconContent, ProfileTitle, TopBarProfile } from "../$id";
-import CompanyLogo from "~/_common/Images/memexlogo.png";
 import formatAmount from "../../../../db/util/formatAmount";
 import getPublicUserProfile from "~/data/getPublicUserProfile.server";
 import { Id as PaymentPreferenceId } from "~/enums/paymentPreferences";
@@ -294,6 +293,7 @@ const CreatorProfile = (): React.ReactElement => {
   const {
     userId,
     // fullName,
+    profileImageUrl,
     companyName,
     demoVideo,
     socialProfiles = [],
@@ -312,7 +312,7 @@ const CreatorProfile = (): React.ReactElement => {
           <ProfileImageContainer scroll={scrollPosition}>
             <ProfileImage>
               <img
-                src={CompanyLogo}
+                src={profileImageUrl || "/images/Logo.png"}
                 alt={"Profile Image"}
                 style={{ borderRadius: "150px" }}
               />
@@ -368,7 +368,7 @@ const CreatorProfile = (): React.ReactElement => {
           <ProfileImageContainer scroll={scrollPosition}>
             <ProfileImage>
               <img
-                src={CompanyLogo}
+                src={profileImageUrl || "/images/Logo.png"}
                 alt={"Profile Image"}
                 style={{ borderRadius: "150px" }}
               />

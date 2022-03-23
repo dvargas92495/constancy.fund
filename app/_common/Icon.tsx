@@ -13,9 +13,11 @@ import PreviewIcon from "@mui/icons-material/Preview";
 import RedditIcon from "@mui/icons-material/Reddit";
 
 import BookSvg from "./Icons/book.svg";
+import CameraSvg from "./Icons/camera.svg";
 import DollarSvg from "./Icons/dollar.svg";
 import GitHubSvg from "./Icons/github.svg";
 import Globe from "./Icons/globe.svg";
+import ImageDefaultSvg from "./Icons/image-default.svg";
 import LinkedInSvg from "./Icons/linkedin.svg";
 import PersonFineSvg from "./Icons/personFine.svg";
 import MailSvg from "./Icons/mail.svg";
@@ -37,6 +39,7 @@ import ethereum from "./Icons/ethereum.svg";
 import bitcoin from "./Icons/bitcoin.svg";
 import paypalSmall from "./Icons/paypalSmall.svg";
 import near from "./Icons/near.svg";
+import UploadSvg from "./Icons/upload.svg";
 
 const Icon = ({
   name,
@@ -49,6 +52,7 @@ const Icon = ({
     | "arrow-drop-down"
     | "arrow-right"
     | "book"
+    | "camera"
     | "check"
     | "delete"
     | "dollar"
@@ -58,6 +62,7 @@ const Icon = ({
     | "github"
     | "globe"
     | "home"
+    | "image-default"
     | "info"
     | "Instagram"
     | "linkedIn"
@@ -85,6 +90,7 @@ const Icon = ({
     | "bitcoin"
     | "bank"
     | "paypalSmall"
+    | "upload"
     | "youtube";
 } & Pick<SvgIconProps, "height" | "width">) => {
   const muiProps = {
@@ -102,6 +108,8 @@ const Icon = ({
       return <ArrowRightIcon {...muiProps} />;
     case "book":
       return <StyledIcon {...props} icon={BookSvg} />;
+    case "camera":
+      return <StyledIcon {...props} icon={CameraSvg} />;
     case "check":
       return <CheckIcon {...muiProps} />;
     case "delete":
@@ -120,6 +128,8 @@ const Icon = ({
       return <StyledIcon {...props} icon={Globe} />;
     case "home":
       return <StyledIcon {...props} icon={PersonFineSvg} />;
+    case "image-default":
+      return <StyledIcon {...props} icon={ImageDefaultSvg} />;
     case "info":
       return <InfoIcon {...muiProps} />;
     case "Instagram":
@@ -154,6 +164,8 @@ const Icon = ({
       return <StyledIcon {...props} icon={TrendingUp} />;
     case "twitter":
       return <StyledIcon {...props} icon={TwitterSvg} />;
+    case "upload":
+      return <StyledIcon {...props} icon={UploadSvg} />;
     case "webIcon":
       return <StyledIcon {...props} icon={Globe} />;
     case "remove":

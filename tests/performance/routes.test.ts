@@ -56,7 +56,7 @@ describe("Loads all routes in a reasonable amount of time", () => {
     });
     proc.on("close", () => {
       // Do a single require of the output file - we are not trying to optimize cold start in these tests
-      // We should optimize it though at some point - performance could go from
+      // We should optimize it though at some point - performance could go from 500ms to < 1ms
       require(serverOutputFile);
       done();
     });

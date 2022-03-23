@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActionFunction,
   Form,
@@ -22,7 +22,6 @@ import Icon from "~/_common/Icon";
 import styled from "styled-components";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import { SecondaryAction } from "~/_common/SecondaryAction";
-import CompanyLogo from "~/_common/Images/memexlogo.png";
 import TextInputContainer from "~/_common/TextInputContainer";
 import TextInputOneLine from "~/_common/TextInputOneLine";
 import TopBar from "~/_common/TopBar";
@@ -39,7 +38,9 @@ import TextFieldDescription from "~/_common/TextFieldDescription";
 import SubSectionTitle from "~/_common/SubSectionTitle";
 import TextInputMultiLine from "~/_common/TextInputMultiLine";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
-import { ConnectClerkCatchBoundary } from "@clerk/remix";
+import ImageUploader from "~/_common/ImageUploader";
+import { ConnectClerkCatchBoundary, useUser } from "@clerk/remix";
+import Avatar from "@mui/material/Avatar";
 
 const SubSection = styled.div`
   margin-top: 60px;
@@ -187,6 +188,14 @@ const UserProfile = () => {
   const [isChanges, setIsChanges] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const changes = useRef(new Set<HTMLElement>());
+  const { user } = useUser();
+  const saveImage = useCallback(
+    (file: File) => {
+      // @ts-ignore
+      return user!.setProfileImage({ file });
+    },
+    [user]
+  );
   useEffect(() => {
     if (actionData?.success) {
       setSnackbarOpen(true);
@@ -262,11 +271,16 @@ const UserProfile = () => {
             </NameAreaBox>
             <ProfileImageContainer>
               <ProfileImageBox>
-                <img
-                  src={CompanyLogo}
-                  alt={"Profile Image"}
-                  style={{ borderRadius: "150px" }}
-                />
+                <ImageUploader
+                  title="Upload photo"
+                  subtitle="Select a profile photo"
+                  handleSuccess={saveImage}
+                >
+                  <Avatar
+                    src={user?.profileImageUrl}
+                    sx={{ height: "100%", width: "100%" }}
+                  />
+                </ImageUploader>
               </ProfileImageBox>
               <ProfileImageChangeOverlay>
                 <Icon name={"dollar"} heightAndWidth="24px" color="purple" />
