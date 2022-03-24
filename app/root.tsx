@@ -210,7 +210,7 @@ const GlobalStyle = createGlobalStyle<{ theme: typeof themeProps }>`
     html, body { height: 100%; }
 
     body {
-      margin: 0,
+      margin: 0;
       backgroundColor: ${(props) => props.theme.palette.background.default};
     }
 

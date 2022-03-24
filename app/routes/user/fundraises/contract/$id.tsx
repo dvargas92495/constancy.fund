@@ -29,6 +29,9 @@ import { PrimaryAction } from "~/_common/PrimaryAction";
 import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
 import getFundraiseData from "~/data/getFundraiseData.server";
 import deleteAgreement from "~/data/deleteAgreement.server";
+import { SecondaryAction } from "~/_common/SecondaryAction";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 const ConditionsContainer = styled.div`
   display: flex;
@@ -96,6 +99,7 @@ const UpdatePill = styled.div`
   justify-content: center;
   align-items: center;
   grid-gap: 15px;
+  margin-right: 16px;
 `;
 
 const ProgressPill = styled.div`
@@ -363,6 +367,11 @@ const AgreementRow = (
   );
 };
 
+const InfoSubBar = styled.span`
+  display: flex;
+  align-items: center;
+`;
+
 const Container = styled.div`
   max-width: 1000px;
 `;
@@ -403,20 +412,42 @@ const UserFundraisesContract = () => {
     () => Math.round((Number(progress) / Number(total)) * 100),
     [progress, total]
   );
+  const [publicLinkCopied, setPublicLinkCopied] = useState(false);
   return (
     <Container>
       <TopBar>
         <InfoArea>
           <PageTitle>My Fundraise</PageTitle>
-          <UpdatePill>
-            {rowsToSign.length > 0 && <span>🎉 </span>}
-            <span>
-              <b>{rowsToSign.length}</b> New
-            </span>
-          </UpdatePill>
+          <InfoSubBar>
+            <UpdatePill>
+              {rowsToSign.length > 0 && <span>🎉 </span>}
+              <span>
+                <b>{rowsToSign.length}</b> New
+              </span>
+            </UpdatePill>
+            <SecondaryAction
+              onClick={() => {
+                window.navigator.clipboard.writeText(`/creator/${id}`);
+                setPublicLinkCopied(true);
+              }}
+              label={"Copy Fundraise Link"}
+              height={"40px"}
+              width={"180px"}
+              fontSize={"16px"}
+            />
+          </InfoSubBar>
         </InfoArea>
         <UserButton />
       </TopBar>
+      <Snackbar
+        open={publicLinkCopied}
+        autoHideDuration={5000}
+        onClose={() => setPublicLinkCopied(false)}
+      >
+        <Alert severity="info" sx={{ width: "100%" }}>
+          Public Link Copied!
+        </Alert>
+      </Snackbar>
       <ContentContainer>
         <ProfileBottomContainer paddingTop={"0"}>
           <Section>
