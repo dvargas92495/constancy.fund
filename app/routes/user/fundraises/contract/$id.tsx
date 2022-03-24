@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
 import Box from "@mui/material/Box";
-import { UserButton } from "@clerk/remix";
+import { UserButton, useUser } from "@clerk/remix";
 
 import _H1 from "@dvargas92495/ui/components/H1";
 import _H4 from "@dvargas92495/ui/components/H4";
@@ -378,6 +378,7 @@ const Container = styled.div`
 
 const UserFundraisesContract = () => {
   const { id = "" } = useParams();
+  const user = useUser();
   const fundraiseData = useLoaderData<FundraiseData>();
   const [rows, setRows] = useState<Agreements>(fundraiseData.agreements);
   const total = useMemo(
@@ -427,7 +428,7 @@ const UserFundraisesContract = () => {
             </UpdatePill>
             <SecondaryAction
               onClick={() => {
-                window.navigator.clipboard.writeText(`/creator/${id}`);
+                window.navigator.clipboard.writeText(`/creator/${user.user?.id}?agreement=${id}`);
                 setPublicLinkCopied(true);
               }}
               label={"Copy Fundraise Link"}
