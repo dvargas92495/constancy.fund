@@ -1,17 +1,22 @@
 import EmailLayout from "./EmailLayout";
 import paymentLabelsById from "../_common/PaymentLabelsById";
 import { Id } from "../enums/paymentPreferences";
+import formatAmount from "../util/formatAmount";
 
 const CreatorSigned = ({
   investorName,
   creatorName,
   contractType,
   creatorPaymentPreferences,
+  contractDetails,
+  agreementAmount,
 }: {
   investorName: string;
   creatorName: string;
   contractType: string;
   creatorPaymentPreferences: Record<Id, Record<string, string>>;
+  contractDetails: Record<string, string>;
+  agreementAmount: number;
 }) => {
   return (
     <EmailLayout>
@@ -37,6 +42,16 @@ const CreatorSigned = ({
           </li>
         ))}
       </ul>
+      <p>
+        As per the agreement, you should send them ${agreementAmount}, paid out{" "}
+        {contractDetails.supportType === "once" && "as a one-time lump sum."}
+        {contractDetails.supportType === "monthly" &&
+          `as a $${formatAmount(
+            agreementAmount / Number(contractDetails.frequency || 1)
+          )} monthly stipend paid for ${Number(
+            contractDetails.frequency || 1
+          )} months.`}
+      </p>
       <hr />
       <p>
         You could ask the creator any questions by directly replying to this

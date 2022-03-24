@@ -4,7 +4,7 @@ import _H1 from "@dvargas92495/ui/components/H1";
 import _H4 from "@dvargas92495/ui/components/H4";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
-import formatAmount from "../../../../../db/util/formatAmount";
+import formatAmount from "../../../../util/formatAmount";
 import Icon from "~/_common/Icon";
 import TextInputContainer from "~/_common/TextInputContainer";
 import TextInputOneLine from "~/_common/TextInputOneLine";

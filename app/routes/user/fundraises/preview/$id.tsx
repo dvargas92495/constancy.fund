@@ -16,7 +16,7 @@ import {
   useParams,
   useFetcher,
 } from "remix";
-import formatAmount from "../../../../../db/util/formatAmount";
+import formatAmount from "../../../../util/formatAmount";
 import styled from "styled-components";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import { SecondaryAction } from "~/_common/SecondaryAction";
@@ -195,9 +195,14 @@ const UserFundraisePreview = () => {
                 <ExplainTitle>How much you raise</ExplainTitle>
                 <ExplainText>
                   I agree to request a total of{" "}
-                  <b>${formatAmount(totalAmount)}</b> paid out as a monthly
-                  stipend of ${formatAmount(paymentAmount)} per month for{" "}
-                  {frequency} months.
+                  <b>${formatAmount(totalAmount)}</b> paid out as{" "}
+                  {data.details.supportType === "monthly"
+                    ? `a monthly stipend of ${formatAmount(
+                        paymentAmount
+                      )} per month for ${frequency} months.`
+                    : data.details.supportType === "once"
+                    ? "a lump sum once."
+                    : "unknown support type"}
                 </ExplainText>
               </ExplainContent>
               <CheckBox name={"term"} required />

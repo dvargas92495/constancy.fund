@@ -10,7 +10,7 @@ import datefnsFormat from "date-fns/format";
 import addDays from "date-fns/addDays";
 import type { User } from "@clerk/clerk-sdk-node";
 import addMonths from "date-fns/addMonths";
-import formatAmount from "../db/util/formatAmount";
+import formatAmount from "../app/util/formatAmount";
 
 const contentByType = {
   isa: isa,

@@ -19,7 +19,7 @@ import Spacer from "~/_common/Spacer";
 import Section from "~/_common/Section";
 import SectionTitle from "~/_common/SectionTitle";
 import { IconContent, ProfileTitle, TopBarProfile } from "../$id";
-import formatAmount from "../../../../db/util/formatAmount";
+import formatAmount from "../../../util/formatAmount";
 import getPublicUserProfile from "~/data/getPublicUserProfile.server";
 import { Id as PaymentPreferenceId } from "~/enums/paymentPreferences";
 
@@ -459,7 +459,7 @@ const CreatorProfile = (): React.ReactElement => {
               <ConditionsContent>
                 <ConditionsSubTitle>Wants to raise</ConditionsSubTitle>
                 <ConditionsTitle>
-                  {formatAmount(fundraises[0].details.amount)}{" "}
+                  ${formatAmount(fundraises[0].details.amount)}{" "}
                   {Number(fundraises[0].details.frequency) > 1 && (
                     <SmallConditionsText> / month</SmallConditionsText>
                   )}

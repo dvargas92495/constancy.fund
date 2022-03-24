@@ -30,7 +30,7 @@ import TextInputOneLine from "~/_common/TextInputOneLine";
 import TextFieldBox from "~/_common/TextFieldBox";
 import TextFieldDescription from "~/_common/TextFieldDescription";
 import { IconContent, ProfileTitle, TopBarProfile } from "../$id";
-import formatAmount from "../../../../db/util/formatAmount";
+import formatAmount from "../../../util/formatAmount";
 import createAgreement from "~/data/createAgreement.server";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import validatePaymentPreferences from "~/data/validatePaymentPreferences";

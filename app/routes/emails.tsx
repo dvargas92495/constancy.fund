@@ -104,6 +104,8 @@ const EmailsRoute = () => {
                 creatorPaymentPreferences: data.users[user].paymentPreferences,
                 agreementUuid: data.ids[agreement].uuid,
                 contractType: data.ids[agreement].type,
+                contractDetails: data.ids[agreement].details,
+                agreementAmount: data.ids[agreement].amount,
               }}
             />
           </PreviewBoundary>

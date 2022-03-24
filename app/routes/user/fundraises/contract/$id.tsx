@@ -12,7 +12,7 @@ import {
   useLoaderData,
   useParams,
 } from "remix";
-import formatAmount from "../../../../../db/util/formatAmount";
+import formatAmount from "../../../../util/formatAmount";
 import TopBar from "~/_common/TopBar";
 import InfoArea from "~/_common/InfoArea";
 import PageTitle from "~/_common/PageTitle";
@@ -381,10 +381,12 @@ const UserFundraisesContract = () => {
   const user = useUser();
   const fundraiseData = useLoaderData<FundraiseData>();
   const [rows, setRows] = useState<Agreements>(fundraiseData.agreements);
+  const frequency = useMemo(
+    () => Number(fundraiseData.details.frequency) || 1,
+    [fundraiseData]
+  );
   const total = useMemo(
-    () =>
-      Number(fundraiseData.details.amount) *
-      (Number(fundraiseData.details.frequency) || 1),
+    () => Number(fundraiseData.details.amount) * frequency,
     [fundraiseData]
   );
   const rowsToSign = useMemo(
@@ -428,7 +430,9 @@ const UserFundraisesContract = () => {
             </UpdatePill>
             <SecondaryAction
               onClick={() => {
-                window.navigator.clipboard.writeText(`/creator/${user.user?.id}?agreement=${id}`);
+                window.navigator.clipboard.writeText(
+                  `/creator/${user.user?.id}?agreement=${id}`
+                );
                 setPublicLinkCopied(true);
               }}
               label={"Copy Fundraise Link"}
@@ -457,7 +461,7 @@ const UserFundraisesContract = () => {
               <ProgressPill>
                 {fundraiseData.details.supportType === "monthly" && (
                   <ProgressPillProgress>
-                    ${formatAmount(progress / 12)}
+                    ${formatAmount(progress / frequency)}
                   </ProgressPillProgress>
                 )}
                 {fundraiseData.details.supportType === "once" && (
@@ -470,9 +474,9 @@ const UserFundraisesContract = () => {
                   {fundraiseData.details.supportType === "monthly" && (
                     <>
                       <ProgressPillTotal>
-                        {formatAmount(total / 12)}
+                        {formatAmount(total / frequency)}
                       </ProgressPillTotal>
-                      <ProgressPillHelpText>/ month</ProgressPillHelpText>
+                      <ProgressPillHelpText>/ month for {frequency} months</ProgressPillHelpText>
                     </>
                   )}
                   {fundraiseData.details.supportType === "once" && (
@@ -500,8 +504,8 @@ const UserFundraisesContract = () => {
                 <ConditionsTitle>
                   {fundraiseData.details.supportType === "monthly" && (
                     <>
-                      ${formatAmount(Math.floor(total / 12))}
-                      <SmallConditionsText>/month</SmallConditionsText>
+                      ${formatAmount(Math.floor(total / frequency))}
+                      <SmallConditionsText>/month for {frequency} months</SmallConditionsText>
                     </>
                   )}
                   {fundraiseData.details.supportType === "once" && (
