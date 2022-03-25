@@ -105,7 +105,7 @@ module "aws-serverless-backend" {
 
 module "aws_static_site_staging" {
   source  = "dvargas92495/static-site/aws"
-  version = "3.5.1"
+  version = "3.5.2"
 
   domain = "staging.constancy.fund"
   secret = var.secret
