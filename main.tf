@@ -105,12 +105,11 @@ module "aws-serverless-backend" {
 
 module "aws_static_site_staging" {
   source  = "dvargas92495/static-site/aws"
-  version = "3.5.0"
+  version = "3.4.0"
 
   domain = "staging.constancy.fund"
   secret = var.secret
   origin_timeout = 20
-  enable_origin_xray = true
   origin_memory_size = 5120
   tags = {
       Application = "constancy-fund"
