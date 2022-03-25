@@ -110,7 +110,7 @@ module "aws_static_site_staging" {
   domain = "staging.constancy.fund"
   secret = var.secret
   origin_timeout = 20
-  origin_memory_size = 10240
+  origin_memory_size = 10000
   tags = {
       Application = "constancy-fund"
   }
