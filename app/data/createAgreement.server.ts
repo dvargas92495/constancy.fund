@@ -152,8 +152,9 @@ const createAgreement = ({
             import("@clerk/clerk-sdk-node").then((clerk) =>
               clerk.users.getUser(c.userId)
             ),
-            import("@dvargas92495/api/invokeDirect").then((invokeDirect) =>
-              invokeDirect.default<Parameters<ContractHandler>[0]>({
+            import("@dvargas92495/api/invokeDirect.js").then((invokeDirect) => {
+              // @ts-ignore WAT
+              return invokeDirect.default.default<Parameters<ContractHandler>[0]>({
                 path: "create-contract-pdf",
                 data: {
                   uuid: c.uuid,
@@ -173,7 +174,7 @@ const createAgreement = ({
                   },
                 },
               })
-            ),
+            }),
           ]).then(([user]) => ({
             user,
             type: FUNDRAISE_TYPES[c.type].name,
@@ -183,7 +184,7 @@ const createAgreement = ({
         });
       })
       .then(async (contract) => {
-        const eversign = await import("@dvargas92495/eversign");
+        const eversign = await import("@dvargas92495/eversign").then(e => e.default);
         const filePath = `_contracts/${contract.uuid}/${contract.agreementUuid}.pdf`;
         const creatorName = `${contract.user.firstName} ${contract.user.lastName}`;
         const creatorEmail =

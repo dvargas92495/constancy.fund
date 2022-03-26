@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import Box from "@mui/material/Box";
 import { UserButton, useUser } from "@clerk/remix";
 
@@ -279,7 +279,6 @@ const STAGE_COLORS = [
 const STAGE_ACTIONS: ((a: {
   contractUuid: string;
   uuid: string;
-  onDelete: (uuid: string) => void;
 }) => React.ReactElement)[] = [
   (row) => {
     const fetcher = useFetcher();
@@ -326,7 +325,6 @@ const STAGE_ACTIONS: ((a: {
 const AgreementRow = (
   row: Agreements[number] & {
     contractUuid: string;
-    onDelete: (uuid: string) => void;
     total: number;
   }
 ) => {
@@ -360,7 +358,6 @@ const AgreementRow = (
         <StageAction
           uuid={row.uuid}
           contractUuid={row.contractUuid}
-          onDelete={row.onDelete}
         />
       </TableCell>
     </TableRow>
@@ -380,7 +377,7 @@ const UserFundraisesContract = () => {
   const { id = "" } = useParams();
   const user = useUser();
   const fundraiseData = useLoaderData<FundraiseData>();
-  const [rows, setRows] = useState<Agreements>(fundraiseData.agreements);
+  const rows = useMemo<Agreements>(() => fundraiseData.agreements, [fundraiseData.agreements]);
   const frequency = useMemo(
     () => Number(fundraiseData.details.frequency) || 1,
     [fundraiseData]
@@ -406,11 +403,6 @@ const UserFundraisesContract = () => {
     [rowsConfirmed]
   );
 
-  const onDelete = useCallback(
-    (uuid: string) => setRows(rows.filter((r) => r.uuid !== uuid)),
-    [setRows, rows]
-  );
-
   const progressPercentage = useMemo(
     () => Math.round((Number(progress) / Number(total)) * 100),
     [progress, total]
@@ -431,7 +423,7 @@ const UserFundraisesContract = () => {
             <SecondaryAction
               onClick={() => {
                 window.navigator.clipboard.writeText(
-                  `/creator/${user.user?.id}?agreement=${id}`
+                  `${window.location.origin}/creator/${user.user?.id}?agreement=${id}`
                 );
                 setPublicLinkCopied(true);
               }}
@@ -595,7 +587,6 @@ const UserFundraisesContract = () => {
                       key={row.uuid}
                       {...row}
                       contractUuid={id}
-                      onDelete={onDelete}
                       total={total}
                     />
                   ))}

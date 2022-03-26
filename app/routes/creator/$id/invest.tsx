@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import getMeta from "~/_common/getMeta";
 import PaymentPreference from "~/_common/PaymentPreferences";
 import getAgreement from "~/data/getAgreement.server";
@@ -11,8 +11,10 @@ import {
   redirect,
   useActionData,
   useLoaderData,
+  useTransition,
 } from "remix";
 import CheckBox from "@mui/material/Checkbox";
+import CircularProgress from "@mui/material/CircularProgress";
 import CountrySelect from "~/_common/CountrySelect";
 
 import Icon from "~/_common/Icon";
@@ -208,11 +210,28 @@ const InvestorPrimaryAction = () => {
   );
 };
 
+const LoadingScreenContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  height: 100%;
+`;
+
 const EnterDetails = () => {
   const state = useLoaderData<Data>();
   const [amount, setAmount] = useState(state.amount);
-
-  return (
+  const transition = useTransition();
+  const showLoadingScreen = useMemo(
+    () => (transition.state === "submitting"),
+    [transition.state]
+  );
+  return showLoadingScreen ? (
+    <LoadingScreenContainer>
+      <h3>Please wait while your contract is being generated...</h3>
+      <CircularProgress />
+    </LoadingScreenContainer>
+  ) : (
     <ProfileContainer method={"post"}>
       <Link to={`/creator/${state.user.id}`}>
         <BackButton>

@@ -12,7 +12,7 @@ const CountrySelect = ({
   return (
     <Autocomplete
       id="country-select-demo"
-      sx={{ width: 300 }}
+      fullWidth
       options={countries}
       defaultValue={countryByLabel[defaultValue]}
       autoHighlight
@@ -37,7 +37,6 @@ const CountrySelect = ({
         <TextField
           {...params}
           name={name}
-          label="Choose a country"
           inputProps={{
             ...params.inputProps,
             autoComplete: "new-password", // disable autocomplete and autofill
