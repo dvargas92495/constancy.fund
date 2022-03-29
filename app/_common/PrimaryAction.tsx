@@ -75,6 +75,7 @@ export const PrimaryAction = ({
   textColor,
   fontWeight,
   type = "button",
+  id,
 }: {
   label: React.ReactNode;
   onClick?: React.EventHandler<React.KeyboardEvent | React.MouseEvent>;
@@ -88,6 +89,7 @@ export const PrimaryAction = ({
   textColor?: string;
   fontWeight?: string;
   type?: React.ButtonHTMLAttributes<HTMLButtonElement>["type"];
+  id?: string;
 }) => {
   const actionData = useActionData();
   const transition = useTransition();
@@ -105,6 +107,7 @@ export const PrimaryAction = ({
       width={width}
       bgColor={!!actionData?.error ? "warning" : bgColor}
       type={type}
+      id={id}
     >
       {loading || isLoading ? (
         <LoadingIndicator size="20px" thickness={3} />

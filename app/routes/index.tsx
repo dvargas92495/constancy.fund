@@ -8,7 +8,6 @@ import {
   Form,
   useActionData,
   useCatch,
-  useNavigate,
 } from "remix";
 import MainImage from "~/_common/Images/runner.svg";
 import AutomateImage from "~/_common/Images/automate.svg";
@@ -30,6 +29,12 @@ const ButtonInnerDiv = styled.div`
 
 const LoginButton = styled.a`
   padding: 10px 20px;
+  text-decoration: none;
+  &:active,
+  &:visited,
+  &:hover {
+    color: inherit;
+  }
 `;
 
 const UserContainer = styled.div`
@@ -297,7 +302,6 @@ const SubscribeBox = () => {
 
 const Home: React.FC = () => {
   const { isSignedIn } = useUser();
-  const navigate = useNavigate();
   return (
     <RootContainer>
       <TopContainer>
@@ -318,9 +322,7 @@ const Home: React.FC = () => {
             {isSignedIn ? (
               <UserButton />
             ) : (
-              <LoginButton onClick={() => navigate("/login")}>
-                LOGIN
-              </LoginButton>
+              <LoginButton href={"/login"}>LOGIN</LoginButton>
             )}
           </UserContainer>
         </MainContentContainer>

@@ -39,7 +39,7 @@ import SubSectionTitle from "~/_common/SubSectionTitle";
 import TextInputMultiLine from "~/_common/TextInputMultiLine";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import ImageUploader from "~/_common/ImageUploader";
-import { ConnectClerkCatchBoundary, useUser } from "@clerk/remix";
+import { ClerkCatchBoundary, useUser } from "@clerk/remix";
 import Avatar from "@mui/material/Avatar";
 
 const SubSection = styled.div`
@@ -74,6 +74,7 @@ const NameandProfileImageSection = styled.div`
 const ProfileImageContainer = styled.div`
   width: 200px;
   height: 200px;
+  min-width: 200px;
   position: relative;
 `;
 
@@ -127,9 +128,7 @@ const SocialProfileRow = styled.div`
   justify-content: flex-start;
 `;
 
-const UserProfileForm = styled(Form)`
-  max-width: 800px;
-`;
+const UserProfileForm = styled(Form)``;
 
 const SOCIAL_PROFILES = [
   { iconName: "twitter" },
@@ -183,6 +182,10 @@ const UserProfile = () => {
     companyAddressNumber,
     companyAddressCity,
     companyAddressZip,
+    representativeAddressStreet,
+    representativeAddressNumber,
+    representativeAddressCity,
+    representativeAddressZip,
     paymentPreferences,
   } = loaderData;
   const [isChanges, setIsChanges] = useState(false);
@@ -220,7 +223,7 @@ const UserProfile = () => {
         }
       }}
     >
-      <TopBar>
+      <TopBar left={255}>
         <InfoArea>
           <PageTitle>Your Profile</PageTitle>
           <ActionButton>
@@ -231,6 +234,7 @@ const UserProfile = () => {
                 height={"40px"}
                 width={"180px"}
                 fontSize={"16px"}
+                id={"view-public-profile"}
               />
             )}
             {isChanges && (
@@ -491,9 +495,9 @@ const UserProfile = () => {
                     </TextFieldDescription>
                     <TextInputContainer width={"300px"}>
                       <TextInputOneLine
-                        defaultValue={companyAddressStreet}
+                        defaultValue={representativeAddressStreet}
                         required
-                        name={"companyAddressStreet"}
+                        name={"representativeAddressStreet"}
                       />
                     </TextInputContainer>
                   </TextFieldBox>
@@ -503,9 +507,9 @@ const UserProfile = () => {
                     </TextFieldDescription>
                     <TextInputContainer>
                       <TextInputOneLine
-                        defaultValue={companyAddressCity}
+                        defaultValue={representativeAddressCity}
                         required
-                        name={"companyAddressCity"}
+                        name={"representativeAddressCity"}
                       />
                     </TextInputContainer>
                   </TextFieldBox>
@@ -517,9 +521,9 @@ const UserProfile = () => {
                     </TextFieldDescription>
                     <TextInputContainer>
                       <TextInputOneLine
-                        defaultValue={companyAddressNumber}
+                        defaultValue={representativeAddressNumber}
                         required
-                        name={"companyAddressNumber"}
+                        name={"representativeAddressNumber"}
                       />
                     </TextInputContainer>
                   </TextFieldBox>
@@ -529,9 +533,9 @@ const UserProfile = () => {
                     </TextFieldDescription>
                     <TextInputContainer>
                       <TextInputOneLine
-                        defaultValue={companyAddressZip}
+                        defaultValue={representativeAddressZip}
                         required
-                        name={"companyAddressZip"}
+                        name={"representativeAddressZip"}
                       />
                     </TextInputContainer>
                   </TextFieldBox>
@@ -545,6 +549,7 @@ const UserProfile = () => {
         open={snackbarOpen}
         autoHideDuration={5000}
         onClose={() => setSnackbarOpen(false)}
+        id={"success-profile-alert"}
       >
         <Alert severity="success" sx={{ width: "100%" }}>
           Successfully Saved Profile!
@@ -593,9 +598,8 @@ export const action: ActionFunction = ({ request }) => {
     .catch((e) => ({ success: false, error: e.message }));
 };
 
-export const CatchBoundary = ConnectClerkCatchBoundary(() => {
+export const CatchBoundary = ClerkCatchBoundary(() => {
   const { data } = useCatch();
-  console.error("used a catch boundary");
   return <div>{data}</div>;
 });
 

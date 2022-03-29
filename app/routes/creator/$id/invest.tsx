@@ -227,7 +227,7 @@ const EnterDetails = () => {
     [transition.state]
   );
   return showLoadingScreen ? (
-    <LoadingScreenContainer>
+    <LoadingScreenContainer id={"wait-contract-generated"}>
       <h3>Please wait while your contract is being generated...</h3>
       <CircularProgress />
     </LoadingScreenContainer>
@@ -539,7 +539,7 @@ const EnterDetails = () => {
         <Section>
           <PaymentPreference />
         </Section>
-        <BottomBar>
+        <BottomBar id={'bottom-bar'}>
           <InvestorPrimaryAction />
         </BottomBar>
       </ProfileBottomContainer>

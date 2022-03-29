@@ -11,7 +11,7 @@ const CountrySelect = ({
 }) => {
   return (
     <Autocomplete
-      id="country-select-demo"
+      id="country-select"
       fullWidth
       options={countries}
       defaultValue={countryByLabel[defaultValue]}
@@ -21,6 +21,7 @@ const CountrySelect = ({
         <Box
           component="li"
           sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+          data-code={`country-select-${option.code}`}
           {...props}
         >
           <img

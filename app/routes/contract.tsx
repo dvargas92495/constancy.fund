@@ -102,14 +102,6 @@ const LoadingBox = styled.div`
   align-items: center;
 `;
 
-/*declare global {
-  interface Window {
-    eversign: {
-      open: (params: ) => void;
-    };
-  }
-}*/
-
 const CONTAINER_ID = "eversign-embed";
 const EversignEmbed = ({
   url,

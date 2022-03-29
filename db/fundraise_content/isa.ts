@@ -44,7 +44,22 @@ export default {
     },
     {
       method: "text",
-      argument: '") is entered into on {date:MMMM do, yyyy} ("',
+      argument: '") is entered into on ',
+      options: {
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument: '{date:MMMM do, yyyy}',
+      options: {
+        highlighted: true,
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument: ' ("',
       options: {
         continued: true,
       },
@@ -60,7 +75,58 @@ export default {
     {
       method: "text",
       argument:
-        '"), by and between {full_name}, {creator_type} residing at {address} (the "',
+        '"), by and between ',
+      options: {
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        '{full_name}',
+      options: {
+        highlighted: true,
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        ', ',
+      options: {
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        '{creator_type}',
+      options: {
+        highlighted: true,
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        ' residing at ',
+      options: {
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        '{address}',
+      options: {
+        highlighted: true,
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        ' (the "',
       options: {
         continued: true,
       },
@@ -107,7 +173,41 @@ export default {
     {
       method: "text",
       argument:
-        '"), and {investor}, a company registered at {investor_location}, and its successors and assigns (the "',
+        '"), and ',
+      options: {
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        '{investor}',
+      options: {
+        highlighted: true,
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        ', a company registered at ',
+      options: {
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        '{investor_location}',
+      options: {
+        highlighted: true,
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        ', and its successors and assigns (the "',
       options: {
         continued: true,
       },
@@ -246,7 +346,24 @@ export default {
     {
       method: "text",
       argument:
-        " means Monday through Friday, except for federal holidays in {country}.",
+        " means Monday through Friday, except for federal holidays in ",
+      options: {
+        continued: true,
+        highlighted: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        "{country}",
+      options: {
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        ".",
       options: {
         paragraphGap: 12,
       },

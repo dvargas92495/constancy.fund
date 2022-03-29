@@ -12,7 +12,7 @@ import {
   useLoaderData,
   ErrorBoundaryComponent,
 } from "remix";
-import { ConnectClerk, ConnectClerkCatchBoundary } from "@clerk/remix";
+import { ClerkApp, ClerkCatchBoundary } from "@clerk/remix";
 import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 import getEmotionCache, { emotionCache } from "./_common/getEmotionCache";
 import { CacheProvider } from "@emotion/react";
@@ -297,7 +297,7 @@ export const links: LinksFunction = () => {
   ];
 };
 
-export const CatchBoundary = ConnectClerkCatchBoundary(() => {
+export const CatchBoundary = ClerkCatchBoundary(() => {
   const caught = useCatch();
   return (
     <html>
@@ -406,4 +406,4 @@ const App = () => {
   );
 };
 
-export default ConnectClerk(App);
+export default ClerkApp(App);

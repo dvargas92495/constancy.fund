@@ -75,7 +75,7 @@ const DashboardTab = ({ path, iconName, text }: typeof TABS[number]) => {
 
 const Dashboard = () => {
   return (
-    <Box sx={{ display: "flex", height: "100%" }}>
+    <Box sx={{ display: "flex", height: "100%", width: "100%" }}>
       <Drawer
         sx={{
           width: DRAWER_WIDTH,
@@ -112,6 +112,7 @@ const Dashboard = () => {
           pb: 2,
           color: "text.primary",
           height: "fit-content",
+          width: `calc(100% - ${DRAWER_WIDTH}px)`
         }}
         flexDirection={"column"}
         display={"flex"}
@@ -124,17 +125,13 @@ const Dashboard = () => {
   );
 };
 
-const globalStyles = (
-  <GlobalStyles
-    styles={{
-      "body > div#root": { justifyContent: "unset" },
-    }}
-  />
-);
-
 const UserPage = (): React.ReactElement => (
   <>
-    {globalStyles}
+    <GlobalStyles
+      styles={{
+        "body > div#root": { justifyContent: "unset" },
+      }}
+    />
     <Dashboard />
   </>
 );

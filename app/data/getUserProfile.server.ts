@@ -35,6 +35,14 @@ const getUserProfile = (userId: string, execute?: Execute) =>
       companyAddressNumber:
         (u.publicMetadata?.companyAddressNumber as string) || "",
       companyAddressZip: (u.publicMetadata?.companyAddressZip as string) || "",
+      representativeAddressStreet:
+        (u.publicMetadata?.representativeAddressStreet as string) || "",
+      representativeAddressNumber:
+        (u.publicMetadata?.representativeAddressNumber as string) || "",
+      representativeAddressCity:
+        (u.publicMetadata?.representativeAddressCity as string) || "",
+      representativeAddressZip:
+        (u.publicMetadata?.representativeAddressZip as string) || "",
       paymentPreferences,
     };
   });

@@ -336,6 +336,7 @@ const CreatorProfile = (): React.ReactElement => {
                 })}
               </ProfileSocialBar>
               <PrimaryAction
+                id={"back-this-project"}
                 label={
                   <IconContent>
                     <Icon
@@ -363,7 +364,7 @@ const CreatorProfile = (): React.ReactElement => {
         </TopBarMainBox>
       </TopBarContainerMinified>
 
-      <TopBarProfile>
+      <TopBarProfile id={'top-bar-profile'}>
         <TopBarMainBox>
           <ProfileImageContainer scroll={scrollPosition}>
             <ProfileImage>
@@ -392,6 +393,7 @@ const CreatorProfile = (): React.ReactElement => {
                 })}
               </ProfileSocialBar>
               <PrimaryAction
+                id={"back-this-project"}
                 label={
                   <IconContent>
                     <Icon
