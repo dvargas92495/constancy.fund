@@ -66,6 +66,10 @@ variable "convertkit_api_key" {
   type = string
 }
 
+variable "cypress_user_password" {
+  type = string
+}
+
 provider "aws" {
   region = "us-east-1"
   access_key = var.aws_access_token
@@ -260,4 +264,10 @@ resource "github_actions_secret" "convertkit_api_key" {
   repository       = "constancy.fund"
   secret_name      = "CONVERTKIT_API_KEY"
   plaintext_value  = var.convertkit_api_key
+}
+
+resource "github_actions_secret" "cypress_user_password" {
+  repository       = "constancy.fund"
+  secret_name      = "CYPRESS_USER_PASSWORD"
+  plaintext_value  = var.cypress_user_password
 }

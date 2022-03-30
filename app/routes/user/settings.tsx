@@ -1,5 +1,7 @@
+import { UserProfile } from "@clerk/remix";
+
 const UserSettings = () => {
-  return <div>Coming Soon!</div>;
+  return <UserProfile />;
 };
 
 export default UserSettings;

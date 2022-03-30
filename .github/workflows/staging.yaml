@@ -3,11 +3,11 @@ on:
   push:
     branches: main
     paths:
-      - "app/**"
-      - "db/**"
-      - "functions/**"
-      - "server/**"
-      - "package.json"
+      # - "app/**"
+      # - "db/**"
+      # - "functions/**"
+      # - "server/**"
+      # - "package.json"
       - ".github/workflows/staging.yaml"
 
 env:
@@ -19,6 +19,7 @@ env:
   CLERK_FRONTEND_API: clerk.rjzug.yeali.lcl.dev
   CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.STAGING_CLOUDFRONT_DISTRIBUTION_ID }}
   CONVERTKIT_API_KEY: ${{ secrets.CONVERTKIT_API_KEY }}
+  CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
   DATABASE_URL: mysql://staging_constancy_fund:${{ secrets.STAGING_MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/staging_constancy_fund
   EVERSIGN_API_KEY: ${{ secrets.EVERSIGN_API_KEY }}
   HOST: https://staging.constancy.fund
@@ -54,3 +55,8 @@ jobs:
         run: npm run build -- --readable
       - name: deploy fe
         run: npm run deploy -- --domain staging.constancy.fund
+      - name: Cypress E2E Tests
+        uses: cypress-io/github-action@v2
+        with:
+          browser: chrome
+          headless: true

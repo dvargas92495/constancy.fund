@@ -15,7 +15,7 @@ describe("Testing core workflows", () => {
       }
     });
     cy.get("a[href='/login']").click();
-    cy.get("input[type=email]").type("dvargas92495@gmail.com");
+    cy.get("input[type=email]").type("test-creator@gmail.com");
     cy.get("button.cl-sign-in-button").click();
     cy.get("div.cl-hidden input[type=password]").should("not.exist");
     cy.get("input[type=password]").type(Cypress.env("CYPRESS_USER_PASSWORD"));
@@ -64,7 +64,7 @@ describe("Testing core workflows", () => {
 
     cy.get('input[name="firstName"]').clear().type("David");
     cy.get('input[name="lastName"]').clear().type("Vargas");
-    cy.get('input[name="contactEmail"]').clear().type("dvargas92495@gmail.com");
+    cy.get('input[name="contactEmail"]').clear().type("test-creator@gmail.com");
     cy.get('input[name="representativeAddressStreet"]').clear().type("Main St");
     cy.get('input[name="representativeAddressNumber"]').clear().type("123");
     cy.get('input[name="representativeAddressCity"]').clear().type("Gotham");
@@ -78,8 +78,8 @@ describe("Testing core workflows", () => {
     cy.get('input[name="amount"]').clear().type("10000");
     cy.get('input[name="term"]').each((c) => cy.wrap(c).check());
 
-    cy.get('input[name="name"]').clear().type("Oliver Sauter");
-    cy.get('input[name="email"]').clear().type("oli@constancy.fund");
+    cy.get('input[name="name"]').clear().type("Test McTester");
+    cy.get('input[name="email"]').clear().type("test@constancy.fund");
     cy.get('input[name="investorAddressStreet"]').clear().type("Main Ave");
     cy.get('input[name="investorAddressNumber"]').clear().type("456");
     cy.get('input[name="investorAddressCity"]').clear().type("Earth");
@@ -89,10 +89,10 @@ describe("Testing core workflows", () => {
     cy.get('input[name="paymentPreference.paypal"]').check();
     cy.get('input[name="paymentPreference.paypal.EmailAddress"]')
       .clear()
-      .type("oli@constancy.fund");
+      .type("test@constancy.fund");
     cy.get("#bottom-bar button[type=submit]").click();
 
     cy.get("#wait-contract-generated").should("be.visible");
-    cy.get("#eversign-embed", { timeout: 10000 }).should("be.visible");
+    cy.get("#eversign-embed", { timeout: 15000 }).should("be.visible");
   });
 });
