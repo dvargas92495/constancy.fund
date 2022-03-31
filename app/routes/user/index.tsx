@@ -223,7 +223,7 @@ const UserProfile = () => {
         }
       }}
     >
-      <TopBar left={255}>
+      <TopBar>
         <InfoArea>
           <PageTitle>Your Profile</PageTitle>
           <ActionButton>

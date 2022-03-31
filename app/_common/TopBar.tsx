@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const TopBar = styled.div<{left?: number}>`
+const TopBar = styled.div`
   height: 100px;
   background: ${(props) => props.theme.palette.color.white};
   border-bottom: solid 1px ${(props) => props.theme.palette.color.lightgrey};
@@ -11,7 +11,7 @@ const TopBar = styled.div<{left?: number}>`
   position: fixed;
   z-index: 10;
   right: 0;
-  left: ${(props) => props.left || 0}px;
+  left: 255px;
 `;
 
 export default TopBar;

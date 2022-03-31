@@ -15,7 +15,7 @@ import SubSectionTitle from "~/_common/SubSectionTitle";
 
 const Container = styled.div`
   max-width: 1000px;
-`
+`;
 
 const FundraisingTypeTopRow = styled.div`
   display: flex;

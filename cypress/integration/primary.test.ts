@@ -15,7 +15,7 @@ describe("Testing core workflows", () => {
       }
     });
     cy.get("a[href='/login']").click();
-    cy.get("input[type=email]").type("test-creator@gmail.com");
+    cy.get("input[type=email]").type("test-creator@constancy.fund");
     cy.get("button.cl-sign-in-button").click();
     cy.get("div.cl-hidden input[type=password]").should("not.exist");
     cy.get("input[type=password]").type(Cypress.env("CYPRESS_USER_PASSWORD"));
@@ -64,7 +64,7 @@ describe("Testing core workflows", () => {
 
     cy.get('input[name="firstName"]').clear().type("David");
     cy.get('input[name="lastName"]').clear().type("Vargas");
-    cy.get('input[name="contactEmail"]').clear().type("test-creator@gmail.com");
+    cy.get('input[name="contactEmail"]').clear().type("test-creator@constancy.fund");
     cy.get('input[name="representativeAddressStreet"]').clear().type("Main St");
     cy.get('input[name="representativeAddressNumber"]').clear().type("123");
     cy.get('input[name="representativeAddressCity"]').clear().type("Gotham");

@@ -8,7 +8,7 @@ const doesContractExist =
         new Promise<boolean>((resolve) =>
           fs.stat(
             path.join(FE_PUBLIC_DIR, `_contracts/${uuid}/draft.pdf`),
-            (err, res) => {
+            (err) => {
               if (err) resolve(false);
               else resolve(true);
             }

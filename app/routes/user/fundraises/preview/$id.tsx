@@ -176,7 +176,7 @@ const UserFundraisePreview = () => {
   }, [onRefresh]);
   return (
     <Container method="post">
-      <TopBar left={255}>
+      <TopBar>
         <InfoArea>
           <PageTitle>Preview Contract {"&"} Confirm Terms</PageTitle>
           <PrimaryAction type={"submit"} label={"Confirm Terms"} />

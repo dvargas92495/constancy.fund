@@ -355,10 +355,7 @@ const AgreementRow = (
         <BottomText>{ProgressPercentage} %</BottomText>
       </TableCell>
       <TableCell>
-        <StageAction
-          uuid={row.uuid}
-          contractUuid={row.contractUuid}
-        />
+        <StageAction uuid={row.uuid} contractUuid={row.contractUuid} />
       </TableCell>
     </TableRow>
   );
@@ -377,7 +374,10 @@ const UserFundraisesContract = () => {
   const { id = "" } = useParams();
   const user = useUser();
   const fundraiseData = useLoaderData<FundraiseData>();
-  const rows = useMemo<Agreements>(() => fundraiseData.agreements, [fundraiseData.agreements]);
+  const rows = useMemo<Agreements>(
+    () => fundraiseData.agreements,
+    [fundraiseData.agreements]
+  );
   const frequency = useMemo(
     () => Number(fundraiseData.details.frequency) || 1,
     [fundraiseData]
@@ -410,7 +410,7 @@ const UserFundraisesContract = () => {
   const [publicLinkCopied, setPublicLinkCopied] = useState(false);
   return (
     <Container>
-      <TopBar left={255}>
+      <TopBar>
         <InfoArea>
           <PageTitle>My Fundraise</PageTitle>
           <InfoSubBar>
@@ -468,7 +468,9 @@ const UserFundraisesContract = () => {
                       <ProgressPillTotal>
                         {formatAmount(total / frequency)}
                       </ProgressPillTotal>
-                      <ProgressPillHelpText>/ month for {frequency} months</ProgressPillHelpText>
+                      <ProgressPillHelpText>
+                        / month for {frequency} months
+                      </ProgressPillHelpText>
                     </>
                   )}
                   {fundraiseData.details.supportType === "once" && (
@@ -497,7 +499,9 @@ const UserFundraisesContract = () => {
                   {fundraiseData.details.supportType === "monthly" && (
                     <>
                       ${formatAmount(Math.floor(total / frequency))}
-                      <SmallConditionsText>/month for {frequency} months</SmallConditionsText>
+                      <SmallConditionsText>
+                        /month for {frequency} months
+                      </SmallConditionsText>
                     </>
                   )}
                   {fundraiseData.details.supportType === "once" && (
