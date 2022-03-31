@@ -410,7 +410,7 @@ const UserFundraisesContract = () => {
   const [publicLinkCopied, setPublicLinkCopied] = useState(false);
   return (
     <Container>
-      <TopBar>
+      <TopBar left={255}>
         <InfoArea>
           <PageTitle>My Fundraise</PageTitle>
           <InfoSubBar>

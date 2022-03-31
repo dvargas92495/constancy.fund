@@ -5,9 +5,13 @@ import { FE_PUBLIC_DIR } from "fuegojs/dist/common";
 const doesContractExist =
   process.env.NODE_ENV === "development"
     ? (uuid: string) =>
-        Promise.resolve(
-          fs.existsSync(
-            path.join(FE_PUBLIC_DIR, `_contracts/${uuid}/draft.pdf`)
+        new Promise<boolean>((resolve) =>
+          fs.stat(
+            path.join(FE_PUBLIC_DIR, `_contracts/${uuid}/draft.pdf`),
+            (err, res) => {
+              if (err) resolve(false);
+              else resolve(true);
+            }
           )
         )
     : (uuid: string) =>

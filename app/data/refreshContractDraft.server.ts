@@ -2,9 +2,10 @@ import type { Handler as AsyncHandler } from "../../functions/create-contract-pd
 import waitForContract from "./waitForContractDraft.server";
 
 const refreshContractDraft = ({ uuid }: { uuid: string }) =>
-  import("@dvargas92495/api/invokeAsync")
+  import("@dvargas92495/api/invokeAsync.js")
     .then((invokeAsync) =>
-      invokeAsync.default<Parameters<AsyncHandler>[0]>({
+      //@ts-ignore
+      invokeAsync.default.default<Parameters<AsyncHandler>[0]>({
         path: "create-contract-pdf",
         data: { uuid },
       })
@@ -20,6 +21,9 @@ const refreshContractDraft = ({ uuid }: { uuid: string }) =>
           `Timed out waiting for contract ${uuid} to finish generating`
         );
       }
+    })
+    .catch(() => {
+      return { success: false };
     });
 
 export default refreshContractDraft;

@@ -15,6 +15,7 @@ import {
   useLoaderData,
   useParams,
   useFetcher,
+  ErrorBoundaryComponent,
 } from "remix";
 import formatAmount from "../../../../util/formatAmount";
 import styled from "styled-components";
@@ -116,7 +117,9 @@ type FundraiseData = Awaited<ReturnType<typeof getFundraiseData>>;
 
 export const loader = createAuthenticatedLoader((userId, params) => {
   return getFundraiseData({ uuid: params.id || "", userId }).then((r) =>
-    waitForContractDraft(params.id || "").then(() => r)
+    waitForContractDraft(params.id || "")
+      .then(() => r)
+      .catch(() => r)
   );
 });
 
@@ -173,7 +176,7 @@ const UserFundraisePreview = () => {
   }, [onRefresh]);
   return (
     <Container method="post">
-      <TopBar>
+      <TopBar left={255}>
         <InfoArea>
           <PageTitle>Preview Contract {"&"} Confirm Terms</PageTitle>
           <PrimaryAction type={"submit"} label={"Confirm Terms"} />
@@ -340,6 +343,28 @@ export const links: LinksFunction = () => {
     { rel: "stylesheet", href: pdfViewerCore },
     { rel: "stylesheet", href: pdfViewerLayout },
   ];
+};
+
+export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
+  // using inline-styles instead of styled components for now due to hydration issues
+  return (
+    <div style={{ padding: 32 }}>
+      <h1 style={{ fontSize: 24 }}>Application Error</h1>
+      <h3 style={{ fontSize: 18 }}>
+        Please email support@constancy.fund for assistance
+      </h3>
+      <pre
+        style={{
+          padding: "2rem",
+          background: "rgba(191, 85, 64, 0.1)",
+          color: "red",
+          overflow: "auto",
+        }}
+      >
+        {error.stack}
+      </pre>
+    </div>
+  );
 };
 
 export default UserFundraisePreview;

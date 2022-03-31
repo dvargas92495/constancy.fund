@@ -349,7 +349,6 @@ export default {
         " means Monday through Friday, except for federal holidays in ",
       options: {
         continued: true,
-        highlighted: true,
       },
     },
     {
@@ -358,6 +357,7 @@ export default {
         "{country}",
       options: {
         continued: true,
+        highlighted: true,
       },
     },
     {
@@ -560,7 +560,41 @@ export default {
     {
       method: "text",
       argument:
-        " means ${amount}, which shall be distributed to Participant {conditional:supportType,monthly,in equal monthly increments over a 12 month period (with each such increment being made available by the 10th day of each month)}{conditional:supportType,once,in a single payment on the Effective Date}. Investor and Participant may, from time to time, agree to increase the funding amount in writing by both parties. For the avoidance of doubt, any increase in the funding amount shall not adversely affect any obligations owing by Participant to Investor, including but not limited to the obligation of Participant to pay the entire Payment Cap (inclusive of any Funding Amount increases) within the Payment Term.",
+        " means $",
+      options: {
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        "{amount}",
+      options: {
+        continued: true,
+        highlighted: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        ", which shall be distributed to Participant ",
+      options: {
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        "{conditional:supportType,monthly,in equal monthly increments over a 12 month period (with each such increment being made available by the 10th day of each month)}{conditional:supportType,once,in a single payment on the Effective Date}",
+      options: {
+        continued: true,
+        highlighted: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        ". Investor and Participant may, from time to time, agree to increase the funding amount in writing by both parties. For the avoidance of doubt, any increase in the funding amount shall not adversely affect any obligations owing by Participant to Investor, including but not limited to the obligation of Participant to pay the entire Payment Cap (inclusive of any Funding Amount increases) within the Payment Term.",
       options: {
         paragraphGap: 12,
       },
@@ -583,7 +617,22 @@ export default {
     },
     {
       method: "text",
-      argument: " means ${threshold} annually.",
+      argument: " means $",
+      options: {
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument: "{threshold}",
+      options: {
+        continued: true,
+        highlighted: true,
+      },
+    },
+    {
+      method: "text",
+      argument: " annually.",
       options: {
         paragraphGap: 12,
       },
@@ -607,7 +656,24 @@ export default {
     {
       method: "text",
       argument:
-        " means {share}%. The Income Share percentage is not an interest rate or annual percentage rate.",
+        " means ",
+      options: {
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        "{share}",
+      options: {
+        continued: true,
+        highlighted: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        "%. The Income Share percentage is not an interest rate or annual percentage rate.",
       options: {
         paragraphGap: 12,
       },
@@ -716,7 +782,22 @@ export default {
     },
     {
       method: "text",
-      argument: " means {multiply:return,0.01} times the Funding Amount.",
+      argument: " means ",
+      options: {
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument: "{multiply:return,0.01}",
+      options: {
+        continued: true,
+        highlighted: true,
+      },
+    },
+    {
+      method: "text",
+      argument: " times the Funding Amount.",
       options: {
         paragraphGap: 12,
       },
@@ -739,7 +820,22 @@ export default {
     },
     {
       method: "text",
-      argument: " means {multiply:cap,12} months.",
+      argument: " means ",
+      options: {
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument: "{multiply:cap,12}",
+      options: {
+        continued: true,
+        highlighted: true,
+      },
+    },
+    {
+      method: "text",
+      argument: " months.",
       options: {
         paragraphGap: 12,
       },
@@ -1640,9 +1736,26 @@ export default {
     {
       method: "text",
       argument:
-        "(a)      The Participant represents and warrants that all information provided in connection with this Agreement is true and accurate and the Participant has not provided any false, misleading or deceptive statements or omissions of fact. Except as disclosed to Investor in the this Agreement, the Participant represents and warrants that: (i) the Participant has never been convicted of a felony or of any crime involving dishonesty or breach of trust under any federal or state statute, rule or regulation; (ii) the Participant is not contemplating bankruptcy and the Participant has not consulted with an attorney regarding bankruptcy in the past six months; (iii) the Participant is at least 18 years of age and the age of majority in the state of current residence; (iv) the Participant is a {country} citizen or permanent resident; (v) the Participant has filed all federal tax returns and reports as required by law, they are true and correct in all material respects, and the Participant has paid all federal taxes and other assessments due.",
+        "(a)      The Participant represents and warrants that all information provided in connection with this Agreement is true and accurate and the Participant has not provided any false, misleading or deceptive statements or omissions of fact. Except as disclosed to Investor in the this Agreement, the Participant represents and warrants that: (i) the Participant has never been convicted of a felony or of any crime involving dishonesty or breach of trust under any federal or state statute, rule or regulation; (ii) the Participant is not contemplating bankruptcy and the Participant has not consulted with an attorney regarding bankruptcy in the past six months; (iii) the Participant is at least 18 years of age and the age of majority in the state of current residence; (iv) the Participant is a ",
       options: {
         indent: 72,
+        continued: true,
+      },
+    },
+    {
+      method: "text",
+      argument:
+        "{country}",
+      options: {
+        continued: true,
+        highlighted: true
+      },
+    },
+    {
+      method: "text",
+      argument:
+        " citizen or permanent resident; (v) the Participant has filed all federal tax returns and reports as required by law, they are true and correct in all material respects, and the Participant has paid all federal taxes and other assessments due.",
+      options: {
         paragraphGap: 12,
       },
     },
@@ -2387,7 +2500,31 @@ export default {
     {
       method: "text",
       argument:
-        "), by and among {full_name} and {investor} (the ",
+        "), by and among ",
+      options: { continued: true },
+    },
+    {
+      method: "text",
+      argument:
+        "{full_name}",
+      options: { continued: true, highlighted: true },
+    },
+    {
+      method: "text",
+      argument:
+        " and ",
+      options: { continued: true },
+    },
+    {
+      method: "text",
+      argument:
+        "{investor} ",
+      options: { continued: true, highlighted: true },
+    },
+    {
+      method: "text",
+      argument:
+        " (the ",
       options: { continued: true },
     },
     {
@@ -2410,7 +2547,19 @@ export default {
     {
       method: "text",
       argument:
-        "Effective as of the {date:do 'day of' MMMM, yyyy}.",
+        "Effective as of the ",
+      options: { continued: true },
+    },
+    {
+      method: "text",
+      argument:
+        "{date:do 'day of' MMMM, yyyy}",
+      options: { continued: true, highlighted: true },
+    },
+    {
+      method: "text",
+      argument:
+        ".",
       options: { paragraphGap: 24 },
     },
     {
