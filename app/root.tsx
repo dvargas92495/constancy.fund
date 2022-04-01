@@ -269,21 +269,29 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader: LoaderFunction = (args) => {
-  return import("@clerk/remix/ssr.server.js").then((clerk) =>
-    clerk.rootAuthLoader(
-      args,
-      () => ({
-        ENV: {
-          API_URL: process.env.API_URL,
-          CLERK_FRONTEND_API: process.env.CLERK_FRONTEND_API,
-          HOST: process.env.HOST,
-          NODE_ENV: process.env.NODE_ENV,
-          STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
-        },
-      }),
-      { loadUser: true }
+  return import("@clerk/remix/ssr.server.js")
+    .then((clerk) =>
+      clerk.rootAuthLoader(
+        args,
+        () => ({
+          ENV: {
+            API_URL: process.env.API_URL,
+            CLERK_FRONTEND_API: process.env.CLERK_FRONTEND_API,
+            HOST: process.env.HOST,
+            NODE_ENV: process.env.NODE_ENV,
+            STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+          },
+        }),
+        { loadUser: true }
+      )
     )
-  );
+    .catch(async (r: Response) => {
+      const data = await r.json();
+      console.log("THROWN DATA!!!");
+      console.log(JSON.stringify(data, undefined, 4));
+      r.headers.append("Cache-Control", "no-cache");
+      throw r;
+    });
 };
 
 export const links: LinksFunction = () => {

@@ -20,7 +20,8 @@
     "postinstall": "fuego postinstall \"@mui/material\" \"pdfjs-dist\" \"@babel/runtime\"",
     "staging": "mysqlsh --host vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com --port 5432 --database staging_constancy_fund --user staging_constancy_fund",
     "test": "jest",
-    "cypress": "cross-env CYPRESS_VERIFY_TIMEOUT=100000 cypress open"
+    "cypress": "cross-env CYPRESS_VERIFY_TIMEOUT=100000 cypress open",
+    "cypress:staging": "cross-env CYPRESS_VERIFY_TIMEOUT=100000 HOST=https://staging.constancy.fund cypress open"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.85",
