@@ -19,6 +19,9 @@ import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import { redirect, ActionFunction } from "remix";
 import createFundraise from "~/data/createFundraise.server";
 import type { FundraiseId } from "../../../../enums/fundraiseTypes";
+import { v4 } from "uuid";
+import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
 
 const ISA_SUPPORT_TYPES = [
   {
@@ -156,6 +159,43 @@ const ThresholdField = () => {
         </InfoPill>
       </ContainerWithInfo>
     </TextFieldBox>
+  );
+};
+
+const AdditionalClause = styled.div`
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+const AdditionalClauses = () => {
+  const [clauses, setClauses] = useState<string[]>([]);
+  return (
+    <>
+      {clauses.map((uuid) => (
+        <AdditionalClause key={uuid}>
+          <TextInputContainer width={"600px"}>
+            <TextInputMultiLine name={"clauses"} required />
+          </TextInputContainer>
+          {clauses.length > 1 && (
+            <IconButton
+              onClick={() => setClauses(clauses.filter((c) => c !== uuid))}
+            >
+              <Icon name={"delete"} />
+            </IconButton>
+          )}
+        </AdditionalClause>
+      ))}
+      <Button
+        endIcon={<Icon name={"add"} />}
+        onClick={() => {
+          setClauses([...clauses, v4()]);
+        }}
+      >
+        Add Clause
+      </Button>
+    </>
   );
 };
 
@@ -347,9 +387,7 @@ const ISADetailForm = () => {
           to add? It is <b>strongly</b> advised to cross-check these terms with
           a legal professional.
         </InfoText>
-        <TextInputContainer width={"600px"}>
-          <TextInputMultiLine name={"clauses"} />
-        </TextInputContainer>
+        <AdditionalClauses />
       </Section>
       <ErrorSnackbar />
     </>

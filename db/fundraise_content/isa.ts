@@ -2468,8 +2468,31 @@ export default {
       argument:
         " Participant and each Company agree that Investor may disclose the Company's name and logo, a brief description of the Participant, and Participant and Company's status as clients of Investor on Investor' website and social media pages.",
       options: {
-        paragraphGap: 36,
+        paragraphGap: 12,
       },
+    },
+    {
+      method: "dynamic",
+      argument: `const length = {clauses_length};
+return Array(length).fill(null).flatMap((_, i) => [
+  {
+    method: "text",
+    argument: (36 + i) + ".    Additional Clause " + (i + 1) + ".",
+    options: {
+      indent: 18,
+      font: "Helvetica-Bold",
+      continued: true,
+    },
+  },
+  {
+    method: "text",
+    argument: " {clauses." + i + "}",
+    options: {
+      paragraphGap: 12,
+    },
+  },
+]);
+`,
     },
     {
       method: "text",

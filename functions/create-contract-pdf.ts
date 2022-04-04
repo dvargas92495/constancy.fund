@@ -67,6 +67,8 @@ type ContractData = {
 const getFirst = (s: NestedString): string =>
   typeof s === "string" ? s : getFirst(s[0]);
 
+type ContractDetailData = { [key: string]: string | Date | ContractDetailData };
+
 export const handler = ({
   uuid,
   outfile = "draft",
@@ -109,9 +111,15 @@ export const handler = ({
        WHERE contractUuid = ?`,
         [uuid]
       ).then((res) => res as { label: string; value: string }[]),
+      execute(
+        `SELECT value
+       FROM contractclause
+       WHERE contractUuid = ?`,
+        [uuid]
+      ).then((res) => res as { value: string }[]),
     ])
       .then(
-        ([contract, details]) =>
+        ([contract, details, clauses]) =>
           new Promise((resolve, reject) => {
             destroy();
             const doc = new PDFDocument();
@@ -137,13 +145,17 @@ export const handler = ({
                   return;
                 }
                 const { data, user } = contract;
-                const detailsData: Record<string, string | Date> = {
+                const detailsData: ContractDetailData = {
                   date: new Date(),
                   full_name: `${user.firstName} ${user.lastName}`,
                   address: `${user.publicMetadata.companyAddressNumber} ${user.publicMetadata.companyAddressStreet}, ${user.publicMetadata.companyAddressCity}, ${user.publicMetadata.companyAddressZip}`,
                   ...Object.fromEntries(
                     details.map(({ label, value }) => [label, value])
                   ),
+                  clauses: Object.fromEntries(
+                    clauses.map((c, i) => [i, c.value])
+                  ),
+                  clauses_length: clauses.length.toString(),
                   creator_type:
                     (user.publicMetadata.creatorType as string) ||
                     "an individual",
@@ -154,7 +166,7 @@ export const handler = ({
                 };
                 const interpolate = (argument: string) =>
                   argument.replace(
-                    /{([a-z_]+)(?::([^}]+))?}/g,
+                    /{([a-z_.0-9]+)(?::([^}]+))?}/g,
                     (orig, key: string, format: string = "") => {
                       if (key === "multiply") {
                         return format
@@ -182,7 +194,16 @@ export const handler = ({
                           return ifFalse;
                         }
                       }
-                      const value = detailsData[key] || "";
+                      const value =
+                        key
+                          .split(".")
+                          .reduce(
+                            (p, k) =>
+                              typeof p === "object" && !(p instanceof Date)
+                                ? p[k]
+                                : p,
+                            detailsData as ContractDetailData[string]
+                          ) || "";
                       if (!value) {
                         return orig;
                       } else if (value instanceof Date) {
@@ -194,6 +215,8 @@ export const handler = ({
                             ? addMonths(value, numericOffset)
                             : addDays(value, numericOffset);
                         return datefnsFormat(newValue, f);
+                      } else if (typeof value === "object") {
+                        return JSON.stringify(value);
                       } else if (!isNaN(Number(value))) {
                         return formatAmount(Number(value));
                       } else {
@@ -349,8 +372,9 @@ export const handler = ({
                   } else if (part.method === "dynamic") {
                     const newPart = new Function(
                       interpolate(part.argument)
-                    )() as ContractPart;
-                    parsePart(newPart);
+                    )() as ContractPart | ContractPart[];
+                    const parts = Array.isArray(newPart) ? newPart : [newPart];
+                    parts.forEach(parsePart);
                   }
                 };
                 (data.parts || []).forEach(parsePart);

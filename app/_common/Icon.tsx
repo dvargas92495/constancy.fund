@@ -1,5 +1,6 @@
 import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
 import styled from "styled-components";
+import AddIcon from "@mui/icons-material/Add";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import CheckIcon from "@mui/icons-material/Check";
@@ -49,6 +50,7 @@ const Icon = ({
   heightAndWidth?: string;
   color?: string;
   name:
+    | "add"
     | "arrow-drop-down"
     | "arrow-right"
     | "book"
@@ -102,6 +104,8 @@ const Icon = ({
     $heightAndWidth: heightAndWidth,
   };
   switch (name) {
+    case "add":
+      return <AddIcon {...muiProps} />;
     case "arrow-drop-down":
       return <ArrowDropDownIcon {...muiProps} />;
     case "arrow-right":

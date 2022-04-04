@@ -13,12 +13,20 @@ model Contract {
   type Int
   userId String
   contractDetails ContractDetail[]
+  contractClauses ContractClause[]
   agreements Agreement[]
 }
 
 model ContractDetail {
   uuid String @id @default(uuid())
   label String
+  value String @db.Text
+  contractUuid String
+  contract Contract @relation(fields: [contractUuid], references: [uuid])
+}
+
+model ContractClause {
+  uuid String @id @default(uuid())
   value String
   contractUuid String
   contract Contract @relation(fields: [contractUuid], references: [uuid])
