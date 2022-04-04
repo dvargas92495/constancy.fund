@@ -81,6 +81,10 @@ provider "github" {
   token = var.github_token
 }
 
+data "aws_cloudfront_cache_policy" "cache_policy" {
+  name = "remix-cache-policy"
+}
+
 module "aws_static_site" {
   source  = "dvargas92495/static-site/aws"
   version = "3.5.2"
@@ -110,12 +114,13 @@ module "aws-serverless-backend" {
 
 module "aws_static_site_staging" {
   source  = "dvargas92495/static-site/aws"
-  version = "3.5.2"
+  version = "3.6.0"
 
   domain = "staging.constancy.fund"
   secret = var.secret
   origin_timeout = 20
   origin_memory_size = 5120
+  cache_policy_id = data.aws_cloudfront_cache_policy.cache_policy.id
   tags = {
       Application = "constancy-fund"
   }
