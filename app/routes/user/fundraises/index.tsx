@@ -62,17 +62,22 @@ type Fundraises = Data["fundraises"];
 
 const DetailComponentById: Record<
   string,
-  (props: Record<string, string>) => React.ReactElement
+  (props: {
+    clauses: string[];
+    details: { [k: string]: string };
+  }) => React.ReactElement
 > = {
   isa: (props) => {
     const {
-      amount,
-      cap,
-      frequency = 1,
-      return: financialReturn,
-      share,
-      supportType,
-      threshold,
+      details: {
+        amount,
+        cap,
+        frequency = 1,
+        return: financialReturn,
+        share,
+        supportType,
+        threshold,
+      },
       clauses,
     } = props;
     const [showMore, setShowMore] = useState(false);
@@ -114,10 +119,16 @@ const DetailComponentById: Record<
                 <li>{Number(financialReturn)}% of initial investment or</li>
                 <li>{cap} years</li>
               </ul>
-              <p>Additional clauses:</p>
-              <ul>
-                <li>{clauses}</li>
-              </ul>
+              {!!clauses.length && (
+                <>
+                  <p>Additional clauses:</p>
+                  <ul>
+                    {clauses.map((c, i) => (
+                      <li key={i}>{c}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </>
           )}
         </Box>
@@ -150,7 +161,10 @@ const FundraiseContentRow = ({
     <TableRow>
       <TableCell>{row.type}</TableCell>
       <TableCell sx={{ width: "320px" }}>
-        <DetailComponent {...row.details} />
+        <DetailComponent
+          details={row.details}
+          clauses={Array.from(row.clauses)}
+        />
       </TableCell>
       <TableCell>{row.progress}</TableCell>
       <TableCell>{row.investorCount}</TableCell>

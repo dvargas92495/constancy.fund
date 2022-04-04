@@ -286,7 +286,7 @@ export const loader: LoaderFunction = (args) => {
       )
     )
     .catch(async (r: Response) => {
-      r.headers.append("Cache-Control", "no-cache");
+      r.headers.append("Cache-Control", "no-store");
       throw r;
     });
 };
