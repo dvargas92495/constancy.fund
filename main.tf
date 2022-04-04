@@ -87,7 +87,7 @@ data "aws_cloudfront_cache_policy" "cache_policy" {
 
 module "aws_static_site" {
   source  = "dvargas92495/static-site/aws"
-  version = "3.5.2"
+  version = "3.4.0"
 
   domain = "constancy.fund"
   secret = var.secret
@@ -114,7 +114,7 @@ module "aws-serverless-backend" {
 
 module "aws_static_site_staging" {
   source  = "dvargas92495/static-site/aws"
-  version = "3.6.0"
+  version = "3.6.1"
 
   domain = "staging.constancy.fund"
   secret = var.secret
