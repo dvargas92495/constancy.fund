@@ -286,9 +286,6 @@ export const loader: LoaderFunction = (args) => {
       )
     )
     .catch(async (r: Response) => {
-      const data = await r.json();
-      console.log("THROWN DATA!!!");
-      console.log(JSON.stringify(data, undefined, 4));
       r.headers.append("Cache-Control", "no-cache");
       throw r;
     });

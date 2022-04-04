@@ -93,6 +93,6 @@ describe("Testing core workflows", () => {
     cy.get("#bottom-bar button[type=submit]").click();
 
     cy.get("#wait-contract-generated").should("be.visible");
-    cy.get("#eversign-embed", { timeout: 15000 }).should("be.visible");
+    cy.get("#eversign-embed", { timeout: 20000 }).should("be.visible");
   });
 });
