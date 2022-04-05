@@ -22,6 +22,10 @@ export const loader: LoaderFunction = ({ request }) => {
         return redirect("/user");
       }
       return {};
+    })
+    .catch(async (r: Response) => {
+      r.headers.append("Cache-Control", "no-store");
+      throw r;
     });
 };
 

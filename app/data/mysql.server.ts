@@ -1,7 +1,7 @@
 import type mysql from "mysql2";
 
 const DATABASE_URL_REGEX =
-  /^mysql:\/\/([a-z0-9_]+):(.{16})@([a-z0-9\.-]+):(\d{3,5})\/([a-z_]+)$/;
+  /^mysql:\/\/([a-z0-9_]+):(.{16})@([a-z0-9.-]+):(\d{3,5})\/([a-z_]+)$/;
 const matches = DATABASE_URL_REGEX.exec(process.env.DATABASE_URL || "");
 
 export const getConnection = () => {
