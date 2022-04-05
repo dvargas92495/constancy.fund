@@ -149,6 +149,7 @@ const ProfileImage = styled.div<{ scroll?: number }>`
     ${(props) => props.theme.palette.color.backgroundColorDarkerDarker};
   border-radius: 300px;
   position: sticky;
+  background: white;
   top: 200px;
 
   ${(props) =>
@@ -261,6 +262,7 @@ const ProfileImageContainer = styled.div<{ scroll?: number }>`
   & * {
     width: fill-available;
     height: fill-available;
+    object-fit: contain;
   }
 `;
 
@@ -349,10 +351,9 @@ const CreatorProfile = (): React.ReactElement => {
                 }
                 onClick={() => {
                   navigate(
-                    `/creator/${userId}/invest${
-                      agreementUuid
-                        ? `?agreement=${agreementUuid}`
-                        : `?fundraise=${fundraises[0].uuid}`
+                    `/creator/${userId}/invest${agreementUuid
+                      ? `?agreement=${agreementUuid}`
+                      : `?fundraise=${fundraises[0].uuid}`
                     }`
                   );
                 }}
@@ -406,10 +407,9 @@ const CreatorProfile = (): React.ReactElement => {
                 }
                 onClick={() => {
                   navigate(
-                    `/creator/${userId}/invest${
-                      agreementUuid
-                        ? `?agreement=${agreementUuid}`
-                        : `?fundraise=${fundraises[0].uuid}`
+                    `/creator/${userId}/invest${agreementUuid
+                      ? `?agreement=${agreementUuid}`
+                      : `?fundraise=${fundraises[0].uuid}`
                     }`
                   );
                 }}
@@ -483,7 +483,7 @@ const CreatorProfile = (): React.ReactElement => {
                     (Number(fundraises[0].details.return || 0) *
                       Number(fundraises[0].details.frequency || 1) *
                       Number(fundraises[0].details.amount || 0)) /
-                      100
+                    100
                   )}
                   <SmallConditionsText>
                     {" "}

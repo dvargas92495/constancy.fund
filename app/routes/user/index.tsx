@@ -106,6 +106,7 @@ const ProfileImageBox = styled.div`
   border: 1px solid ${(props) => props.theme.palette.color.lightgrey};
   border-radius: 300px;
   margin: 1px;
+  background: white;
   cursor: pointer;
 
   &:hover {
@@ -117,6 +118,7 @@ const ProfileImageBox = styled.div`
   & > * {
     height: fill-available;
     width: fill-available;
+    object-fit: contain;
   }
 `;
 
