@@ -3,9 +3,9 @@ import { cy, describe, it, Cypress } from "local-cypress";
 describe("Testing core workflows", () => {
   it("Creates a contract between a user and an investor", () => {
     cy.visit(Cypress.env("HOST"));
-    cy.get("div#root");
-    cy.getCookie("__session").then((val) => {
-      if (val) {
+    cy.get("div#user-container").then((val) => {
+      cy.log(val.children[0].tagName);
+      if (val.children[0].tagName !== 'A') {
         cy.get(
           "button.cl-user-button-trigger > img.cl-user-button-avatar"
         ).click();

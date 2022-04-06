@@ -318,7 +318,7 @@ const Home: React.FC = () => {
             </SubTitle>
             <SubscribeBox />
           </IntroBox>
-          <UserContainer>
+          <UserContainer id={"user-container"}>
             {isSignedIn ? (
               <UserButton />
             ) : (
