@@ -284,11 +284,7 @@ export const loader: LoaderFunction = (args) => {
         }),
         { loadUser: true }
       )
-    )
-    .catch(async (r: Response) => {
-      r.headers.append("Cache-Control", "no-store");
-      throw r;
-    });
+    );
 };
 
 export const links: LinksFunction = () => {

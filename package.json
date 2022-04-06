@@ -54,7 +54,7 @@
   "dependencies": {
     "@dvargas92495/api": "^0.7.0",
     "@dvargas92495/eversign": "^1.9.5",
-    "@dvargas92495/ui": "^0.51.7",
+    "@dvargas92495/ui": "^0.51.8",
     "@prisma/client": "^3.6.0",
     "@react-pdf-viewer/core": "^3.0.0",
     "@react-pdf-viewer/default-layout": "^3.0.0",
