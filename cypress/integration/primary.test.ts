@@ -2,10 +2,10 @@ import { cy, describe, it, Cypress } from "local-cypress";
 
 describe("Testing core workflows", () => {
   it("Creates a contract between a user and an investor", () => {
-    cy.visit(Cypress.env("HOST"));
+    cy.visit(Cypress.env("HOST"), { failOnStatusCode: false });
     cy.get("div#user-container").then((val) => {
       cy.log(val.children[0].tagName);
-      if (val.children[0].tagName !== 'A') {
+      if (val.children[0].tagName !== "A") {
         cy.get(
           "button.cl-user-button-trigger > img.cl-user-button-avatar"
         ).click();
@@ -64,7 +64,9 @@ describe("Testing core workflows", () => {
 
     cy.get('input[name="firstName"]').clear().type("David");
     cy.get('input[name="lastName"]').clear().type("Vargas");
-    cy.get('input[name="contactEmail"]').clear().type("test-creator@constancy.fund");
+    cy.get('input[name="contactEmail"]')
+      .clear()
+      .type("test-creator@constancy.fund");
     cy.get('input[name="representativeAddressStreet"]').clear().type("Main St");
     cy.get('input[name="representativeAddressNumber"]').clear().type("123");
     cy.get('input[name="representativeAddressCity"]').clear().type("Gotham");
@@ -73,7 +75,7 @@ describe("Testing core workflows", () => {
     cy.get("button[type=submit]").click();
     cy.get("#success-profile-alert").should("be.visible");
 
-    cy.visit(`${Cypress.env('HOST')}/creator/user_21vC5l7JKfQfY79q1OhYsFiviM1`);
+    cy.visit(`${Cypress.env("HOST")}/creator/user_21vC5l7JKfQfY79q1OhYsFiviM1`);
     cy.get("#top-bar-profile #back-this-project").click();
     cy.get('input[name="amount"]').clear().type("10000");
     cy.get('input[name="term"]').each((c) => cy.wrap(c).check());
