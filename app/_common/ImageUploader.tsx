@@ -3,10 +3,11 @@
 import React from "react";
 
 import Icon from "./Icon";
-import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import styled from "styled-components";
-import CircularProgress from "@mui/material/CircularProgress";
+import { PrimaryAction } from "./PrimaryAction";
+import { LoadingIndicator } from "./LoadingIndicator";
+import { SecondaryAction } from "./SecondaryAction";
 
 const TitleContainer = styled.div`
   margin-bottom: 1.25em;
@@ -195,9 +196,14 @@ const FileDropArea = ({
     const v = uiState == UIState.Idle ? "visible" : "hidden";
     return (
       <div style={{ visibility: v }}>
-        <Button onClick={promptForFile}>
-          <Icon name="upload" /> Select file to upload
-        </Button>
+        <PrimaryAction
+          label={
+            <span>
+              <Icon name="upload" /> Select file to upload
+            </span>
+          }
+          onClick={promptForFile}
+        />
         <FileInput
           type="file"
           accept={acceptedTypes.join(",")}
@@ -232,7 +238,7 @@ const FileDropArea = ({
     ),
     uploading: (
       <DropArea {...areaHandlers}>
-        <CircularProgress />
+        <LoadingIndicator />
         <p style={{ marginTop: "3em" }}>Uploading file</p>
       </DropArea>
     ),
@@ -359,12 +365,10 @@ function ImageUploader({
             handleError={uploadError}
           />
           {hasFileError ? helpTexts["error"] : helpTexts["normal"]}
-          <Button onClick={closeModal}>Close</Button>
+          <SecondaryAction label={"Close"} onClick={closeModal} />
         </Card>
       </Dialog>
-      <UploaderWrapper onClick={openModal}>
-        {children}
-      </UploaderWrapper>
+      <UploaderWrapper onClick={openModal}>{children}</UploaderWrapper>
     </>
   );
 }

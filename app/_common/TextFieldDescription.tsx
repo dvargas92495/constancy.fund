@@ -16,7 +16,7 @@ const Asterisk = styled.span``;
 
 const TextFieldDescription: React.FC<{
   $small?: boolean;
-  required: boolean;
+  required?: boolean;
 }> = ({ $small, required, children }) => {
   return (
     <TextFieldDescriptionContainer $small={$small}>

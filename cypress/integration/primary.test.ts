@@ -4,8 +4,7 @@ describe("Testing core workflows", () => {
   it("Creates a contract between a user and an investor", () => {
     cy.visit(Cypress.env("HOST"), { failOnStatusCode: false });
     cy.get("div#user-container > div").then((val) => {
-      cy.log(val.children[0].tagName);
-      if (val.children[0].tagName !== "A") {
+      if (!val.children().first().is('a')) {
         cy.get(
           "button.cl-user-button-trigger > img.cl-user-button-avatar"
         ).click();

@@ -8,19 +8,8 @@ import {
   ActionFunction,
   useFetcher,
 } from "remix";
-import Box from "@mui/material/Box";
-import _H1 from "@dvargas92495/ui/components/H1";
-import _H4 from "@dvargas92495/ui/components/H4";
-import Button from "@mui/material/Button";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import IconButton from "@mui/material/IconButton";
 import Popover from "@mui/material/Popover";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "~/_common/ListItemIcon";
 import ListItemText from "~/_common/ListItemText";
 import deleteFundraiseData from "~/data/deleteFundraiseData.server";
@@ -39,6 +28,7 @@ import styled from "styled-components";
 import formatAmount from "../../../util/formatAmount";
 import getFundraises from "~/data/getFundraises.server";
 import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
+import { SecondaryAction } from "~/_common/SecondaryAction";
 
 const NotCompletedMessageContainer = styled.div`
   display: flex;
@@ -53,12 +43,23 @@ const Container = styled.div`
 
 const FundraisingContainer = styled.div``;
 
-const H4 = (props: Parameters<typeof _H4>[0]) => (
-  <_H4 sx={{ fontSize: 20, mt: 0, ...props.sx }} {...props} />
-);
+const H4 = styled.h4`
+  font-size: 20px;
+`;
 
 type Data = Awaited<ReturnType<typeof getFundraises>>;
 type Fundraises = Data["fundraises"];
+
+const CellContainer = styled.div`
+  display: flex;
+  & p {
+    margin-top: 0;
+  }
+`;
+
+const CollapseContainer = styled.div`
+  min-width: 40px;
+`;
 
 const DetailComponentById: Record<
   string,
@@ -82,15 +83,8 @@ const DetailComponentById: Record<
     } = props;
     const [showMore, setShowMore] = useState(false);
     return (
-      <Box
-        display={"flex"}
-        sx={{
-          "& p": {
-            marginTop: 0,
-          },
-        }}
-      >
-        <Box sx={{ minWidth: "40px" }}>
+      <CellContainer>
+        <CollapseContainer>
           {showMore ? (
             <IconButton onClick={() => setShowMore(false)}>
               <Icon name={"arrow-drop-down"} />
@@ -100,8 +94,8 @@ const DetailComponentById: Record<
               <Icon name={"arrow-right"} />
             </IconButton>
           )}
-        </Box>
-        <Box>
+        </CollapseContainer>
+        <div>
           <p>
             {" "}
             Looking to raise <b>${formatAmount(Number(amount))}</b> paid out{" "}
@@ -131,14 +125,23 @@ const DetailComponentById: Record<
               )}
             </>
           )}
-        </Box>
-      </Box>
+        </div>
+      </CellContainer>
     );
   },
   loan: () => <div>Coming Soon!</div>,
   safe: () => <div>Coming Soon!</div>,
   saft: () => <div>Coming Soon!</div>,
 };
+
+const ActionCell = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ListItem = styled.div`
+  display: flex;
+`;
 
 const FundraiseContentRow = ({
   onDeleteSuccess,
@@ -158,33 +161,30 @@ const FundraiseContentRow = ({
     );
   }, [row.uuid, fetcher]);
   return (
-    <TableRow>
-      <TableCell>{row.type}</TableCell>
-      <TableCell sx={{ width: "320px" }}>
+    <tr>
+      <td>{row.type}</td>
+      <td style={{ width: "320px" }}>
         <DetailComponent
           details={row.details}
           clauses={Array.from(row.clauses)}
         />
-      </TableCell>
-      <TableCell>{row.progress}</TableCell>
-      <TableCell>{row.investorCount}</TableCell>
-      <TableCell sx={{ minWidth: "240px" }}>
-        <Box flex={"display"} alignItems={"center"}>
-          <Button
-            variant="outlined"
-            sx={{ marginRight: 1 }}
+      </td>
+      <td>{row.progress}</td>
+      <td>{row.investorCount}</td>
+      <td style={{ minWidth: "240px" }}>
+        <ActionCell>
+          <SecondaryAction
             onClick={() => {
               navigate(`/user/fundraises/contract/${row.uuid}`, {
                 state: { isOpen: true },
               });
             }}
-          >
-            Invite Investor
-          </Button>
+            label={"Invite Investoy"}
+          />
           <IconButton onClick={(e) => setIsOpen(e.target as HTMLButtonElement)}>
             <Icon name={"more-vert"} />
           </IconButton>
-        </Box>
+        </ActionCell>
         <Popover
           open={!!isOpen}
           anchorEl={isOpen}
@@ -194,37 +194,40 @@ const FundraiseContentRow = ({
             horizontal: "left",
           }}
         >
-          <List>
+          <div>
             <ListItem
-              button
               onClick={() => {
                 navigate(`/user/fundraises/contract/${row.uuid}`);
               }}
-              sx={{ display: "flex" }}
             >
               <ListItemIcon>
                 <Icon name={"preview"} />
               </ListItemIcon>
               <ListItemText>See Investors</ListItemText>
             </ListItem>
-            <ListItem button onClick={onPreview} sx={{ display: "flex" }}>
+            <ListItem onClick={onPreview}>
               <ListItemIcon>
                 <Icon name={"preview"} />
               </ListItemIcon>
               <ListItemText>Preview</ListItemText>
             </ListItem>
-            <ListItem button onClick={onDelete} sx={{ display: "flex" }}>
+            <ListItem onClick={onDelete}>
               <ListItemIcon>
                 <Icon name={"delete"} />
               </ListItemIcon>
               <ListItemText>Delete</ListItemText>
             </ListItem>
-          </List>
+          </div>
         </Popover>
-      </TableCell>
-    </TableRow>
+      </td>
+    </tr>
   );
 };
+
+const FirstContainer = styled.div`
+  margin-top: 32px;
+  text-align: center;
+`;
 
 const UserFundraiseIndex = () => {
   const { isSignedIn, user } = useUser();
@@ -289,17 +292,17 @@ const UserFundraiseIndex = () => {
           {data.completed &&
             (rows.length ? (
               <FundraisingContainer>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Type</TableCell>
-                      <TableCell>Details</TableCell>
-                      <TableCell>Progress</TableCell>
-                      <TableCell># Investors</TableCell>
-                      <TableCell></TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
+                <table style={{ minWidth: 650 }} aria-label="simple table">
+                  <thead>
+                    <tr>
+                      <td>Type</td>
+                      <td>Details</td>
+                      <td>Progress</td>
+                      <td># Investors</td>
+                      <td></td>
+                    </tr>
+                  </thead>
+                  <tbody>
                     {rows.map((row) => (
                       <FundraiseContentRow
                         key={row.uuid}
@@ -307,19 +310,17 @@ const UserFundraiseIndex = () => {
                         onDeleteSuccess={onDeleteSuccess}
                       />
                     ))}
-                  </TableBody>
-                </Table>
+                  </tbody>
+                </table>
               </FundraisingContainer>
             ) : (
-              <Box sx={{ mt: 4 }} textAlign={"center"}>
+              <FirstContainer>
                 <H4>Set up your first fundraise</H4>
-                <Button
-                  variant={"contained"}
+                <PrimaryAction
+                  label={"Start New Fundraise"}
                   onClick={() => navigate(`/user/fundraises/setup`)}
-                >
-                  Start New Fundraise
-                </Button>
-              </Box>
+                />
+              </FirstContainer>
             ))}
         </Section>
       </ContentContainer>

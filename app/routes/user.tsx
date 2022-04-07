@@ -1,11 +1,7 @@
 import getMeta from "~/_common/getMeta";
 import React from "react";
 import Drawer from "@mui/material/Drawer";
-import Box from "@mui/material/Box";
-import List from "@mui/material/List";
-import _H1 from "@dvargas92495/ui/components/H1";
-import _H4 from "@dvargas92495/ui/components/H4";
-import GlobalStyles from "@mui/material/GlobalStyles";
+import { createGlobalStyle } from "styled-components";
 import { Link as RemixLink, LoaderFunction, Outlet, redirect } from "remix";
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
@@ -73,9 +69,38 @@ const DashboardTab = ({ path, iconName, text }: typeof TABS[number]) => {
   );
 };
 
+const Root = styled.div`
+  display: flex;
+  height: 100%;
+  width: 100%;
+`;
+
+const Main = styled.main`
+  flex-grow: 1,
+  padding-bottom: 16px,
+  color: text.primary;
+  height: fit-content;
+  width: calc(100% - ${DRAWER_WIDTH}px);
+  flex-direction:column;
+  display:flex;
+`;
+
+const MainContainer = styled.div`
+  flex-grow: 1;
+  display: flex;
+  flexdirection: column;
+`;
+
+const List = styled.ul`
+  & a {
+    text-decoration: none;
+    width: 100%;
+  }
+`;
+
 const Dashboard = () => {
   return (
-    <Box sx={{ display: "flex", height: "100%", width: "100%" }}>
+    <Root>
       <Drawer
         sx={{
           width: DRAWER_WIDTH,
@@ -90,14 +115,7 @@ const Dashboard = () => {
         variant="permanent"
         anchor="left"
       >
-        <List
-          sx={{
-            a: {
-              textDecoration: "none",
-              width: "100%",
-            },
-          }}
-        >
+        <List>
           <MenuSidebarContainer>
             {TABS.map((t) => (
               <DashboardTab {...t} key={t.path} />
@@ -105,33 +123,24 @@ const Dashboard = () => {
           </MenuSidebarContainer>
         </List>
       </Drawer>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          pb: 2,
-          color: "text.primary",
-          height: "fit-content",
-          width: `calc(100% - ${DRAWER_WIDTH}px)`
-        }}
-        flexDirection={"column"}
-        display={"flex"}
-      >
-        <Box flexGrow={1} display={"flex"} flexDirection={"column"}>
+      <Main>
+        <MainContainer>
           <Outlet />
-        </Box>
-      </Box>
-    </Box>
+        </MainContainer>
+      </Main>
+    </Root>
   );
 };
 
+const GlobalStyles = createGlobalStyle`
+  body > div#root { 
+    justify-content: unset; 
+  }
+`;
+
 const UserPage = (): React.ReactElement => (
   <>
-    <GlobalStyles
-      styles={{
-        "body > div#root": { justifyContent: "unset" },
-      }}
-    />
+    <GlobalStyles />
     <Dashboard />
   </>
 );

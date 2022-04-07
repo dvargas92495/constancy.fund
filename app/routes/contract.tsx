@@ -135,7 +135,7 @@ const EversignEmbed = ({
     <EversignBox id={CONTAINER_ID}>
       {loading && (
         <LoadingBox>
-          <LoadingIndicator />{" "}
+          <LoadingIndicator />
         </LoadingBox>
       )}
     </EversignBox>

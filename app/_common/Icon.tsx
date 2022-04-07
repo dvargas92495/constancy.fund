@@ -1,27 +1,25 @@
-import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
 import styled from "styled-components";
-import AddIcon from "@mui/icons-material/Add";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import CheckIcon from "@mui/icons-material/Check";
-import DeleteIcon from "@mui/icons-material/Delete";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import InfoIcon from "@mui/icons-material/Info";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import NoteIcon from "@mui/icons-material/Note";
-import PreviewIcon from "@mui/icons-material/Preview";
-import RedditIcon from "@mui/icons-material/Reddit";
-
+import AddSvg from "./Icons/Add.svg";
+import ArrowDropDownSvg from "./Icons/arrow-drop-down.svg";
+import ArrowRightSvg from "./Icons/arrow-right.svg";
 import BookSvg from "./Icons/book.svg";
+import CheckSvg from "./Icons/Check.svg";
 import CameraSvg from "./Icons/camera.svg";
+import DeleteSvg from "./Icons/delete.svg";
 import DollarSvg from "./Icons/dollar.svg";
+import FacebookSvg from "./Icons/facebook.svg";
 import GitHubSvg from "./Icons/github.svg";
 import Globe from "./Icons/globe.svg";
 import ImageDefaultSvg from "./Icons/image-default.svg";
+import InfoSvg from "./Icons/info.svg";
+import InstagramSvg from "./Icons/instagram.svg";
 import LinkedInSvg from "./Icons/linkedin.svg";
 import PersonFineSvg from "./Icons/personFine.svg";
+import PreviewSvg from "./Icons/preview.svg";
 import MailSvg from "./Icons/mail.svg";
+import MoreVertSvg from "./Icons/more-vert.svg";
+import NoteSvg from "./Icons/note.svg";
+import RedditSvg from "./Icons/reddit.svg";
 import RocketSvg from "./Icons/rocket.svg";
 import PublicSvg from "./Icons/globe.svg";
 import TwitterSvg from "./Icons/twitter.svg";
@@ -94,36 +92,32 @@ const Icon = ({
     | "paypalSmall"
     | "upload"
     | "youtube";
-} & Pick<SvgIconProps, "height" | "width">) => {
-  const muiProps = {
-    ...inputProps,
-    color: inputProps.color as SvgIconProps["color"],
-  };
+} & StyledIconProps) => {
   const props = {
     ...inputProps,
     $heightAndWidth: heightAndWidth,
   };
   switch (name) {
     case "add":
-      return <AddIcon {...muiProps} />;
+      return <StyledIcon icon={AddSvg} {...props} />;
     case "arrow-drop-down":
-      return <ArrowDropDownIcon {...muiProps} />;
+      return <StyledIcon icon={ArrowDropDownSvg} {...props} />;
     case "arrow-right":
-      return <ArrowRightIcon {...muiProps} />;
+      return <StyledIcon icon={ArrowRightSvg} {...props} />;
     case "book":
       return <StyledIcon {...props} icon={BookSvg} />;
     case "camera":
       return <StyledIcon {...props} icon={CameraSvg} />;
     case "check":
-      return <CheckIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={CheckSvg} />;
     case "delete":
-      return <DeleteIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={DeleteSvg} />;
     case "dollar":
       return <StyledIcon {...props} icon={DollarSvg} />;
     case "email":
       return <StyledIcon {...props} icon={MailSvg} />;
     case "facebook":
-      return <FacebookIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={FacebookSvg} />;
     case "fundraise":
       return <StyledIcon {...props} icon={RocketSvg} />;
     case "github":
@@ -135,9 +129,9 @@ const Icon = ({
     case "image-default":
       return <StyledIcon {...props} icon={ImageDefaultSvg} />;
     case "info":
-      return <InfoIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={InfoSvg} />;
     case "Instagram":
-      return <InstagramIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={InstagramSvg} />;
     case "linkedIn":
       return <StyledIcon {...props} icon={LinkedInSvg} />;
     case "mail":
@@ -145,17 +139,17 @@ const Icon = ({
     case "money":
       return <StyledIcon {...props} icon={DollarSvg} />;
     case "more-vert":
-      return <MoreVertIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={MoreVertSvg} />;
     case "note":
-      return <NoteIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={NoteSvg} />;
     case "personFine":
       return <StyledIcon {...props} icon={PersonFineSvg} />;
     case "preview":
-      return <PreviewIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={PreviewSvg} />;
     case "public":
       return <StyledIcon {...props} icon={PublicSvg} />;
     case "reddit":
-      return <RedditIcon {...muiProps} />;
+      return <StyledIcon {...props} icon={RedditSvg} />;
     case "repeat":
       return <StyledIcon {...props} icon={Repeat} />;
     case "settings":
@@ -193,11 +187,11 @@ const Icon = ({
     case "ethereum":
       return <StyledIcon {...props} icon={ethereum} />;
     default:
-      return <SvgIcon {...muiProps} />;
+      return <svg />;
   }
 };
 
-const StyledIcon = styled.div<{
+type StyledIconProps = {
   icon?: any;
   height?: string | number;
   width?: string | number;
@@ -205,7 +199,9 @@ const StyledIcon = styled.div<{
   hoverOff?: boolean;
   $heightAndWidth?: string;
   rotation?: number;
-}>`
+};
+
+const StyledIcon = styled.div<StyledIconProps>`
   cursor: ${(props) => (props.hoverOff ? "default" : "pointer")};
   height: ${(props) =>
     props.$heightAndWidth ? props.$heightAndWidth : props.height};

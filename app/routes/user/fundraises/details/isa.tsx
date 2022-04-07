@@ -21,7 +21,7 @@ import createFundraise from "~/data/createFundraise.server";
 import type { FundraiseId } from "../../../../enums/fundraiseTypes";
 import { v4 } from "uuid";
 import IconButton from "@mui/material/IconButton";
-import Button from "@mui/material/Button";
+import { SecondaryAction } from "~/_common/SecondaryAction";
 
 const ISA_SUPPORT_TYPES = [
   {
@@ -167,7 +167,7 @@ const AdditionalClause = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`
+`;
 
 const AdditionalClauses = () => {
   const [clauses, setClauses] = useState<string[]>([]);
@@ -187,14 +187,16 @@ const AdditionalClauses = () => {
           )}
         </AdditionalClause>
       ))}
-      <Button
-        endIcon={<Icon name={"add"} />}
+      <SecondaryAction
+        label={
+          <span>
+            Add Clause <Icon name={"add"} />
+          </span>
+        }
         onClick={() => {
           setClauses([...clauses, v4()]);
         }}
-      >
-        Add Clause
-      </Button>
+      />
     </>
   );
 };

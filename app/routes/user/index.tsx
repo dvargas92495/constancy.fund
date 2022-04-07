@@ -9,10 +9,6 @@ import {
 } from "remix";
 import getUserProfile from "~/data/getUserProfile.server";
 import saveUserProfile from "~/data/saveUserProfile.server";
-import Box from "@mui/material/Box";
-import _H1 from "@dvargas92495/ui/components/H1";
-import _H4 from "@dvargas92495/ui/components/H4";
-import ExternalLink from "@dvargas92495/ui/components/ExternalLink";
 import CountrySelect from "~/_common/CountrySelect";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
@@ -366,11 +362,15 @@ const UserProfile = () => {
           <InfoText>
             You must have a registered company to be able to use this service.
             If you do not, there are fast ways to open up a company.{" "}
-            <ExternalLink href={"https://stripe.com/atlas"}>
+            <a
+              href={"https://stripe.com/atlas"}
+              target={"_blank"}
+              rel="noopener"
+            >
               Learn More.
-            </ExternalLink>
+            </a>
           </InfoText>
-          <Box>
+          <div>
             <TextFieldBox>
               <TextFieldDescription required>
                 Registered Country
@@ -544,7 +544,7 @@ const UserProfile = () => {
                 </AddressBox>
               </AddressArea>
             </SubSection>
-          </Box>
+          </div>
         </Section>
       </ContentContainer>
       <Snackbar

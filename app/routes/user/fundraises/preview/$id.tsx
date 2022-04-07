@@ -1,7 +1,4 @@
 import { useEffect, useCallback } from "react";
-import Box from "@mui/material/Box";
-import _H1 from "@dvargas92495/ui/components/H1";
-import _H4 from "@dvargas92495/ui/components/H4";
 import CheckBox from "@mui/material/Checkbox";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
@@ -153,6 +150,12 @@ export const action: ActionFunction = ({ request, params }) => {
     });
 };
 
+const AgreementHeading = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 const UserFundraisePreview = () => {
   const { id = "" } = useParams();
   const data = useLoaderData<FundraiseData>();
@@ -300,13 +303,7 @@ const UserFundraisePreview = () => {
           </ExplainContainer>
         </Section>
         <Section>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
+          <AgreementHeading>
             <SectionTitle>Full Legal Agreement</SectionTitle>
             {process.env.NODE_ENV === "development" && (
               <SecondaryAction
@@ -315,7 +312,7 @@ const UserFundraisePreview = () => {
                 height={"40px"}
               />
             )}
-          </Box>
+          </AgreementHeading>
           <SubSectionTitle></SubSectionTitle>
           <EversignEmbedContainer>
             {fetcher.state === "submitting" ? (

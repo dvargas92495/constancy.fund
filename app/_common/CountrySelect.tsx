@@ -1,6 +1,14 @@
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
+import styled from "styled-components";
+import TextInputContainer from "./TextInputContainer";
+import TextInputOneLine from "./TextInputOneLine";
+
+const Option = styled.li`
+  & > img: { 
+    marginRight: 16px 
+    flexShrink: 0 
+  }
+`;
 
 const CountrySelect = ({
   name,
@@ -18,12 +26,7 @@ const CountrySelect = ({
       autoHighlight
       getOptionLabel={(option) => option.label}
       renderOption={(props, option) => (
-        <Box
-          component="li"
-          sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-          data-code={`country-select-${option.code}`}
-          {...props}
-        >
+        <Option data-code={`country-select-${option.code}`} {...props}>
           <img
             loading="lazy"
             width="20"
@@ -32,17 +35,17 @@ const CountrySelect = ({
             alt=""
           />
           {option.label} ({option.code})
-        </Box>
+        </Option>
       )}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          name={name}
-          inputProps={{
-            ...params.inputProps,
-            autoComplete: "new-password", // disable autocomplete and autofill
-          }}
-        />
+      renderInput={({ id, disabled, inputProps }) => (
+        <TextInputContainer width={"600px"}>
+          <TextInputOneLine
+            id={id}
+            disabled={disabled}
+            {...inputProps}
+            name={name}
+          />
+        </TextInputContainer>
       )}
     />
   );

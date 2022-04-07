@@ -14,7 +14,6 @@ import {
   useTransition,
 } from "remix";
 import CheckBox from "@mui/material/Checkbox";
-import CircularProgress from "@mui/material/CircularProgress";
 import CountrySelect from "~/_common/CountrySelect";
 
 import Icon from "~/_common/Icon";
@@ -36,6 +35,7 @@ import formatAmount from "../../../util/formatAmount";
 import createAgreement from "~/data/createAgreement.server";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import validatePaymentPreferences from "~/data/validatePaymentPreferences";
+import { LoadingIndicator } from "~/_common/LoadingIndicator";
 
 type Data = Awaited<ReturnType<typeof getAgreement>>;
 
@@ -223,13 +223,13 @@ const EnterDetails = () => {
   const [amount, setAmount] = useState(state.amount);
   const transition = useTransition();
   const showLoadingScreen = useMemo(
-    () => (transition.state === "submitting"),
+    () => transition.state === "submitting",
     [transition.state]
   );
   return showLoadingScreen ? (
     <LoadingScreenContainer id={"wait-contract-generated"}>
       <h3>Please wait while your contract is being generated...</h3>
-      <CircularProgress />
+      <LoadingIndicator size="20px" thickness={3} />
     </LoadingScreenContainer>
   ) : (
     <ProfileContainer method={"post"}>
@@ -539,7 +539,7 @@ const EnterDetails = () => {
         <Section>
           <PaymentPreference />
         </Section>
-        <BottomBar id={'bottom-bar'}>
+        <BottomBar id={"bottom-bar"}>
           <InvestorPrimaryAction />
         </BottomBar>
       </ProfileBottomContainer>

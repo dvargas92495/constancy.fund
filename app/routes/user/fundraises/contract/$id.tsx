@@ -1,9 +1,5 @@
 import React, { useState, useMemo } from "react";
-import Box from "@mui/material/Box";
 import { UserButton, useUser } from "@clerk/remix";
-
-import _H1 from "@dvargas92495/ui/components/H1";
-import _H4 from "@dvargas92495/ui/components/H4";
 import CONTRACT_STAGES from "../../../../enums/contract_stages";
 import {
   ActionFunction,
@@ -575,7 +571,7 @@ const UserFundraisesContract = () => {
                 </ProgressPillProgress>
               </ProgressPillSmall>
             </TitleTopBoxSmall>
-            <Box>
+            <div>
               <Table>
                 {/* <TableHead>
                   <TableRow>
@@ -596,7 +592,7 @@ const UserFundraisesContract = () => {
                   ))}
                 </TableBody>
               </Table>
-            </Box>
+            </div>
           </Section>
         </ProfileBottomContainer>
       </ContentContainer>

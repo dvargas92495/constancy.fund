@@ -1,5 +1,4 @@
-import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
+import styled from "styled-components";
 import CircularProgress, {
   circularProgressClasses,
   CircularProgressProps,
@@ -21,10 +20,14 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   },
 }));
 
+const Position = styled.div`
+  position: relative;
+`;
+
 // Inspired by the former Facebook spinners.
 export function LoadingIndicator(props: CircularProgressProps) {
   return (
-    <Box sx={{ position: "relative" }}>
+    <Position>
       <CircularProgress
         variant="determinate"
         sx={{
@@ -53,16 +56,20 @@ export function LoadingIndicator(props: CircularProgressProps) {
         thickness={4}
         {...props}
       />
-    </Box>
+    </Position>
   );
 }
 
+const Container = styled.div`
+  flex-grow: 1;
+`;
+
 export default function LoadingIndicatorBar() {
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Container>
       <LoadingIndicator />
       <br />
       <BorderLinearProgress variant="determinate" value={50} />
-    </Box>
+    </Container>
   );
 }

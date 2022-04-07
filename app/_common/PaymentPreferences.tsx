@@ -1,5 +1,4 @@
 import Checkbox from "@mui/material/Checkbox";
-import Box from "@mui/material/Box";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { useState } from "react";
@@ -11,10 +10,16 @@ import TextFieldBox from "./TextFieldBox";
 import InfoText from "./InfoText";
 import PAYMENT_PREFERENCES, { Id } from "../enums/paymentPreferences";
 import paymentLabelsById from "./PaymentLabelsById";
+import styled from "styled-components";
 
 const paymentFieldsById = Object.fromEntries(
   PAYMENT_PREFERENCES.map(({ id, fields }) => [id, fields])
 );
+
+const Row = styled.div`
+  width: 50%;
+  margin-left: 31px;
+`;
 
 const PaymentPreference = ({
   id,
@@ -37,7 +42,7 @@ const PaymentPreference = ({
         label={paymentLabelsById[id]}
       />
       {checked && (
-        <Box sx={{ width: "50%", marginLeft: "31px" }}>
+        <Row>
           {(paymentFieldsById[id] || []).map((f) => {
             const key = f.replace(/ /g, "");
             const name = `paymentPreference.${id}.${key}`;
@@ -54,11 +59,21 @@ const PaymentPreference = ({
               </TextFieldBox>
             );
           })}
-        </Box>
+        </Row>
       )}
     </>
   );
 };
+
+const Group = styled.div`
+  width: 100%;
+`;
+
+const Preferences = styled.div`
+  display: flex;
+  min-height: 160px;
+  width: 100%;
+`;
 
 const PaymentPreferences = ({
   defaultValue = {},
@@ -73,8 +88,8 @@ const PaymentPreferences = ({
         funds?
       </InfoText>
       <TextFieldBox>
-        <Box sx={{ width: "100%" }}>
-          <Box display={"flex"} sx={{ minHeight: "160px", width: "100%" }}>
+        <Group>
+          <Preferences>
             <FormGroup sx={{ width: "100%" }}>
               {PAYMENT_PREFERENCES.map(({ id }) => (
                 <PaymentPreference
@@ -84,8 +99,8 @@ const PaymentPreferences = ({
                 />
               ))}
             </FormGroup>
-          </Box>
-        </Box>
+          </Preferences>
+        </Group>
       </TextFieldBox>
     </>
   );
