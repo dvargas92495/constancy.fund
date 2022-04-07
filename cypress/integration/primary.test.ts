@@ -40,11 +40,11 @@ describe("Testing core workflows", () => {
     cy.get('input[name="socialProfiles"]')
       .clear()
       .each((c, i) => cy.wrap(c).type(socials[i]));
-    cy.get('input[name="demoVideo"]').type(
+    cy.get('input[name="demoVideo"]').clear().type(
       "https://www.loom.com/share/833d682690a0450bbd799bffef1dd0d6"
     );
-    cy.get('input[name="attachDeck"]').type(
-      "https://www.loom.com/share/833d682690a0450bbd799bffef1dd0d6"
+    cy.get('input[name="attachDeck"]').clear().type(
+      "https://google.com"
     );
     cy.get('input[name="paymentPreference.ethereum"]').check();
     cy.get('input[name="paymentPreference.ethereum.Address"]')
@@ -52,7 +52,7 @@ describe("Testing core workflows", () => {
       .type("0x6d7C5b7B06e63679AdA34D06b2F98d567CEcf1Eb");
 
     cy.get('input[name="registeredCountry"]').clear().type("United States");
-    cy.get('li[data-code="country-select-US"]').click();
+    cy.get('li > div[data-code="country-select-US"]').click();
     cy.get('input[name="companyRegistrationNumber"]')
       .clear()
       .type("8675309-69");

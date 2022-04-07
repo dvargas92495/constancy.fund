@@ -19,6 +19,7 @@ import { CacheProvider } from "@emotion/react";
 import MuiThemeProvider from "@mui/material/styles/ThemeProvider";
 import createTheme from "@mui/material/styles/createTheme";
 import { useMemo } from "react";
+import DefaultErrorBoundary from "./_common/DefaultErrorBoundary";
 
 const themeProps = {
   palette: {
@@ -269,22 +270,21 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader: LoaderFunction = (args) => {
-  return import("@clerk/remix/ssr.server.js")
-    .then((clerk) =>
-      clerk.rootAuthLoader(
-        args,
-        () => ({
-          ENV: {
-            API_URL: process.env.API_URL,
-            CLERK_FRONTEND_API: process.env.CLERK_FRONTEND_API,
-            HOST: process.env.HOST,
-            NODE_ENV: process.env.NODE_ENV,
-            STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
-          },
-        }),
-        { loadUser: true }
-      )
-    );
+  return import("@clerk/remix/ssr.server.js").then((clerk) =>
+    clerk.rootAuthLoader(
+      args,
+      () => ({
+        ENV: {
+          API_URL: process.env.API_URL,
+          CLERK_FRONTEND_API: process.env.CLERK_FRONTEND_API,
+          HOST: process.env.HOST,
+          NODE_ENV: process.env.NODE_ENV,
+          STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+        },
+      }),
+      { loadUser: true }
+    )
+  );
 };
 
 export const links: LinksFunction = () => {
@@ -329,27 +329,7 @@ export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
         <Links />
       </head>
       <body>
-        <main
-          style={{
-            fontFamily: "system-ui, sans-serif",
-            padding: "2rem",
-          }}
-        >
-          <h1 style={{ fontSize: 24 }}>Application Error</h1>
-          <h3 style={{ fontSize: 18 }}>
-            Please email support@constancy.fund for assistance
-          </h3>
-          <pre
-            style={{
-              padding: "2rem",
-              background: "rgba(191, 85, 64, 0.1)",
-              color: "red",
-              overflow: "auto",
-            }}
-          >
-            {error.stack}
-          </pre>
-        </main>
+        <DefaultErrorBoundary error={error} />
         <Scripts />
       </body>
     </html>

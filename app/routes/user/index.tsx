@@ -37,6 +37,7 @@ import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import ImageUploader from "~/_common/ImageUploader";
 import { ClerkCatchBoundary, useUser } from "@clerk/remix";
 import Avatar from "@mui/material/Avatar";
+import DefaultErrorBoundary from "~/_common/DefaultErrorBoundary";
 
 const SubSection = styled.div`
   margin-top: 60px;
@@ -604,5 +605,7 @@ export const CatchBoundary = ClerkCatchBoundary(() => {
   const { data } = useCatch();
   return <div>{data}</div>;
 });
+
+export const ErrorBoundary = DefaultErrorBoundary;
 
 export default UserProfile;

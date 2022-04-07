@@ -1,13 +1,34 @@
-import Autocomplete from "@mui/material/Autocomplete";
 import styled from "styled-components";
-import TextInputContainer from "./TextInputContainer";
 import TextInputOneLine from "./TextInputOneLine";
+import Autosuggest from "react-autosuggest";
+import { useCallback, useState } from "react";
 
-const Option = styled.li`
-  & > img: { 
-    marginRight: 16px 
-    flexShrink: 0 
+const SuggestionsContainer = styled.div`
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  border-radius: 4px;
+  width: 100%;
+  position: absolute;
+  background: #eeeeee;
+  z-index: 1;
+
+  & > ul {
+    list-style: none;
+    margin: 0px;
+    padding: 8px 0px;
+    max-height: 40vh;
+    overflow: auto;
   }
+`;
+
+const Option = styled.div<{ isHighlighted: boolean }>`
+  & > img {
+    margin-right: 16px;
+    flex-shrink: 0;
+  }
+  padding: 8px;
+  cursor: pointer;
+  background: ${(props) =>
+    props.isHighlighted ? "rgb(0,0,0,0.08)" : "transparent"};
 `;
 
 const CountrySelect = ({
@@ -17,37 +38,56 @@ const CountrySelect = ({
   name: string;
   defaultValue?: string;
 }) => {
+  const [query, setQuery] = useState(defaultValue);
+  const getSuggestions = useCallback(
+    (value?: string) =>
+      value
+        ? countries.filter((c) => new RegExp(value, "i").test(c.label))
+        : [],
+    []
+  );
+  const [suggestions, setSuggestions] = useState(getSuggestions);
   return (
-    <Autocomplete
-      id="country-select"
-      fullWidth
-      options={countries}
-      defaultValue={countryByLabel[defaultValue]}
-      autoHighlight
-      getOptionLabel={(option) => option.label}
-      renderOption={(props, option) => (
-        <Option data-code={`country-select-${option.code}`} {...props}>
-          <img
-            loading="lazy"
-            width="20"
-            src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-            srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
-            alt=""
-          />
-          {option.label} ({option.code})
-        </Option>
-      )}
-      renderInput={({ id, disabled, inputProps }) => (
-        <TextInputContainer width={"600px"}>
-          <TextInputOneLine
-            id={id}
-            disabled={disabled}
-            {...inputProps}
-            name={name}
-          />
-        </TextInputContainer>
-      )}
-    />
+    <>
+      <Autosuggest
+        suggestions={suggestions}
+        onSuggestionsFetchRequested={({ value }) => {
+          setSuggestions(getSuggestions(value));
+        }}
+        onSuggestionsClearRequested={() => setSuggestions(getSuggestions())}
+        getSuggestionValue={(c) => c.label}
+        renderSuggestion={(option, params) => (
+          <Option
+            data-code={`country-select-${option.code}`}
+            isHighlighted={params.isHighlighted}
+          >
+            <img
+              loading="lazy"
+              width="20"
+              src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
+              srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
+              alt=""
+            />
+            {option.label} ({option.code})
+          </Option>
+        )}
+        renderSuggestionsContainer={(params) => (
+          <SuggestionsContainer {...params.containerProps}>
+            {params.children}
+          </SuggestionsContainer>
+        )}
+        renderInputComponent={(props) => <TextInputOneLine {...props} />}
+        inputProps={{
+          name,
+          value: query,
+          onChange: (_, { newValue }) => {
+            setQuery(newValue);
+          },
+          autoComplete: "new-password",
+        }}
+        multiSection={false}
+      />
+    </>
   );
 };
 
@@ -307,7 +347,5 @@ const countries: CountryType[] = [
   { code: "ZM", label: "Zambia" },
   { code: "ZW", label: "Zimbabwe" },
 ];
-
-const countryByLabel = Object.fromEntries(countries.map((c) => [c.label, c]));
 
 export default CountrySelect;

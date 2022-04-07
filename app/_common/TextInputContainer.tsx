@@ -14,6 +14,8 @@ const TextInputContainer = styled.div<{ width?: string }>`
   height: fit-content;
   & > div {
     font-size: 14px;
+    width: 100%;
+    position: relative;
   }
 `;
 
