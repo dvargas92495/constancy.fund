@@ -10,6 +10,7 @@ on:
       # - "server/**"
       # - "package.json"
       - ".github/workflows/staging.yaml"
+      - "cypress/integration/primary.test.ts"
 
 env:
   API_URL: https://api.staging.constancy.fund

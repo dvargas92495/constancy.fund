@@ -3,7 +3,7 @@ import { cy, describe, it, Cypress } from "local-cypress";
 describe("Testing core workflows", () => {
   it("Creates a contract between a user and an investor", () => {
     cy.visit(Cypress.env("HOST"), { failOnStatusCode: false });
-    cy.get("div#user-container").then((val) => {
+    cy.get("div#user-container > div").then((val) => {
       cy.log(val.children[0].tagName);
       if (val.children[0].tagName !== "A") {
         cy.get(

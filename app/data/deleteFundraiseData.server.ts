@@ -19,6 +19,7 @@ const deleteFundraiseData = ({
         return Promise.all([
           execute(`DELETE FROM contractdetail WHERE contractUuid = ?`, [uuid]),
           execute(`DELETE FROM agreement WHERE contractUuid = ?`, [uuid]),
+          execute(`DELETE FROM contractclause WHERE contractUuid = ?`, [uuid]),
         ])
           .then(() => execute(`DELETE FROM contract WHERE uuid = ?`, [uuid]))
           .then(destroy);

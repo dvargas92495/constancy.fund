@@ -3,12 +3,7 @@ import getMeta from "~/_common/getMeta";
 import styled from "styled-components";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import axios from "axios";
-import {
-  ActionFunction,
-  Form,
-  useActionData,
-  useCatch,
-} from "remix";
+import { ActionFunction, Form, useActionData, useCatch } from "remix";
 import MainImage from "~/_common/Images/runner.svg";
 import AutomateImage from "~/_common/Images/automate.svg";
 import Icon from "~/_common/Icon";
@@ -322,7 +317,9 @@ const Home: React.FC = () => {
             {isSignedIn ? (
               <UserButton />
             ) : (
-              <LoginButton href={"/login"}>LOGIN</LoginButton>
+              <div>
+                <LoginButton href={"/login"}>LOGIN</LoginButton>
+              </div>
             )}
           </UserContainer>
         </MainContentContainer>
@@ -434,6 +431,6 @@ export const headers = () => {
   return {
     "Cache-Control": "max-age=604800, stale-while-revalidate=86400", // 7 days, 1 day
   };
-}
+};
 
 export default Home;

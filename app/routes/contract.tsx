@@ -1,7 +1,4 @@
 import getMeta from "~/_common/getMeta";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Body from "@dvargas92495/ui/components/Body";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import React, { useEffect, useState } from "react";
@@ -20,6 +17,7 @@ import {
   useParams,
 } from "remix";
 import getContract from "../data/getContract.server";
+import { PrimaryAction } from "~/_common/PrimaryAction";
 
 const ProfileContainer = styled.div`
   width: 100%;
@@ -103,6 +101,11 @@ const LoadingBox = styled.div`
 `;
 
 const CONTAINER_ID = "eversign-embed";
+const EversignBox = styled.div`
+  height: 60vh;
+  marginbottom: 32px;
+`;
+
 const EversignEmbed = ({
   url,
   onSign,
@@ -129,13 +132,13 @@ const EversignEmbed = ({
     }
   }, [url, setLoading]);
   return (
-    <Box id={CONTAINER_ID} sx={{ height: "60vh", marginBottom: "32px" }}>
+    <EversignBox id={CONTAINER_ID}>
       {loading && (
         <LoadingBox>
           <LoadingIndicator />{" "}
         </LoadingBox>
       )}
-    </Box>
+    </EversignBox>
   );
 };
 
@@ -181,21 +184,16 @@ const ContractPage = (): React.ReactElement => {
             />
           </EversignEmbedContainer>
         </Section>
-        <Body>
-          {signed && !isInvestor && (
-            <Button
-              color={"primary"}
-              variant={"contained"}
-              onClick={() =>
-                window.location.assign(
-                  `/user/fundraises/contract/${contractUuid}`
-                )
-              }
-            >
-              Back to Dashboard
-            </Button>
-          )}
-        </Body>
+        {signed && !isInvestor && (
+          <PrimaryAction
+            onClick={() =>
+              window.location.assign(
+                `/user/fundraises/contract/${contractUuid}`
+              )
+            }
+            label={"Back to Dashboard"}
+          />
+        )}
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={10000}
