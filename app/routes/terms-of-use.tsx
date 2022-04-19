@@ -1,4 +1,3 @@
-import ExternalLink from "@dvargas92495/ui/components/ExternalLink";
 import React from "react";
 import styled from "styled-components";
 import getMeta from "~/_common/getMeta";
@@ -390,12 +389,12 @@ const TermsOfUsePage: React.FC = () => (
     <h2> Your Privacy.</h2>
     <p>
       Please read our{" "}
-      <ExternalLink href={"/privacy-policy"}>Privacy Policy</ExternalLink>.
+      <a href={"/privacy-policy"} target={"_blank"} rel={"noopener"}>Privacy Policy</a>.
     </p>
     <h2> Contact Information</h2>
     <p>
       Please read our{" "}
-      <ExternalLink href={"/contact"}>Contact Page</ExternalLink>.
+      <a href={"/contact"} target={"_blank"} rel={"noopener"}>Contact Page</a>.
     </p>
   </Container>
 );

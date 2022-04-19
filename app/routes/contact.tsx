@@ -1,6 +1,5 @@
 import React from "react";
 import getMeta from "~/_common/getMeta";
-import ExternalLink from "@dvargas92495/ui/components/ExternalLink";
 
 const ContactPage: React.FunctionComponent = () => (
   <>
@@ -10,9 +9,9 @@ const ContactPage: React.FunctionComponent = () => (
     </p>
     <p>
       Our DMs are also open on Twitter at{" "}
-      <ExternalLink href={"https://twitter.com/constancyfund"}>
+      <a href={"https://twitter.com/constancyfund"} target={"_blank"} rel={"noopener"}>
         @constancyfund
-      </ExternalLink>.
+      </a>.
     </p>
   </>
 );

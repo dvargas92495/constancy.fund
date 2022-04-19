@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import getMeta from "~/_common/getMeta";
-import ExternalLink from "@dvargas92495/ui/components/ExternalLink";
 import QUESTIONAIRES from "~/_common/questionaires";
 import {
   LoaderFunction,
@@ -327,13 +326,13 @@ const CreatorProfile = (): React.ReactElement => {
                 {socialProfiles.map((s, i) => {
                   const SocialIcon = icons.find(({ test }) => test.test(s));
                   return (
-                    <ExternalLink href={s} key={i}>
+                    <a target={"_blank"} rel={"noopener"} href={s} key={i}>
                       <Icon
                         heightAndWidth="16px"
                         color="purple"
                         name={SocialIcon?.name || "webIcon"}
                       />
-                    </ExternalLink>
+                    </a>
                   );
                 })}
               </ProfileSocialBar>
@@ -383,13 +382,13 @@ const CreatorProfile = (): React.ReactElement => {
                 {socialProfiles.map((s, i) => {
                   const SocialIcon = icons.find(({ test }) => test.test(s));
                   return (
-                    <ExternalLink href={s} key={i}>
+                    <a target={"_blank"} rel={"noopener"} href={s} key={i}>
                       <Icon
                         heightAndWidth="16px"
                         color="purple"
                         name={SocialIcon?.name || "webIcon"}
                       />
-                    </ExternalLink>
+                    </a>
                   );
                 })}
               </ProfileSocialBar>

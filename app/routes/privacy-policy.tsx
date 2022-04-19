@@ -1,7 +1,6 @@
 import React from "react";
 import getMeta from "~/_common/getMeta";
 import styled from "styled-components";
-import ExternalLink from "@dvargas92495/ui/components/ExternalLink";
 
 const Container = styled.div`
   max-width: 800px;
@@ -19,7 +18,7 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
     <p>
       If you have additional questions or require more information about our
       Privacy Policy, do not hesitate to{" "}
-      <ExternalLink href={"/contact"}>contact us</ExternalLink>.
+      <a href={"/contact"} target={"_blank"} rel={"noopener"}>contact us</a>.
     </p>
     <p>
       This Privacy Policy applies only to our online activities and is valid for
@@ -33,7 +32,7 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
     <p>
       By using our websites, you hereby consent to our Privacy Policy and agree
       to its terms. For our Terms and Conditions, please visit the{" "}
-      <ExternalLink href={"/terms-of-use"}>Terms Of Use</ExternalLink>.
+      <a href={"/terms-of-use"} target={"_blank"} rel={"noopener"}>Terms Of Use</a>.
     </p>
     <h2>Information we collect</h2>
     <p>
