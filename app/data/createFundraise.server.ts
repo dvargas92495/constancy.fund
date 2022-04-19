@@ -17,7 +17,7 @@ const createFundraise = ({
   const details = Object.entries(data)
     .filter(([k]) => k !== "clauses")
     .flatMap(([k, vs]) => vs.map((v) => ({ k, v })));
-  const clauses = data["clauses"];
+  const clauses = data["clauses"] || [];
   if (clauses.some((c) => !c))
     throw new Error("Cannot create fundraise with an empty additional clause");
 

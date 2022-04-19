@@ -1,7 +1,5 @@
 import { useState } from "react";
 import styled from "styled-components";
-import _H1 from "@dvargas92495/ui/components/H1";
-import _H4 from "@dvargas92495/ui/components/H4";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
 import formatAmount from "../../../../util/formatAmount";

@@ -18,7 +18,7 @@ const EmailLayout: React.FC = ({ children }) => (
         textAlign: "center",
       }}
     >
-      <img height={40} src={`${process.env.HOST}/svgs/constancy-logo.svg`}></img>
+      <img height={40} src={`${process.env.ORIGIN}/svgs/constancy-logo.svg`}></img>
     </div>
     <div
       style={{
@@ -42,7 +42,7 @@ const EmailLayout: React.FC = ({ children }) => (
       <div style={{ width: "50%" }}>
         Sent From{" "}
         <a
-          href={process.env.HOST}
+          href={process.env.ORIGIN}
           style={{ color: "#4d9bd7", textDecoration: "none" }}
         >
           Constancy
@@ -50,7 +50,7 @@ const EmailLayout: React.FC = ({ children }) => (
       </div>
       <div style={{ width: "50%", textAlign: "right" }}>
         <a
-          href={`mailto:support@${process.env.HOST}`}
+          href={`mailto:support@${process.env.ORIGIN}`}
           style={{ color: "#4d9bd7", textDecoration: "none" }}
         >
           Contact Support

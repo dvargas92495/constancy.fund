@@ -2,7 +2,7 @@ import { cy, describe, it, Cypress } from "local-cypress";
 
 describe("Testing core workflows", () => {
   it("Creates a contract between a user and an investor", () => {
-    cy.visit(Cypress.env("HOST"), { failOnStatusCode: false });
+    cy.visit(Cypress.env("ORIGIN"), { failOnStatusCode: false });
     cy.get("div#user-container > div").then((val) => {
       if (!val.children().first().is("a")) {
         cy.get(
@@ -19,7 +19,7 @@ describe("Testing core workflows", () => {
     cy.get("div.cl-hidden input[type=password]").should("not.exist");
     cy.get("input[type=password]").type(Cypress.env("CYPRESS_USER_PASSWORD"));
     cy.get("button.cl-sign-in-button").click();
-    cy.url().should("eq", `${Cypress.env("HOST")}/user`);
+    cy.url().should("eq", `${Cypress.env("ORIGIN")}/user`);
 
     cy.get('input[name="companyName"]').clear().type("Vargas Arts, LLC");
     const questionaires = [
@@ -74,7 +74,7 @@ describe("Testing core workflows", () => {
     cy.get("button[type=submit]").click();
     cy.get("#success-profile-alert").should("be.visible");
 
-    cy.visit(`${Cypress.env("HOST")}/creator/user_21vC5l7JKfQfY79q1OhYsFiviM1`);
+    cy.visit(`${Cypress.env("ORIGIN")}/creator/user_21vC5l7JKfQfY79q1OhYsFiviM1`);
     cy.get("#top-bar-profile #back-this-project").click();
     cy.get('input[name="amount"]').clear().type("10000");
     cy.get('input[name="term"]').each((c) => cy.wrap(c).check());

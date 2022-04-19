@@ -200,7 +200,7 @@ const createAgreement = ({
               }
             : {
                 name: "contract",
-                fileUrl: `${process.env.HOST}/${filePath}`,
+                fileUrl: `${process.env.ORIGIN}/${filePath}`,
               }
         );
 

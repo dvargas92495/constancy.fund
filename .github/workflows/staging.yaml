@@ -25,7 +25,7 @@ env:
   CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
   DATABASE_URL: mysql://staging_constancy_fund:${{ secrets.STAGING_MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/staging_constancy_fund
   EVERSIGN_API_KEY: ${{ secrets.EVERSIGN_API_KEY }}
-  HOST: https://staging.constancy.fund
+  ORIGIN: https://staging.constancy.fund
   STRIPE_PUBLIC_KEY: ${{ secrets.STAGING_STRIPE_PUBLIC_KEY }}
   STRIPE_SECRET_KEY: ${{ secrets.STAGING_STRIPE_SECRET_KEY }}
   STRIPE_CHECKOUT_SECRET: ${{ secrets.STAGING_STRIPE_CHECKOUT_SECRET }}

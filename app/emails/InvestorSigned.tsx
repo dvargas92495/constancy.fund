@@ -21,7 +21,7 @@ const InvestorSigned = ({
       <p>
         Congratulations! {investorName} has signed the {contractType} between
         the two of you.{" "}
-        <a href={`${process.env.HOST}/contract?uuid=${agreementUuid}&signer=2`}>
+        <a href={`${process.env.ORIGIN}/contract?uuid=${agreementUuid}&signer=2`}>
           Click here
         </a>{" "}
         to sign the agreement.

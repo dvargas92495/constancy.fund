@@ -18,8 +18,8 @@ env:
   DATABASE_URL: mysql://constancy_fund:${{ secrets.MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/constancy_fund
   EVERSIGN_API_KEY: ${{ secrets.EVERSIGN_API_KEY }}
   FE_DIR_PREFIX: /tmp
-  HOST: https://constancy.fund
   IS_PRODUCTION: 1
+  ORIGIN: https://constancy.fund
   STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
 jobs:

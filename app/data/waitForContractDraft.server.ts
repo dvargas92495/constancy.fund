@@ -20,7 +20,7 @@ const doesContractExist =
           .then((s3) =>
             s3
               .headObject({
-                Bucket: (process.env.HOST || "").replace(/^https?:\/\//, ""),
+                Bucket: (process.env.ORIGIN || "").replace(/^https?:\/\//, ""),
                 Key: `_contracts/${uuid}/draft.pdf`,
               })
               .promise()

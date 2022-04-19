@@ -17,7 +17,7 @@ const InvitationToFund = ({
       <p>
         You have been invited to invest in {creatorName}.{" "}
         <a
-          href={`${process.env.HOST}/creator/${creatorId}?agreement=${agreementUuid}`}
+          href={`${process.env.ORIGIN}/creator/${creatorId}?agreement=${agreementUuid}`}
         >
           Click here
         </a>{" "}
