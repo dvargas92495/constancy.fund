@@ -153,8 +153,7 @@ const createAgreement = ({
               clerk.users.getUser(c.userId)
             ),
             import("@dvargas92495/api/invokeDirect.js").then((invokeDirect) => {
-              // @ts-ignore WAT
-              return invokeDirect.default.default<Parameters<ContractHandler>[0]>({
+              return invokeDirect.default<Parameters<ContractHandler>[0]>({
                 path: "create-contract-pdf",
                 data: {
                   uuid: c.uuid,

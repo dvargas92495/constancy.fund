@@ -51,8 +51,7 @@ const createFundraise = ({
       .then(() => {
         destroy();
         return import("@dvargas92495/api/invokeAsync.js").then((invokeAsync) =>
-          //@ts-ignore  
-          invokeAsync.default.default<Parameters<AsyncHandler>[0]>({
+          invokeAsync.default<Parameters<AsyncHandler>[0]>({
             path: "create-contract-pdf",
             data: { uuid },
           })
