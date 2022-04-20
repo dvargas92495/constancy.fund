@@ -4,11 +4,6 @@ on:
   push:
     branches: main
     paths:
-      # - "app/**"
-      # - "db/**"
-      # - "functions/**"
-      # - "server/**"
-      # - "package.json"
       - ".github/workflows/staging.yaml"
       - "cypress/integration/primary.test.ts"
 
