@@ -5,4 +5,5 @@ out
 .env
 _fuego
 .cache
+.replit
 public/_contracts

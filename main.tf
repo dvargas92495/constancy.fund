@@ -78,6 +78,10 @@ variable "cypress_record_key" {
   type = string
 }
 
+variable "infura_id" {
+  type = string
+}
+
 provider "aws" {
   region = "us-east-1"
   access_key = var.aws_access_token
@@ -296,4 +300,10 @@ resource "github_actions_secret" "cypress_record_key" {
   repository       = "constancy.fund"
   secret_name      = "CYPRESS_RECORD_KEY"
   plaintext_value  = var.cypress_record_key
+}
+
+resource "github_actions_secret" "infura_id" {
+  repository       = "constancy.fund"
+  secret_name      = "INFURA_ID"
+  plaintext_value  = var.infura_id
 }
