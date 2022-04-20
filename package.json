@@ -42,7 +42,7 @@
     "cypress": "^9.5.2",
     "esbuild-jest": "^0.5.0",
     "eslint": "^8.4.0",
-    "fuegojs": "^0.26.6",
+    "fuegojs": "^0.26.7",
     "jest": "^27.5.1",
     "local-cypress": "^1.2.5",
     "prettier": "^2.5.1",
