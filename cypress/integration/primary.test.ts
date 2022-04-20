@@ -86,7 +86,7 @@ describe("Testing core workflows", () => {
     cy.get('input[name="investorAddressCity"]').clear().type("Earth");
     cy.get('input[name="investorAddressZip"]').clear().type("67890");
     cy.get('input[name="investorAddressCountry"]').clear().type("France");
-    cy.get('li[data-code="country-select-FR"]').click();
+    cy.get('li > div[data-code="country-select-FR"]').click();
     cy.get('input[name="paymentPreference.paypal"]').check();
     cy.get('input[name="paymentPreference.paypal.EmailAddress"]')
       .clear()
