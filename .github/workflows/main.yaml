@@ -34,6 +34,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.17.6
+      - name: Install NPM 8
+        run: npm install -g npm@latest
       - name: install
         run: npm install
       - name: build
