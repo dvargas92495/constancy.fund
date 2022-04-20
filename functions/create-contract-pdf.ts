@@ -388,7 +388,7 @@ export const handler = ({
       )
       .then(() => {
         console.log("time to deploy");
-        return targetedDeploy([outFile], true);
+        return targetedDeploy([outFile]);
       })
   );
 };
