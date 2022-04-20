@@ -61,7 +61,7 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
-    "@dvargas92495/api": "^0.8.0",
+    "@dvargas92495/api": "^0.8.1",
     "@dvargas92495/eversign": "^1.9.5",
     "@dvargas92495/ui": "^0.53.1",
     "@prisma/client": "^3.6.0",
