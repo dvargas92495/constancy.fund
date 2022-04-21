@@ -3,16 +3,18 @@ import getMeta from "~/_common/getMeta";
 import PaymentPreference from "~/_common/PaymentPreferences";
 import getAgreement from "~/data/getAgreement.server";
 import {
-  ActionFunction,
   Form,
   Link,
-  LoaderFunction,
-  MetaFunction,
-  redirect,
   useActionData,
   useLoaderData,
   useTransition,
-} from "remix";
+} from "@remix-run/react";
+import {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+  redirect,
+} from "@remix-run/server-runtime";
 import CheckBox from "@mui/material/Checkbox";
 import CountrySelect from "~/_common/CountrySelect";
 
