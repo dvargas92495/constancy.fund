@@ -1,8 +1,7 @@
-import { expect, use } from "chai";
-import { ethers, waffle } from "hardhat";
+import { use } from "chai";
+import { ethers } from "hardhat";
 import { solidity } from "ethereum-waffle";
 import { utils } from "ethers";
-import { fail } from "assert";
 
 use(solidity);
 

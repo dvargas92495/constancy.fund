@@ -7,3 +7,6 @@ _fuego
 .cache
 .replit
 public/_contracts
+artifacts/
+cache/
+typechain-types/

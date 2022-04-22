@@ -3,7 +3,7 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ISA {
+contract ISA is Ownable {
     address public investor;
     uint256 public share;
     uint256 public cap;
@@ -55,7 +55,7 @@ contract ISA {
         uint256 total = invested + revenueAllocated + balance - toInvestor;
         revenueAllocated = 0;
         
-        (bool success, ) = payable(owner).call{value: total}("");
+        (bool success, ) = payable(owner()).call{value: total}("");
         require(
             success,
             "Address: unable to send value, recipient may have reverted"
