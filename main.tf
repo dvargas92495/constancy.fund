@@ -116,9 +116,10 @@ module "aws_static_site" {
 
 module "aws-serverless-backend" {
   source  = "dvargas92495/serverless-backend/aws"
-  version = "2.4.1"
+  version = "2.5.0"
 
   api_name = "constancy-fund"
+  directory = "api"
   sizes = {
     "create-contract-pdf": 5120
   }
@@ -144,7 +145,8 @@ module "aws_static_site_staging" {
 
 module "aws-serverless-backend_staging" {
   source  = "dvargas92495/serverless-backend/aws"
-  version = "2.4.1"
+  version = "2.5.0"
+  directory = "api"
 
   api_name = "staging-constancy-fund"
   sizes = {

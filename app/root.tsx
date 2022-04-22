@@ -1,17 +1,19 @@
 import {
   Links,
-  LinksFunction,
   LiveReload,
-  LoaderFunction,
   Meta,
-  MetaFunction,
   Outlet,
   Scripts,
   useCatch,
   ScrollRestoration,
   useLoaderData,
+} from "@remix-run/react";
+import {
+  LinksFunction,
+  LoaderFunction,
+  MetaFunction,
   ErrorBoundaryComponent,
-} from "remix";
+} from "@remix-run/server-runtime";
 import { ClerkApp, ClerkCatchBoundary } from "@clerk/remix";
 import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 import getEmotionCache, { emotionCache } from "./_common/getEmotionCache";

@@ -1,5 +1,5 @@
 import React from "react";
-import { useTransition } from "remix";
+import { useTransition } from "@remix-run/react";
 import styled from "styled-components";
 
 const StyledInput = styled.input`

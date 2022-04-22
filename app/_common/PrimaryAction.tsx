@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useActionData, useTransition } from "remix";
+import { useActionData, useTransition } from "@remix-run/react";
 import styled from "styled-components";
 import { LoadingIndicator } from "./LoadingIndicator";
 

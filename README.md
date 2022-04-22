@@ -27,6 +27,12 @@ Every change causes a new staging deploy when merged into main. For production, 
 
 ## Setup
 
+The project is made up of the following top level directories, representing different deploy targets:
+
+1. `/api` - Has all the functions that make up our public api, deployed to individual Lambdas with API Gateway on top.
+1. `/app` - Has all of the application's logic, deployed to our CDN.
+1. `/db` - Has all data + schema migrations, schema definition, and enums.
+
 The application's logic is all contained within the `/app` directory. This directory is further subdivided by the following directories:
 
 1. `/_common` - This store common frontend components used across pages.
@@ -42,11 +48,6 @@ The rest of the files here are part of Remix's boilerplate. There are three addi
 1. `/.github/workflows` - This hosts automations for common development workflows
 1. `/public` - This hosts public assets like images, favicon, etc.
 1. `/server` - This hosts a file used by [Remix](https://remix.run) to run the front end, to be abstracted out in the future.
-
-The following directories are deprecated and have logic being migrated to the `/app` directory.
-
-1. `/functions` - Has the create contract function, deployed to a background Lambda
-1. `/db` - Should be migrated to `/app/data` over time. Currently has schema migrations, schema definition, and enums.
 
 The rest of the files in the root should be considered boilerplate that helps run the app in all environments.
 

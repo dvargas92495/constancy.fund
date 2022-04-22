@@ -1,6 +1,5 @@
 import { renderToString } from "react-dom/server";
-import { RemixServer } from "remix";
-import type { EntryContext } from "remix";
+import { RemixServer } from "@remix-run/react";
 import { ServerStyleSheet } from "styled-components";
 import createEmotionServer from "@emotion/server/create-instance";
 import { emotionCache } from "./_common/getEmotionCache";
@@ -9,7 +8,7 @@ export default function handleRequest(
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
-  remixContext: EntryContext
+  remixContext: Parameters<typeof RemixServer>[0]["context"]
 ) {
   const sheet = new ServerStyleSheet();
   const markup = renderToString(

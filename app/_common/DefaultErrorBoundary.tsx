@@ -1,4 +1,4 @@
-import type { ErrorBoundaryComponent } from "remix";
+import type { ErrorBoundaryComponent } from "@remix-run/server-runtime";
 
 const DefaultErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
   return (
