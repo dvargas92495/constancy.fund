@@ -10,10 +10,11 @@ contract ISA is Ownable {
     uint256 public allowance;
     bytes32 public ipfsHash;
 
-    uint256 public invested;
     uint256 public balance;
+    uint256 public totalInvested;
     uint256 public totalRevenue;   
-    uint256 public totalReturned; 
+    uint256 public totalReturned;
+    uint256 public investmentAllocated;
     uint256 public returnAllocated;
     uint256 public revenueAllocated;
 
@@ -37,23 +38,36 @@ contract ISA is Ownable {
             "Only the investor can invest in this contract"
         );
         require(msg.value > 0, "Must invest more than 0 ETH");
-        invested += msg.value;
+        investmentAllocated += msg.value;
+        totalInvested += msg.value;
     }
 
     event Received(address, uint);
     receive() external payable {
         balance += msg.value;
-        totalRevenue += msg.value;
         emit Received(msg.sender, msg.value);
     }
 
+    function investorCut() public view returns (uint256) {
+        uint256 raw = balance + totalRevenue < allowance 
+          ? 0 
+          : (totalRevenue < allowance 
+              ? balance + totalRevenue - allowance 
+              : balance
+            ) * share / 10000;
+        uint256 space = (cap*totalInvested) - totalReturned;
+        return raw < space ? raw : space;
+    }
+
     function creatorWithdraw() public {
-        uint256 toInvestor = (balance + totalRevenue - allowance) * share / 100;
+        uint256 toInvestor = investorCut();
         totalRevenue += balance - toInvestor;
         totalReturned += toInvestor;
         returnAllocated += toInvestor;
-        uint256 total = invested + revenueAllocated + balance - toInvestor;
+        uint256 total = investmentAllocated + revenueAllocated + balance - toInvestor;
+        investmentAllocated = 0;
         revenueAllocated = 0;
+        balance = 0;
         
         (bool success, ) = payable(owner()).call{value: total}("");
         require(
@@ -63,12 +77,13 @@ contract ISA is Ownable {
     }
 
     function investorWithdraw() public {
-        uint256 toInvestor = (balance + totalRevenue - allowance) * share / 100;
+        uint256 toInvestor = investorCut();
         totalRevenue += balance - toInvestor;
         totalReturned += toInvestor;
         revenueAllocated += balance - toInvestor;
         uint256 total = returnAllocated + toInvestor;
-        revenueAllocated = 0;
+        returnAllocated = 0;
+        balance = 0;
         
         (bool success, ) = payable(investor).call{value: total}("");
         require(

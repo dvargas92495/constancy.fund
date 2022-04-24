@@ -33,6 +33,10 @@ const config: HardhatUserConfig = {
       url: "http://localhost:8545",
     },
   },
+  paths: {
+    sources: "./contracts",
+    tests: "./tests/contracts",
+  }
 };
 
 export default config;
