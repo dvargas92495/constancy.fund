@@ -18,6 +18,8 @@ import {
 } from "remix";
 import getContract from "../data/getContract.server";
 import { PrimaryAction } from "~/_common/PrimaryAction";
+import { ethers } from "ethers";
+import contractJson from "../../artifacts/contracts/ISA.sol/ISA.json";
 
 const ProfileContainer = styled.div`
   width: 100%;
@@ -151,11 +153,29 @@ const ContractPage = (): React.ReactElement => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const fetcher = useFetcher();
   useEffect(() => {
-    if (fetcher.data?.success) {
+    if (fetcher.data?.ethereum) {
+      const provider = new ethers.providers.Web3Provider(
+        // @ts-ignore
+        window.ethereum
+      );
+      const signer = provider.getSigner();
+      const contract = new ethers.ContractFactory(contractJson.abi, contractJson.bytecode, signer);
+      contract.deploy(
+        fetcher.data.ethereum.investorAddress,
+        fetcher.data.ethereum.share,
+        fetcher.data.ethereum.cap,
+        fetcher.data.ethereum.threshold,
+        fetcher.data.ethereum.hash,
+      ).then(c => {
+        c.address
+        setSigned(true);
+        setSnackbarOpen(true);
+      })
+    }else if (fetcher.data?.success) {
       setSigned(true);
       setSnackbarOpen(true);
     }
-  }, [fetcher.data?.success]);
+  }, [fetcher.data]);
   return (
     <ProfileContainer>
       <BackButton
@@ -179,7 +199,7 @@ const ContractPage = (): React.ReactElement => {
             <EversignEmbed
               url={url}
               onSign={() => {
-                fetcher.submit({ agreementUuid }, { method: "post" });
+                fetcher.submit({ agreementUuid }, { method: "put" });
               }}
             />
           </EversignEmbedContainer>

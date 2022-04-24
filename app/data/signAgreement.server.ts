@@ -9,7 +9,7 @@ import getPaymentPreferences from "./getPaymentPreferences.server";
 const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
   getMysql().then(({ execute, destroy }) => {
     return execute(
-      `SELECT e.id, i.uuid, i.name, i.email, c.userId, c.type
+      `SELECT e.id, i.uuid, i.name, i.email, c.userId, c.type, c.uuid as contract, a.amount
      FROM agreement a
      INNER JOIN investor i ON i.uuid = a.investorUuid
      INNER JOIN eversigndocument e ON a.uuid = e.agreementUuid
@@ -25,6 +25,8 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
           email: string;
           userId: string;
           type: number;
+          contract: string;
+          amount: number;
         }[];
         if (!doc)
           throw new NotFoundError(
@@ -50,9 +52,16 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
               contractType: FUNDRAISE_TYPES[doc.type || 0].name,
               id: u.id,
             })),
+          execute(
+            `SELECT d.label, d.value
+             FROM contractdetail d
+             WHERE d.contractUuid = ?`,
+            [doc.contract]
+          ),
+          Promise.resolve(doc.amount),
         ]);
       })
-      .then(([numSigners, r]) => {
+      .then(([numSigners, r, details, agreementAmount]) => {
         if (numSigners === 1) {
           return getPaymentPreferences(r.investorUuid, execute).then(
             (investorPaymentPreferences) =>
@@ -84,6 +93,12 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
                     creatorName: r.userName,
                     contractType: r.contractType,
                     creatorPaymentPreferences,
+                    contractDetails: Object.fromEntries(
+                      (details as { label: string; value: string }[]).map(
+                        (d) => [d.label, d.value]
+                      )
+                    ),
+                    agreementAmount,
                   }),
                 })
               )
