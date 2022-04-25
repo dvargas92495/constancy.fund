@@ -15,7 +15,7 @@ import {
   MetaFunction,
   redirect,
 } from "@remix-run/server-runtime";
-import CheckBox from "@mui/material/Checkbox";
+import CheckBox from "~/_common/Checkbox";
 import CountrySelect from "~/_common/CountrySelect";
 
 import Icon from "~/_common/Icon";

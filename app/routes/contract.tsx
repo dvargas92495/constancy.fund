@@ -159,19 +159,25 @@ const ContractPage = (): React.ReactElement => {
         window.ethereum
       );
       const signer = provider.getSigner();
-      const contract = new ethers.ContractFactory(contractJson.abi, contractJson.bytecode, signer);
-      contract.deploy(
-        fetcher.data.ethereum.investorAddress,
-        fetcher.data.ethereum.share,
-        fetcher.data.ethereum.cap,
-        fetcher.data.ethereum.threshold,
-        fetcher.data.ethereum.hash,
-      ).then(c => {
-        c.address
-        setSigned(true);
-        setSnackbarOpen(true);
-      })
-    }else if (fetcher.data?.success) {
+      const contract = new ethers.ContractFactory(
+        contractJson.abi,
+        contractJson.bytecode,
+        signer
+      );
+      contract
+        .deploy(
+          fetcher.data.ethereum.investorAddress,
+          fetcher.data.ethereum.share,
+          fetcher.data.ethereum.cap,
+          fetcher.data.ethereum.threshold,
+          fetcher.data.ethereum.hash
+        )
+        .then((c) => {
+          c.address;
+          setSigned(true);
+          setSnackbarOpen(true);
+        });
+    } else if (fetcher.data?.success) {
       setSigned(true);
       setSnackbarOpen(true);
     }

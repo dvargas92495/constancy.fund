@@ -1,6 +1,4 @@
-import Checkbox from "@mui/material/Checkbox";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "~/_common/Checkbox";
 import { useState } from "react";
 import TextInputOneLine from "./TextInputOneLine";
 import TextInputContainer from "./TextInputContainer";
@@ -21,6 +19,24 @@ const Row = styled.div`
   margin-left: 31px;
 `;
 
+const FormControlLabel = styled.label`
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  vertical-align: middle;
+  margin-left: -11px;
+  margin-right: 16px;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.5;
+`;
+
+const FormGroup = styled.div`
+  display: flex;
+  flex-flow: column wrap;
+  width: 100%;
+`;
+
 const PaymentPreference = ({
   id,
   defaultValue,
@@ -31,16 +47,14 @@ const PaymentPreference = ({
   const [checked, setChecked] = useState(!!defaultValue);
   return (
     <>
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={checked}
-            onChange={(e) => setChecked(e.target.checked)}
-            name={`paymentPreference.${id}`}
-          />
-        }
-        label={paymentLabelsById[id]}
-      />
+      <FormControlLabel>
+        <Checkbox
+          defaultChecked={!!defaultValue}
+          onChange={(e) => setChecked(e.target.checked)}
+          name={`paymentPreference.${id}`}
+        />
+        <span>{paymentLabelsById[id]}</span>
+      </FormControlLabel>
       {checked && (
         <Row>
           {(paymentFieldsById[id] || []).map((f) => {
@@ -90,7 +104,7 @@ const PaymentPreferences = ({
       <TextFieldBox>
         <Group>
           <Preferences>
-            <FormGroup sx={{ width: "100%" }}>
+            <FormGroup>
               {PAYMENT_PREFERENCES.map(({ id }) => (
                 <PaymentPreference
                   key={id}

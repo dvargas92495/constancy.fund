@@ -39,6 +39,7 @@ import bitcoin from "./Icons/bitcoin.svg";
 import paypalSmall from "./Icons/paypalSmall.svg";
 import near from "./Icons/near.svg";
 import UploadSvg from "./Icons/upload.svg";
+import { MouseEventHandler } from "react";
 
 const Icon = ({
   name,
@@ -92,7 +93,7 @@ const Icon = ({
     | "paypalSmall"
     | "upload"
     | "youtube";
-} & StyledIconProps) => {
+} & StyledIconProps & { onClick?: MouseEventHandler<HTMLSpanElement> }) => {
   const props = {
     ...inputProps,
     $heightAndWidth: heightAndWidth,

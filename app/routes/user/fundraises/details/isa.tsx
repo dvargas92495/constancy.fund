@@ -1,7 +1,5 @@
 import { useState } from "react";
 import styled from "styled-components";
-import RadioGroup from "@mui/material/RadioGroup";
-import Radio from "@mui/material/Radio";
 import formatAmount from "../../../../util/formatAmount";
 import Icon from "~/_common/Icon";
 import TextInputContainer from "~/_common/TextInputContainer";
@@ -18,7 +16,6 @@ import { redirect, ActionFunction } from "remix";
 import createFundraise from "~/data/createFundraise.server";
 import type { FundraiseId } from "../../../../enums/fundraiseTypes";
 import { v4 } from "uuid";
-import IconButton from "@mui/material/IconButton";
 import { SecondaryAction } from "~/_common/SecondaryAction";
 
 const ISA_SUPPORT_TYPES = [
@@ -177,11 +174,10 @@ const AdditionalClauses = () => {
             <TextInputMultiLine name={"clauses"} required />
           </TextInputContainer>
           {clauses.length > 1 && (
-            <IconButton
+            <Icon
+              name={"delete"}
               onClick={() => setClauses(clauses.filter((c) => c !== uuid))}
-            >
-              <Icon name={"delete"} />
-            </IconButton>
+            />
           )}
         </AdditionalClause>
       ))}
@@ -199,6 +195,54 @@ const AdditionalClauses = () => {
   );
 };
 
+const RadioGroup = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
+const RadioContainer = styled.span`
+  border-radius: 50%;
+  color: #73778b;
+  width: 50%;
+  padding: 0px;
+  text-decoration: none;
+  user-select: none;
+  vertical-align: middle;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+  background-color: transparent;
+  outline: 0;
+  border: 0;
+  margin: 0;
+  display: inline-flex;
+`;
+
+const RadioInput = styled.input`
+  &:hover {
+    background: none;
+  }
+  &:checked {
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+  }
+  width: 50%;
+  padding: 0;
+  cursor: inherit;
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  z-index: 1;
+`;
+
 const ISADetailForm = () => {
   const [supportType, setSupportType] = useState("");
   const [amount, setAmount] = useState(0);
@@ -210,36 +254,18 @@ const ISADetailForm = () => {
       <Section>
         <SubSectionTitle>How do you want to raise?</SubSectionTitle>
         <HowMuchSubSection>
-          <RadioGroup
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-            }}
-            name="supportType"
-            onChange={(e) => setSupportType(e.target.value)}
-          >
+          <RadioGroup>
             {ISA_SUPPORT_TYPES.map(({ label, value, description }) => (
-              <Radio
-                key={value}
-                value={value}
-                disableRipple
-                required
-                sx={{
-                  "&:hover": {
-                    background: "none",
-                  },
-                  "& .MuiTouchRipple": {
-                    display: "none",
-                  },
-                  "& .Mui-checked": {
-                    borderStyle: "solid",
-                    borderWidth: "1px",
-                    borderColor: "black",
-                  },
-                  width: "50%",
-                  padding: 0,
-                }}
-                checkedIcon={
+              <RadioContainer>
+                <RadioInput
+                  type={"radio"}
+                  name="supportType"
+                  key={value}
+                  value={value}
+                  required
+                  onChange={(e) => setSupportType(e.target.value)}
+                />
+                {value === supportType ? (
                   <SupportTypeCard active={true}>
                     <SectionCircle margin={"0"} width={"40px"} height={"40px"}>
                       <Icon
@@ -255,8 +281,7 @@ const ISADetailForm = () => {
                       </SupportTypeDescription>
                     </SupportTypeContentBox>
                   </SupportTypeCard>
-                }
-                icon={
+                ) : (
                   <SupportTypeCard>
                     <SectionCircle margin={"0"} width={"40px"}>
                       <Icon
@@ -272,8 +297,8 @@ const ISADetailForm = () => {
                       </SupportTypeDescription>
                     </SupportTypeContentBox>
                   </SupportTypeCard>
-                }
-              />
+                )}
+              </RadioContainer>
             ))}
           </RadioGroup>
         </HowMuchSubSection>

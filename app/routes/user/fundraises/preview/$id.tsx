@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from "react";
-import CheckBox from "@mui/material/Checkbox";
+import CheckBox from "~/_common/Checkbox";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import pdfViewerCore from "@react-pdf-viewer/core/lib/styles/index.css";
