@@ -1,6 +1,4 @@
 import getMeta from "~/_common/getMeta";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
 import React, { useEffect, useState } from "react";
 import signAgreement from "~/data/signAgreement.server";
 import eversign from "../external/eversign";
@@ -20,6 +18,7 @@ import getContract from "../data/getContract.server";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import { ethers } from "ethers";
 import contractJson from "../../artifacts/contracts/ISA.sol/ISA.json";
+import Toast from "~/_common/Toast";
 
 const ProfileContainer = styled.div`
   width: 100%;
@@ -220,19 +219,16 @@ const ContractPage = (): React.ReactElement => {
             label={"Back to Dashboard"}
           />
         )}
-        <Snackbar
+        <Toast
           open={snackbarOpen}
-          autoHideDuration={10000}
           onClose={() => setSnackbarOpen(false)}
           color="success"
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          position="TOP_CENTER"
         >
-          <Alert severity="success" sx={{ width: "100%" }}>
-            {isInvestor
-              ? "We are waiting for the creator to confirm this investment and send you an email with next steps when this happened."
-              : "Congratulations! Both you and the investor have both signed the agreement! Now go create something awesome"}
-          </Alert>
-        </Snackbar>
+          {isInvestor
+            ? "We are waiting for the creator to confirm this investment and send you an email with next steps when this happened."
+            : "Congratulations! Both you and the investor have both signed the agreement! Now go create something awesome"}
+        </Toast>
       </ProfileBottomContainer>
     </ProfileContainer>
   );

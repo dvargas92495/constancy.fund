@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useActionData } from "@remix-run/react";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
+import Toast from "./Toast";
 
 const ErrorSnackbar = () => {
   const actionData = useActionData();
@@ -12,15 +11,9 @@ const ErrorSnackbar = () => {
     }
   }, [actionData, setError]);
   return (
-    <Snackbar
-      open={!!error}
-      autoHideDuration={5000}
-      onClose={() => setError("")}
-    >
-      <Alert severity="error" sx={{ width: "100%" }}>
-        {error}
-      </Alert>
-    </Snackbar>
+    <Toast open={!!error} onClose={() => setError("")} color="danger">
+      {error}
+    </Toast>
   );
 };
 

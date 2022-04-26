@@ -3,7 +3,6 @@
 import React from "react";
 
 import Icon from "./Icon";
-import Dialog from "@mui/material/Dialog";
 import styled from "styled-components";
 import { PrimaryAction } from "./PrimaryAction";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -315,6 +314,69 @@ const HelperTextError = styled.p`
   color: red;
 `;
 
+const DialogRoot = styled.div`
+  position: fixed;
+  z-index: 1300;
+  inset: 0px;
+`;
+
+const DialogBackground = styled.div`
+  opacity: 1;
+  transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inset: 0px;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 0;
+  cursor: auto;
+`;
+
+const DialogCenter = styled.div`
+  opacity: 1;
+  transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  height: 100%;
+  outline: 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const DialogContent = styled.div`
+  background-color: rgb(255, 255, 255);
+  color: rgb(41, 44, 56);
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  border-radius: 4px;
+  box-shadow: rgb(0 0 0 / 20%) 0px 11px 15px -7px,
+    rgb(0 0 0 / 14%) 0px 24px 38px 3px, rgb(0 0 0 / 12%) 0px 9px 46px 8px;
+  margin: 32px;
+  position: relative;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100% - 64px);
+  max-width: 600px;
+  min-width: 400px;
+`;
+
+const Dialog = ({
+  isOpen,
+  children,
+  onClose,
+}: React.PropsWithChildren<{ isOpen: boolean; onClose: () => void }>) => {
+  return isOpen ? (
+    <DialogRoot>
+      <DialogBackground onClick={onClose} />
+      <DialogCenter>
+        <DialogContent>{children}</DialogContent>
+      </DialogCenter>
+    </DialogRoot>
+  ) : (
+    <React.Fragment />
+  );
+};
+
 function ImageUploader({
   title,
   subtitle,
@@ -352,7 +414,7 @@ function ImageUploader({
 
   return (
     <>
-      <Dialog open={isModalOpen} onClose={closeModal}>
+      <Dialog isOpen={isModalOpen} onClose={closeModal}>
         <Card>
           <TitleContainer>
             <Title>{title}</Title>

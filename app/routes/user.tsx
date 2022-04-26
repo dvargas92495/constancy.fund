@@ -1,12 +1,38 @@
 import getMeta from "~/_common/getMeta";
 import React from "react";
-import Drawer from "@mui/material/Drawer";
 import { createGlobalStyle } from "styled-components";
 import { Link as RemixLink, LoaderFunction, Outlet, redirect } from "remix";
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
 import ListItemIcon from "~/_common/ListItemIcon";
 import ListItemText from "~/_common/ListItemText";
+
+const DRAWER_WIDTH = 255;
+const DrawerRoot = styled.div`
+  flex: 0 0 auto;
+  width: ${DRAWER_WIDTH}px;
+  flex-shrink: 0;
+`;
+
+const DrawerContainer = styled.div`
+  width: ${DRAWER_WIDTH}px;
+  box-sizing: border-box;
+  border-right: 1px solid #f0f0f0;
+  background-color: #fff;
+  color: #292c38;
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  box-shadow: none;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1 0 auto;
+  z-index: 1200;
+  position: fixed;
+  top: 0;
+  outline: 0;
+  left: 0;
+`;
 
 const MenuListItem = styled.div`
   height: 60px;
@@ -37,7 +63,6 @@ const MenuSidebarContainer = styled.div`
   justify-content: center;
 `;
 
-const DRAWER_WIDTH = 255;
 const TABS = [
   {
     text: "My Profile",
@@ -92,6 +117,7 @@ const MainContainer = styled.div`
 `;
 
 const List = styled.ul`
+  padding: 0;
   & a {
     text-decoration: none;
     width: 100%;
@@ -101,28 +127,17 @@ const List = styled.ul`
 const Dashboard = () => {
   return (
     <Root>
-      <Drawer
-        sx={{
-          width: DRAWER_WIDTH,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: DRAWER_WIDTH,
-            boxSizing: "border-box",
-            backgroundColor: "palette.color.white",
-            borderRight: "1px solid #f0f0f0",
-          },
-        }}
-        variant="permanent"
-        anchor="left"
-      >
-        <List>
-          <MenuSidebarContainer>
-            {TABS.map((t) => (
-              <DashboardTab {...t} key={t.path} />
-            ))}
-          </MenuSidebarContainer>
-        </List>
-      </Drawer>
+      <DrawerRoot>
+        <DrawerContainer>
+          <List>
+            <MenuSidebarContainer>
+              {TABS.map((t) => (
+                <DashboardTab {...t} key={t.path} />
+              ))}
+            </MenuSidebarContainer>
+          </List>
+        </DrawerContainer>
+      </DrawerRoot>
       <Main>
         <MainContainer>
           <Outlet />

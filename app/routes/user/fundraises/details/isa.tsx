@@ -200,7 +200,7 @@ const RadioGroup = styled.div`
   flex-direction: row;
 `;
 
-const RadioContainer = styled.span`
+const RadioContainer = styled.div`
   border-radius: 50%;
   color: #73778b;
   width: 50%;

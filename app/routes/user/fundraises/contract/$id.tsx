@@ -26,8 +26,7 @@ import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
 import getFundraiseData from "~/data/getFundraiseData.server";
 import deleteAgreement from "~/data/deleteAgreement.server";
 import { SecondaryAction } from "~/_common/SecondaryAction";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
+import Toast from "~/_common/Toast";
 
 const ConditionsContainer = styled.div`
   display: flex;
@@ -432,15 +431,9 @@ const UserFundraisesContract = () => {
         </InfoArea>
         <UserButton />
       </TopBar>
-      <Snackbar
-        open={publicLinkCopied}
-        autoHideDuration={5000}
-        onClose={() => setPublicLinkCopied(false)}
-      >
-        <Alert severity="info" sx={{ width: "100%" }}>
-          Public Link Copied!
-        </Alert>
-      </Snackbar>
+      <Toast open={publicLinkCopied} onClose={() => setPublicLinkCopied(false)}>
+        Public Link Copied!
+      </Toast>
       <ContentContainer>
         <ProfileBottomContainer paddingTop={"0"}>
           <Section>

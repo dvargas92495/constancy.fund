@@ -10,8 +10,6 @@ import {
 import getUserProfile from "~/data/getUserProfile.server";
 import saveUserProfile from "~/data/saveUserProfile.server";
 import CountrySelect from "~/_common/CountrySelect";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
 import PaymentPreferences from "~/_common/PaymentPreferences";
 import QUESTIONAIRES from "~/_common/questionaires";
 import Icon from "~/_common/Icon";
@@ -36,8 +34,8 @@ import TextInputMultiLine from "~/_common/TextInputMultiLine";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import ImageUploader from "~/_common/ImageUploader";
 import { ClerkCatchBoundary, useUser } from "@clerk/remix";
-import Avatar from "@mui/material/Avatar";
 import DefaultErrorBoundary from "~/_common/DefaultErrorBoundary";
+import Toast from "~/_common/Toast";
 
 const SubSection = styled.div`
   margin-top: 60px;
@@ -279,9 +277,10 @@ const UserProfile = () => {
                   subtitle="Select a profile photo"
                   handleSuccess={saveImage}
                 >
-                  <Avatar
+                  <img
                     src={user?.profileImageUrl}
-                    sx={{ height: "100%", width: "100%" }}
+                    width={'100%'}
+                    height={'100%'}
                   />
                 </ImageUploader>
               </ProfileImageBox>
@@ -548,16 +547,9 @@ const UserProfile = () => {
           </div>
         </Section>
       </ContentContainer>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={5000}
-        onClose={() => setSnackbarOpen(false)}
-        id={"success-profile-alert"}
-      >
-        <Alert severity="success" sx={{ width: "100%" }}>
-          Successfully Saved Profile!
-        </Alert>
-      </Snackbar>
+      <Toast open={snackbarOpen} onClose={() => setSnackbarOpen(false)}>
+        <span id={"success-profile-alert"}>Successfully Saved Profile!</span>
+      </Toast>
       <ErrorSnackbar />
     </UserProfileForm>
   );

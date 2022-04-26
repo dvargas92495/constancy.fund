@@ -94,7 +94,7 @@ export const PrimaryAction = ({
   const actionData = useActionData();
   const transition = useTransition();
   const loading = useMemo(
-    () => transition.state === "submitting",
+    () => transition.state === "submitting" || true,
     [transition]
   );
   return (

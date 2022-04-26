@@ -17,7 +17,7 @@
     "publish": "fuego publish",
     "precompile": "prisma generate",
     "start": "concurrently \"npm:api\" \"npm:dev\"",
-    "postinstall": "fuego postinstall \"@mui/material\" \"pdfjs-dist\" \"@babel/runtime\"",
+    "postinstall": "fuego postinstall \"pdfjs-dist\"",
     "staging": "mysqlsh --host vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com --port 5432 --database staging_constancy_fund --user staging_constancy_fund",
     "test": "hardhat test",
     "cypress": "cross-env CYPRESS_VERIFY_TIMEOUT=100000 cypress open",
@@ -61,9 +61,9 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
+    "@clerk/remix": "^0.3.12",
     "@dvargas92495/api": "^0.8.1",
     "@dvargas92495/eversign": "^1.9.5",
-    "@dvargas92495/ui": "^0.53.1",
     "@prisma/client": "^3.6.0",
     "@react-pdf-viewer/core": "^3.0.0",
     "@react-pdf-viewer/default-layout": "^3.0.0",

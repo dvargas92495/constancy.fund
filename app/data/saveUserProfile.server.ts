@@ -25,6 +25,14 @@ const saveUserProfile = (userId: string, data: Record<string, string[]>) => {
     throw new Error("`companyAddressNumber` is required.");
   } else if (!data.companyAddressZip?.[0]) {
     throw new Error("`companyAddressZip` is required.");
+  } else if (!data.representativeAddressStreet?.[0]) {
+    throw new Error("`representativeAddressStreet` is required.");
+  } else if (!data.representativeAddressCity?.[0]) {
+    throw new Error("`representativeAddressCity` is required.");
+  } else if (!data.representativeAddressNumber?.[0]) {
+    throw new Error("`representativeAddressNumber` is required.");
+  } else if (!data.representativeAddressZip?.[0]) {
+    throw new Error("`representativeAddressZip` is required.");
   } else if (
     !(data.socialProfiles || []).every((sp) => !sp || sp.startsWith("https://"))
   ) {
@@ -74,6 +82,10 @@ const saveUserProfile = (userId: string, data: Record<string, string[]>) => {
               companyAddressCity: data.companyAddressCity[0],
               companyAddressNumber: data.companyAddressNumber[0],
               companyAddressZip: data.companyAddressZip[0],
+              representativeAddressStreet: data.representativeAddressStreet[0],
+              representativeAddressCity: data.representativeAddressCity[0],
+              representativeAddressNumber: data.representativeAddressNumber[0],
+              representativeAddressZip: data.representativeAddressZip[0],
             },
           }),
           ...(paymentPreferencesToDelete.length

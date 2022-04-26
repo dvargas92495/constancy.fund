@@ -5,6 +5,7 @@ import ArrowRightSvg from "./Icons/arrow-right.svg";
 import BookSvg from "./Icons/book.svg";
 import CheckSvg from "./Icons/check.svg";
 import CameraSvg from "./Icons/camera.svg";
+import DangerSvg from "./Icons/Danger.svg";
 import DeleteSvg from "./Icons/delete.svg";
 import DollarSvg from "./Icons/dollar.svg";
 import FacebookSvg from "./Icons/facebook.svg";
@@ -24,7 +25,9 @@ import RocketSvg from "./Icons/rocket.svg";
 import PublicSvg from "./Icons/globe.svg";
 import TwitterSvg from "./Icons/twitter.svg";
 import SettingsSvg from "./Icons/settings.svg";
+import SuccessSvg from "./Icons/Success.svg";
 import ThumbsUp from "./Icons/thumbsUp.svg";
+import WarningSvg from "./Icons/Warning.svg";
 import Repeat from "./Icons/repeat.svg";
 import Split from "./Icons/split.svg";
 import TrendingUp from "./Icons/trendingUp.svg";
@@ -40,63 +43,67 @@ import paypalSmall from "./Icons/paypalSmall.svg";
 import near from "./Icons/near.svg";
 import UploadSvg from "./Icons/upload.svg";
 import { MouseEventHandler } from "react";
+import React from "react";
 
-const Icon = ({
-  name,
-  heightAndWidth,
-  ...inputProps
-}: {
-  heightAndWidth?: string;
-  color?: string;
-  name:
-    | "add"
-    | "arrow-drop-down"
-    | "arrow-right"
-    | "book"
-    | "camera"
-    | "check"
-    | "delete"
-    | "dollar"
-    | "email"
-    | "facebook"
-    | "fundraise"
-    | "github"
-    | "globe"
-    | "home"
-    | "image-default"
-    | "info"
-    | "Instagram"
-    | "linkedIn"
-    | "mail"
-    | "money"
-    | "more-vert"
-    | "note"
-    | "personFine"
-    | "preview"
-    | "public"
-    | "reddit"
-    | "repeat"
-    | "settings"
-    | "split"
-    | "thumbsUp"
-    | "trendingUp"
-    | "twitter"
-    | "webIcon"
-    | "remove"
-    | "backArrow"
-    | "edit"
-    | "monitor"
-    | "ethereum"
-    | "near"
-    | "bitcoin"
-    | "bank"
-    | "paypalSmall"
-    | "upload"
-    | "youtube";
-} & StyledIconProps & { onClick?: MouseEventHandler<HTMLSpanElement> }) => {
+const Icon = React.forwardRef<
+  HTMLDivElement,
+  {
+    heightAndWidth?: string;
+    color?: string;
+    name:
+      | "add"
+      | "arrow-drop-down"
+      | "arrow-right"
+      | "backArrow"
+      | "bank"
+      | "bitcoin"
+      | "book"
+      | "camera"
+      | "check"
+      | "danger"
+      | "delete"
+      | "dollar"
+      | "edit"
+      | "email"
+      | "ethereum"
+      | "facebook"
+      | "fundraise"
+      | "github"
+      | "globe"
+      | "home"
+      | "image-default"
+      | "info"
+      | "Instagram"
+      | "linkedIn"
+      | "mail"
+      | "money"
+      | "monitor"
+      | "more-vert"
+      | "near"
+      | "note"
+      | "paypalSmall"
+      | "personFine"
+      | "preview"
+      | "public"
+      | "reddit"
+      | "remove"
+      | "repeat"
+      | "settings"
+      | "split"
+      | "success"
+      | "thumbsUp"
+      | "trendingUp"
+      | "twitter"
+      | "upload"
+      | "warning"
+      | "webIcon"
+      | "youtube";
+  } & StyledIconProps & { onClick?: MouseEventHandler<HTMLSpanElement> }
+>(({ name, heightAndWidth, ...inputProps }, ref) => {
   const props = {
     ...inputProps,
     $heightAndWidth: heightAndWidth,
+    ref,
   };
   switch (name) {
     case "add":
@@ -111,6 +118,8 @@ const Icon = ({
       return <StyledIcon {...props} icon={CameraSvg} />;
     case "check":
       return <StyledIcon {...props} icon={CheckSvg} />;
+    case "danger":
+      return <StyledIcon {...props} icon={DangerSvg} />;
     case "delete":
       return <StyledIcon {...props} icon={DeleteSvg} />;
     case "dollar":
@@ -157,6 +166,8 @@ const Icon = ({
       return <StyledIcon {...props} icon={SettingsSvg} />;
     case "split":
       return <StyledIcon {...props} icon={Split} />;
+    case "success":
+      return <StyledIcon {...props} icon={SuccessSvg} />;
     case "thumbsUp":
       return <StyledIcon {...props} icon={ThumbsUp} />;
     case "trendingUp":
@@ -165,6 +176,8 @@ const Icon = ({
       return <StyledIcon {...props} icon={TwitterSvg} />;
     case "upload":
       return <StyledIcon {...props} icon={UploadSvg} />;
+    case "warning":
+      return <StyledIcon {...props} icon={WarningSvg} />;
     case "webIcon":
       return <StyledIcon {...props} icon={Globe} />;
     case "remove":
@@ -190,7 +203,7 @@ const Icon = ({
     default:
       return <svg />;
   }
-};
+});
 
 type StyledIconProps = {
   icon?: any;

@@ -16,11 +16,6 @@ import {
 } from "@remix-run/server-runtime";
 import { ClerkApp, ClerkCatchBoundary } from "@clerk/remix";
 import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
-import getEmotionCache, { emotionCache } from "./_common/getEmotionCache";
-import { CacheProvider } from "@emotion/react";
-import MuiThemeProvider from "@mui/material/styles/ThemeProvider";
-import createTheme from "@mui/material/styles/createTheme";
-import { useMemo } from "react";
 import DefaultErrorBoundary from "./_common/DefaultErrorBoundary";
 
 const themeProps = {
@@ -117,80 +112,6 @@ const themeProps = {
       fontSize: "1.25rem",
     },
   },
-  components: {
-    MuiBreadcrumbs: {
-      styleOverrides: {
-        root: {
-          margin: 0,
-        },
-      },
-    },
-    MuiCardHeader: {
-      styleOverrides: {
-        subheader: {
-          margin: 0,
-        },
-        title: {
-          margin: 0,
-        },
-      },
-    },
-    MuiDialog: {
-      styleOverrides: {
-        paper: {
-          minWidth: 400,
-        },
-      },
-    },
-    MuiDialogTitle: {
-      styleOverrides: {
-        root: {
-          "& h2": {
-            margin: 0,
-          },
-        },
-      },
-    },
-    MuiFormControlLabel: {
-      styleOverrides: {
-        label: {
-          margin: 0,
-        },
-      },
-    },
-    MuiInputBase: {
-      styleOverrides: {
-        root: {
-          margin: 0,
-        },
-      },
-    },
-    MuiInputLabel: {
-      styleOverrides: {
-        root: {
-          margin: 0,
-        },
-      },
-    },
-    MuiListItem: {
-      styleOverrides: {
-        root: {
-          display: "list-item",
-          fontSize: 16,
-          "& .MuiTypography-root": {
-            margin: 0,
-          },
-        },
-      },
-    },
-    MuiListItemText: {
-      styleOverrides: {
-        primary: {
-          margin: 0,
-        },
-      },
-    },
-  },
 };
 
 const GlobalStyle = createGlobalStyle<{ theme: typeof themeProps }>`
@@ -227,38 +148,6 @@ const GlobalStyle = createGlobalStyle<{ theme: typeof themeProps }>`
 
     strong, b {
       fontWeight: ${(props) => props.theme.typography.fontWeightBold};
-    }
-
-    & .MuiPopover-paper {
-      box-shadow: 0px 22px 26px 18px rgba(0, 0, 0, 0.03) !important;
-      width: 300px !important;
-    }
-
-    & .MuiMenuItem-root {
-        font-size: 14px !important;
-        border-radius: 8px !important;
-        margin: 0 10px !important;
-        padding: 0 10px !important;
-        display: flex !important;
-        height: 60px !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-        color: ${(props) => props.theme.palette.color.darkerText};
-
-        &:hover {
-          background: ${(props) =>
-            props.theme.palette.color.backgroundColorDarker} !important;
-        }
-    }
-
-    & .Mui-selected {
-        background: ${(props) =>
-          props.theme.palette.color.backgroundHighlight} !important;
-    }
-
-    & .Mui-focusVisible {
-        background: ${(props) =>
-          props.theme.palette.color.backgroundColorDarker} !important;
     }
 `;
 
@@ -348,7 +237,6 @@ const RootContainer = styled.div`
 
 const App = () => {
   const data = useLoaderData<{ ENV: Record<string, string> }>();
-  const theme = useMemo(() => createTheme(themeProps), []);
   return (
     <html lang="en">
       <head>
@@ -357,22 +245,13 @@ const App = () => {
         <Meta />
         <Links />
         {typeof document === "undefined" ? "__STYLES__" : null}
-        {typeof document === "undefined" ? "__STYLES2__" : null}
       </head>
       <body>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={themeProps}>
           <GlobalStyle />
-          <CacheProvider
-            value={
-              typeof document === "undefined" ? emotionCache : getEmotionCache()
-            }
-          >
-            <MuiThemeProvider theme={theme}>
-              <RootContainer id="root">
-                <Outlet />
-              </RootContainer>
-            </MuiThemeProvider>
-          </CacheProvider>
+          <RootContainer id="root">
+            <Outlet />
+          </RootContainer>
         </ThemeProvider>
         <ScrollRestoration />
         <script

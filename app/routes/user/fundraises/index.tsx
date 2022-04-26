@@ -8,10 +8,6 @@ import {
   ActionFunction,
   useFetcher,
 } from "remix";
-import IconButton from "@mui/material/IconButton";
-import Popover from "@mui/material/Popover";
-import ListItemIcon from "~/_common/ListItemIcon";
-import ListItemText from "~/_common/ListItemText";
 import deleteFundraiseData from "~/data/deleteFundraiseData.server";
 import Icon from "~/_common/Icon";
 import { PrimaryAction } from "~/_common/PrimaryAction";
@@ -86,13 +82,17 @@ const DetailComponentById: Record<
       <CellContainer>
         <CollapseContainer>
           {showMore ? (
-            <IconButton onClick={() => setShowMore(false)}>
-              <Icon name={"arrow-drop-down"} />
-            </IconButton>
+            <Icon
+              name={"arrow-drop-down"}
+              onClick={() => setShowMore(false)}
+              heightAndWidth={"24px"}
+            />
           ) : (
-            <IconButton onClick={() => setShowMore(true)}>
-              <Icon name={"arrow-right"} />
-            </IconButton>
+            <Icon
+              name={"arrow-right"}
+              onClick={() => setShowMore(true)}
+              heightAndWidth={"24px"}
+            />
           )}
         </CollapseContainer>
         <div>
@@ -136,11 +136,9 @@ const DetailComponentById: Record<
 
 const ActionCell = styled.div`
   display: flex;
-  align-items: center;
-`;
-
-const ListItem = styled.div`
-  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
 `;
 
 const FundraiseContentRow = ({
@@ -148,7 +146,6 @@ const FundraiseContentRow = ({
   ...row
 }: Fundraises[number] & { onDeleteSuccess: (uuid: string) => void }) => {
   const fetcher = useFetcher();
-  const [isOpen, setIsOpen] = useState<HTMLButtonElement | undefined>();
   const navigate = useNavigate();
   const onPreview = useCallback(() => {
     navigate(`/user/fundraises/preview/${row.uuid}`);
@@ -162,16 +159,20 @@ const FundraiseContentRow = ({
   }, [row.uuid, fetcher]);
   return (
     <tr>
-      <td>{row.type}</td>
-      <td style={{ width: "320px" }}>
+      <td style={{ minWidth: "120px", verticalAlign: "top" }}>{row.type}</td>
+      <td style={{ minWidth: "320px", verticalAlign: "top" }}>
         <DetailComponent
           details={row.details}
           clauses={Array.from(row.clauses)}
         />
       </td>
-      <td>{row.progress}</td>
-      <td>{row.investorCount}</td>
-      <td style={{ minWidth: "240px" }}>
+      <td style={{ minWidth: "120px", verticalAlign: "top" }}>
+        {row.progress}
+      </td>
+      <td style={{ minWidth: "120px", verticalAlign: "top" }}>
+        {row.investorCount}
+      </td>
+      <td style={{ minWidth: "240px", verticalAlign: "top" }}>
         <ActionCell>
           <SecondaryAction
             onClick={() => {
@@ -179,46 +180,23 @@ const FundraiseContentRow = ({
                 state: { isOpen: true },
               });
             }}
-            label={"Invite Investoy"}
+            label={"Invite Investor"}
+            width={"100%"}
           />
-          <IconButton onClick={(e) => setIsOpen(e.target as HTMLButtonElement)}>
-            <Icon name={"more-vert"} />
-          </IconButton>
+          <SecondaryAction
+            onClick={() => {
+              navigate(`/user/fundraises/contract/${row.uuid}`);
+            }}
+            label={"See Investors"}
+            width={"100%"}
+          />
+          <SecondaryAction
+            onClick={onPreview}
+            label={"Preview"}
+            width={"100%"}
+          />
+          <SecondaryAction onClick={onDelete} label={"Delete"} width={"100%"} />
         </ActionCell>
-        <Popover
-          open={!!isOpen}
-          anchorEl={isOpen}
-          onClose={() => setIsOpen(undefined)}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
-          }}
-        >
-          <div>
-            <ListItem
-              onClick={() => {
-                navigate(`/user/fundraises/contract/${row.uuid}`);
-              }}
-            >
-              <ListItemIcon>
-                <Icon name={"preview"} />
-              </ListItemIcon>
-              <ListItemText>See Investors</ListItemText>
-            </ListItem>
-            <ListItem onClick={onPreview}>
-              <ListItemIcon>
-                <Icon name={"preview"} />
-              </ListItemIcon>
-              <ListItemText>Preview</ListItemText>
-            </ListItem>
-            <ListItem onClick={onDelete}>
-              <ListItemIcon>
-                <Icon name={"delete"} />
-              </ListItemIcon>
-              <ListItemText>Delete</ListItemText>
-            </ListItem>
-          </div>
-        </Popover>
       </td>
     </tr>
   );

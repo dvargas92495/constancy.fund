@@ -1,8 +1,6 @@
 import { renderToString } from "react-dom/server";
 import { RemixServer } from "@remix-run/react";
 import { ServerStyleSheet } from "styled-components";
-import createEmotionServer from "@emotion/server/create-instance";
-import { emotionCache } from "./_common/getEmotionCache";
 
 export default function handleRequest(
   request: Request,
@@ -17,16 +15,9 @@ export default function handleRequest(
     )
   );
 
-  // Inject MUI
-  const { extractCriticalToChunks, constructStyleTagsFromChunks } =
-    createEmotionServer(emotionCache);
-  const chunks = extractCriticalToChunks(markup);
-  const styles = constructStyleTagsFromChunks(chunks);
-  const postMuiMarkup = markup.replace("__STYLES__", styles);
-
   // Inject Styled Components
   const styleTags = sheet.getStyleTags();
-  const finalMarkup = postMuiMarkup.replace("__STYLES2__", styleTags);
+  const finalMarkup = markup.replace("__STYLES__", styleTags);
 
   responseHeaders.set("Content-Type", "text/html");
 

@@ -5,8 +5,6 @@ import getEmailData from "../data/getEmailData.server";
 import TextFieldDescription from "../_common/TextFieldDescription";
 import TextFieldBox from "../_common/TextFieldBox";
 import TextInputContainer from "../_common/TextInputContainer";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 
 export const loader: LoaderFunction = () => {
   const development = process.env.NODE_ENV === "development";
@@ -53,39 +51,35 @@ const EmailsRoute = () => {
             <TextFieldBox>
               <TextFieldDescription>Creator</TextFieldDescription>
               <TextInputContainer width={"350px"}>
-                <Select
+                <select
                   value={user}
-                  maxRows={10}
-                  MenuProps={{ sx: { maxHeight: 200 } }}
+                  style={{  maxHeight: 200  }}
                   onChange={(e) => setUser(Number(e.target.value))}
-                  fullWidth
                   required
                 >
                   {data.users.map((c, index) => (
-                    <MenuItem value={index} key={c.id}>
+                    <option value={index} key={c.id}>
                       {c.name}
-                    </MenuItem>
+                    </option>
                   ))}
-                </Select>
+                </select>
               </TextInputContainer>
             </TextFieldBox>
             <TextFieldBox>
               <TextFieldDescription>Agreement</TextFieldDescription>
               <TextInputContainer width={"350px"}>
-                <Select
+                <select
                   value={agreement}
-                  maxRows={10}
-                  MenuProps={{ sx: { maxHeight: 200 } }}
+                  style={{  maxHeight: 200  }}
                   onChange={(e) => setAgreement(Number(e.target.value))}
-                  fullWidth
                   required
                 >
                   {data.ids.map((c, index) => (
-                    <MenuItem value={index} key={c.uuid}>
+                    <option value={index} key={c.uuid}>
                       {c.type}
-                    </MenuItem>
+                    </option>
                   ))}
-                </Select>
+                </select>
               </TextInputContainer>
             </TextFieldBox>
           </div>
