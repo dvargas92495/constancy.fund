@@ -232,7 +232,7 @@ const RootContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  min-height: fit-content;
+  height: 100%;
 `;
 
 const App = () => {

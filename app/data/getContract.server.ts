@@ -1,9 +1,8 @@
 import getMysql from "./mysql.server";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import getEversign from "./eversign.server";
-import FUNDRAISE_TYPES from "../enums/fundraiseTypes";
 
-const getContract = ({ uuid, signer }: { uuid: string; signer: string }) =>
+const getContract = ({ uuid, signer }: { uuid: string; signer: number }) =>
   getMysql().then(({ execute, destroy }) => {
     return execute(
       `SELECT e.id
@@ -22,7 +21,7 @@ const getContract = ({ uuid, signer }: { uuid: string; signer: string }) =>
           (doc) =>
             doc
               .getSigners()
-              .find((s) => s.getId() === Number(signer))
+              .find((s) => s.getId() === signer)
               ?.getEmbeddedSigningUrl() || ""
         )
         .then((url) =>
@@ -44,11 +43,9 @@ const getContract = ({ uuid, signer }: { uuid: string; signer: string }) =>
                 `Cannot find fundraise tied to agreement ${uuid}`
               );
             return {
-              userId: results[0].userId,
-              type: FUNDRAISE_TYPES[results[0].type].name,
-              agreementUuid: uuid,
               url,
               contractUuid: results[0].uuid,
+              creatorUrl: `/creator/${results[0].userId}?agreement=${uuid}`,
             };
           })
         );

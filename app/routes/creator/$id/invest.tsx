@@ -605,7 +605,7 @@ export const action: ActionFunction = ({ params, request }) => {
         investorAddressZip: data.investorAddressZip[0],
         investorAddressCountry: data.investorAddressCountry[0],
         paymentPreferences,
-      }).then(({ uuid }) => redirect(`/contract?uuid=${uuid}&signer=1`));
+      }).then(({ uuid }) => redirect(`/contract/${uuid}`));
     })
     .catch((e) => {
       console.error(e);

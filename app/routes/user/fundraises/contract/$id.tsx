@@ -296,7 +296,7 @@ const STAGE_ACTIONS: ((a: {
     );
   },
   (row) => (
-    <Link href={`/contract?uuid=${row.uuid}&signer=1`}>
+    <Link href={`/contract/${row.uuid}`}>
       Resend invitation to Backer
     </Link>
   ),
@@ -305,7 +305,7 @@ const STAGE_ACTIONS: ((a: {
       textColor="white"
       bgColor="purple"
       label={"Sign Contract"}
-      onClick={() => window.open(`/contract?uuid=${row.uuid}&signer=2`)}
+      onClick={() => window.open(`/contract/${row.uuid}`)}
     />
   ),
   (row) => (
