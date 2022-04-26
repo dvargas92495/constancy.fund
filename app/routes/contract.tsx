@@ -17,7 +17,6 @@ import {
 import getContract from "../data/getContract.server";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import { ethers } from "ethers";
-import contractJson from "../../artifacts/contracts/ISA.sol/ISA.json";
 import Toast from "~/_common/Toast";
 
 const ProfileContainer = styled.div`
@@ -159,8 +158,8 @@ const ContractPage = (): React.ReactElement => {
       );
       const signer = provider.getSigner();
       const contract = new ethers.ContractFactory(
-        contractJson.abi,
-        contractJson.bytecode,
+        fetcher.data.ethereum.abi,
+        fetcher.data.ethereum.bytecode,
         signer
       );
       contract
