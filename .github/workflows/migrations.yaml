@@ -3,8 +3,8 @@ on:
   push:
     branches: main
     paths:
-      - "db/**"
-      - ".github/workflows/db.yaml"
+      - "migrations/**"
+      - ".github/workflows/migrations.yaml"
 
 env:
   DATABASE_URL: mysql://constancy_fund:${{ secrets.MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/constancy_fund
