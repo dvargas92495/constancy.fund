@@ -3,7 +3,7 @@ import getMysql from "../app/data/mysql.server";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
-import isa from "../db/fundraise_content/isa";
+import isa from "../app/enums/isa";
 import { targetedDeploy } from "fuegojs/dist/deploy";
 import { FE_PUBLIC_DIR } from "fuegojs/dist/common";
 import datefnsFormat from "date-fns/format";

@@ -12,10 +12,8 @@
     "compile": "fuego compile",
     "deploy": "fuego deploy",
     "dev": "fuego dev",
-    "migrate": "prisma migrate deploy",
-    "migrate:dev": "prisma migrate dev",
+    "migrate": "fuego migrate",
     "publish": "fuego publish",
-    "precompile": "prisma generate",
     "start": "concurrently \"npm:api\" \"npm:dev\"",
     "postinstall": "fuego postinstall \"pdfjs-dist\"",
     "staging": "mysqlsh --host vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com --port 5432 --database staging_constancy_fund --user staging_constancy_fund",
@@ -54,7 +52,6 @@
     "hardhat": "^2.9.3",
     "local-cypress": "^1.2.5",
     "prettier": "^2.5.1",
-    "prisma": "^3.6.0",
     "ts-node": "^10.4.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-react-hooks": "^2.2.2",
@@ -64,7 +61,6 @@
     "@clerk/remix": "^0.3.12",
     "@dvargas92495/api": "^0.8.1",
     "@dvargas92495/eversign": "^1.9.5",
-    "@prisma/client": "^3.6.0",
     "@react-pdf-viewer/core": "^3.0.0",
     "@react-pdf-viewer/default-layout": "^3.0.0",
     "@remix-run/react": "^1.2.3",
@@ -88,9 +84,6 @@
     "stripe": "^8.191.0",
     "styled-components": "^5.3.3",
     "webfontloader": "^1.6.28"
-  },
-  "prisma": {
-    "schema": "db/schema.prisma"
   },
   "fuego": {
     "functionFileDependencies": {

@@ -25,23 +25,29 @@ There are three main environments that are managed:
 
 Every change causes a new staging deploy when merged into main. For production, only the relevant infrastructure is redeployed.
 
+## Architecture
+
+The application is built using `[remix](https://remix.run)` and deployed to `[AWS](https://aws.amazon.com)`. To help with all necessary build and deploy tools, the project uses a wrapper on these frameworks called `[fuego](https://github.com/dvargas92495/fuegojs)`, a tool actively in development by @dvargas92495. This should be no cause for concern though, as Remix and AWS are doing all of the heavy lifting.
+
+The Cloud architecture is serverless. There is a Cloudfront CDN that has an Origin Lambda attached which is where the app logic gets deployed to. RDS hosts the mysql data and S3 hosts all of the static content.
+
 ## Setup
 
 The project is made up of the following top level directories, representing different deploy targets:
 
 1. `/api` - Has all the functions that make up our public api, deployed to individual Lambdas with API Gateway on top.
 1. `/app` - Has all of the application's logic, deployed to our CDN.
-1. `/db` - Has all data + schema migrations, schema definition, and enums.
+1. `/migrations` - Has all data migrations we've ever run locally and on production.
 
 The application's logic is all contained within the `/app` directory. This directory is further subdivided by the following directories:
 
 1. `/_common` - This store common frontend components used across pages.
 1. `/data` - This stores all of our backend logic.
 1. `/emails` - This stores our email templates.
-1. `/enum` - This stores all hardcoded data.
+1. `/enums` - This stores all hardcoded data.
 1. `/external` - Third party scripts that we are integrating directly instead of loading in the script tag.
 1. `/routes` - This stores all of our frontend pages mapped to URL routes.
-1. `/util` - Functions that are usedon both the front end and the backend
+1. `/util` - Functions that are used on both the front end and the backend
 
 The rest of the files here are part of Remix's boilerplate. There are three additional directories that should rarely see changes:
 
@@ -80,6 +86,4 @@ Each route has `loader`s and `action`s which call imported modules from `app/dat
 
 The application currently uses `mysql` as its database layer. There is an [RDS](https://aws.amazon.com/rds/) instance live for production and staging. For local environment, the developer is expected to run their own instance or connect to staging.
 
-The `/db` directory is broken up into the following sections:
-- `schema.prisma` - a file defining the app's data model. When this file changes, `prisma` is able to autogenerate and eventually run migration files to have the target environment match the file's definition. Unfortunately, as an ORM, `prisma` queries were prohibitively expensive and we are now using direct mysql queries.
-- `/migrations` - migration files that run in different environments to set up our live schema.
+To create a new migration file, run `npx fuego migrate --generate [name]`. To migrate your local data environment, run `npx fuego migrate`.
