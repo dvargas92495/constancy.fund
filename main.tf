@@ -82,6 +82,14 @@ variable "infura_id" {
   type = string
 }
 
+variable "ipfs_infura_id" {
+  type = string
+}
+
+variable "ipfs_infura_secret" {
+  type = string
+}
+
 provider "aws" {
   region = "us-east-1"
   access_key = var.aws_access_token
@@ -308,4 +316,16 @@ resource "github_actions_secret" "infura_id" {
   repository       = "constancy.fund"
   secret_name      = "INFURA_ID"
   plaintext_value  = var.infura_id
+}
+
+resource "github_actions_secret" "ipfs_infura_id" {
+  repository       = "constancy.fund"
+  secret_name      = "IPFS_INFURA_ID"
+  plaintext_value  = var.ipfs_infura_id
+}
+
+resource "github_actions_secret" "ipfs_infura_secret" {
+  repository       = "constancy.fund"
+  secret_name      = "IPFS_INFURA_SECRET"
+  plaintext_value  = var.ipfs_infura_secret
 }
