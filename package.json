@@ -72,6 +72,7 @@
     "classnames": "^2.3.1",
     "date-fns": "^2.16.1",
     "eversign": "^1.9.2",
+    "form-data": "^4.0.0",
     "history": "^5.1.0",
     "inter-ui": "^3.19.3",
     "pdfjs-dist": "2.11.338",

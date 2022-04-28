@@ -33,11 +33,17 @@ The Cloud architecture is serverless. There is a Cloudfront CDN that has an Orig
 
 ## Setup
 
-The project is made up of the following top level directories, representing different deploy targets:
+The project is made up of the following top level directories, roughly representing different entrypoints for interacting with Constancy:
 
 1. `/api` - Has all the functions that make up our public api, deployed to individual Lambdas with API Gateway on top.
 1. `/app` - Has all of the application's logic, deployed to our CDN.
+1. `/contracts` - Has all of our Smart Contract solidity code.
+1. `/cypress` - Has all of our end-to-end tests, to be one day moved to within the `/tests` directory.
 1. `/migrations` - Has all data migrations we've ever run locally and on production.
+1. `/public` - Has all of the public assets for our app. We may or may not want to move these within `/app` one day.
+1. `/scripts` - Helper scripts to assist with various functions not captured by build tools.
+1. `/server` - The entry point for our web app, to be one day moved to within `/app`.
+1. `/tests` - Has all of our contract and unit tests
 
 The application's logic is all contained within the `/app` directory. This directory is further subdivided by the following directories:
 

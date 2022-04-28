@@ -1,0 +1,31 @@
+name: Publish Contracts
+on:
+  push:
+    branches: main
+    paths:
+      - "contracts/**"
+      - ".github/workflows/contracts.yaml"
+
+env:
+  IPFS_INFURA_ID: ${{ secrets.IPFS_INFURA_ID }}
+  IPFS_INFURA_SECRET: ${{ secrets.IPFS_INFURA_SECRET }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.17.6
+      - name: Install NPM 8
+        run: npm install -g npm@latest
+      - name: install
+        run: npm install
+      - name: build
+        run: npx hardhat compile
+      - name: test
+        run: npx hardhat test
+      - name: Deploy to IPFS
+        run: npx ts-node scripts/deploy-smart-contract.ts
