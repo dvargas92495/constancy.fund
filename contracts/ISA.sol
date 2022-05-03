@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract ISA is Ownable {
     address public investor;
     uint256 public share;
-    uint256 public cap;
+    uint256 public returnMultiple;
     uint256 public allowance;
     bytes32 public ipfsHash;
 
@@ -21,13 +21,15 @@ contract ISA is Ownable {
     constructor(
         address _investor,
         uint256 _share,
-        uint256 _cap,
+        uint256 _returnMultiple,
         uint256 _allowance,
         bytes32 _ipfsHash
     ) {
+        require(_returnMultiple > 10000, "Return multiple must be over 100.00%");
+        require(_share < 10000, "Revenue share must be under 100.00%");
         investor = _investor;
         share = _share;
-        cap = _cap;
+        returnMultiple = _returnMultiple;
         allowance = _allowance;
         ipfsHash = _ipfsHash;
     }
@@ -55,7 +57,7 @@ contract ISA is Ownable {
               ? balance + totalRevenue - allowance 
               : balance
             ) * share / 10000;
-        uint256 space = (cap*totalInvested) - totalReturned;
+        uint256 space = (returnMultiple*totalInvested / 10000) - totalReturned;
         return raw < space ? raw : space;
     }
 

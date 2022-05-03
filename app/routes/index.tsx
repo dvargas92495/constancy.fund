@@ -8,7 +8,7 @@ import MainImage from "~/_common/Images/runner.svg";
 import AutomateImage from "~/_common/Images/automate.svg";
 import Icon from "~/_common/Icon";
 import SuperPowerImage from "~/_common/Images/superpower.svg";
-import { UserButton, useUser } from "@clerk/remix";
+import UserAvatar from "~/_common/UserAvatar";
 
 const LogoContainer = styled.img`
   position: absolute;
@@ -20,26 +20,6 @@ const LogoContainer = styled.img`
 
 const ButtonInnerDiv = styled.div`
   padding: 0 10px;
-`;
-
-const LoginButton = styled.a`
-  padding: 10px 20px;
-  text-decoration: none;
-  &:active,
-  &:visited,
-  &:hover {
-    color: inherit;
-  }
-`;
-
-const UserContainer = styled.div`
-  color: ${(props) => props.theme.palette.color.purple};
-  font-size: 18px;
-  font-weight: 800;
-  position: absolute;
-  right: 50px;
-  top: 40px;
-  cursor: pointer;
 `;
 
 const MainContentContainer = styled.div`
@@ -296,7 +276,6 @@ const SubscribeBox = () => {
 };
 
 const Home: React.FC = () => {
-  const { isSignedIn } = useUser();
   return (
     <RootContainer>
       <TopContainer>
@@ -313,15 +292,7 @@ const Home: React.FC = () => {
             </SubTitle>
             <SubscribeBox />
           </IntroBox>
-          <UserContainer id={"user-container"}>
-            {isSignedIn ? (
-              <UserButton />
-            ) : (
-              <div>
-                <LoginButton href={"/login"}>LOGIN</LoginButton>
-              </div>
-            )}
-          </UserContainer>
+          <UserAvatar />
         </MainContentContainer>
         <MainImageContainer src={MainImage} />
       </TopContainer>

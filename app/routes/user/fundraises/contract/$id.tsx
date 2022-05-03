@@ -418,7 +418,7 @@ const UserFundraisesContract = () => {
             <SecondaryAction
               onClick={() => {
                 window.navigator.clipboard.writeText(
-                  `${window.location.origin}/creator/${user.user?.id}?agreement=${id}`
+                  `${window.location.origin}/creator/${user.user?.id}?fundraise=${id}`
                 );
                 setPublicLinkCopied(true);
               }}

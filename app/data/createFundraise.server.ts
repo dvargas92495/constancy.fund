@@ -1,8 +1,9 @@
 import getConnection from "./mysql.server";
+import invokeAsync from "./invokeAsync.server";
 import { dbIdByTypeId } from "../enums/fundraiseTypes";
 import { v4 } from "uuid";
 import type { FundraiseId } from "../enums/fundraiseTypes";
-import type { Handler as AsyncHandler } from "../../functions/create-contract-pdf";
+import type { Handler as AsyncHandler } from "../../api/create-contract-pdf";
 
 const createFundraise = ({
   data,
@@ -50,12 +51,10 @@ const createFundraise = ({
       )
       .then(() => {
         destroy();
-        return import("@dvargas92495/api/invokeAsync.js").then((invokeAsync) =>
-          invokeAsync.default<Parameters<AsyncHandler>[0]>({
-            path: "create-contract-pdf",
-            data: { uuid },
-          })
-        );
+        return invokeAsync<Parameters<AsyncHandler>[0]>({
+          path: "create-contract-pdf",
+          data: { uuid },
+        });
       })
       .then(() => uuid);
   });

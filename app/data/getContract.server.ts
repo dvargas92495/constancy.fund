@@ -22,9 +22,8 @@ const getContract = ({ uuid, signer }: { uuid: string; signer: number }) =>
             doc
               .getSigners()
               .find((s) => s.getId() === signer)
-              ?.getEmbeddedSigningUrl() || ""
         )
-        .then((url) =>
+        .then((signer) =>
           execute(
             `SELECT f.userId, f.type, f.uuid
           FROM agreement a
@@ -43,9 +42,9 @@ const getContract = ({ uuid, signer }: { uuid: string; signer: number }) =>
                 `Cannot find fundraise tied to agreement ${uuid}`
               );
             return {
-              url,
+              url: signer?.getEmbeddedSigningUrl(),
+              signed: signer?.getSigned(),
               contractUuid: results[0].uuid,
-              creatorUrl: `/creator/${results[0].userId}?agreement=${uuid}`,
             };
           })
         );

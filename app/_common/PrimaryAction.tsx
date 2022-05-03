@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useActionData, useTransition } from "@remix-run/react";
 import styled from "styled-components";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -65,7 +65,7 @@ const StyledPrimaryActionLinkText = styled.div<{
 export const PrimaryAction = ({
   label,
   onClick,
-  disabled,
+  disabled: _disabled,
   innerRef,
   fontSize,
   isLoading,
@@ -93,14 +93,12 @@ export const PrimaryAction = ({
 }) => {
   const actionData = useActionData();
   const transition = useTransition();
-  const loading = useMemo(
-    () => transition.state === "submitting",
-    [transition]
-  );
+  const loading = transition.state === "submitting" || isLoading;
+  const disabled = _disabled || loading;
   return (
     <StyledPrimaryAction
-      onClick={disabled === true ? undefined : onClick}
-      disabled={loading || disabled}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
       ref={innerRef}
       onKeyPress={(e) => (e.key === "Enter" ? onClick?.(e) : false)}
       height={height}
@@ -109,7 +107,7 @@ export const PrimaryAction = ({
       type={type}
       id={id}
     >
-      {loading || isLoading ? (
+      {loading ? (
         <LoadingIndicator size="20px" thickness={3} />
       ) : (
         <StyledPrimaryActionLinkText

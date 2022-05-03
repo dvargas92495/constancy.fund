@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
 import format from "date-fns/format";
-import axios from "axios";
-import FormData from "form-data";
 import fs from "fs";
 import getMysqlConnection from "../app/data/mysql.server";
+import uploadToIpfs from "../app/data/uploadToIpfs.server";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -12,7 +11,6 @@ dotenv.config();
 const deploySmartContract = () => {
   const date = new Date();
   const version = format(date, "yyyy-MM-dd-mm-hh");
-  const formData = new FormData();
   const artifacts = fs.readdirSync("artifacts/contracts", {
     withFileTypes: true,
   });
@@ -21,39 +19,11 @@ const deploySmartContract = () => {
       const file = fs.readFileSync(
         `artifacts/contracts/${a.name}/${a.name.replace(/\.sol$/, ".json")}`
       );
-      formData.append("files", file);
-      return axios
-        .post<{ Hash: string }>(
-          "https://ipfs.infura.io:5001/api/v0/add",
-          formData,
-          {
-            headers: {
-              ...formData.getHeaders(),
-              Authorization: `Bearer ${Buffer.from(
-                `${process.env.IPFS_INFURA_ID}:${process.env.IPFS_INFURA_SECRET}`
-              ).toString("base64")}`,
-            },
-          }
-        )
-        .then((r) =>
-          axios
-            .post(
-              `https://ipfs.infura.io:5001/api/v0/pin/add?arg=${r.data.Hash}`,
-              {},
-              {
-                headers: {
-                  Authorization: `Bearer ${Buffer.from(
-                    `${process.env.IPFS_INFURA_ID}:${process.env.IPFS_INFURA_SECRET}`
-                  ).toString("base64")}`,
-                },
-              }
-            )
-            .then(() => ({
-              hash: r.data.Hash,
-              version,
-              name: a.name.replace(/\.sol$/, ""),
-            }))
-        );
+      return uploadToIpfs({ file }).then((hash) => ({
+        hash,
+        version,
+        name: a.name.replace(/\.sol$/, ""),
+      }));
     })
   )
     .then((records) =>

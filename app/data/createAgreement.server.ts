@@ -7,9 +7,38 @@ import {
 import FUNDRAISE_TYPES from "../enums/fundraiseTypes";
 import { FE_PUBLIC_DIR } from "fuegojs/dist/common";
 import path from "path";
-import type { Handler as ContractHandler } from "../../functions/create-contract-pdf";
 import { v4 } from "uuid";
 import { Id, dbTypeById } from "~/enums/paymentPreferences";
+
+const invokeDirect =
+  process.env.NODE_ENV === "production"
+    ? (data: {
+        uuid: string;
+        outfile?: string | undefined;
+        inputData?: Record<string, string> | undefined;
+      }) =>
+        import("aws-sdk")
+          .then(
+            (AWS) => new AWS.default.Lambda({ region: process.env.AWS_REGION })
+          )
+          .then((lambda) =>
+            lambda
+              .invoke({
+                FunctionName: `${(process.env.ORIGIN || "")
+                  ?.replace(/\./g, "-")
+                  .replace(/^https?:\/\//, "")}_${path}`,
+                InvocationType: "RequestResponse",
+                Payload: Buffer.from(JSON.stringify(data)),
+              })
+              .promise()
+          )
+          .then(() => true)
+    : (data: {
+        uuid: string;
+        outfile?: string | undefined;
+        inputData?: Record<string, string> | undefined;
+      }) =>
+        import(`../../api/create-contract-pdf`).then((c) => c.handler(data));
 
 const createPaymentPreferences = ({
   userId,
@@ -152,27 +181,16 @@ const createAgreement = ({
             import("@clerk/clerk-sdk-node").then((clerk) =>
               clerk.users.getUser(c.userId)
             ),
-            import("@dvargas92495/api/invokeDirect.js").then((invokeDirect) => {
-              return invokeDirect.default<Parameters<ContractHandler>[0]>({
-                path: "create-contract-pdf",
-                data: {
-                  uuid: c.uuid,
-                  outfile: agreementUuid,
-                  inputData: {
-                    investor: name,
-                    investor_location: `${investorAddressNumber} ${investorAddressStreet} ${investorAddressCity}, ${investorAddressCountry}, ${investorAddressZip}`,
-                    amount: (
-                      Number(detailData.amount) * investorShare
-                    ).toString(),
-                    share: (
-                      Number(detailData.share) * investorShare
-                    ).toString(),
-                    return: (
-                      Number(detailData.return) * investorShare
-                    ).toString(),
-                  },
-                },
-              })
+            invokeDirect({
+              uuid: c.uuid,
+              outfile: agreementUuid,
+              inputData: {
+                investor: name,
+                investor_location: `${investorAddressNumber} ${investorAddressStreet} ${investorAddressCity}, ${investorAddressCountry}, ${investorAddressZip}`,
+                amount: (Number(detailData.amount) * investorShare).toString(),
+                share: (Number(detailData.share) * investorShare).toString(),
+                return: (Number(detailData.return) * investorShare).toString(),
+              },
             }),
           ]).then(([user]) => ({
             user,
@@ -183,7 +201,9 @@ const createAgreement = ({
         });
       })
       .then(async (contract) => {
-        const eversign = await import("@dvargas92495/eversign").then(e => e.default);
+        const eversign = await import("@dvargas92495/eversign").then(
+          (e) => e.default
+        );
         const filePath = `_contracts/${contract.uuid}/${contract.agreementUuid}.pdf`;
         const creatorName = `${contract.user.firstName} ${contract.user.lastName}`;
         const creatorEmail =

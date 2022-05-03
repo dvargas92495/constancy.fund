@@ -50,7 +50,10 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
               userName: `${u.firstName} ${u.lastName}`,
               documentId: doc.id,
               contractType: FUNDRAISE_TYPES[doc.type || 0].name,
+              contractId: FUNDRAISE_TYPES[doc.type || 0].id,
               id: u.id,
+              agreementUuid: doc.uuid,
+              contractUuid: doc.contract,
             })),
           execute(
             `SELECT d.label, d.value
@@ -63,10 +66,10 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
       })
       .then(([numSigners, r, details, agreementAmount]) => {
         if (numSigners === 1) {
-          return getPaymentPreferences(r.investorUuid, execute).then(
-            (investorPaymentPreferences) =>
-              import("aws-sdk-plus/dist/sendEmail").then((sendEmail) =>
-                sendEmail.default({
+          return getPaymentPreferences(r.investorUuid, execute)
+            .then((investorPaymentPreferences) =>
+              import("aws-sdk-plus").then((aws) =>
+                aws.sendEmail({
                   to: r.userEmail,
                   replyTo: r.investorEmail,
                   subject: `${r.investorName} has signed the agreement!`,
@@ -79,12 +82,19 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
                   }),
                 })
               )
-          );
+            )
+            .then(() => ({}));
         } else if (numSigners === 2) {
+          const contractDetails = Object.fromEntries(
+            (details as { label: string; value: string }[]).map((d) => [
+              d.label,
+              d.value,
+            ])
+          );
           return getPaymentPreferences(r.id || "", execute).then(
             (creatorPaymentPreferences) =>
-              import("aws-sdk-plus/dist/sendEmail").then((sendEmail) =>
-                sendEmail.default({
+              import("aws-sdk-plus").then((aws) =>
+                aws.sendEmail({
                   to: r.investorEmail,
                   replyTo: r.userEmail,
                   subject: `${r.userName} has signed the agreement!`,
@@ -93,11 +103,7 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
                     creatorName: r.userName,
                     contractType: r.contractType,
                     creatorPaymentPreferences,
-                    contractDetails: Object.fromEntries(
-                      (details as { label: string; value: string }[]).map(
-                        (d) => [d.label, d.value]
-                      )
-                    ),
+                    contractDetails,
                     agreementAmount,
                   }),
                 })
@@ -107,8 +113,10 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
           throw new MethodNotAllowedError(`No one has actually signed`);
         }
       })
-      .then(destroy)
-      .then(() => ({ success: true }));
+      .then(() => {
+        destroy();
+        return { success: true };
+      });
   });
 
 export default signAgreement;

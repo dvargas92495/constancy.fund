@@ -25,7 +25,7 @@ describe("ISA", function () {
     const contract = await factoryContract.deploy(
       await investor.getAddress(),
       2000,
-      3,
+      30000,
       utils.parseEther("10.0"),
       "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
     );

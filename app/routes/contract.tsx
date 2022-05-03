@@ -1,19 +1,30 @@
 import { Link, LoaderFunction, useLoaderData } from "remix";
+import styled from "styled-components";
 import getContracts from "~/data/getContracts.server";
+import UserAvatar from "~/_common/UserAvatar";
+
+const Container = styled.div`
+  margin-top: 256px;
+`;
 
 const ContractPage = () => {
   const { contracts } =
     useLoaderData<Awaited<ReturnType<typeof getContracts>>>();
-  return !contracts?.length ? (
-    <div>You do not have any live contracts</div>
-  ) : (
-    <ul>
-      {contracts.map(({ id, agreementUuid }) => (
-        <li key={id}>
-          <Link to={agreementUuid}>Go to contract</Link>
-        </li>
-      ))}
-    </ul>
+  return (
+    <Container>
+      <UserAvatar />
+      {!contracts?.length ? (
+        <div>You do not have any live contracts</div>
+      ) : (
+        <ul>
+          {contracts.map(({ id, agreementUuid }) => (
+            <li key={id}>
+              <Link to={agreementUuid}>Go to contract</Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Container>
   );
 };
 
@@ -21,7 +32,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   const { userId } = await import("@clerk/remix/ssr.server.js").then((clerk) =>
     clerk.getAuth(request)
   );
-  console.log(userId);
   return getContracts({ userId });
 };
 

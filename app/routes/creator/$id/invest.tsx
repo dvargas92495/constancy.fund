@@ -225,7 +225,7 @@ const EnterDetails = () => {
   const [amount, setAmount] = useState(state.amount);
   const transition = useTransition();
   const showLoadingScreen = useMemo(
-    () => transition.state === "submitting",
+    () => transition.state === "submitting" || transition.state === "loading",
     [transition.state]
   );
   return showLoadingScreen ? (
@@ -562,10 +562,7 @@ export const loader: LoaderFunction = ({ params, request }) => {
 export const action: ActionFunction = ({ params, request }) => {
   return import("@clerk/remix/ssr.server.js")
     .then((clerk) => clerk.getAuth(request))
-    .then(async ({ userId }) => {
-      if (!userId) {
-        return new Response("No valid user found", { status: 401 });
-      }
+    .then(async () => {
       const formData = await request.formData();
       const data = Object.fromEntries(
         Array.from(formData.keys()).map((k) => [
