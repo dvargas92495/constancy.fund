@@ -28,7 +28,7 @@ const invokeDirect =
               .invoke({
                 FunctionName: `${(process.env.ORIGIN || "")
                   ?.replace(/\./g, "-")
-                  .replace(/^https?:\/\//, "")}_${path}`,
+                  .replace(/^https?:\/\//, "")}_create-contract-pdf`,
                 InvocationType: "RequestResponse",
                 Payload: Buffer.from(JSON.stringify(data)),
               })
