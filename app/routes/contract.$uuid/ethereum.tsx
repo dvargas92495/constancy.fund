@@ -2,7 +2,10 @@ import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
-import getEthereumContractData from "~/data/getEthereumContractData.server";
+import getEthereumContractData, {
+  DeployedData,
+  ReadyData,
+} from "~/data/getEthereumContractData.server";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import { ethers } from "ethers";
 import DefaultErrorBoundary from "~/_common/DefaultErrorBoundary";
@@ -11,6 +14,7 @@ import TextFieldBox from "~/_common/TextFieldBox";
 import TextFieldDescription from "~/_common/TextFieldDescription";
 import TextInputContainer from "~/_common/TextInputContainer";
 import TextInputOneLine from "~/_common/TextInputOneLine";
+import { infuraEthersProvidersById } from "~/enums/web3Networks";
 
 declare global {
   interface Window {
@@ -22,31 +26,9 @@ const ContractContainer = styled.div`
   padding: 32px;
 `;
 
-const ViewSmartContract = ({
-  network,
-  address,
-  isInvestor,
-  creatorAddress,
-  investorAddress,
-  abi,
-  amount,
-  price,
-  totalInvested,
-  balance,
-  investorCut,
-}: {
-  network: number;
-  address: string;
-  isInvestor: boolean;
-  creatorAddress: string;
-  investorAddress: string;
-  abi: ethers.ContractInterface;
-  amount: number;
-  price: number;
-  totalInvested: string;
-  balance: string;
-  investorCut: string;
-}) => {
+const ViewSmartContract = (
+  props: Omit<DeployedData, "valid" | "deployed"> & { isInvestor: boolean }
+) => {
   const [walletAddress, setWalletAddress] = useState("");
   useEffect(() => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -67,43 +49,117 @@ const ViewSmartContract = ({
   const creatorWithdraw = useCallback(() => {
     setLoading(true);
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contract = new ethers.Contract(address, abi, provider.getSigner());
-    return contract.creatorWithdraw().then(() => setLoading(false));
-  }, [setLoading, address, abi]);
+    const contract = new ethers.Contract(
+      props.address,
+      props.abi,
+      provider.getSigner()
+    );
+    return contract
+      .creatorWithdraw()
+      .then((tx: ethers.ContractTransaction) => tx.wait())
+      .then(() => setLoading(false));
+  }, [setLoading, props.address, props.abi]);
   const investorWithdraw = useCallback(() => {
     setLoading(true);
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contract = new ethers.Contract(address, abi, provider.getSigner());
-    return contract.investorWithdraw().then(() => setLoading(false));
-  }, [setLoading, address, abi]);
-  const defaultInvestment = (amount / price).toFixed(6);
+    const contract = new ethers.Contract(
+      props.address,
+      props.abi,
+      provider.getSigner()
+    );
+    return contract
+      .investorWithdraw()
+      .then((tx: ethers.ContractTransaction) => tx.wait())
+      .then(() => setLoading(false));
+  }, [setLoading, props.address, props.abi]);
+  const defaultInvestment = (props.amount / props.price).toFixed(6);
   const [investment, setInvestment] = useState(defaultInvestment);
   const invest = useCallback(() => {
     setLoading(true);
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contract = new ethers.Contract(address, abi, provider.getSigner());
+    const contract = new ethers.Contract(
+      props.address,
+      props.abi,
+      provider.getSigner()
+    );
     return contract
       .invest({ value: ethers.utils.parseEther(investment) })
+      .then((tx: ethers.ContractTransaction) => tx.wait())
       .then(() => setLoading(false));
-  }, [setLoading, address, abi]);
+  }, [setLoading, props.address, props.abi]);
+  const Summary = useCallback(() => (
+    <>
+      <p>Value stored in contract:</p>
+      <ul>
+        <li>
+          <b>Total Balance: </b>
+          {props.totalBalance} ETH
+        </li>
+        <li>
+          <b>Creator Cut: </b>
+          {(
+            Number(props.balance) -
+            Number(props.investorCut) +
+            Number(props.revenueAllocated) +
+            Number(props.investmentAllocated)
+          ).toFixed(6)}{" "}
+          ETH
+        </li>
+        <li>
+          <b>Investor Cut: </b>
+          {(Number(props.investorCut) + Number(props.returnAllocated)).toFixed(
+            6
+          )}{" "}
+          ETH
+        </li>
+      </ul>
+      <p>Contract History:</p>
+      <ul>
+        <li>
+          <b>Total Invested: </b>
+          {props.totalInvested} ETH
+        </li>
+        <li>
+          <b>Total Return: </b>
+          {props.totalReturned} ETH
+        </li>
+        <li>
+          <b>Total Revenue: </b>
+          {props.totalRevenue} ETH
+        </li>
+      </ul>
+    </>
+  ), [props]);
   return (
     <p>
-      Smart contract for this agreement is deployed on chain ({network}) at
-      address ({address}).
+      Smart contract for this agreement is deployed on the
+      {infuraEthersProvidersById[props.network]} network. View on{" "}
+      <a
+        target={"_blank"}
+        rel={"noreferrer"}
+        href={`https://${
+          infuraEthersProvidersById[props.network] === "homestead"
+            ? ""
+            : `${infuraEthersProvidersById[props.network]}.`
+        }etherscan.io/address/${props.address}`}
+      >
+        Etherscan
+      </a>
+      .
       {!walletAddress ? (
         <p>Waiting for a wallet to connect...</p>
-      ) : isInvestor ? (
-        walletAddress !== investorAddress ? (
+      ) : props.isInvestor ? (
+        walletAddress !== props.investorAddress ? (
           <p>
             Incorrect wallet address logged in to view this contract as
-            investor. Please switch to address {investorAddress}
+            investor. Please switch to address {props.investorAddress}
           </p>
         ) : (
           <>
             <p>Enter investment amount and click the button to invest below:</p>
             <TextFieldBox>
               <TextFieldDescription required>
-                Investment ({totalInvested} ETH invested so far)
+                Investment ({props.totalInvested} ETH invested so far)
               </TextFieldDescription>
               <TextInputContainer width={"350px"}>
                 <TextInputOneLine
@@ -126,27 +182,13 @@ const ViewSmartContract = ({
               label={"Withdraw"}
               isLoading={loading}
             />
-            <p>Value stored in contract:</p>
-            <ul>
-              <li>
-                <b>Total Balance: </b>
-                {balance} ETH
-              </li>
-              <li>
-                <b>Creator Cut: </b>
-                {(Number(balance) - Number(investorCut)).toFixed(1)} ETH
-              </li>
-              <li>
-                <b>Investor Cut: </b>
-                {investorCut} ETH
-              </li>
-            </ul>
+            <Summary />
           </>
         )
-      ) : walletAddress !== creatorAddress ? (
+      ) : walletAddress !== props.creatorAddress ? (
         <p>
           Incorrect wallet address logged in to view this contract as creator.
-          Please switch to address {creatorAddress}
+          Please switch to address {props.creatorAddress}
         </p>
       ) : (
         <>
@@ -156,21 +198,8 @@ const ViewSmartContract = ({
             label={"Withdraw"}
             isLoading={loading}
           />
-          <p>Value stored in contract:</p>
-          <ul>
-            <li>
-              <b>Total Balance: </b>
-              {balance} ETH
-            </li>
-            <li>
-              <b>Creator Cut: </b>
-              {(Number(balance) - Number(investorCut)).toFixed(1)} ETH
-            </li>
-            <li>
-              <b>Investor Cut: </b>
-              {investorCut} ETH
-            </li>
-          </ul>
+          <p>Make sure all users and clients send revenue for your project to address: {props.address}</p>
+          <Summary />
         </>
       )}
     </p>
@@ -190,20 +219,7 @@ const DeploySmartContract = ({
   price,
   versionHash,
   hashAsAddress,
-}: {
-  isInvestor: boolean;
-  creatorAddress: string;
-  investorAddress: string;
-  share: string;
-  returnMultiple: string;
-  threshold: string;
-  hash: string;
-  abi: ethers.ContractInterface;
-  bytecode: ethers.utils.BytesLike;
-  price: number;
-  versionHash: string;
-  hashAsAddress: string;
-}) => {
+}: Omit<ReadyData, "valid" | "deployed"> & { isInvestor: boolean }) => {
   const fetcher = useFetcher();
   const [loading, setLoading] = useState(false);
   const onDeploy = useCallback(() => {
@@ -212,13 +228,17 @@ const DeploySmartContract = ({
     const signer = provider.getSigner();
     const contract = new ethers.ContractFactory(abi, bytecode, signer);
     Promise.all([
-      contract.deploy(
-        investorAddress,
-        Number(share) * 100,
-        Number(returnMultiple) * 100,
-        ethers.utils.parseEther((Number(threshold) / price).toFixed(6)),
-        hashAsAddress
-      ),
+      contract
+        .deploy(
+          investorAddress,
+          Number(share) * 100,
+          Number(returnMultiple) * 100,
+          ethers.utils.parseEther((Number(threshold) / price).toFixed(6)),
+          hashAsAddress
+        )
+        .then((contract) => {
+          return contract.deployTransaction.wait().then(() => contract);
+        }),
       provider.getNetwork(),
     ]).then(([contract, chain]) => {
       fetcher.submit(
@@ -331,35 +351,10 @@ const EthereumContractPage = () => {
         </p>
       )}
       {loaderData.valid && loaderData.deployed && (
-        <ViewSmartContract
-          isInvestor={loaderData.isInvestor}
-          network={loaderData.network}
-          address={loaderData.address}
-          creatorAddress={loaderData.creatorAddress}
-          investorAddress={loaderData.investorAddress}
-          abi={loaderData.abi}
-          balance={loaderData.balance}
-          price={loaderData.price}
-          totalInvested={loaderData.totalInvested}
-          investorCut={loaderData.investorCut}
-          amount={loaderData.amount}
-        />
+        <ViewSmartContract {...loaderData} />
       )}
       {loaderData.valid && !loaderData.deployed && (
-        <DeploySmartContract
-          isInvestor={loaderData.isInvestor}
-          creatorAddress={loaderData.creatorAddress}
-          investorAddress={loaderData.investorAddress}
-          threshold={loaderData.threshold}
-          returnMultiple={loaderData.returnMultiple}
-          share={loaderData.share}
-          hash={loaderData.hash}
-          abi={loaderData.abi}
-          bytecode={loaderData.bytecode as ethers.utils.BytesLike}
-          price={loaderData.price}
-          versionHash={loaderData.versionHash}
-          hashAsAddress={loaderData.hashAsAddress}
-        />
+        <DeploySmartContract {...loaderData} />
       )}
     </ContractContainer>
   );

@@ -7,6 +7,7 @@ import {
   useCatch,
   ScrollRestoration,
   useLoaderData,
+  useTransition,
 } from "@remix-run/react";
 import {
   LinksFunction,
@@ -17,6 +18,7 @@ import {
 import { ClerkApp, ClerkCatchBoundary } from "@clerk/remix";
 import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 import DefaultErrorBoundary from "./_common/DefaultErrorBoundary";
+import { LoadingIndicator } from "./_common/LoadingIndicator";
 
 const themeProps = {
   palette: {
@@ -235,6 +237,22 @@ const RootContainer = styled.div`
   height: 100%;
 `;
 
+const LoadingContainer = styled.div`
+  z-index: 10000;
+  position: fixed;
+  bottom: 8px;
+  left: 8px;
+`;
+
+const PageTransition = () => {
+  const transition = useTransition();
+  return transition.state === "loading" ? (
+    <LoadingContainer>
+      <LoadingIndicator />
+    </LoadingContainer>
+  ) : null;
+}
+
 const App = () => {
   const data = useLoaderData<{ ENV: Record<string, string> }>();
   return (
@@ -252,6 +270,7 @@ const App = () => {
           <RootContainer id="root">
             <Outlet />
           </RootContainer>
+          <PageTransition />
         </ThemeProvider>
         <ScrollRestoration />
         <script

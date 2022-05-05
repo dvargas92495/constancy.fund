@@ -1,3 +1,5 @@
+import type { Lambda } from "aws-sdk";
+
 const invokeAsync =
   process.env.NODE_ENV === "production"
     ? <T extends Record<string, unknown>>({
@@ -7,9 +9,10 @@ const invokeAsync =
         path: string;
         data: T;
       }) =>
-        import("aws-sdk")
+        Promise.resolve(require("aws-sdk"))
           .then(
-            (AWS) => new AWS.default.Lambda({ region: process.env.AWS_REGION })
+            (AWS) =>
+              new AWS.Lambda({ region: process.env.AWS_REGION }) as Lambda
           )
           .then((lambda) =>
             lambda

@@ -9,6 +9,7 @@ import { FE_PUBLIC_DIR } from "fuegojs/dist/common";
 import path from "path";
 import { v4 } from "uuid";
 import { Id, dbTypeById } from "~/enums/paymentPreferences";
+import type { Lambda } from "aws-sdk";
 
 const invokeDirect =
   process.env.NODE_ENV === "production"
@@ -17,9 +18,10 @@ const invokeDirect =
         outfile?: string | undefined;
         inputData?: Record<string, string> | undefined;
       }) =>
-        import("aws-sdk")
+        Promise.resolve(require("aws-sdk"))
           .then(
-            (AWS) => new AWS.default.Lambda({ region: process.env.AWS_REGION })
+            (AWS) =>
+              new AWS.Lambda({ region: process.env.AWS_REGION }) as Lambda
           )
           .then((lambda) =>
             lambda

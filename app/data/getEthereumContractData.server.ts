@@ -3,43 +3,15 @@ import uploadToIpfs from "./uploadToIpfs.server";
 import getMysql from "./mysql.server";
 import { NotFoundError } from "aws-sdk-plus/dist/errors";
 import getPaymentPreferences from "./getPaymentPreferences.server";
-import FUNDRAISE_TYPES from "../enums/fundraiseTypes";
+import FUNDRAISE_TYPES from "~/enums/fundraiseTypes";
 import fs from "fs";
 import bs58 from "bs58";
-import { providers, Contract, ContractInterface, utils } from "ethers";
+import { providers, Contract, ContractInterface, utils, ethers } from "ethers";
+import { infuraEthersProvidersById } from "~/enums/web3Networks";
+import type { S3 } from "aws-sdk";
 
 const ipfsHashToBytes32 = (s: string) =>
   `0x${Buffer.from(bs58.decode(s).slice(2)).toString("hex")}`;
-
-const MAINNET_NETWORK_ID = 0x1;
-const KOVAN_NETWORK_ID = 0x2a;
-const ROPSTEN_NETWORK_ID = 0x3;
-const RINKEBY_NETWORK_ID = 0x4;
-const GOERLI_NETWORK_ID = 0x5;
-const OPTIMISM_NETWORK_ID = 10;
-const OPTIMISM_KOVAN_NETWORK_ID = 69;
-const ARBITRUM_TEST_NETWORK_ID = 421611;
-const ARBITRUM_NETWORK_ID = 42161;
-const POLYGON_MAIN_NETWORK_ID = 137;
-const POLYGON_TEST_NETWORK_ID = 80001;
-const LOCALHOST_NETWORK_ID = 0x7a69;
-
-const infuraEthersProvidersById: {
-  [id: number]: string;
-} = {
-  [LOCALHOST_NETWORK_ID]: "localhost",
-  [KOVAN_NETWORK_ID]: "kovan",
-  [ROPSTEN_NETWORK_ID]: "ropsten",
-  [MAINNET_NETWORK_ID]: "homestead",
-  [RINKEBY_NETWORK_ID]: "rinkeby",
-  [OPTIMISM_NETWORK_ID]: "optimism",
-  [OPTIMISM_KOVAN_NETWORK_ID]: "optimism-kovan",
-  [POLYGON_MAIN_NETWORK_ID]: "matic",
-  [POLYGON_TEST_NETWORK_ID]: "maticmum",
-  [GOERLI_NETWORK_ID]: "goerli",
-  [ARBITRUM_TEST_NETWORK_ID]: "arbitrum-rinkeby",
-  [ARBITRUM_NETWORK_ID]: "arbitrum",
-};
 
 const getEthPriceInUsd = () =>
   axios
@@ -47,6 +19,43 @@ const getEthPriceInUsd = () =>
       `https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd`
     )
     .then((r) => r.data.ethereum.usd);
+
+export type InvalidData = { valid: false; deployed: false };
+export type DeployedData = {
+  deployed: true;
+  valid: true;
+  creatorAddress: string;
+  investorAddress: string;
+  address: string;
+  network: number;
+  abi: ContractInterface;
+  amount: number;
+  price: number;
+  totalInvested: string;
+  totalRevenue: string;
+  totalReturned: string;
+  balance: string;
+  investorCut: string;
+  investmentAllocated: string;
+  revenueAllocated: string;
+  returnAllocated: string;
+  totalBalance: string;
+};
+export type ReadyData = {
+  valid: true;
+  deployed: false;
+  creatorAddress: string;
+  investorAddress: string;
+  share: string;
+  returnMultiple: string;
+  threshold: string;
+  hash: string;
+  hashAsAddress: string;
+  abi: ContractInterface;
+  bytecode: utils.BytesLike;
+  price: number;
+  versionHash: string;
+};
 
 const getEthereumContractData = ({ uuid }: { uuid: string }) => {
   return getMysql().then(({ execute, destroy }) => {
@@ -115,38 +124,7 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
           type,
           hash,
           amount,
-        }): Promise<
-          | { valid: false; deployed: false }
-          | {
-              deployed: true;
-              valid: true;
-              creatorAddress: string;
-              investorAddress: string;
-              address: string;
-              network: number;
-              abi: ContractInterface;
-              amount: number;
-              price: number;
-              totalInvested: string;
-              balance: string;
-              investorCut: string;
-            }
-          | {
-              valid: true;
-              deployed: false;
-              creatorAddress: string;
-              investorAddress: string;
-              share: string;
-              returnMultiple: string;
-              threshold: string;
-              hash: string;
-              hashAsAddress: string;
-              abi: ContractInterface;
-              bytecode: utils.BytesLike;
-              price: number;
-              versionHash: string;
-            }
-        > => {
+        }): Promise<InvalidData | ReadyData | DeployedData> => {
           if (
             !creatorPaymentPreferences["ethereum"] ||
             !investorPaymentPreferences["ethereum"]
@@ -172,9 +150,33 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                   contract.investor().then((s: string) => s.toLowerCase()),
                   Promise.resolve(res.data.abi),
                   getEthPriceInUsd(),
-                  contract.totalInvested().then((s: number) => utils.formatEther(s)),
-                  contract.balance().then((s: number) => utils.formatEther(s)),
-                  contract.investorCut().then((s: number) => utils.formatEther(s)),
+                  contract
+                    .totalInvested()
+                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
+                  contract
+                    .totalRevenue()
+                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
+                  contract
+                    .totalReturned()
+                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
+                  contract
+                    .balance()
+                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
+                  contract
+                    .investorCut()
+                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
+                  contract
+                    .investmentAllocated()
+                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
+                  contract
+                    .revenueAllocated()
+                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
+                  contract
+                    .returnAllocated()
+                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
+                  provider
+                    .getBalance(contract.address)
+                    .then((s) => utils.formatEther(s)),
                 ]);
               })
               .then(
@@ -184,8 +186,14 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                   abi,
                   price,
                   totalInvested,
+                  totalRevenue,
+                  totalReturned,
                   balance,
                   investorCut,
+                  investmentAllocated,
+                  revenueAllocated,
+                  returnAllocated,
+                  totalBalance,
                 ]) => ({
                   valid: true,
                   deployed: true,
@@ -197,8 +205,14 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                   amount,
                   price,
                   totalInvested,
+                  totalRevenue,
+                  totalReturned,
                   balance,
                   investorCut,
+                  investmentAllocated,
+                  revenueAllocated,
+                  returnAllocated,
+                  totalBalance,
                 })
               );
           }
@@ -214,8 +228,8 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                   .then((res) => ({ ...res.data, versionHash: hash }))
               ),
             (process.env.NODE_ENV === "production"
-              ? import("aws-sdk")
-                  .then((AWS) => new AWS.default.S3())
+              ? Promise.resolve(require("aws-sdk"))
+                  .then((AWS) => new AWS.S3() as S3)
                   .then((s3) =>
                     s3
                       .getObject({

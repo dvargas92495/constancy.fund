@@ -1,7 +1,8 @@
 import getMeta from "~/_common/getMeta";
 import React from "react";
 import { createGlobalStyle } from "styled-components";
-import { Link as RemixLink, LoaderFunction, Outlet, redirect } from "remix";
+import { Link as RemixLink, Outlet, useTransition } from "@remix-run/react";
+import { LoaderFunction, redirect } from "@remix-run/node";
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
 import ListItemIcon from "~/_common/ListItemIcon";

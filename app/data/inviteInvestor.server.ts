@@ -41,9 +41,9 @@ const inviteInvestor = ({
       })
       .then((agreementUuid) => {
         destroy();
-        return import("aws-sdk-plus/dist/sendEmail")
-          .then((sendEmail) =>
-            sendEmail.default({
+        return import("aws-sdk-plus")
+          .then((aws) =>
+            aws.default.sendEmail({
               to: email,
               replyTo:
                 user.emailAddresses.find(

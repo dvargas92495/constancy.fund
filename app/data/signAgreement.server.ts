@@ -69,7 +69,7 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
           return getPaymentPreferences(r.investorUuid, execute)
             .then((investorPaymentPreferences) =>
               import("aws-sdk-plus").then((aws) =>
-                aws.sendEmail({
+                aws.default.sendEmail({
                   to: r.userEmail,
                   replyTo: r.investorEmail,
                   subject: `${r.investorName} has signed the agreement!`,
@@ -94,7 +94,7 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
           return getPaymentPreferences(r.id || "", execute).then(
             (creatorPaymentPreferences) =>
               import("aws-sdk-plus").then((aws) =>
-                aws.sendEmail({
+                aws.default.sendEmail({
                   to: r.investorEmail,
                   replyTo: r.userEmail,
                   subject: `${r.userName} has signed the agreement!`,
