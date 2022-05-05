@@ -44,6 +44,10 @@ jobs:
         run: npm install
       - name: migrate
         run: npm run migrate
+      - name: build contract
+        run: npx hardhat compile
+      - name: Deploy to IPFS
+        run: npx ts-node scripts/deploy-smart-contract.ts
       - name: build api
         run: npm run compile -- --readable
         env:
