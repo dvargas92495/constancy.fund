@@ -22,7 +22,7 @@ const CreatorSigned = ({
     <EmailLayout>
       <p>Hi {investorName},</p>
       <p>
-        Congratulations! Both you and {creatorName} have signed the $
+        Congratulations! Both you and {creatorName} have signed the{" "}
         {contractType}! You may begin sending them funds through one of the
         viable payment preferences below:
       </p>

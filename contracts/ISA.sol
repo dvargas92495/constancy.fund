@@ -17,6 +17,7 @@ contract ISA is Ownable {
     uint256 public investmentAllocated;
     uint256 public returnAllocated;
     uint256 public revenueAllocated;
+    bool public closed;
 
     constructor(
         address _investor,
@@ -32,9 +33,11 @@ contract ISA is Ownable {
         returnMultiple = _returnMultiple;
         allowance = _allowance;
         ipfsHash = _ipfsHash;
+        closed = false;
     }
 
     function invest() external payable {
+        require(!closed, "The funding has closed for this contract");
         require(
             investor == msg.sender,
             "Only the investor can invest in this contract"
@@ -92,5 +95,13 @@ contract ISA is Ownable {
             success,
             "Address: unable to send value, recipient may have reverted"
         );
+    }
+
+    function closeInvestments() public {
+        require(
+            msg.sender == owner(),
+            "Only contract owner could close investments"
+        );
+        closed = true;
     }
 }

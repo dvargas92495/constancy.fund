@@ -6,7 +6,13 @@ import getEversign from "./eversign.server";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import getPaymentPreferences from "./getPaymentPreferences.server";
 
-const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
+const signAgreement = ({
+  agreementUuid,
+  // userId,
+}: {
+  agreementUuid: string;
+  userId: string | null;
+}) =>
   getMysql().then(({ execute, destroy }) => {
     return execute(
       `SELECT e.id, i.uuid, i.name, i.email, c.userId, c.type, c.uuid as contract, a.amount
@@ -35,9 +41,7 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
         return Promise.all([
           getEversign()
             .then((eversign) => eversign.getDocumentByHash(doc.id))
-            .then((r) =>
-              r.getSigners().reduce((p, c) => (c.getSigned() ? p + 1 : p), 0)
-            ),
+            .then((r) => r.getSigners()),
           import("@clerk/clerk-sdk-node")
             .then((clerk) => clerk.users.getUser(doc.userId))
             .then((u) => ({
@@ -64,27 +68,11 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
           Promise.resolve(doc.amount),
         ]);
       })
-      .then(([numSigners, r, details, agreementAmount]) => {
-        if (numSigners === 1) {
-          return getPaymentPreferences(r.investorUuid, execute)
-            .then((investorPaymentPreferences) =>
-              import("aws-sdk-plus").then((aws) =>
-                aws.default.sendEmail({
-                  to: r.userEmail,
-                  replyTo: r.investorEmail,
-                  subject: `${r.investorName} has signed the agreement!`,
-                  body: renderInvestorSigned({
-                    investorName: r.investorName,
-                    investorPaymentPreferences,
-                    creatorName: r.userName,
-                    contractType: r.contractType,
-                    agreementUuid,
-                  }),
-                })
-              )
-            )
-            .then(() => ({}));
-        } else if (numSigners === 2) {
+      .then(([allSigners, r, details, agreementAmount]) => {
+        const totalSigners = allSigners.length;
+        const signers = allSigners.filter((s) => s.getSigned());
+        // const noSigners = allSigners.filter((s) => !s.getSigned());
+        if (signers.length === totalSigners) {
           const contractDetails = Object.fromEntries(
             (details as { label: string; value: string }[]).map((d) => [
               d.label,
@@ -109,6 +97,25 @@ const signAgreement = ({ agreementUuid }: { agreementUuid: string }) =>
                 })
               )
           );
+        } else if (signers.length > 0) {
+          return getPaymentPreferences(r.investorUuid, execute)
+            .then((investorPaymentPreferences) =>
+              import("aws-sdk-plus").then((aws) =>
+                aws.default.sendEmail({
+                  to: r.userEmail,
+                  replyTo: r.investorEmail,
+                  subject: `${r.investorName} has signed the agreement!`,
+                  body: renderInvestorSigned({
+                    investorName: r.investorName,
+                    investorPaymentPreferences,
+                    creatorName: r.userName,
+                    contractType: r.contractType,
+                    agreementUuid,
+                  }),
+                })
+              )
+            )
+            .then(() => ({}));
         } else {
           throw new MethodNotAllowedError(`No one has actually signed`);
         }

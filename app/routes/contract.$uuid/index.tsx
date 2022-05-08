@@ -73,7 +73,7 @@ const ContractContentPage = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const fetcher = useFetcher();
   useEffect(() => {
-     if (fetcher.data?.success) {
+    if (fetcher.data?.success) {
       setSigned(true);
       setSnackbarOpen(true);
     }
@@ -123,13 +123,16 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   );
 };
 
-export const action: ActionFunction = async ({ params }) => {
+export const action: ActionFunction = async ({ params, request }) => {
   const agreementUuid = params.uuid;
   if (!agreementUuid)
     throw new Response("`agreementUuid` is required", { status: 400 });
   if (typeof agreementUuid !== "string")
     throw new Response("`agreementUuid` must be a string", { status: 400 });
-  return signAgreement({ agreementUuid }).then(() =>
+  const { userId } = await import("@clerk/remix/ssr.server.js").then((clerk) =>
+    clerk.getAuth(request)
+  );
+  return signAgreement({ agreementUuid, userId }).then(() =>
     redirect(`/contract/${agreementUuid}/success`)
   );
 };
