@@ -6,11 +6,13 @@ import {
   useLoaderData,
   useParams,
   useFetcher,
+  useTransition,
 } from "@remix-run/react";
 import getContractPaymentPreferences from "~/data/getContractPaymentPreferences.server";
 import { useState } from "react";
 import Toast from "~/_common/Toast";
 import signAgreement from "~/data/signAgreement.server";
+import DefaultErrorBoundary from "~/_common/DefaultErrorBoundary";
 
 const SignedContainer = styled.div`
   padding: 32px;
@@ -31,6 +33,7 @@ const ContractSuccessPage = () => {
   const params = useParams();
   const [toastMessage, setToastMessage] = useState("");
   const fetcher = useFetcher();
+  const submitting = useTransition().state === "submitting";
   return (
     <div>
       <SignedContainer>
@@ -41,12 +44,14 @@ const ContractSuccessPage = () => {
             onClick={() => {
               fetcher.submit({ operation: "resend" }, { method: "post" });
             }}
+            isLoading={submitting}
           />
           <SecondaryAction
             label={"Download Contract"}
             onClick={() => {
               setToastMessage("Feature coming soon");
             }}
+            isLoading={submitting}
           />
           {Object.keys(preferences).map((pref) => (
             <div key={pref}>
@@ -54,6 +59,7 @@ const ContractSuccessPage = () => {
                 <SecondaryAction
                   label={"View Ethereum Smart Contract"}
                   onClick={() => navigate(`/contract/${params.uuid}/ethereum`)}
+                  isLoading={submitting}
                 />
               )}
             </div>
@@ -91,7 +97,9 @@ export const action: ActionFunction = async ({ request, params }) => {
   const uuid = params["uuid"] || "";
   switch (operation) {
     case "resend":
-      return signAgreement({ agreementUuid: uuid, userId });
+      return signAgreement({ agreementUuid: uuid, userId }).catch((e) => {
+        throw new Response(e.message, { status: 500 });
+      });
     default:
       throw new Response(`Unknown operation: ${operation}`, { status: 400 });
   }
@@ -100,5 +108,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 export const handle = {
   title: "Success!",
 };
+
+export const ErrorBoundary = DefaultErrorBoundary;
 
 export default ContractSuccessPage;

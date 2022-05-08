@@ -251,7 +251,7 @@ const PageTransition = () => {
       <LoadingIndicator />
     </LoadingContainer>
   ) : null;
-}
+};
 
 const App = () => {
   const data = useLoaderData<{ ENV: Record<string, string> }>();
