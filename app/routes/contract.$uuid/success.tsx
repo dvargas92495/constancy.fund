@@ -13,6 +13,7 @@ import { useState } from "react";
 import Toast from "~/_common/Toast";
 import signAgreement from "~/data/signAgreement.server";
 import DefaultErrorBoundary from "~/_common/DefaultErrorBoundary";
+import DefaultCatchBoundary from "~/_common/DefaultCatchBoundary";
 
 const SignedContainer = styled.div`
   padding: 32px;
@@ -110,5 +111,7 @@ export const handle = {
 };
 
 export const ErrorBoundary = DefaultErrorBoundary;
+
+export const CatchBoundary = DefaultCatchBoundary;
 
 export default ContractSuccessPage;

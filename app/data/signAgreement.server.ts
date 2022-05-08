@@ -1,15 +1,14 @@
 import getMysql from "./mysql.server";
-import { render as renderInvestorSigned } from "../emails/InvestorSigned";
-import { render as renderCreatorSigned } from "../emails/CreatorSigned";
 import FUNDRAISE_TYPES from "../enums/fundraiseTypes";
 import getEversign from "./eversign.server";
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import getPaymentPreferences from "./getPaymentPreferences.server";
+import invokeAsync from "./invokeAsync.server";
 
 const signAgreement = ({
   agreementUuid,
-  // userId,
-}: {
+}: // userId,
+{
   agreementUuid: string;
   userId: string | null;
 }) =>
@@ -81,39 +80,43 @@ const signAgreement = ({
           );
           return getPaymentPreferences(r.id || "", execute).then(
             (creatorPaymentPreferences) =>
-              import("aws-sdk-plus").then((aws) =>
-                aws.default.sendEmail({
+              invokeAsync({
+                path: "send-email",
+                data: {
                   to: r.investorEmail,
                   replyTo: r.userEmail,
                   subject: `${r.userName} has signed the agreement!`,
-                  body: renderCreatorSigned({
+                  bodyComponent: "creator-signed",
+                  bodyProps: {
                     investorName: r.investorName,
                     creatorName: r.userName,
                     contractType: r.contractType,
                     creatorPaymentPreferences,
                     contractDetails,
                     agreementAmount,
-                  }),
-                })
-              )
+                  },
+                },
+              })
           );
         } else if (signers.length > 0) {
           return getPaymentPreferences(r.investorUuid, execute)
             .then((investorPaymentPreferences) =>
-              import("aws-sdk-plus").then((aws) =>
-                aws.default.sendEmail({
+              invokeAsync({
+                path: "send-email",
+                data: {
                   to: r.userEmail,
                   replyTo: r.investorEmail,
                   subject: `${r.investorName} has signed the agreement!`,
-                  body: renderInvestorSigned({
+                  bodyComponent: "investor-signed",
+                  bodyProps: {
                     investorName: r.investorName,
                     investorPaymentPreferences,
                     creatorName: r.userName,
                     contractType: r.contractType,
                     agreementUuid,
-                  }),
-                })
-              )
+                  },
+                },
+              })
             )
             .then(() => ({}));
         } else {

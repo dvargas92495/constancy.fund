@@ -1,8 +1,8 @@
 import { MethodNotAllowedError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import type { User } from "@clerk/clerk-sdk-node";
 import getMysql from "./mysql.server";
-import { render } from "../emails/InvitationToFund";
 import { v4 } from "uuid";
+import invokeAsync from "./invokeAsync.server";
 
 const inviteInvestor = ({
   user,
@@ -41,24 +41,24 @@ const inviteInvestor = ({
       })
       .then((agreementUuid) => {
         destroy();
-        return import("aws-sdk-plus")
-          .then((aws) =>
-            aws.default.sendEmail({
-              to: email,
-              replyTo:
-                user.emailAddresses.find(
-                  (e) => e.id === user.primaryEmailAddressId
-                )?.emailAddress || undefined,
-              subject: `Invitation to fund ${user.firstName} ${user.lastName}`,
-              body: render({
-                investorName: name,
-                creatorName: `${user.firstName} ${user.lastName}`,
-                creatorId: user.id || "",
-                agreementUuid,
-              }),
-            })
-          )
-          .then(() => ({ uuid: agreementUuid }));
+        return invokeAsync({
+          path: "send-email",
+          data: {
+            to: email,
+            replyTo:
+              user.emailAddresses.find(
+                (e) => e.id === user.primaryEmailAddressId
+              )?.emailAddress || undefined,
+            subject: `Invitation to fund ${user.firstName} ${user.lastName}`,
+            bodyComponent: "invitation-to-fund",
+            bodyProps: {
+              investorName: name,
+              creatorName: `${user.firstName} ${user.lastName}`,
+              creatorId: user.id || "",
+              agreementUuid,
+            },
+          },
+        }).then(() => ({ uuid: agreementUuid }));
       });
   });
 
