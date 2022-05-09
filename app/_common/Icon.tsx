@@ -206,7 +206,7 @@ const Icon = React.forwardRef<
 });
 
 type StyledIconProps = {
-  icon?: any;
+  icon?: string;
   height?: string | number;
   width?: string | number;
   color?: string;

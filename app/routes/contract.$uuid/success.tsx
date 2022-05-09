@@ -6,7 +6,6 @@ import {
   useLoaderData,
   useParams,
   useFetcher,
-  useTransition,
 } from "@remix-run/react";
 import getContractPaymentPreferences from "~/data/getContractPaymentPreferences.server";
 import { useState } from "react";
@@ -76,7 +75,7 @@ const ContractSuccessPage = () => {
       >
         {toastMessage}
       </Toast>
-      <SuccessSnackbar message="Successfully resent email!" />
+      <SuccessSnackbar message="Successfully resent email!" fetcher={fetcher} />
     </div>
   );
 };

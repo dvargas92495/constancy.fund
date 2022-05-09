@@ -35,10 +35,10 @@ const getFundraiseData = ({ uuid, userId }: { uuid: string; userId: string }) =>
         );
       const statuses = await Promise.all(
         Array.from(new Set(fundraise.map(({ id }) => id)))
-          .filter((id) => !!id)
+          .filter((id): id is string => !!id)
           .map((id) =>
             getEversign()
-              .then((eversign) => eversign.getDocumentByHash(id!))
+              .then((eversign) => eversign.getDocumentByHash(id))
               .then((r) =>
                 r.getSigners().every((s) => s.getSigned())
                   ? 3

@@ -392,7 +392,7 @@ function ImageUploader({
     setHasFileError(false);
   };
   const closeModal = () => setIsModalOpen(false);
-  const uploadSuccess = (img: any) => {
+  const uploadSuccess = (img: File) => {
     void handleSuccess(img).then(() => closeModal());
   };
   const uploadError = () => {

@@ -22,7 +22,7 @@ const InvitationToFund = ({
         >
           Click here
         </a>{" "}
-        to visit this creator's public profile and enter your details.
+        to visit this creator&apos;s public profile and enter your details.
       </p>
       <hr />
       <p>

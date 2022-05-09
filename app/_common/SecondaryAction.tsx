@@ -66,7 +66,7 @@ export const SecondaryAction = ({
   label: React.ReactNode;
   onClick: React.EventHandler<React.MouseEvent | React.KeyboardEvent>;
   disabled?: boolean;
-  innerRef?: any;
+  innerRef?: React.RefObject<HTMLDivElement>;
   fontSize?: string;
   isLoading?: boolean;
   height?: string;

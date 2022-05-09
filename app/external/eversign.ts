@@ -71,7 +71,7 @@ const eversign = {
     if (
       eventType &&
       eventTypes.includes(eventType) &&
-      eversign.callbacks.hasOwnProperty(eventType)
+      eversign.callbacks[eventType]
     ) {
       const callback = eversign.callbacks[eventType];
       if (typeof callback == "function") callback();

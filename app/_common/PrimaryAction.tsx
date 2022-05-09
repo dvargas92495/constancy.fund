@@ -80,7 +80,7 @@ export const PrimaryAction = ({
   label: React.ReactNode;
   onClick?: React.EventHandler<React.KeyboardEvent | React.MouseEvent>;
   disabled?: boolean;
-  innerRef?: any;
+  innerRef?: React.RefObject<HTMLButtonElement>;
   fontSize?: string;
   isLoading?: boolean;
   height?: string;
@@ -103,7 +103,7 @@ export const PrimaryAction = ({
       onKeyPress={(e) => (e.key === "Enter" ? onClick?.(e) : false)}
       height={height}
       width={width}
-      bgColor={!!actionData?.error ? "warning" : bgColor}
+      bgColor={actionData?.error ? "warning" : bgColor}
       type={type}
       id={id}
     >

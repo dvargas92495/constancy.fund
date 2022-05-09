@@ -1,15 +1,24 @@
 import { useEffect, useState } from "react";
-import { useActionData } from "@remix-run/react";
+import { useActionData, useFetcher } from "@remix-run/react";
 import Toast from "./Toast";
 
-const SuccessSnackbar = ({ message }: { message: string }) => {
+const SuccessSnackbar = ({
+  message,
+  fetcher,
+}: {
+  message: string;
+  fetcher?: ReturnType<typeof useFetcher>;
+}) => {
   const actionData = useActionData();
   const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
-    if (actionData?.success) {
+    if (
+      actionData?.success ||
+      (fetcher?.data as { success?: boolean })?.success
+    ) {
       setIsOpen(true);
     }
-  }, [actionData, setIsOpen]);
+  }, [actionData, setIsOpen, fetcher]);
   return (
     <Toast
       open={isOpen}

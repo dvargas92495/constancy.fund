@@ -259,7 +259,7 @@ const SubscribeBox = () => {
   return subscribed ? (
     <SubscribeConfirmBox>
       <Icon name="check" heightAndWidth="16px" />
-      You're subscribed!
+      You&apos;re subscribed!
     </SubscribeConfirmBox>
   ) : (
     <SignupBox method="post">
@@ -302,7 +302,7 @@ const Home: React.FC = () => {
         </UseCaseTitle>
         <ShortPitchDescription>
           Its hard getting to your initial capital if your company does not fit
-          the growth expectations of Venture Capital investments or you don't
+          the growth expectations of Venture Capital investments or you don&apos;t
           want to sell equity because of conflicting company values.
         </ShortPitchDescription>
       </ShortPitchSection>
@@ -321,7 +321,7 @@ const Home: React.FC = () => {
           <UseCaseExampleBox>
             <UseCaseExampleTitle>Small Businesses</UseCaseExampleTitle>
             <UseCaseExampleDescription>
-              Can't get Venture Capital investments or getting a loan from a
+              Can&apos;t get Venture Capital investments or getting a loan from a
               bank is not the right fit?
             </UseCaseExampleDescription>
           </UseCaseExampleBox>
