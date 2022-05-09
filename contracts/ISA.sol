@@ -10,7 +10,7 @@ contract ISA is Ownable {
     uint256 public allowance;
     bytes32 public ipfsHash;
 
-    uint256 public balance;
+    uint256 public balance; // should've actually been named `unallocated`
     uint256 public totalInvested;
     uint256 public totalRevenue;   
     uint256 public totalReturned;
@@ -62,6 +62,14 @@ contract ISA is Ownable {
             ) * share / 10000;
         uint256 space = (returnMultiple*totalInvested / 10000) - totalReturned;
         return raw < space ? raw : space;
+    }
+
+    function creatorWithdrawPreview() public view returns (uint256) {
+        return investmentAllocated + revenueAllocated + balance - investorCut();
+    }
+
+    function investorWithdrawPreview() public view returns (uint256) {
+        return returnAllocated + investorCut();
     }
 
     function creatorWithdraw() public {

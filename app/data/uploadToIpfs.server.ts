@@ -12,7 +12,7 @@ const uploadToIpfs = ({ file }: { file: Buffer }) => {
       {
         headers: {
           ...formData.getHeaders(),
-          Authorization: `Bearer ${Buffer.from(
+          Authorization: `Basic ${Buffer.from(
             `${process.env.IPFS_INFURA_ID}:${process.env.IPFS_INFURA_SECRET}`
           ).toString("base64")}`,
         },
@@ -25,7 +25,7 @@ const uploadToIpfs = ({ file }: { file: Buffer }) => {
           {},
           {
             headers: {
-              Authorization: `Bearer ${Buffer.from(
+              Authorization: `Basic ${Buffer.from(
                 `${process.env.IPFS_INFURA_ID}:${process.env.IPFS_INFURA_SECRET}`
               ).toString("base64")}`,
             },
