@@ -256,7 +256,7 @@ const ISADetailForm = () => {
         <HowMuchSubSection>
           <RadioGroup>
             {ISA_SUPPORT_TYPES.map(({ label, value, description }) => (
-              <RadioContainer>
+              <RadioContainer key={value}>
                 <RadioInput
                   type={"radio"}
                   name="supportType"
@@ -307,7 +307,7 @@ const ISADetailForm = () => {
           {supportType && (
             <TextFieldBox>
               <TextFieldDescription required>
-                Amount you'd like to raise
+                Amount you&apos;d like to raise
               </TextFieldDescription>
               <TextInputContainer>
                 <TextInputOneLine
@@ -408,7 +408,7 @@ const ISADetailForm = () => {
       <Section>
         <SubSectionTitle>Additional Contract Clauses</SubSectionTitle>
         <InfoText>
-          Do you have any special requirements in this contract that you'd like
+          Do you have any special requirements in this contract that you&apos;d like
           to add? It is <b>strongly</b> advised to cross-check these terms with
           a legal professional.
         </InfoText>

@@ -1,16 +1,17 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@typescript-eslint"
-  ],
+  "plugins": ["@typescript-eslint", "react"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended"
   ],
-  "ignorePatterns": [
-    "**/dist/*",
-    "scripts/"
-  ]
+  "ignorePatterns": ["**/dist/*", "scripts/"],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/display-name": "off",
+    "react/prop-types": "off"
+  }
 }

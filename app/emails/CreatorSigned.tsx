@@ -17,7 +17,7 @@ const CreatorSigned = ({
   creatorPaymentPreferences: Record<Id, Record<string, string>>;
   contractDetails: Record<string, string>;
   agreementAmount: number;
-}) => {
+}): React.ReactElement => {
   return (
     <EmailLayout>
       <p>Hi {investorName},</p>

@@ -48,6 +48,7 @@
     "cross-spawn": "^7.0.3",
     "cypress": "^9.5.2",
     "eslint": "^8.4.0",
+    "eslint-plugin-react": "^7.29.4",
     "ethereum-waffle": "^3.4.4",
     "ethers": "^5.6.4",
     "fuegojs": "^0.26.8",

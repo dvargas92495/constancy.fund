@@ -1,5 +1,3 @@
-import _H1 from "@dvargas92495/ui/components/H1";
-import _H4 from "@dvargas92495/ui/components/H4";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import TopBar from "~/_common/TopBar";
 import InfoArea from "~/_common/InfoArea";

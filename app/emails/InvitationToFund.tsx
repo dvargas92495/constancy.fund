@@ -1,4 +1,5 @@
 import EmailLayout from "./EmailLayout";
+import React from "react";
 
 const InvitationToFund = ({
   investorName,
@@ -10,7 +11,7 @@ const InvitationToFund = ({
   creatorName: string;
   creatorId: string;
   agreementUuid: string;
-}) => {
+}): React.ReactElement => {
   return (
     <EmailLayout>
       <p>Hi {investorName},</p>

@@ -191,7 +191,6 @@ const UserProfile = () => {
   const { user } = useUser();
   const saveImage = useCallback(
     (file: File) => {
-      // @ts-ignore
       return user!.setProfileImage({ file });
     },
     [user]
@@ -365,7 +364,7 @@ const UserProfile = () => {
             <a
               href={"https://stripe.com/atlas"}
               target={"_blank"}
-              rel="noopener"
+              rel="noreferrer"
             >
               Learn More.
             </a>

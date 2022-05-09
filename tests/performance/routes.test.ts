@@ -57,20 +57,20 @@ describe("Loads all routes in a reasonable amount of time", () => {
     proc.on("close", () => {
       // Do a single require of the output file - we are not trying to optimize cold start in these tests
       // We should optimize it though at some point - performance could go from 500ms to < 1ms
-      require(serverOutputFile);
-      done();
+      import(serverOutputFile).then(() => done());
     });
   });
 
-  test("GET `/` route", () => {
+  test("GET `/` route", async (done) => {
     const event = createCloudfrontRequest();
-    const { handler } = require(serverOutputFile);
+    const { handler } = await import(serverOutputFile);
     const startTime = process.hrtime.bigint();
     return handler(event, mockContext, mockCallback).then(
       (res: CloudFrontResponseResult) => {
         const endTime = process.hrtime.bigint();
         expect(res.status).toBe("200");
         expect(nsToMs(endTime - startTime)).toBeLessThan(100);
+        done();
       }
     );
   });

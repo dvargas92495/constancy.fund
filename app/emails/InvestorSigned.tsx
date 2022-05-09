@@ -1,6 +1,7 @@
 import { Id } from "~/enums/paymentPreferences";
 import paymentLabelsById from "~/_common/PaymentLabelsById";
 import EmailLayout from "./EmailLayout";
+import React from "react";
 
 const InvestorSigned = ({
   creatorName,
@@ -14,7 +15,7 @@ const InvestorSigned = ({
   contractType: string;
   agreementUuid: string;
   investorPaymentPreferences: Record<Id, Record<string, string>>;
-}) => {
+}): React.ReactElement => {
   return (
     <EmailLayout>
       <p>Hi {creatorName},</p>

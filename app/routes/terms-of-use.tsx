@@ -66,7 +66,7 @@ const TermsOfUsePage: React.FC = () => (
       respect to Third-Party Links. You use all Third-Party Links at your own
       risk, and should apply a suitable level of caution and discretion in doing
       so. When you click on any of the Third-Party Links, the applicable third
-      party's terms and policies apply, including the third party's privacy and
+      party&apos;s terms and policies apply, including the third party&apos;s privacy and
       data gathering practices.
     </p>
     <h2>Other Users</h2>
@@ -87,23 +87,23 @@ const TermsOfUsePage: React.FC = () => (
       action of every kind and nature, that has arisen or arises directly or
       indirectly out of, or that relates directly or indirectly to, the Site. If
       you are a California resident, you hereby waive California civil code
-      section 1542 in connection with the foregoing, which states: "a general
+      section 1542 in connection with the foregoing, which states: &quot;a general
       release does not extend to claims which the creditor does not know or
       suspect to exist in his or her favor at the time of executing the release,
       which if known by him or her must have materially affected his or her
-      settlement with the debtor."
+      settlement with the debtor.&quot;
     </p>
     <h2>Cookies and Web Beacons</h2>
     <p>
-      Like any other website, Constancy use 'cookies'. These
-      cookies are used to store information including visitors' preferences, and
+      Like any other website, Constancy use &apos;cookies&apos;. These
+      cookies are used to store information including visitors&apos; preferences, and
       the pages on the website that the visitor accessed or visited. The
-      information is used to optimize the users' experience by customizing our
-      web page content based on visitors' browser type and/or other information.
+      information is used to optimize the users&apos; experience by customizing our
+      web page content based on visitors&apos; browser type and/or other information.
     </p>
     <h2>Disclaimers</h2>
     <p>
-      The site is provided on an "as-is" and "as available" basis, and company
+      The site is provided on an &quot;as-is&quot; and &quot;as available&quot; basis, and company
       and our suppliers expressly disclaim any and all warranties and conditions
       of any kind, whether express, implied, or statutory, including all
       warranties or conditions of merchantability, fitness for a particular
@@ -332,7 +332,7 @@ const TermsOfUsePage: React.FC = () => (
     <p>
       Notwithstanding the foregoing, claims of defamation, violation of the
       Computer Fraud and Abuse Act, and infringement or misappropriation of the
-      other party's patent, copyright, trademark or trade secrets shall not be
+      other party&apos;s patent, copyright, trademark or trade secrets shall not be
       subject to this Arbitration Agreement.
     </p>
     <p>
@@ -372,15 +372,15 @@ const TermsOfUsePage: React.FC = () => (
       the use of the Site. Our failure to exercise or enforce any right or
       provision of these Terms shall not operate as a waiver of such right or
       provision. The section titles in these Terms are for convenience only and
-      have no legal or contractual effect. The word "including" means "including
-      without limitation". If any provision of these Terms is held to be invalid
+      have no legal or contractual effect. The word &quot;including&quot; means &quot;including
+      without limitation&quot;. If any provision of these Terms is held to be invalid
       or unenforceable, the other provisions of these Terms will be unimpaired
       and the invalid or unenforceable provision will be deemed modified so that
       it is valid and enforceable to the maximum extent permitted by law. Your
       relationship to Company is that of an independent contractor, and neither
       party is an agent or partner of the other. These Terms, and your rights
       and obligations herein, may not be assigned, subcontracted, delegated, or
-      otherwise transferred by you without Company's prior written consent, and
+      otherwise transferred by you without Company&apos;s prior written consent, and
       any attempted assignment, subcontract, delegation, or transfer in
       violation of the foregoing will be null and void. Company may freely
       assign these Terms. The terms and conditions set forth in these Terms
@@ -389,12 +389,12 @@ const TermsOfUsePage: React.FC = () => (
     <h2> Your Privacy.</h2>
     <p>
       Please read our{" "}
-      <a href={"/privacy-policy"} target={"_blank"} rel={"noopener"}>Privacy Policy</a>.
+      <a href={"/privacy-policy"} target={"_blank"} rel={"noreferrer"}>Privacy Policy</a>.
     </p>
     <h2> Contact Information</h2>
     <p>
       Please read our{" "}
-      <a href={"/contact"} target={"_blank"} rel={"noopener"}>Contact Page</a>.
+      <a href={"/contact"} target={"_blank"} rel={"noreferrer"}>Contact Page</a>.
     </p>
   </Container>
 );

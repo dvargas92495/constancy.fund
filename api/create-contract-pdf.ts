@@ -64,9 +64,6 @@ type ContractData = {
   parts?: ContractPart[];
 };
 
-const getFirst = (s: NestedString): string =>
-  typeof s === "string" ? s : getFirst(s[0]);
-
 type ContractDetailData = { [key: string]: string | Date | ContractDetailData };
 
 export const handler = ({

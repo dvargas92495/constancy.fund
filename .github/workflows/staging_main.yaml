@@ -1,11 +1,12 @@
-name: Publish staging
+name: Publish staging app
 on:
   workflow_dispatch:
   push:
     branches: main
     paths:
-      - ".github/workflows/staging.yaml"
-      - "cypress/integration/primary.test.ts"
+      - "app/**"
+      - "server/**"
+      - ".github/workflows/staging_main.yaml"
 
 env:
   API_URL: https://api.staging.constancy.fund
@@ -16,13 +17,9 @@ env:
   CLERK_FRONTEND_API: clerk.rjzug.yeali.lcl.dev
   CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.STAGING_CLOUDFRONT_DISTRIBUTION_ID }}
   CONVERTKIT_API_KEY: ${{ secrets.CONVERTKIT_API_KEY }}
-  CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-  CYPRESS_USER_PASSWORD: ${{ secrets.CYPRESS_USER_PASSWORD }}
   DATABASE_URL: mysql://staging_constancy_fund:${{ secrets.STAGING_MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/staging_constancy_fund
   EVERSIGN_API_KEY: ${{ secrets.EVERSIGN_API_KEY }}
   INFURA_ID: ${{ secrets.INFURA_ID }}
-  IPFS_INFURA_ID: ${{ secrets.IPFS_INFURA_ID }}
-  IPFS_INFURA_SECRET: ${{ secrets.IPFS_INFURA_SECRET }}
   ORIGIN: https://staging.constancy.fund
   STRIPE_PUBLIC_KEY: ${{ secrets.STAGING_STRIPE_PUBLIC_KEY }}
   STRIPE_SECRET_KEY: ${{ secrets.STAGING_STRIPE_SECRET_KEY }}
@@ -42,30 +39,7 @@ jobs:
         run: npm install -g npm@latest
       - name: install
         run: npm install
-      - name: migrate
-        run: npm run migrate
-      - name: build contract
-        run: npx hardhat compile
-      - name: Deploy to IPFS
-        run: npx ts-node scripts/deploy-smart-contract.ts
-      - name: build api
-        run: npm run compile -- --readable
-        env:
-          FE_DIR_PREFIX: /tmp
-      - name: deploy api
-        run: npm run publish -- --name staging.constancy.fund
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.STAGINGL_AWS_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGINGL_AWS_ACCESS_SECRET }}
-          FE_DIR_PREFIX: /tmp
       - name: build fe
         run: npm run build -- --readable
       - name: deploy fe
         run: npm run deploy -- --domain staging.constancy.fund
-      - name: Cypress E2E Tests
-        run: npx cypress run --record --key ${{ secrets.CYPRESS_RECORD_KEY }}
-      # - name: Cypress E2E Tests
-      #   uses: cypress-io/github-action@v2
-      #   with:
-      #     browser: chrome
-      #     headless: true

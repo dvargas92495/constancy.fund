@@ -1,10 +1,10 @@
 name: Publish API
 on:
+  workflow_dispatch:
   push:
     branches: main
     paths:
-      - "functions/**"
-      - "package.json"
+      - "api/**"
       - ".github/workflows/api.yaml"
 
 env:
@@ -21,6 +21,7 @@ env:
   IS_PRODUCTION: 1
   ORIGIN: https://constancy.fund
   STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+  SUPPORT_EMAIL: support@constancy.fund
 
 jobs:
   deploy:

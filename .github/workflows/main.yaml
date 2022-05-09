@@ -4,7 +4,6 @@ on:
   push:
     branches: main
     paths:
-      - "package.json"
       - "app/**"
       - "server/**"
       - ".github/workflows/main.yaml"
@@ -24,6 +23,7 @@ env:
   IS_PRODUCTION: 1
   ORIGIN: https://constancy.fund
   STRIPE_PUBLIC_KEY: ${{ secrets.STRIPE_PUBLIC_KEY }}
+  SUPPORT_EMAIL: support@constancy.fund
 
 jobs:
   deploy:

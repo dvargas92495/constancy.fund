@@ -156,7 +156,8 @@ const FundraiseContentRow = ({
       { uuid: row.uuid },
       { method: "delete", action: "/user/fundraises?index" }
     );
-  }, [row.uuid, fetcher]);
+    onDeleteSuccess(row.uuid);
+  }, [row.uuid, fetcher, onDeleteSuccess]);
   return (
     <tr>
       <td style={{ minWidth: "120px", verticalAlign: "top" }}>{row.type}</td>

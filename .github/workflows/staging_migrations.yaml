@@ -1,0 +1,27 @@
+name: Publish staging migrations
+on:
+  workflow_dispatch:
+  push:
+    branches: main
+    paths:
+      - "migrations/**"
+      - ".github/workflows/staging.yaml"
+
+env:
+  DATABASE_URL: mysql://staging_constancy_fund:${{ secrets.STAGING_MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/staging_constancy_fund
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14.17.6
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.17.6
+      - name: Install NPM 8
+        run: npm install -g npm@latest
+      - name: install
+        run: npm install
+      - name: migrate
+        run: npm run migrate

@@ -14,6 +14,7 @@ import Toast from "~/_common/Toast";
 import signAgreement from "~/data/signAgreement.server";
 import DefaultErrorBoundary from "~/_common/DefaultErrorBoundary";
 import DefaultCatchBoundary from "~/_common/DefaultCatchBoundary";
+import SuccessSnackbar from "~/_common/SuccessSnackbar";
 
 const SignedContainer = styled.div`
   padding: 32px;
@@ -75,6 +76,7 @@ const ContractSuccessPage = () => {
       >
         {toastMessage}
       </Toast>
+      <SuccessSnackbar message="Successfully resent email!" />
     </div>
   );
 };

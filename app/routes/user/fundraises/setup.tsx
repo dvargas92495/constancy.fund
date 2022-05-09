@@ -1,5 +1,3 @@
-import _H1 from "@dvargas92495/ui/components/H1";
-import _H4 from "@dvargas92495/ui/components/H4";
 import FUNDRAISE_TYPES from "../../../enums/fundraiseTypes";
 import { useNavigate } from "remix";
 import Icon from "~/_common/Icon";
