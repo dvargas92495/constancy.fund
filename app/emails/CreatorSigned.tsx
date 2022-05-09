@@ -2,6 +2,7 @@ import EmailLayout from "./EmailLayout";
 import paymentLabelsById from "../_common/PaymentLabelsById";
 import { Id } from "../enums/paymentPreferences";
 import formatAmount from "../util/formatAmount";
+import React from "react";
 
 const CreatorSigned = ({
   investorName,

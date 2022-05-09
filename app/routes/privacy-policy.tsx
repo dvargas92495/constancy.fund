@@ -18,7 +18,10 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
     <p>
       If you have additional questions or require more information about our
       Privacy Policy, do not hesitate to{" "}
-      <a href={"/contact"} target={"_blank"} rel={"noopener"}>contact us</a>.
+      <a href={"/contact"} target={"_blank"} rel={"noreferrer"}>
+        contact us
+      </a>
+      .
     </p>
     <p>
       This Privacy Policy applies only to our online activities and is valid for
@@ -32,7 +35,10 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
     <p>
       By using our websites, you hereby consent to our Privacy Policy and agree
       to its terms. For our Terms and Conditions, please visit the{" "}
-      <a href={"/terms-of-use"} target={"_blank"} rel={"noopener"}>Terms Of Use</a>.
+      <a href={"/terms-of-use"} target={"_blank"} rel={"noreferrer"}>
+        Terms Of Use
+      </a>
+      .
     </p>
     <h2>Information we collect</h2>
     <p>
@@ -70,7 +76,7 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
     <p>
       Constancy follows a standard procedure of using log files. These files log
       visitors when they visit websites. All hosting companies do this and a
-      part of hosting services' analytics. The information collected by log
+      part of hosting services&apos; analytics. The information collected by log
       files include internet protocol (IP) addresses, browser type, Internet
       Service Provider (ISP), date and time stamp, referring/exit pages, and
       possibly the number of clicks. These are not linked to any information
@@ -80,19 +86,19 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
     </p>
     <h2>Cookies and Web Beacons</h2>
     <p>
-      Like any other website, Constancy uses 'cookies'. These cookies are used
-      to store information including visitors' preferences, and the pages on the
+      Like any other website, Constancy uses &apos;cookies&apos;. These cookies are used
+      to store information including visitors&apos; preferences, and the pages on the
       website that the visitor accessed or visited. The information is used to
-      optimize the users' experience by customizing our web page content based
-      on visitors' browser type and/or other information.
+      optimize the users&apos; experience by customizing our web page content based
+      on visitors&apos; browser type and/or other information.
     </p>
     <p>
-      For more general information on cookies, please read "What Are Cookies"
+      For more general information on cookies, please read &quot;What Are Cookies&quot;
       from Cookie Consent.
     </p>
     <h2>Third Party Privacy Policies</h2>
     <p>
-      Constancy's Privacy Policy does not apply to other websites. Thus, we are
+      Constancy&apos;s Privacy Policy does not apply to other websites. Thus, we are
       advising you to consult the respective Privacy Policies of these
       third-party servicers for more detailed information. It may include their
       practices and instructions about how to opt-out of certain options.
@@ -100,7 +106,7 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
     <p>
       You can choose to disable cookies through your individual browser options.
       To know more detailed information about cookie management with specific
-      web browsers, it can be found at the browsers' respective websites.
+      web browsers, it can be found at the browsers&apos; respective websites.
     </p>
     <h2>CCPA Privacy Rights</h2>
     <p>
@@ -109,7 +115,7 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
     </p>
     <ul>
       <li>
-        Request that a business that collects a consumer's personal data
+        Request that a business that collects a consumer&apos;s personal data
         disclose the categories and specific pieces of personal data that a
         business has collected about consumers.
       </li>
@@ -120,8 +126,8 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
       </li>
 
       <li>
-        Request that a business that sells a consumer's personal data, not sell
-        the consumer's personal data.
+        Request that a business that sells a consumer&apos;s personal data, not sell
+        the consumer&apos;s personal data.
       </li>
     </ul>
     <p>
@@ -166,7 +172,7 @@ const PrivacyPolicyPage: React.FunctionComponent = () => (
       If you make a request, we have one month to respond to you. If you would
       like to exercise any of these rights, please contact us.
     </p>
-    <h2>Children's Information</h2>
+    <h2>Children&apos;s Information</h2>
     <p>
       Another part of our priority is adding protection for children while using
       the internet. We encourage parents and guardians to observe, participate

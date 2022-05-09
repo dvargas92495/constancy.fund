@@ -326,7 +326,7 @@ const CreatorProfile = (): React.ReactElement => {
                 {socialProfiles.map((s, i) => {
                   const SocialIcon = icons.find(({ test }) => test.test(s));
                   return (
-                    <a target={"_blank"} rel={"noopener"} href={s} key={i}>
+                    <a target={"_blank"} rel={"noreferrer"} href={s} key={i}>
                       <Icon
                         heightAndWidth="16px"
                         color="purple"
@@ -350,9 +350,10 @@ const CreatorProfile = (): React.ReactElement => {
                 }
                 onClick={() => {
                   navigate(
-                    `/creator/${userId}/invest${agreementUuid
-                      ? `?agreement=${agreementUuid}`
-                      : `?fundraise=${fundraises[0].uuid}`
+                    `/creator/${userId}/invest${
+                      agreementUuid
+                        ? `?agreement=${agreementUuid}`
+                        : `?fundraise=${fundraises[0].uuid}`
                     }`
                   );
                 }}
@@ -364,7 +365,7 @@ const CreatorProfile = (): React.ReactElement => {
         </TopBarMainBox>
       </TopBarContainerMinified>
 
-      <TopBarProfile id={'top-bar-profile'}>
+      <TopBarProfile id={"top-bar-profile"}>
         <TopBarMainBox>
           <ProfileImageContainer scroll={scrollPosition}>
             <ProfileImage>
@@ -382,7 +383,7 @@ const CreatorProfile = (): React.ReactElement => {
                 {socialProfiles.map((s, i) => {
                   const SocialIcon = icons.find(({ test }) => test.test(s));
                   return (
-                    <a target={"_blank"} rel={"noopener"} href={s} key={i}>
+                    <a target={"_blank"} rel={"noreferrer"} href={s} key={i}>
                       <Icon
                         heightAndWidth="16px"
                         color="purple"
@@ -406,9 +407,10 @@ const CreatorProfile = (): React.ReactElement => {
                 }
                 onClick={() => {
                   navigate(
-                    `/creator/${userId}/invest${agreementUuid
-                      ? `?agreement=${agreementUuid}`
-                      : `?fundraise=${fundraises[0].uuid}`
+                    `/creator/${userId}/invest${
+                      agreementUuid
+                        ? `?agreement=${agreementUuid}`
+                        : `?fundraise=${fundraises[0].uuid}`
                     }`
                   );
                 }}
@@ -482,7 +484,7 @@ const CreatorProfile = (): React.ReactElement => {
                     (Number(fundraises[0].details.return || 0) *
                       Number(fundraises[0].details.frequency || 1) *
                       Number(fundraises[0].details.amount || 0)) /
-                    100
+                      100
                   )}
                   <SmallConditionsText>
                     {" "}

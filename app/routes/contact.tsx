@@ -9,9 +9,14 @@ const ContactPage: React.FunctionComponent = () => (
     </p>
     <p>
       Our DMs are also open on Twitter at{" "}
-      <a href={"https://twitter.com/constancyfund"} target={"_blank"} rel={"noopener"}>
+      <a
+        href={"https://twitter.com/constancyfund"}
+        target={"_blank"}
+        rel={"noreferrer"}
+      >
         @constancyfund
-      </a>.
+      </a>
+      .
     </p>
   </>
 );

@@ -191,7 +191,8 @@ const UserProfile = () => {
   const { user } = useUser();
   const saveImage = useCallback(
     (file: File) => {
-      return user!.setProfileImage({ file });
+      if (user) return user.setProfileImage({ file });
+      return Promise.reject("No user available");
     },
     [user]
   );
@@ -278,8 +279,8 @@ const UserProfile = () => {
                 >
                   <img
                     src={user?.profileImageUrl}
-                    width={'100%'}
-                    height={'100%'}
+                    width={"100%"}
+                    height={"100%"}
                   />
                 </ImageUploader>
               </ProfileImageBox>

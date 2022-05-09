@@ -35,7 +35,7 @@ const ContractSuccessPage = () => {
   const params = useParams();
   const [toastMessage, setToastMessage] = useState("");
   const fetcher = useFetcher();
-  const submitting = useTransition().state === "submitting";
+  const submitting = fetcher.state === "submitting";
   return (
     <div>
       <SignedContainer>
