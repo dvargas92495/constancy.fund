@@ -112,4 +112,12 @@ contract ISA is Ownable {
         );
         closed = true;
     }
+
+    function reopenInvestments() public {
+        require(
+            msg.sender == owner(),
+            "Only contract owner could reopen investments"
+        );
+        closed = false;
+    }
 }

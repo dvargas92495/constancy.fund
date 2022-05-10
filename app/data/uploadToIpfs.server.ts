@@ -4,6 +4,9 @@ import FormData from "form-data";
 const uploadToIpfs = ({ file }: { file: Buffer }) => {
   const formData = new FormData();
   formData.append("files", file);
+  const Authorization = `Basic ${Buffer.from(
+    `${process.env.IPFS_INFURA_ID}:${process.env.IPFS_INFURA_SECRET}`
+  ).toString("base64")}`;
 
   return axios
     .post<{ Hash: string }>(
@@ -12,9 +15,7 @@ const uploadToIpfs = ({ file }: { file: Buffer }) => {
       {
         headers: {
           ...formData.getHeaders(),
-          Authorization: `Basic ${Buffer.from(
-            `${process.env.IPFS_INFURA_ID}:${process.env.IPFS_INFURA_SECRET}`
-          ).toString("base64")}`,
+          Authorization,
         },
       }
     )
@@ -25,9 +26,7 @@ const uploadToIpfs = ({ file }: { file: Buffer }) => {
           {},
           {
             headers: {
-              Authorization: `Basic ${Buffer.from(
-                `${process.env.IPFS_INFURA_ID}:${process.env.IPFS_INFURA_SECRET}`
-              ).toString("base64")}`,
+              Authorization,
             },
           }
         )
