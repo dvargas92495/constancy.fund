@@ -18,7 +18,7 @@ const deleteAgreement = ({ uuid, userId }: { uuid: string; userId: string }) =>
         [uuid]
       ),
     ])
-      .then(([agreements, eversigns]) => {
+      .then(async ([agreements, eversigns]) => {
         const [contract] = agreements as { userId: string }[];
         if (!contract)
           throw new NotFoundError(

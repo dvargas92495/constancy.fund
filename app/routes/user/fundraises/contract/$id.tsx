@@ -27,6 +27,8 @@ import getFundraiseData from "~/data/getFundraiseData.server";
 import deleteAgreement from "~/data/deleteAgreement.server";
 import { SecondaryAction } from "~/_common/SecondaryAction";
 import Toast from "~/_common/Toast";
+import DefaultErrorBoundary from "~/_common/DefaultErrorBoundary";
+import DefaultCatchBoundary from "~/_common/DefaultCatchBoundary";
 
 const ConditionsContainer = styled.div`
   display: flex;
@@ -295,14 +297,10 @@ const RowDelete = (row: {
     </>
   );
 };
+
 const STAGE_ACTIONS: typeof RowDelete[] = [
   RowDelete,
-  (row) => (
-    <>
-      <Link href={`/contract/${row.uuid}`}>Visit Contract Page</Link>
-      <RowDelete {...row} />
-    </>
-  ),
+  (row) => <Link href={`/contract/${row.uuid}`}>Visit Contract Page</Link>,
   (row) => (
     <PrimaryAction
       textColor="white"
@@ -627,5 +625,8 @@ export const action: ActionFunction = async ({ request }) => {
       }
     });
 };
+
+export const ErrorBoundary = DefaultErrorBoundary;
+export const CatchBoundary = DefaultCatchBoundary;
 
 export default UserFundraisesContract;
