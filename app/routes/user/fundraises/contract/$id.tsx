@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from "react";
 import { UserButton, useUser } from "@clerk/remix";
 import CONTRACT_STAGES from "../../../../enums/contract_stages";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import {
-  ActionFunction,
-  LoaderFunction,
+  Link as RemixLink,
   useFetcher,
   useLoaderData,
   useParams,
-} from "remix";
+} from "@remix-run/react";
 import formatAmount from "../../../../util/formatAmount";
 import TopBar from "~/_common/TopBar";
 import InfoArea from "~/_common/InfoArea";
@@ -271,34 +271,37 @@ const STAGE_COLORS = [
   "#ff9090",
   "#8312DD",
 ];
-const STAGE_ACTIONS: ((a: {
+
+const RowDelete = (row: {
   contractUuid: string;
   uuid: string;
-}) => React.ReactElement)[] = [
-  (row) => {
-    const fetcher = useFetcher();
-    return (
-      <>
-        {fetcher.state === "idle" ? (
-          <>
-            <IconContainer
-              onClick={() => {
-                fetcher.submit({ uuid: row.uuid }, { method: "delete" });
-              }}
-            >
-              <Icon name="remove" heightAndWidth={"16px"} />
-            </IconContainer>
-          </>
-        ) : (
-          <LoadingIndicator size={30} />
-        )}
-      </>
-    );
-  },
+}): React.ReactElement => {
+  const fetcher = useFetcher();
+  return (
+    <>
+      {fetcher.state === "idle" ? (
+        <>
+          <IconContainer
+            onClick={() => {
+              fetcher.submit({ uuid: row.uuid }, { method: "delete" });
+            }}
+          >
+            <Icon name="remove" heightAndWidth={"16px"} />
+          </IconContainer>
+        </>
+      ) : (
+        <LoadingIndicator size={30} />
+      )}
+    </>
+  );
+};
+const STAGE_ACTIONS: typeof RowDelete[] = [
+  RowDelete,
   (row) => (
-    <Link href={`/contract/${row.uuid}`}>
-      Resend invitation to Backer
-    </Link>
+    <>
+      <Link href={`/contract/${row.uuid}`}>Visit Contract Page</Link>
+      <RowDelete {...row} />
+    </>
   ),
   (row) => (
     <PrimaryAction
@@ -310,7 +313,7 @@ const STAGE_ACTIONS: ((a: {
   ),
   (row) => (
     <Link href={`/_contracts/${row.contractUuid}/${row.uuid}.pdf`}>
-      View Contract
+      View Contract PDF
     </Link>
   ),
   () => <span />,
@@ -403,12 +406,20 @@ const UserFundraisesContract = () => {
     [progress, total]
   );
   const [publicLinkCopied, setPublicLinkCopied] = useState(false);
+  const [hiddenLink, setHiddenLink] = useState(false);
   return (
     <Container>
       <TopBar>
         <InfoArea>
-          <PageTitle>My Fundraise</PageTitle>
+          <PageTitle onClick={() => setHiddenLink(!hiddenLink)}>
+            My Fundraise
+          </PageTitle>
           <InfoSubBar>
+            {hiddenLink && (
+              <RemixLink to={`/user/fundraises?stay=true`}>
+                All Fundraises
+              </RemixLink>
+            )}
             <UpdatePill>
               {rowsToSign.length > 0 && <span>🎉 </span>}
               <span>

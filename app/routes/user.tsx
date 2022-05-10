@@ -73,7 +73,7 @@ const TABS = [
   {
     text: "My Fundraise",
     iconName: "fundraise",
-    path: "fundraises",
+    path: "fundraises"
   },
   {
     text: "Settings",
