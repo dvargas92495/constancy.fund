@@ -1,12 +1,16 @@
 import getMeta from "~/_common/getMeta";
 import React from "react";
 import { createGlobalStyle } from "styled-components";
-import { Link as RemixLink, Outlet } from "@remix-run/react";
+import { Link as RemixLink, Outlet, useMatches } from "@remix-run/react";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
 import ListItemIcon from "~/_common/ListItemIcon";
 import ListItemText from "~/_common/ListItemText";
+import TopBar from "~/_common/TopBar";
+import InfoArea from "~/_common/InfoArea";
+import PageTitle from "~/_common/PageTitle";
+import ContentContainer from "~/_common/ContentContainer";
 
 const DRAWER_WIDTH = 255;
 const DrawerRoot = styled.div`
@@ -125,7 +129,13 @@ const List = styled.ul`
   }
 `;
 
+const DefaultTitleBar = () => <PageTitle>Admin Dashboard</PageTitle>;
+
 const Dashboard = () => {
+  const matches = useMatches();
+  const TitleBar =
+    matches.reverse().find((m) => m.handle?.TitleBar)?.handle?.TitleBar ||
+    DefaultTitleBar;
   return (
     <Root>
       <DrawerRoot>
@@ -141,7 +151,14 @@ const Dashboard = () => {
       </DrawerRoot>
       <Main>
         <MainContainer>
-          <Outlet />
+          <TopBar>
+            <InfoArea>
+              <TitleBar />
+            </InfoArea>
+          </TopBar>
+          <ContentContainer>
+            <Outlet />
+          </ContentContainer>
         </MainContainer>
       </Main>
     </Root>

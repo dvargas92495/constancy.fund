@@ -1,7 +1,7 @@
 import getMeta from "~/_common/getMeta";
 import React from "react";
 import { createGlobalStyle } from "styled-components";
-import { Link as RemixLink, Outlet } from "@remix-run/react";
+import { Link as RemixLink, Outlet, useLoaderData } from "@remix-run/react";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
@@ -64,7 +64,11 @@ const MenuSidebarContainer = styled.div`
   justify-content: center;
 `;
 
-const TABS = [
+const TABS: {
+  text: string;
+  iconName: Parameters<typeof Icon>[0]["name"];
+  path: string;
+}[] = [
   {
     text: "My Profile",
     iconName: "home",
@@ -73,14 +77,14 @@ const TABS = [
   {
     text: "My Fundraise",
     iconName: "fundraise",
-    path: "fundraises"
+    path: "fundraises",
   },
   {
     text: "Settings",
     iconName: "settings",
     path: "settings",
   },
-] as const;
+];
 
 const DashboardTab = ({ path, iconName, text }: typeof TABS[number]) => {
   return (
@@ -126,6 +130,7 @@ const List = styled.ul`
 `;
 
 const Dashboard = () => {
+  const { isAdmin } = useLoaderData<{ isAdmin: boolean }>();
   return (
     <Root>
       <DrawerRoot>
@@ -135,6 +140,13 @@ const Dashboard = () => {
               {TABS.map((t) => (
                 <DashboardTab {...t} key={t.path} />
               ))}
+              {isAdmin && (
+                <DashboardTab
+                  path={"/admin"}
+                  text={"Admin Dashboard"}
+                  iconName={"info"}
+                />
+              )}
             </MenuSidebarContainer>
           </List>
         </DrawerContainer>
@@ -164,11 +176,18 @@ const UserPage = (): React.ReactElement => (
 export const loader: LoaderFunction = ({ request }) => {
   return import("@clerk/remix/ssr.server.js")
     .then((clerk) => clerk.getAuth(request))
-    .then((authData) => {
-      if (!authData.userId) {
+    .then(async (authData) => {
+      const { userId } = authData;
+      if (!userId) {
         return redirect("/login");
       }
-      return {};
+      const user = await import("@clerk/clerk-sdk-node").then((clerk) =>
+        clerk.users.getUser(userId)
+      );
+      const isAdmin = user.emailAddresses.some((e) =>
+        e.emailAddress?.endsWith("constancy.fund")
+      );
+      return { isAdmin };
     });
 };
 
