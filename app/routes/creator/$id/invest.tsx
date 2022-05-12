@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import getMeta from "~/_common/getMeta";
 import PaymentPreference from "~/_common/PaymentPreferences";
-import getAgreement from "~/data/getAgreement.server";
+import getAgreement from "~/data/getAgreementAsPotentialInvestor.server";
 import {
   Form,
   Link,

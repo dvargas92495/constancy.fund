@@ -2,7 +2,7 @@ import { BadRequestError, NotFoundError } from "aws-sdk-plus/dist/errors";
 import getUserProfile from "./getUserProfile.server";
 import getMysql from "./mysql.server";
 
-const getAgreement = ({
+const getAgreementAsPotentialInvestor = ({
   agreement,
   fundraise,
   userId,
@@ -79,4 +79,4 @@ const getAgreement = ({
     });
   });
 
-export default getAgreement;
+export default getAgreementAsPotentialInvestor;
