@@ -5,7 +5,7 @@ import {
   useNavigate,
   useSearchParams,
 } from "@remix-run/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
 import getAllAgreements from "~/data/getAllAgreements.server";
@@ -54,7 +54,10 @@ const OutletContainer = styled.div`
 
 const DeleteSuccessNotification = () => {
   const [searchParams] = useSearchParams();
-  const [isOpen, setIsOpen] = useState(searchParams.get("delete") === "true");
+  const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => {
+    if (searchParams.get("delete") === "true") setIsOpen(true);
+  }, [searchParams]);
   return (
     <Toast open={isOpen} onClose={() => setIsOpen(false)} color={"success"}>
       Successfully deleted agreement!

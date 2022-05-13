@@ -37,10 +37,10 @@ const deleteAgreementAsAdmin = ({
                             `Failed to cancel document https://crowdinvestinme.eversign.com/documents/${e.id}\nReason: ${err}`
                           );
                         })
-                        .then(() =>
+                        .then((r) =>
                           eversign.deleteDocument(doc, "").catch((err) => {
                             throw new Error(
-                              `Failed to delete document https://crowdinvestinme.eversign.com/documents/${e.id}\nReason: ${err}`
+                              `Failed to delete document https://crowdinvestinme.eversign.com/documents/${e.id}\nReason: ${err}\nResponse From Cancel: ${r}`
                             );
                           })
                         )
