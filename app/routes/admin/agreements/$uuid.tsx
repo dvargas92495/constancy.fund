@@ -47,10 +47,17 @@ export const action: ActionFunction = ({ request, params }) => {
       if (!userId) {
         return new Response("No valid user found", { status: 401 });
       }
-      return deleteAgreementAsAdmin({
-        userId,
-        uuid: params["uuid"] || "",
-      }).then(() => redirect(`/admin/agreements?delete=true`));
+      if (request.method === "DELETE") {
+        return deleteAgreementAsAdmin({
+          userId,
+          uuid: params["uuid"] || "",
+        })
+          .then(() => redirect(`/admin/agreements?delete=true`));
+      } else {
+        throw new Response(`Method ${request.method} not found`, {
+          status: 404,
+        });
+      }
     });
 };
 

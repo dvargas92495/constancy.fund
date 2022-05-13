@@ -9,7 +9,7 @@ const DefaultErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
         width: "100%",
       }}
     >
-      <h1 style={{ fontSize: 24 }}>Application Error</h1>
+      <h1 style={{ fontSize: 24 }}>{error.name}</h1>
       <h3 style={{ fontSize: 18 }}>
         Please email support@constancy.fund for assistance
       </h3>

@@ -4,17 +4,11 @@ import { useCatch } from "@remix-run/react";
 
 const DefaultCatchBoundary: CatchBoundaryComponent = () => {
   const caught = useCatch();
-  return (
-    <DefaultErrorBoundary
-      error={
-        new Error(
-          typeof caught.data === "object"
-            ? JSON.stringify(caught.data)
-            : caught.data
-        )
-      }
-    />
+  const error = new Error(
+    typeof caught.data === "object" ? JSON.stringify(caught.data) : caught.data
   );
+  error.name = `CAUGHT ${error.name}`;
+  return <DefaultErrorBoundary error={error} />;
 };
 
 export default DefaultCatchBoundary;
