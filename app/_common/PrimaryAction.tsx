@@ -93,7 +93,7 @@ export const PrimaryAction = ({
 }) => {
   const actionData = useActionData();
   const transition = useTransition();
-  const loading = transition.state === "submitting" || isLoading;
+  const loading = transition.state !== "idle" || isLoading;
   const disabled = _disabled || loading;
   return (
     <StyledPrimaryAction

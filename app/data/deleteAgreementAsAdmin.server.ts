@@ -24,13 +24,42 @@ const deleteAgreementAsAdmin = ({
               eversign
                 .getDocumentByHash(e.id)
                 .then((doc) =>
-                  doc.getIsDraft()
-                    ? eversign.deleteDocument(doc, "")
+                  doc.getIsDraft() || doc.getIsCancelled()
+                    ? eversign.deleteDocument(doc, "").catch((err) => {
+                        throw new Error(
+                          `Failed to delete draft document https://crowdinvestinme.eversign.com/documents/${e.id}\nReason: ${err}`
+                        );
+                      })
                     : eversign
                         .cancelDocument(doc)
-                        .then(() => eversign.deleteDocument(doc, ""))
+                        .catch((err) => {
+                          throw new Error(
+                            `Failed to cancel document https://crowdinvestinme.eversign.com/documents/${e.id}\nReason: ${err}`
+                          );
+                        })
+                        .then(() =>
+                          eversign.deleteDocument(doc, "").catch((err) => {
+                            throw new Error(
+                              `Failed to delete document https://crowdinvestinme.eversign.com/documents/${e.id}\nReason: ${err}`
+                            );
+                          })
+                        )
+                )
+                .then(() =>
+                  execute(
+                    `DELETE FROM eversigndocument
+              WHERE id = ?`,
+                    [e.id]
+                  )
                 )
             )
+          );
+        })
+        .then(() => {
+          return execute(
+            `DELETE FROM investor
+            WHERE agreementUuid = ?`,
+            [uuid]
           );
         })
         .then(() => {
