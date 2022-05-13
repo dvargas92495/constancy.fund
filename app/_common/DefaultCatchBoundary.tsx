@@ -7,7 +7,7 @@ const DefaultCatchBoundary: CatchBoundaryComponent = () => {
   const error = new Error(
     typeof caught.data === "object" ? JSON.stringify(caught.data) : caught.data
   );
-  error.name = `CAUGHT ${error.name}`;
+  error.name = `Caught an ${error.name}`;
   return <DefaultErrorBoundary error={error} />;
 };
 

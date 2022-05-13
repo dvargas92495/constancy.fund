@@ -52,7 +52,10 @@ export const action: ActionFunction = ({ request, params }) => {
           userId,
           uuid: params["uuid"] || "",
         })
-          .then(() => redirect(`/admin/agreements?delete=true`));
+          .then(() => redirect(`/admin/agreements?delete=true`))
+          .catch((e: Error) => {
+            throw new Response(`Unexpected error: ${e.name}\n${e.stack}`);
+          })
       } else {
         throw new Response(`Method ${request.method} not found`, {
           status: 404,
