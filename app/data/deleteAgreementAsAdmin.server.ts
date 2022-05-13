@@ -23,7 +23,13 @@ const deleteAgreementAsAdmin = ({
             (eversigns as { id: string }[]).map((e) =>
               eversign
                 .getDocumentByHash(e.id)
-                .then((doc) => eversign.deleteDocument(doc, ""))
+                .then((doc) =>
+                  doc.getIsDraft()
+                    ? eversign.deleteDocument(doc, "")
+                    : eversign
+                        .cancelDocument(doc)
+                        .then(() => eversign.deleteDocument(doc, ""))
+                )
             )
           );
         })
