@@ -57,13 +57,6 @@ const deleteAgreementAsAdmin = ({
         })
         .then(() => {
           return execute(
-            `DELETE FROM investor
-            WHERE agreementUuid = ?`,
-            [uuid]
-          );
-        })
-        .then(() => {
-          return execute(
             `DELETE FROM agreement
         WHERE uuid = ?`,
             [uuid]

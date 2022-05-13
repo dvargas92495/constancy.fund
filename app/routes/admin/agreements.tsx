@@ -45,6 +45,11 @@ const HeaderRow = styled.tr`
 const TableContainer = styled.div`
   display: flex;
   gap: 64px;
+  overflow: hidden;
+`;
+
+const OutletContainer = styled.div`
+  overflow-x: scroll;
 `;
 
 const DeleteSuccessNotification = () => {
@@ -91,7 +96,9 @@ const AdminAgreementsPage = () => {
             ))}
           </tbody>
         </Table>
-        <Outlet />
+        <OutletContainer>
+          <Outlet />
+        </OutletContainer>
       </TableContainer>
       <DeleteSuccessNotification />
     </div>

@@ -10,13 +10,18 @@ import ListItemText from "~/_common/ListItemText";
 import TopBar from "~/_common/TopBar";
 import InfoArea from "~/_common/InfoArea";
 import PageTitle from "~/_common/PageTitle";
-import ContentContainer from "~/_common/ContentContainer";
 
 const DRAWER_WIDTH = 255;
 const DrawerRoot = styled.div`
   flex: 0 0 auto;
   width: ${DRAWER_WIDTH}px;
   flex-shrink: 0;
+`;
+
+const ContentContainer = styled.div`
+  padding: 50px;
+  margin-top: 80px;
+  width: 100%;
 `;
 
 const DrawerContainer = styled.div`
