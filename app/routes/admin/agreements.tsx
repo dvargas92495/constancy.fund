@@ -49,7 +49,7 @@ const TableContainer = styled.div`
 `;
 
 const OutletContainer = styled.div`
-  overflow-x: scroll;
+  overflow-x: auto;
 `;
 
 const DeleteSuccessNotification = () => {
@@ -59,7 +59,12 @@ const DeleteSuccessNotification = () => {
     if (searchParams.get("delete") === "true") setIsOpen(true);
   }, [searchParams]);
   return (
-    <Toast open={isOpen} onClose={() => setIsOpen(false)} color={"success"}>
+    <Toast
+      open={isOpen}
+      onClose={() => setIsOpen(false)}
+      color={"success"}
+      position={"TOP_CENTER"}
+    >
       Successfully deleted agreement!
     </Toast>
   );
