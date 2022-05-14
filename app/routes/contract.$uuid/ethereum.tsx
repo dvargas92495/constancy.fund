@@ -87,49 +87,52 @@ const ViewSmartContract = (
       .then((tx: ethers.ContractTransaction) => tx.wait())
       .then(() => setLoading(false));
   }, [setLoading, props.address, props.abi]);
-  const Summary = useCallback(() => (
-    <>
-      <p>Value stored in contract:</p>
-      <ul>
-        <li>
-          <b>Total Balance: </b>
-          {props.totalBalance} ETH
-        </li>
-        <li>
-          <b>Creator Cut: </b>
-          {(
-            Number(props.balance) -
-            Number(props.investorCut) +
-            Number(props.revenueAllocated) +
-            Number(props.investmentAllocated)
-          ).toFixed(6)}{" "}
-          ETH
-        </li>
-        <li>
-          <b>Investor Cut: </b>
-          {(Number(props.investorCut) + Number(props.returnAllocated)).toFixed(
-            6
-          )}{" "}
-          ETH
-        </li>
-      </ul>
-      <p>Contract History:</p>
-      <ul>
-        <li>
-          <b>Total Invested: </b>
-          {props.totalInvested} ETH
-        </li>
-        <li>
-          <b>Total Return: </b>
-          {props.totalReturned} ETH
-        </li>
-        <li>
-          <b>Total Revenue: </b>
-          {props.totalRevenue} ETH
-        </li>
-      </ul>
-    </>
-  ), [props]);
+  const Summary = useCallback(
+    () => (
+      <>
+        <p>Value stored in contract:</p>
+        <ul>
+          <li>
+            <b>Total Balance: </b>
+            {props.totalBalance} ETH
+          </li>
+          <li>
+            <b>Creator Cut: </b>
+            {(
+              Number(props.balance) -
+              Number(props.investorCut) +
+              Number(props.revenueAllocated) +
+              Number(props.investmentAllocated)
+            ).toFixed(6)}{" "}
+            ETH
+          </li>
+          <li>
+            <b>Investor Cut: </b>
+            {(
+              Number(props.investorCut) + Number(props.returnAllocated)
+            ).toFixed(6)}{" "}
+            ETH
+          </li>
+        </ul>
+        <p>Contract History:</p>
+        <ul>
+          <li>
+            <b>Total Invested: </b>
+            {props.totalInvested} ETH
+          </li>
+          <li>
+            <b>Total Return: </b>
+            {props.totalReturned} ETH
+          </li>
+          <li>
+            <b>Total Revenue: </b>
+            {props.totalRevenue} ETH
+          </li>
+        </ul>
+      </>
+    ),
+    [props]
+  );
   return (
     <p>
       Smart contract for this agreement is deployed on the
@@ -198,7 +201,10 @@ const ViewSmartContract = (
             label={"Withdraw"}
             isLoading={loading}
           />
-          <p>Make sure all users and clients send revenue for your project to address: {props.address}</p>
+          <p>
+            Make sure all users and clients send revenue for your project to
+            address: {props.address}
+          </p>
           <Summary />
         </>
       )}
@@ -367,10 +373,14 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     clerk.getAuth(request)
   );
   const uuid = params["uuid"] || "";
-  return getEthereumContractData({ uuid }).then((r) => ({
-    ...r,
-    isInvestor: !userId,
-  }));
+  return getEthereumContractData({ uuid })
+    .then((r) => ({
+      ...r,
+      isInvestor: !userId,
+    }))
+    .catch((e: Error) => {
+      throw new Response(`Unexpected error: ${e.name}\n${e.stack}`);
+    });
 };
 
 export const action: ActionFunction = async ({ params, request }) => {
