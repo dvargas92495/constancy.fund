@@ -20,7 +20,7 @@ const getEthPriceInUsd = () =>
     )
     .then((r) => r.data.ethereum.usd as number)
     .catch((e) => {
-      throw new Error(`Failed to get ETH price in USD: ${e.response.data}`);
+      throw new Error(`Failed to get ETH price in USD:\n${e.response?.data || e.message}`);
     });
 
 export type InvalidData = { valid: false; deployed: false };
