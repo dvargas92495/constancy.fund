@@ -29,7 +29,12 @@ const AdminAgreementPage = () => {
         ))}
       </ul>
       <h6>Agreement Details:</h6>
-      <p>${data.amount}</p>
+      <p>${data.amount} Investment</p>
+      {data.address && (
+        <p>
+          Ethereuem Smart Contract deployed on {data.network} at {data.address}
+        </p>
+      )}
       <h6>Actions:</h6>
       <Form method={"delete"}>
         <PrimaryAction type={"submit"} label={"Delete"} />
@@ -55,7 +60,7 @@ export const action: ActionFunction = ({ request, params }) => {
           .then(() => redirect(`/admin/agreements?delete=true`))
           .catch((e: Error) => {
             throw new Response(`Unexpected error: ${e.name}\n${e.stack}`);
-          })
+          });
       } else {
         throw new Response(`Method ${request.method} not found`, {
           status: 404,

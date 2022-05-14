@@ -27,3 +27,20 @@ export const infuraEthersProvidersById: {
   [ARBITRUM_TEST_NETWORK_ID]: "arbitrum-rinkeby",
   [ARBITRUM_NETWORK_ID]: "arbitrum",
 };
+
+export const displayNameById: {
+  [id: number]: string;
+} = {
+  [LOCALHOST_NETWORK_ID]: "Hardhat",
+  [KOVAN_NETWORK_ID]: "Kovan",
+  [ROPSTEN_NETWORK_ID]: "Ropsten",
+  [MAINNET_NETWORK_ID]: "Mainnet",
+  [RINKEBY_NETWORK_ID]: "Rinkeby",
+  [OPTIMISM_NETWORK_ID]: "Optimism",
+  [OPTIMISM_KOVAN_NETWORK_ID]: "Optimism Kovan",
+  [POLYGON_MAIN_NETWORK_ID]: "Polygon",
+  [POLYGON_TEST_NETWORK_ID]: "Polygon Mumbai",
+  [GOERLI_NETWORK_ID]: "Goerli",
+  [ARBITRUM_TEST_NETWORK_ID]: "Arbitrum Rinkeby",
+  [ARBITRUM_NETWORK_ID]: "Arbitrum",
+};

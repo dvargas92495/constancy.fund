@@ -64,6 +64,31 @@ const deleteAgreementAsAdmin = ({
         })
         .then(() => {
           return execute(
+            `SELECT uuid, hash, address, network FROM deployed_smart_contracts WHERE agreement_uuid = ?`,
+            [uuid]
+          ).then((records) => {
+            const contracts = records as {
+              uuid: string;
+              hash: string;
+              address: string;
+              network: number;
+            }[];
+            if (!contracts.length) return;
+            return execute(
+              `INSERT INTO orphaned_smart_contracts (uuid, hash, address, network) VALUES ${contracts
+                .map(() => `(?,?,?,?)`)
+                .join(",")}`,
+              contracts.flatMap((c) => [c.uuid, c.hash, c.address, c.network])
+            ).then(() =>
+              execute(
+                `DELETE FROM deployed_smart_contracts WHERE agreement_uuid = ?`,
+                [uuid]
+              )
+            );
+          });
+        })
+        .then(() => {
+          return execute(
             `DELETE FROM agreement
         WHERE uuid = ?`,
             [uuid]
