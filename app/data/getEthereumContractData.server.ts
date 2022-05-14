@@ -18,7 +18,10 @@ const getEthPriceInUsd = () =>
     .get(
       `https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd`
     )
-    .then((r) => r.data.ethereum.usd as number);
+    .then((r) => r.data.ethereum.usd as number)
+    .catch((e) => {
+      throw new Error(`Failed to get ETH price in USD: ${e.response.data}`);
+    });
 
 export type InvalidData = { valid: false; deployed: false };
 export type DeployedData = {
@@ -113,6 +116,9 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
           }
         );
       })
+      .catch((e) => {
+        throw new Error(`Failed to query data from internal database: ${e}`);
+      })
       .then(
         ({
           creatorPaymentPreferences,
@@ -154,11 +160,7 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                   contract.owner().then((s: string) => s.toLowerCase()),
                   contract.investor().then((s: string) => s.toLowerCase()),
                   Promise.resolve(res.data.abi),
-                  getEthPriceInUsd().catch((e) => {
-                    throw new Error(
-                      `Failed to get ETH price in USD: ${e.response.data}`
-                    );
-                  }),
+                  getEthPriceInUsd(),
                   contract
                     .totalInvested()
                     .then((s: ethers.BigNumber) => utils.formatEther(s)),
@@ -206,26 +208,27 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                   revenueAllocated,
                   returnAllocated,
                   totalBalance,
-                ]) => ({
-                  valid: true,
-                  deployed: true,
-                  address,
-                  network,
-                  creatorAddress,
-                  investorAddress,
-                  abi,
-                  amount,
-                  price,
-                  totalInvested,
-                  totalRevenue,
-                  totalReturned,
-                  balance,
-                  investorCut,
-                  investmentAllocated,
-                  revenueAllocated,
-                  returnAllocated,
-                  totalBalance,
-                } as const)
+                ]) =>
+                  ({
+                    valid: true,
+                    deployed: true,
+                    address,
+                    network,
+                    creatorAddress,
+                    investorAddress,
+                    abi,
+                    amount,
+                    price,
+                    totalInvested,
+                    totalRevenue,
+                    totalReturned,
+                    balance,
+                    investorCut,
+                    investmentAllocated,
+                    revenueAllocated,
+                    returnAllocated,
+                    totalBalance,
+                  } as const)
               )
               .catch((e) => {
                 throw new Error(
@@ -261,34 +264,46 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
               : Promise.resolve(
                   fs.readFileSync(`public/_contracts/${contract}/${uuid}.pdf`)
                 )
-            ).then((file) =>
-              uploadToIpfs({
-                file,
-              })
-            ),
+            )
+              .then((file) =>
+                uploadToIpfs({
+                  file,
+                }) // TODO: Remove from GET
+              )
+              .catch((e) => {
+                throw new Error(
+                  `Failed to get contract pdf and upload to ipfs: ${e.response.data}`
+                );
+              }),
             getEthPriceInUsd(),
-          ]).then(([contractJson, hash, price]) => {
-            destroy();
-            return {
-              valid: true,
-              deployed: false,
-              creatorAddress: (
-                creatorPaymentPreferences["ethereum"]["Address"] || ""
-              ).toLowerCase(),
-              investorAddress: (
-                investorPaymentPreferences["ethereum"]["Address"] || ""
-              ).toLowerCase(),
-              share: contractDetails.share,
-              returnMultiple: contractDetails.return,
-              threshold: contractDetails.threshold,
-              hash,
-              hashAsAddress: ipfsHashToBytes32(hash),
-              versionHash: contractJson.versionHash,
-              abi: contractJson.abi,
-              bytecode: contractJson.bytecode,
-              price,
-            };
-          });
+          ])
+            .then(([contractJson, hash, price]) => {
+              destroy();
+              return {
+                valid: true,
+                deployed: false,
+                creatorAddress: (
+                  creatorPaymentPreferences["ethereum"]["Address"] || ""
+                ).toLowerCase(),
+                investorAddress: (
+                  investorPaymentPreferences["ethereum"]["Address"] || ""
+                ).toLowerCase(),
+                share: contractDetails.share,
+                returnMultiple: contractDetails.return,
+                threshold: contractDetails.threshold,
+                hash,
+                hashAsAddress: ipfsHashToBytes32(hash),
+                versionHash: contractJson.versionHash,
+                abi: contractJson.abi,
+                bytecode: contractJson.bytecode,
+                price,
+              } as const;
+            })
+            .catch((e) => {
+              throw new Error(
+                `Failed to get ETH contract setup data: ${e.response.data}`
+              );
+            });
         }
       );
   });
