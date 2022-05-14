@@ -151,7 +151,7 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
               .get(`https://ipfs.io/ipfs/${hash}`)
               .catch((e) => {
                 throw new Error(
-                  `Failed to find IPFS hash ${hash}: ${e.response.data}`
+                  `Failed to find IPFS hash ${hash}: ${e.response?.data || e}`
                 );
               })
               .then((res) => {
@@ -272,7 +272,7 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
               )
               .catch((e) => {
                 throw new Error(
-                  `Failed to get contract pdf and upload to ipfs: ${e.response.data}`
+                  `Failed to get contract pdf and upload to ipfs: ${e.response?.data || e}`
                 );
               }),
             getEthPriceInUsd(),
@@ -301,7 +301,7 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
             })
             .catch((e) => {
               throw new Error(
-                `Failed to get ETH contract setup data: ${e.response.data}`
+                `Failed to get ETH contract setup data: ${e.response?.data || e}`
               );
             });
         }
