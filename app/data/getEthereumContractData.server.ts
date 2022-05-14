@@ -18,7 +18,7 @@ const getEthPriceInUsd = () =>
     .get(
       `https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd`
     )
-    .then((r) => r.data.ethereum.usd);
+    .then((r) => r.data.ethereum.usd as number);
 
 export type InvalidData = { valid: false; deployed: false };
 export type DeployedData = {
@@ -143,13 +143,22 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
             );
             return axios
               .get(`https://ipfs.io/ipfs/${hash}`)
+              .catch((e) => {
+                throw new Error(
+                  `Failed to find IPFS hash ${hash}: ${e.response.data}`
+                );
+              })
               .then((res) => {
                 const contract = new Contract(address, res.data.abi, provider);
                 return Promise.all([
                   contract.owner().then((s: string) => s.toLowerCase()),
                   contract.investor().then((s: string) => s.toLowerCase()),
                   Promise.resolve(res.data.abi),
-                  getEthPriceInUsd(),
+                  getEthPriceInUsd().catch((e) => {
+                    throw new Error(
+                      `Failed to get ETH price in USD: ${e.response.data}`
+                    );
+                  }),
                   contract
                     .totalInvested()
                     .then((s: ethers.BigNumber) => utils.formatEther(s)),
@@ -176,7 +185,10 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                     .then((s: ethers.BigNumber) => utils.formatEther(s)),
                   provider
                     .getBalance(contract.address)
-                    .then((s) => utils.formatEther(s)),
+                    .then((s) => utils.formatEther(s))
+                    .catch((e) => {
+                      throw new Error(`Failed to get contract balance: ${e}`);
+                    }),
                 ]);
               })
               .then(
@@ -213,8 +225,13 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                   revenueAllocated,
                   returnAllocated,
                   totalBalance,
-                })
-              );
+                } as const)
+              )
+              .catch((e) => {
+                throw new Error(
+                  `Error was thrown querying data from smart contract: ${e}`
+                );
+              });
           }
           return Promise.all([
             execute(

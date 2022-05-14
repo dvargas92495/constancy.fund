@@ -381,7 +381,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
       isInvestor: !userId,
     }))
     .catch((e: Error) => {
-      throw new Response(`Unexpected error: ${e.name}\n${e.stack}`);
+      throw new Response(`Failed to grab ETH contract Data: ${e.stack}`);
     });
 };
 
