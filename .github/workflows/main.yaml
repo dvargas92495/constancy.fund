@@ -20,6 +20,8 @@ env:
   DATABASE_URL: mysql://constancy_fund:${{ secrets.MYSQL_PASSWORD }}@vargas-arts.c2sjnb5f4d57.us-east-1.rds.amazonaws.com:5432/constancy_fund
   EVERSIGN_API_KEY: ${{ secrets.EVERSIGN_API_KEY }}
   INFURA_ID: ${{ secrets.INFURA_ID }}
+  IPFS_INFURA_ID: ${{ secrets.IPFS_INFURA_ID }}
+  IPFS_INFURA_SECRET: ${{ secrets.IPFS_INFURA_SECRET }}
   IS_PRODUCTION: 1
   ORIGIN: https://constancy.fund
   STRIPE_PUBLIC_KEY: ${{ secrets.STRIPE_PUBLIC_KEY }}
