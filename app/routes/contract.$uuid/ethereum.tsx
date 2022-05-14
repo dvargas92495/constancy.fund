@@ -15,6 +15,7 @@ import TextFieldDescription from "~/_common/TextFieldDescription";
 import TextInputContainer from "~/_common/TextInputContainer";
 import TextInputOneLine from "~/_common/TextInputOneLine";
 import { infuraEthersProvidersById } from "~/enums/web3Networks";
+import DefaultCatchBoundary from "~/_common/DefaultCatchBoundary";
 
 declare global {
   interface Window {
@@ -367,6 +368,7 @@ const EthereumContractPage = () => {
 };
 
 export const ErrorBoundary = DefaultErrorBoundary;
+export const CatchBoundary = DefaultCatchBoundary;
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const { userId } = await import("@clerk/remix/ssr.server.js").then((clerk) =>
