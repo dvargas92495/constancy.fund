@@ -24,14 +24,22 @@ const deleteAgreementAsAdmin = ({
               eversign
                 .getDocumentByHash(e.id)
                 .then((doc) =>
-                  doc.getIsDraft() || doc.getIsCancelled() || doc.getIsCompleted()
-                    ? eversign.deleteDocument(doc, "").catch((err) => {
-                        throw new Error(
-                          `Failed to delete draft document https://crowdinvestinme.eversign.com/documents/${
-                            e.id
-                          }\nReason: ${JSON.stringify(err, null, 4)}\nRaw Reason: ${err}`
-                        );
-                      })
+                  doc.getIsDraft() ||
+                  doc.getIsCancelled() ||
+                  doc.getIsCompleted()
+                    ? Promise.resolve(doc.setIsDraft(true)) // a way to hack the front end sdk into thinking we could delete this eversign doc
+                        .then(() => eversign.deleteDocument(doc, ""))
+                        .catch((err) => {
+                          throw new Error(
+                            `Failed to delete draft document https://crowdinvestinme.eversign.com/documents/${
+                              e.id
+                            }\nReason: ${JSON.stringify(
+                              err,
+                              null,
+                              4
+                            )}\nRaw Reason: ${err}`
+                          );
+                        })
                     : eversign
                         .cancelDocument(doc)
                         .catch((err) => {

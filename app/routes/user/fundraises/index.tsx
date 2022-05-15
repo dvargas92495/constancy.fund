@@ -21,7 +21,7 @@ import SectionCircle from "~/_common/SectionCircle";
 import InfoText from "~/_common/InfoText";
 import SubSectionTitle from "~/_common/SubSectionTitle";
 import styled from "styled-components";
-import formatAmount from "../../../util/formatAmount";
+import formatAmount from "~/util/formatAmount";
 import getFundraises from "~/data/getFundraises.server";
 import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
 import { SecondaryAction } from "~/_common/SecondaryAction";
@@ -154,7 +154,7 @@ const FundraiseContentRow = ({
   const onDelete = useCallback(() => {
     fetcher.submit(
       { uuid: row.uuid },
-      { method: "delete", action: "/user/fundraises?index" }
+      { method: "delete" }
     );
     onDeleteSuccess(row.uuid);
   }, [row.uuid, fetcher, onDeleteSuccess]);
