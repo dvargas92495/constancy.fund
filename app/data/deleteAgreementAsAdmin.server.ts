@@ -24,7 +24,7 @@ const deleteAgreementAsAdmin = ({
               eversign
                 .getDocumentByHash(e.id)
                 .then((doc) =>
-                  doc.getIsDraft() || doc.getIsCancelled()
+                  doc.getIsDraft() || doc.getIsCancelled() || doc.getIsCompleted()
                     ? eversign.deleteDocument(doc, "").catch((err) => {
                         throw new Error(
                           `Failed to delete draft document https://crowdinvestinme.eversign.com/documents/${
