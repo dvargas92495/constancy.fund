@@ -29,7 +29,7 @@ const deleteAgreementAsAdmin = ({
                         throw new Error(
                           `Failed to delete draft document https://crowdinvestinme.eversign.com/documents/${
                             e.id
-                          }\nReason: ${JSON.stringify(err, null, 4)}`
+                          }\nReason: ${JSON.stringify(err, null, 4)}\nRaw Reason: ${err}`
                         );
                       })
                     : eversign
