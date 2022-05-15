@@ -141,10 +141,7 @@ const ActionCell = styled.div`
   gap: 4px;
 `;
 
-const FundraiseContentRow = ({
-  onDeleteSuccess,
-  ...row
-}: Fundraises[number] & { onDeleteSuccess: (uuid: string) => void }) => {
+const FundraiseContentRow = (row: Fundraises[number]) => {
   const fetcher = useFetcher();
   const navigate = useNavigate();
   const onPreview = useCallback(() => {
@@ -156,8 +153,7 @@ const FundraiseContentRow = ({
       { uuid: row.uuid },
       { method: "delete" }
     );
-    onDeleteSuccess(row.uuid);
-  }, [row.uuid, fetcher, onDeleteSuccess]);
+  }, [row.uuid, fetcher]);
   return (
     <tr>
       <td style={{ minWidth: "120px", verticalAlign: "top" }}>{row.type}</td>
@@ -214,13 +210,6 @@ const UserFundraiseIndex = () => {
     throw new Error(`Somehow tried to load a non-logged in User profile`);
   }
   const data = useLoaderData<Data>();
-  const [rows, setRows] = useState<Fundraises>(data.fundraises);
-  const onDeleteSuccess = useCallback(
-    (uuid: string) => {
-      setRows(rows.filter((r) => r.uuid !== uuid));
-    },
-    [setRows, rows]
-  );
   const navigate = useNavigate();
   return (
     <Container>
@@ -269,7 +258,7 @@ const UserFundraiseIndex = () => {
             </NotCompletedMessageContainer>
           )}
           {data.completed &&
-            (rows.length ? (
+            (data.fundraises.length ? (
               <FundraisingContainer>
                 <table style={{ minWidth: 650 }} aria-label="simple table">
                   <thead>
@@ -282,11 +271,10 @@ const UserFundraiseIndex = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {rows.map((row) => (
+                    {data.fundraises.map((row) => (
                       <FundraiseContentRow
                         key={row.uuid}
                         {...row}
-                        onDeleteSuccess={onDeleteSuccess}
                       />
                     ))}
                   </tbody>
