@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
-import formatAmount from "../../../../util/formatAmount";
+import formatAmount from "../../../util/formatAmount";
 import Icon from "~/_common/Icon";
 import TextInputContainer from "~/_common/TextInputContainer";
 import TextInputOneLine from "~/_common/TextInputOneLine";
@@ -14,9 +14,11 @@ import TextInputMultiLine from "~/_common/TextInputMultiLine";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import { redirect, ActionFunction } from "remix";
 import createFundraise from "~/data/createFundraise.server";
-import type { FundraiseId } from "../../../../enums/fundraiseTypes";
+import type { FundraiseId } from "../../../enums/fundraiseTypes";
 import { v4 } from "uuid";
 import { SecondaryAction } from "~/_common/SecondaryAction";
+export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
+export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 
 const ISA_SUPPORT_TYPES = [
   {
@@ -465,7 +467,7 @@ export const action: ActionFunction = ({ request }) => {
         id: new URL(request.url).pathname
           .split("/")
           .slice(-1)[0] as FundraiseId,
-      }).then((uuid) => redirect(`/user/fundraises/preview/${uuid}`));
+      }).then((uuid) => redirect(`/user/fundraises/${uuid}/preview`));
     })
     .catch((e) => {
       console.error(e);

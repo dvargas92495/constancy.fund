@@ -1,13 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { UserButton, useUser } from "@clerk/remix";
-import {
-  LoaderFunction,
-  useNavigate,
-  redirect,
-  useLoaderData,
-  ActionFunction,
-  useFetcher,
-} from "remix";
+import { LoaderFunction, redirect, ActionFunction } from "@remix-run/node";
+import { useNavigate, useLoaderData, useFetcher, Link } from "@remix-run/react";
 import deleteFundraiseData from "~/data/deleteFundraiseData.server";
 import Icon from "~/_common/Icon";
 import { PrimaryAction } from "~/_common/PrimaryAction";
@@ -145,57 +139,51 @@ const FundraiseContentRow = (row: Fundraises[number]) => {
   const fetcher = useFetcher();
   const navigate = useNavigate();
   const onPreview = useCallback(() => {
-    navigate(`/user/fundraises/preview/${row.uuid}`);
+    navigate(`/user/fundraises/${row.uuid}/preview`);
   }, [navigate, row.uuid]);
   const DetailComponent = DetailComponentById[row.type];
   const onDelete = useCallback(() => {
-    fetcher.submit(
-      { uuid: row.uuid },
-      { method: "delete" }
-    );
+    fetcher.submit({ uuid: row.uuid }, { method: "delete" });
   }, [row.uuid, fetcher]);
   return (
-    <tr>
-      <td style={{ minWidth: "120px", verticalAlign: "top" }}>{row.type}</td>
-      <td style={{ minWidth: "320px", verticalAlign: "top" }}>
-        <DetailComponent
-          details={row.details}
-          clauses={Array.from(row.clauses)}
-        />
-      </td>
-      <td style={{ minWidth: "120px", verticalAlign: "top" }}>
-        {row.progress}
-      </td>
-      <td style={{ minWidth: "120px", verticalAlign: "top" }}>
-        {row.investorCount}
-      </td>
-      <td style={{ minWidth: "240px", verticalAlign: "top" }}>
-        <ActionCell>
-          <SecondaryAction
-            onClick={() => {
-              navigate(`/user/fundraises/contract/${row.uuid}`, {
-                state: { isOpen: true },
-              });
-            }}
-            label={"Invite Investor"}
-            width={"100%"}
+    <Link to={`/user/fundraises/${row.uuid}`}>
+      <tr>
+        <td style={{ minWidth: "120px", verticalAlign: "top" }}>{row.type}</td>
+        <td style={{ minWidth: "320px", verticalAlign: "top" }}>
+          <DetailComponent
+            details={row.details}
+            clauses={Array.from(row.clauses)}
           />
-          <SecondaryAction
-            onClick={() => {
-              navigate(`/user/fundraises/contract/${row.uuid}`);
-            }}
-            label={"See Investors"}
-            width={"100%"}
-          />
-          <SecondaryAction
-            onClick={onPreview}
-            label={"Preview"}
-            width={"100%"}
-          />
-          <SecondaryAction onClick={onDelete} label={"Delete"} width={"100%"} />
-        </ActionCell>
-      </td>
-    </tr>
+        </td>
+        <td style={{ minWidth: "120px", verticalAlign: "top" }}>
+          {row.progress}
+        </td>
+        <td style={{ minWidth: "120px", verticalAlign: "top" }}>
+          {row.investorCount}
+        </td>
+        <td style={{ minWidth: "240px", verticalAlign: "top" }}>
+          <ActionCell>
+            <SecondaryAction
+              onClick={() => {
+                navigate(`/user/fundraises/${row.uuid}`);
+              }}
+              label={"See Investors"}
+              width={"100%"}
+            />
+            <SecondaryAction
+              onClick={onPreview}
+              label={"Preview"}
+              width={"100%"}
+            />
+            <SecondaryAction
+              onClick={onDelete}
+              label={"Delete"}
+              width={"100%"}
+            />
+          </ActionCell>
+        </td>
+      </tr>
+    </Link>
   );
 };
 
@@ -267,15 +255,12 @@ const UserFundraiseIndex = () => {
                       <td>Details</td>
                       <td>Progress</td>
                       <td># Investors</td>
-                      <td></td>
+                      <td>Actions</td>
                     </tr>
                   </thead>
                   <tbody>
                     {data.fundraises.map((row) => (
-                      <FundraiseContentRow
-                        key={row.uuid}
-                        {...row}
-                      />
+                      <FundraiseContentRow key={row.uuid} {...row} />
                     ))}
                   </tbody>
                 </table>
@@ -302,7 +287,7 @@ export const loader: LoaderFunction = createAuthenticatedLoader(
         if (!r.completed || params["stay"]) {
           return r;
         } else if (r.fundraises.length) {
-          return redirect(`/user/fundraises/contract/${r.fundraises[0].uuid}`);
+          return redirect(`/user/fundraises/${r.fundraises[0].uuid}`);
         } else {
           return redirect(`/user/fundraises/setup`);
         }
@@ -318,17 +303,19 @@ export const action: ActionFunction = async ({ request }) => {
     .then((clerk) => clerk.getAuth(request))
     .then(async ({ userId }) => {
       if (!userId) {
-        return new Response("Unauthorized", { status: 401 });
+        throw new Response("Unauthorized", { status: 401 });
       }
-      const formData = await request.formData();
       if (request.method === "DELETE") {
+        const formData = await request.formData();
         const uuid = formData.get("uuid");
         if (!uuid) return new Response("`uuid` is required", { status: 400 });
         if (typeof uuid !== "string")
           return new Response("`uuid` must be a string", { status: 400 });
         return deleteFundraiseData({ uuid, userId });
       } else {
-        return {};
+        throw new Response(`Method ${request.method} Not Found`, {
+          status: 404,
+        });
       }
     });
 };

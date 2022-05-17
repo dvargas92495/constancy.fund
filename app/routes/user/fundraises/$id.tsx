@@ -1,14 +1,15 @@
 import React, { useState, useMemo } from "react";
 import { UserButton, useUser } from "@clerk/remix";
-import CONTRACT_STAGES from "../../../../enums/contract_stages";
+import CONTRACT_STAGES from "~/enums/contract_stages";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import {
+  Form,
   Link as RemixLink,
   useFetcher,
   useLoaderData,
   useParams,
 } from "@remix-run/react";
-import formatAmount from "../../../../util/formatAmount";
+import formatAmount from "~/util/formatAmount";
 import TopBar from "~/_common/TopBar";
 import InfoArea from "~/_common/InfoArea";
 import PageTitle from "~/_common/PageTitle";
@@ -27,8 +28,13 @@ import getFundraiseData from "~/data/getFundraiseData.server";
 import deleteAgreement from "~/data/deleteAgreement.server";
 import { SecondaryAction } from "~/_common/SecondaryAction";
 import Toast from "~/_common/Toast";
-import DefaultErrorBoundary from "~/_common/DefaultErrorBoundary";
-import DefaultCatchBoundary from "~/_common/DefaultCatchBoundary";
+import inviteInvestor from "~/data/inviteInvestor.server";
+import TextFieldBox from "~/_common/TextFieldBox";
+import TextFieldDescription from "~/_common/TextFieldDescription";
+import TextInputContainer from "~/_common/TextInputContainer";
+import TextInputOneLine from "~/_common/TextInputOneLine";
+export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
+export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 
 const ConditionsContainer = styled.div`
   display: flex;
@@ -596,6 +602,33 @@ const UserFundraisesContract = () => {
               </Table>
             </div>
           </Section>
+
+          <Section>
+            <TitleTopBoxSmall>
+              <SectionTitle margin={"0px"}>Invite Investor</SectionTitle>
+            </TitleTopBoxSmall>
+            <Form>
+              <TextFieldBox>
+                <TextFieldDescription required>Name</TextFieldDescription>
+                <TextInputContainer width={"350px"}>
+                  <TextInputOneLine name={"name"} required />
+                </TextInputContainer>
+              </TextFieldBox>
+              <TextFieldBox>
+                <TextFieldDescription required>Email</TextFieldDescription>
+                <TextInputContainer width={"350px"}>
+                  <TextInputOneLine name={"email"} required />
+                </TextInputContainer>
+              </TextFieldBox>
+              <TextFieldBox>
+                <TextFieldDescription required>Amount</TextFieldDescription>
+                <TextInputContainer width={"350px"}>
+                  <TextInputOneLine name={"amount"} required />
+                </TextInputContainer>
+              </TextFieldBox>
+              <PrimaryAction label={"Invite"} type={"submit"} />
+            </Form>
+          </Section>
         </ProfileBottomContainer>
       </ContentContainer>
     </Container>
@@ -606,27 +639,53 @@ export const loader: LoaderFunction = createAuthenticatedLoader(
   (userId, params) => getFundraiseData({ uuid: params.id || "", userId })
 );
 
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ request, params }) => {
   return import("@clerk/remix/ssr.server.js")
     .then((clerk) => clerk.getAuth(request))
     .then(async ({ userId }) => {
       if (!userId) {
         return new Response("Unauthorized", { status: 401 });
       }
-      const formData = await request.formData();
       if (request.method === "DELETE") {
-        const uuid = formData.get("uuid");
+        const uuid = params["uuid"];
         if (!uuid) return new Response("`uuid` is required", { status: 400 });
         if (typeof uuid !== "string")
           return new Response("`uuid` must be a string", { status: 400 });
         return deleteAgreement({ uuid, userId });
+      } else if (request.method === "POST") {
+        const formData = await request.formData();
+
+        const uuid = formData.get("uuid");
+        if (!uuid) return new Response("`uuid` is required", { status: 400 });
+        if (typeof uuid !== "string")
+          return new Response("`uuid` must be a string", { status: 400 });
+
+        const name = formData.get("name");
+        if (!name) return new Response("`name` is required", { status: 400 });
+        if (typeof name !== "string")
+          return new Response("`name` must be a string", { status: 400 });
+
+        const email = formData.get("email");
+        if (!email) return new Response("`email` is required", { status: 400 });
+        if (typeof email !== "string")
+          return new Response("`email` must be a string", { status: 400 });
+
+        const _amount = formData.get("amount");
+        if (!_amount)
+          return new Response("`amount` is required", { status: 400 });
+        const amount = Number(_amount);
+        if (isNaN(amount))
+          return new Response("`amount` must be a number", { status: 400 });
+
+        return import("@clerk/clerk-sdk-node")
+          .then((clerk) => clerk.users.getUser(userId))
+          .then((user) => inviteInvestor({ uuid, user, email, amount, name }));
       } else {
-        return {};
+        throw new Response(`Method ${request.method} Not Found`, {
+          status: 404,
+        });
       }
     });
 };
-
-export const ErrorBoundary = DefaultErrorBoundary;
-export const CatchBoundary = DefaultCatchBoundary;
 
 export default UserFundraisesContract;

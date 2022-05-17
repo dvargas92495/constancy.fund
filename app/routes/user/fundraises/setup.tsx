@@ -10,6 +10,8 @@ import ContentContainer from "~/_common/ContentContainer";
 import Section from "~/_common/Section";
 import InfoText from "~/_common/InfoText";
 import SubSectionTitle from "~/_common/SubSectionTitle";
+export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
+export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 
 const Container = styled.div`
   max-width: 1000px;
@@ -66,7 +68,7 @@ const UserFundraisesSetup = () => {
                 <PrimaryAction
                   label={enabled ? "Select" : "Coming Soon"}
                   disabled={enabled ? false : true}
-                  onClick={() => navigate(`/user/fundraises/details/${id}`)}
+                  onClick={() => navigate(`/user/fundraises/setup/${id}`)}
                 />
               </FundraisingTypeTopRow>
               <FundraisingTypeHelpBox>

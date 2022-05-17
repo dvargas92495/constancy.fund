@@ -14,9 +14,8 @@ import {
   ActionFunction,
   LinksFunction,
   redirect,
-  ErrorBoundaryComponent,
 } from "@remix-run/server-runtime";
-import formatAmount from "../../../../util/formatAmount";
+import formatAmount from "../../../util/formatAmount";
 import styled from "styled-components";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import { SecondaryAction } from "~/_common/SecondaryAction";
@@ -34,6 +33,8 @@ import waitForContractDraft from "~/data/waitForContractDraft.server";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
 import refreshContractDraft from "~/data/refreshContractDraft.server";
+export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
+export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 
 const ExplainTitle = styled.div`
   font-size: 18px;
@@ -131,7 +132,7 @@ export const action: ActionFunction = ({ request, params }) => {
       }
       if (request.method === "POST") {
         // Do we need any backend validation? My sense says no.
-        return redirect(`/user/fundraises/contract/${params.id}`);
+        return redirect(`/user/fundraises/${params.id}`);
       } else if (request.method === "PUT") {
         const formData = await request.formData();
         const uuid = formData.get("uuid");
@@ -342,28 +343,6 @@ export const links: LinksFunction = () => {
     { rel: "stylesheet", href: pdfViewerCore },
     { rel: "stylesheet", href: pdfViewerLayout },
   ];
-};
-
-export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
-  // using inline-styles instead of styled components for now due to hydration issues
-  return (
-    <div style={{ padding: 32 }}>
-      <h1 style={{ fontSize: 24 }}>Application Error</h1>
-      <h3 style={{ fontSize: 18 }}>
-        Please email support@constancy.fund for assistance
-      </h3>
-      <pre
-        style={{
-          padding: "2rem",
-          background: "rgba(191, 85, 64, 0.1)",
-          color: "red",
-          overflow: "auto",
-        }}
-      >
-        {error.stack}
-      </pre>
-    </div>
-  );
 };
 
 export default UserFundraisePreview;

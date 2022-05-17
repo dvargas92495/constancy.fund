@@ -89,7 +89,7 @@ const ContractContentPage = () => {
       {signed && !isInvestor && (
         <PrimaryAction
           onClick={() =>
-            window.location.assign(`/user/fundraises/contract/${contractUuid}`)
+            window.location.assign(`/user/fundraises/${contractUuid}`)
           }
           label={"Back to Dashboard"}
         />

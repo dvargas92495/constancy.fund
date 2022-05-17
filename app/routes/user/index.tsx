@@ -1,12 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  ActionFunction,
-  Form,
-  LoaderFunction,
-  useActionData,
-  useCatch,
-  useLoaderData,
-} from "remix";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { Form, useActionData, useCatch, useLoaderData } from "@remix-run/react";
 import getUserProfile from "~/data/getUserProfile.server";
 import saveUserProfile from "~/data/saveUserProfile.server";
 import CountrySelect from "~/_common/CountrySelect";
