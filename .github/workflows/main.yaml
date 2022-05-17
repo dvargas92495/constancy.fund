@@ -1,11 +1,10 @@
-name: Publish site
+name: Publish app
 on:
   workflow_dispatch:
   push:
     branches: main
     paths:
       - "app/**"
-      - "server/**"
       - ".github/workflows/main.yaml"
 
 env:

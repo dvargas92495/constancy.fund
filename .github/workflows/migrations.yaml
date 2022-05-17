@@ -1,4 +1,4 @@
-name: Migrate DB
+name: Run migrations
 on:
   push:
     branches: main

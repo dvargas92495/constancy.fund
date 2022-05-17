@@ -51,7 +51,7 @@
     "eslint-plugin-react": "^7.29.4",
     "ethereum-waffle": "^3.4.4",
     "ethers": "^5.6.4",
-    "fuegojs": "^0.26.8",
+    "fuegojs": "^0.28.0",
     "hardhat": "^2.9.3",
     "local-cypress": "^1.2.5",
     "prettier": "^2.5.1",

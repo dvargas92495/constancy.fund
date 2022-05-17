@@ -1,4 +1,4 @@
-name: Publish staging migrations
+name: Run staging migrations
 on:
   workflow_dispatch:
   push:

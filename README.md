@@ -42,7 +42,6 @@ The project is made up of the following top level directories, roughly represent
 1. `/migrations` - Has all data migrations we've ever run locally and on production.
 1. `/public` - Has all of the public assets for our app. We may or may not want to move these within `/app` one day.
 1. `/scripts` - Helper scripts to assist with various functions not captured by build tools.
-1. `/server` - The entry point for our web app, to be one day moved to within `/app`.
 1. `/tests` - Has all of our contract and unit tests
 
 The application's logic is all contained within the `/app` directory. This directory is further subdivided by the following directories:
@@ -53,6 +52,7 @@ The application's logic is all contained within the `/app` directory. This direc
 1. `/enums` - This stores all hardcoded data.
 1. `/external` - Third party scripts that we are integrating directly instead of loading in the script tag.
 1. `/routes` - This stores all of our frontend pages mapped to URL routes.
+1. `/server` - The entry point for our web app on AWS
 1. `/util` - Functions that are used on both the front end and the backend
 
 The rest of the files here are part of Remix's boilerplate. There are three additional directories that should rarely see changes:
