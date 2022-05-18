@@ -86,7 +86,7 @@
     "react": "^17.0.2",
     "react-autosuggest": "^10.1.0",
     "react-dom": "^17.0.2",
-    "remix-lambda-at-edge": "^0.4.0",
+    "remix-lambda-at-edge": "^0.4.2",
     "stripe": "^8.191.0",
     "styled-components": "^5.3.3",
     "webfontloader": "^1.6.28"

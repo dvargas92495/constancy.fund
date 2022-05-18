@@ -1,6 +1,9 @@
+import { useMatches } from "@remix-run/react";
 import type { ErrorBoundaryComponent } from "@remix-run/server-runtime";
 
 const DefaultErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
+  const matches = useMatches();
+  const logUrl = matches[0].data.logUrl;
   return (
     <main
       style={{
@@ -23,6 +26,22 @@ const DefaultErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
       >
         {error.stack}
       </pre>
+      {logUrl && (
+        <p>
+          Check out the rest of the logs on{" "}
+          <a
+            href={logUrl}
+            target={"_blank"}
+            rel={"noreferrer"}
+            className={
+              "text-sky-800 underline hover:no-underline active:text-sky-900"
+            }
+          >
+            AWS
+          </a>
+          .
+        </p>
+      )}
     </main>
   );
 };

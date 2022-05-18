@@ -33,6 +33,7 @@ import TextFieldBox from "~/_common/TextFieldBox";
 import TextFieldDescription from "~/_common/TextFieldDescription";
 import TextInputContainer from "~/_common/TextInputContainer";
 import TextInputOneLine from "~/_common/TextInputOneLine";
+import SuccessSnackbar from "~/_common/SuccessSnackbar";
 export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
 export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 
@@ -607,7 +608,7 @@ const UserFundraisesContract = () => {
             <TitleTopBoxSmall>
               <SectionTitle margin={"0px"}>Invite Investor</SectionTitle>
             </TitleTopBoxSmall>
-            <Form>
+            <Form method="post">
               <TextFieldBox>
                 <TextFieldDescription required>Name</TextFieldDescription>
                 <TextInputContainer width={"350px"}>
@@ -627,6 +628,7 @@ const UserFundraisesContract = () => {
                 </TextInputContainer>
               </TextFieldBox>
               <PrimaryAction label={"Invite"} type={"submit"} />
+              <SuccessSnackbar message="Successfully invited investor to fundraise!"/>
             </Form>
           </Section>
         </ProfileBottomContainer>

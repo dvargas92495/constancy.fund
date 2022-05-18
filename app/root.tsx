@@ -19,6 +19,7 @@ import { ClerkApp, ClerkCatchBoundary } from "@clerk/remix";
 import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 import DefaultErrorBoundary from "./_common/DefaultErrorBoundary";
 import { LoadingIndicator } from "./_common/LoadingIndicator";
+import type { Context } from "aws-lambda";
 
 const themeProps = {
   palette: {
@@ -166,15 +167,39 @@ export const loader: LoaderFunction = (args) => {
   return import("@clerk/remix/ssr.server.js").then((clerk) =>
     clerk.rootAuthLoader(
       args,
-      () => ({
-        ENV: {
-          API_URL: process.env.API_URL,
-          CLERK_FRONTEND_API: process.env.CLERK_FRONTEND_API,
-          ORIGIN: process.env.ORIGIN,
-          NODE_ENV: process.env.NODE_ENV,
-          STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
-        },
-      }),
+      (args) => {
+        const lambdaContext = (
+          args.context || {
+            lambdaContext: {
+              invokedFunctionArn: "",
+              logGroupName: "",
+            },
+          }
+        ).lambdaContext as Context;
+        const region = lambdaContext.invokedFunctionArn.match(
+          /^arn:aws:lambda:([a-z0-9-]+):/
+        )?.[1];
+        const { user } = args.request;
+        const isAdmin =
+          user &&
+          user.emailAddresses.some((e) =>
+            e.emailAddress?.endsWith("constancy.fund")
+          );
+        return {
+          ENV: {
+            API_URL: process.env.API_URL,
+            CLERK_FRONTEND_API: process.env.CLERK_FRONTEND_API,
+            ORIGIN: process.env.ORIGIN,
+            NODE_ENV: process.env.NODE_ENV,
+            STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+          },
+          logUrl: isAdmin
+            ? `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#logsV2:log-groups/log-group/${encodeURIComponent(
+                lambdaContext.logGroupName
+              )}/log-events/${encodeURIComponent(lambdaContext.logStreamName)}`
+            : "",
+        };
+      },
       { loadUser: true }
     )
   );
