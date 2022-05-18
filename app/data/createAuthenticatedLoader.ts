@@ -23,6 +23,9 @@ const createAuthenticatedLoader =
           ),
           ...searchParams,
         });
+      })
+      .catch((e) => {
+        throw new Response(e.message, { status: e.status || 500 });
       });
   };
 

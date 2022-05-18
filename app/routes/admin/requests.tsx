@@ -8,7 +8,7 @@ import {
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
-import getAllAgreements from "~/data/getAllAgreements.server";
+import listRequests from "~/data/listRequests.server";
 export { default as DefaultCatchBoundary } from "~/_common/DefaultCatchBoundary";
 export { default as DefaultErrorBoundary } from "~/_common/DefaultErrorBoundary";
 import Toast from "~/_common/Toast";
@@ -70,9 +70,8 @@ const DeleteSuccessNotification = () => {
   );
 };
 
-const AdminAgreementsPage = () => {
-  const { agreements } =
-    useLoaderData<Awaited<ReturnType<typeof getAllAgreements>>>();
+const AdminRequestsPage = () => {
+  const { streams } = useLoaderData<Awaited<ReturnType<typeof listRequests>>>();
   const navigate = useNavigate();
   return (
     <div>
@@ -81,25 +80,19 @@ const AdminAgreementsPage = () => {
         <Table>
           <thead>
             <HeaderRow>
-              <Header>Type</Header>
-              <Header>Status</Header>
-              <Header>Creator Name</Header>
-              <Header>Investor Name</Header>
-              <Header>Amount</Header>
+              <Header>Time</Header>
+              <Header>Name</Header>
             </HeaderRow>
           </thead>
           <tbody>
-            {agreements.map((a, index) => (
+            {streams.map((a, index) => (
               <Row
-                key={a.uuid}
+                key={a.arn}
                 index={index}
-                onClick={() => navigate(`/admin/agreements/${a.uuid}`)}
+                onClick={() => navigate(`/admin/requests/${a.arn}`)}
               >
-                <Cell>{a.type}</Cell>
-                <Cell>{a.status}</Cell>
-                <Cell>{a.userId}</Cell>
-                <Cell>{a.name}</Cell>
-                <Cell>${a.amount}</Cell>
+                <Cell>{a.creationTime}</Cell>
+                <Cell>{a.logStreamName}</Cell>
               </Row>
             ))}
           </tbody>
@@ -113,7 +106,6 @@ const AdminAgreementsPage = () => {
   );
 };
 
-export const loader: LoaderFunction =
-  createAuthenticatedLoader(getAllAgreements);
+export const loader: LoaderFunction = createAuthenticatedLoader(listRequests);
 
-export default AdminAgreementsPage;
+export default AdminRequestsPage;

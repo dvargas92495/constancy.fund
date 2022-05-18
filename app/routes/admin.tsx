@@ -85,9 +85,9 @@ const TABS = [
     path: "agreements",
   },
   {
-    text: "Users",
-    iconName: "settings",
-    path: "users",
+    text: "Requests",
+    iconName: "arrow-right",
+    path: "requests",
   },
 ] as const;
 
