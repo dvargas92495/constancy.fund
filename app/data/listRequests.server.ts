@@ -31,7 +31,7 @@ const listRequests = (userId: string) =>
             logGroupNamePrefix: `/aws/lambda/${r}.${process.env.ORIGIN?.replace(
               /\./,
               "-"
-            )}`,
+            ).replace(/^https:\/\//, "")}`,
           })
           .promise()
           .then((lg) => lg.logGroups || [])
