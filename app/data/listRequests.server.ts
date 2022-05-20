@@ -29,7 +29,7 @@ const listRequests = (userId: string) =>
         cw
           .describeLogGroups({
             logGroupNamePrefix: `/aws/lambda/${r}.${process.env.ORIGIN?.replace(
-              /\./,
+              /\./g,
               "-"
             ).replace(/^https:\/\//, "")}`,
           })
