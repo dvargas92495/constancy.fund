@@ -228,7 +228,7 @@ export const CatchBoundary = ClerkCatchBoundary(() => {
       </head>
       <body>
         <h1>
-          {caught.status} {caught.statusText}
+          {caught.status} {caught.data}
         </h1>
         <Scripts />
       </body>

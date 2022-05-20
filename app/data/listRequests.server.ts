@@ -21,7 +21,7 @@ const regions = [
   "us-west-2",
 ];
 
-const getAllAgreements = (userId: string) =>
+const listRequests = (userId: string) =>
   verifyAdminUser(userId).then(() => {
     const cw = new AWS.CloudWatchLogs();
     return Promise.all(
@@ -51,4 +51,4 @@ const getAllAgreements = (userId: string) =>
       .then((streams) => ({ streams }));
   });
 
-export default getAllAgreements;
+export default listRequests;

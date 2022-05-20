@@ -25,6 +25,7 @@ const createAuthenticatedLoader =
         });
       })
       .catch((e) => {
+        if (e instanceof Response) throw e
         throw new Response(e.message, { status: e.status || 500 });
       });
   };

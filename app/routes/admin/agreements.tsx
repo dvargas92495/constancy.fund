@@ -9,8 +9,8 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
 import getAllAgreements from "~/data/getAllAgreements.server";
-export { default as DefaultCatchBoundary } from "~/_common/DefaultCatchBoundary";
-export { default as DefaultErrorBoundary } from "~/_common/DefaultErrorBoundary";
+export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
+export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
 import Toast from "~/_common/Toast";
 
 const Table = styled.table`
