@@ -107,7 +107,7 @@ data "aws_cloudfront_cache_policy" "cache_policy" {
 
 module "aws_static_site" {
   source  = "dvargas92495/static-site/aws"
-  version = "3.6.2"
+  version = "3.6.4"
 
   domain = "constancy.fund"
   secret = var.secret
@@ -124,7 +124,7 @@ module "aws_static_site" {
 
 module "aws-serverless-backend" {
   source  = "dvargas92495/serverless-backend/aws"
-  version = "2.5.0"
+  version = "2.5.2"
 
   api_name = "constancy-fund"
   directory = "api"
@@ -135,7 +135,7 @@ module "aws-serverless-backend" {
 
 module "aws_static_site_staging" {
   source  = "dvargas92495/static-site/aws"
-  version = "3.6.2"
+  version = "3.6.4"
 
   domain = "staging.constancy.fund"
   secret = var.secret
@@ -153,7 +153,7 @@ module "aws_static_site_staging" {
 
 module "aws-serverless-backend_staging" {
   source  = "dvargas92495/serverless-backend/aws"
-  version = "2.5.0"
+  version = "2.5.2"
   directory = "api"
 
   api_name = "staging-constancy-fund"
