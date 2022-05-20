@@ -1,7 +1,4 @@
-import getMysql from "./mysql.server";
-import FUNDRAISE_TYPES from "../../app/enums/fundraiseTypes";
-import STAGES from "../../app/enums/contract_stages";
-import getEversign from "./eversign.server";
+import AWS from "aws-sdk";
 import verifyAdminUser from "./verifyAdminUser.server";
 
 const regions = [
@@ -25,35 +22,33 @@ const regions = [
 ];
 
 const getAllAgreements = (userId: string) =>
-  verifyAdminUser(userId)
-    .then(() => import("aws-sdk"))
-    .then((aws) => {
-      const cw = new aws.default.CloudWatchLogs();
-      return Promise.all(
-        regions.map((r) =>
-          cw
-            .describeLogGroups({
-              logGroupNamePrefix: `/aws/lambda/${r}.${process.env.ORIGIN?.replace(
-                /\./,
-                "-"
-              )}`,
-            })
-            .promise()
-            .then((lg) => lg.logGroups || [])
-        )
+  verifyAdminUser(userId).then(() => {
+    const cw = new AWS.CloudWatchLogs();
+    return Promise.all(
+      regions.map((r) =>
+        cw
+          .describeLogGroups({
+            logGroupNamePrefix: `/aws/lambda/${r}.${process.env.ORIGIN?.replace(
+              /\./,
+              "-"
+            )}`,
+          })
+          .promise()
+          .then((lg) => lg.logGroups || [])
       )
-        .then((groups) => groups.flat())
-        .then((groups) =>
-          Promise.all(
-            groups.map((g) =>
-              cw
-                .describeLogStreams({ logGroupName: g.logGroupName || "" })
-                .promise()
-                .then((r) => r.logStreams || [])
-            )
-          ).then((streams) => streams.flat())
-        )
-        .then((streams) => ({ streams }));
-    });
+    )
+      .then((groups) => groups.flat())
+      .then((groups) =>
+        Promise.all(
+          groups.map((g) =>
+            cw
+              .describeLogStreams({ logGroupName: g.logGroupName || "" })
+              .promise()
+              .then((r) => r.logStreams || [])
+          )
+        ).then((streams) => streams.flat())
+      )
+      .then((streams) => ({ streams }));
+  });
 
 export default getAllAgreements;
