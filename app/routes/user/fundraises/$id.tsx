@@ -657,10 +657,10 @@ export const action: ActionFunction = async ({ request, params }) => {
       } else if (request.method === "POST") {
         const formData = await request.formData();
 
-        const uuid = params["uuid"];
-        if (!uuid) throw new Response("`uuid` is required", { status: 400 });
+        const uuid = params["id"];
+        if (!uuid) throw new Response("`id` is required", { status: 400 });
         if (typeof uuid !== "string")
-          throw new Response("`uuid` must be a string", { status: 400 });
+          throw new Response("`id` must be a string", { status: 400 });
 
         const name = formData.get("name");
         if (!name) throw new Response("`name` is required", { status: 400 });
