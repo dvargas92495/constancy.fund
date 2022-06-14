@@ -80,19 +80,27 @@ const AdminRequestsPage = () => {
         <Table>
           <thead>
             <HeaderRow>
-              <Header>Time</Header>
+              <Header>Created</Header>
+              <Header>Last Updated</Header>
               <Header>Name</Header>
             </HeaderRow>
           </thead>
           <tbody>
             {streams.map((a, index) => (
-              <Row
-                key={a.arn}
-                index={index}
-                onClick={() => navigate(`/admin/requests/${a.arn}`)}
-              >
-                <Cell>{a.creationTime}</Cell>
-                <Cell>{a.logStreamName}</Cell>
+              <Row key={a.arn} index={index}>
+                <Cell>{new Date(a.creationTime).toLocaleString()}</Cell>
+                <Cell>{new Date(a.lastEventTimestamp).toLocaleString()}</Cell>
+                <Cell>
+                  <a
+                    href={`https://${
+                      a.region
+                    }.console.aws.amazon.com/cloudwatch/home?region=${
+                      a.region
+                    }#logsV2:log-groups/log-group/${encodeURIComponent(a.arn)}`}
+                  >
+                    {a.logStreamName}
+                  </a>
+                </Cell>
               </Row>
             ))}
           </tbody>

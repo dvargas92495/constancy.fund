@@ -628,7 +628,7 @@ const UserFundraisesContract = () => {
                 </TextInputContainer>
               </TextFieldBox>
               <PrimaryAction label={"Invite"} type={"submit"} />
-              <SuccessSnackbar message="Successfully invited investor to fundraise!"/>
+              <SuccessSnackbar message="Successfully invited investor to fundraise!" />
             </Form>
           </Section>
         </ProfileBottomContainer>
@@ -646,38 +646,38 @@ export const action: ActionFunction = async ({ request, params }) => {
     .then((clerk) => clerk.getAuth(request))
     .then(async ({ userId }) => {
       if (!userId) {
-        return new Response("Unauthorized", { status: 401 });
+        throw new Response("Unauthorized", { status: 401 });
       }
       if (request.method === "DELETE") {
         const uuid = params["uuid"];
-        if (!uuid) return new Response("`uuid` is required", { status: 400 });
+        if (!uuid) throw new Response("`uuid` is required", { status: 400 });
         if (typeof uuid !== "string")
-          return new Response("`uuid` must be a string", { status: 400 });
+          throw new Response("`uuid` must be a string", { status: 400 });
         return deleteAgreement({ uuid, userId });
       } else if (request.method === "POST") {
         const formData = await request.formData();
 
-        const uuid = formData.get("uuid");
-        if (!uuid) return new Response("`uuid` is required", { status: 400 });
+        const uuid = params["uuid"];
+        if (!uuid) throw new Response("`uuid` is required", { status: 400 });
         if (typeof uuid !== "string")
-          return new Response("`uuid` must be a string", { status: 400 });
+          throw new Response("`uuid` must be a string", { status: 400 });
 
         const name = formData.get("name");
-        if (!name) return new Response("`name` is required", { status: 400 });
+        if (!name) throw new Response("`name` is required", { status: 400 });
         if (typeof name !== "string")
-          return new Response("`name` must be a string", { status: 400 });
+          throw new Response("`name` must be a string", { status: 400 });
 
         const email = formData.get("email");
-        if (!email) return new Response("`email` is required", { status: 400 });
+        if (!email) throw new Response("`email` is required", { status: 400 });
         if (typeof email !== "string")
-          return new Response("`email` must be a string", { status: 400 });
+          throw new Response("`email` must be a string", { status: 400 });
 
         const _amount = formData.get("amount");
         if (!_amount)
-          return new Response("`amount` is required", { status: 400 });
+          throw new Response("`amount` is required", { status: 400 });
         const amount = Number(_amount);
         if (isNaN(amount))
-          return new Response("`amount` must be a number", { status: 400 });
+          throw new Response("`amount` must be a number", { status: 400 });
 
         return import("@clerk/clerk-sdk-node")
           .then((clerk) => clerk.users.getUser(userId))

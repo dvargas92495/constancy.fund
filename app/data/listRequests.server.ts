@@ -34,7 +34,7 @@ const listRequests = (userId: string) =>
             ).replace(/^https:\/\//, "")}`,
           })
           .promise()
-          .then((lg) => lg.logGroups || [])
+          .then((lg) => (lg.logGroups || []).map((g) => ({ ...g, region: r })))
       )
     )
       .then((groups) => groups.flat())
@@ -42,11 +42,27 @@ const listRequests = (userId: string) =>
         Promise.all(
           groups.map((g) =>
             cw
-              .describeLogStreams({ logGroupName: g.logGroupName || "" })
+              .describeLogStreams({
+                logGroupName: g.logGroupName || "",
+                orderBy: "LastEventTime",
+                descending: true,
+              })
               .promise()
-              .then((r) => r.logStreams || [])
+              .then((r) =>
+                (r.logStreams || []).map((s) => ({
+                  region: g.region,
+                  arn: s.arn || "",
+                  creationTime: s.creationTime || 0,
+                  lastEventTimestamp: s.lastEventTimestamp || 0,
+                  logStreamName: s.logStreamName || "",
+                }))
+              )
           )
-        ).then((streams) => streams.flat())
+        ).then((streams) =>
+          streams
+            .flat()
+            .sort((a, b) => b.lastEventTimestamp - a.lastEventTimestamp)
+        )
       )
       .then((streams) => ({ streams }));
   });
