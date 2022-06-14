@@ -16,6 +16,7 @@ import TextInputContainer from "~/_common/TextInputContainer";
 import TextInputOneLine from "~/_common/TextInputOneLine";
 import { infuraEthersProvidersById } from "~/enums/web3Networks";
 import DefaultCatchBoundary from "~/_common/DefaultCatchBoundary";
+import uploadContractToIpfs from "~/data/uploadContractToIpfs.server";
 
 declare global {
   interface Window {
@@ -220,54 +221,17 @@ const DeploySmartContract = ({
   share,
   returnMultiple,
   threshold,
-  hash,
   abi,
   bytecode,
   price,
   versionHash,
-  hashAsAddress,
 }: Omit<ReadyData, "valid" | "deployed"> & { isInvestor: boolean }) => {
   const fetcher = useFetcher();
   const [loading, setLoading] = useState(false);
   const onDeploy = useCallback(() => {
     setLoading(true);
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.ContractFactory(abi, bytecode, signer);
-    Promise.all([
-      contract
-        .deploy(
-          investorAddress,
-          Number(share) * 100,
-          Number(returnMultiple) * 100,
-          ethers.utils.parseEther((Number(threshold) / price).toFixed(6)),
-          hashAsAddress
-        )
-        .then((contract) => {
-          return contract.deployTransaction.wait().then(() => contract);
-        }),
-      provider.getNetwork(),
-    ]).then(([contract, chain]) => {
-      fetcher.submit(
-        {
-          address: contract.address,
-          network: `${chain.chainId}`,
-          hash: versionHash,
-        },
-        { method: "post" }
-      );
-    });
-  }, [
-    fetcher,
-    abi,
-    bytecode,
-    hash,
-    threshold,
-    returnMultiple,
-    share,
-    investorAddress,
-    hashAsAddress,
-  ]);
+    fetcher.submit({}, { method: "put" });
+  }, [fetcher, setLoading]);
   const [walletAddress, setWalletAddress] = useState("");
   useEffect(() => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -285,8 +249,43 @@ const DeploySmartContract = ({
       });
   }, [setWalletAddress]);
   useEffect(() => {
-    console.log(fetcher.type, fetcher.state);
-  }, [fetcher, setLoading]);
+    if (fetcher.data.hash) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.ContractFactory(abi, bytecode, signer);
+      Promise.all([
+        contract
+          .deploy(
+            investorAddress,
+            Number(share) * 100,
+            Number(returnMultiple) * 100,
+            ethers.utils.parseEther((Number(threshold) / price).toFixed(6)),
+            fetcher.data.hashAsAddress
+          )
+          .then((contract) => {
+            return contract.deployTransaction.wait().then(() => contract);
+          }),
+        provider.getNetwork(),
+      ]).then(([contract, chain]) => {
+        fetcher.submit(
+          {
+            address: contract.address,
+            network: `${chain.chainId}`,
+            hash: versionHash,
+          },
+          { method: "post" }
+        );
+      });
+    }
+  }, [
+    fetcher,
+    abi,
+    bytecode,
+    threshold,
+    returnMultiple,
+    share,
+    investorAddress,
+  ]);
   return (
     <>
       <p>Agreement ready for smart contract ready deployment</p>
@@ -325,10 +324,6 @@ const DeploySmartContract = ({
               <li>
                 <b>Threshold: </b>${threshold} (
                 {(Number(threshold) / price).toFixed(6)} ETH)
-              </li>
-              <li>
-                <b>IPFS Hash: </b>
-                {hash}
               </li>
             </ul>
             <PrimaryAction
@@ -395,6 +390,9 @@ export const action: ActionFunction = async ({ params, request }) => {
       network: Number(body.get("network")),
       hash: body.get("hash") as string,
     });
+  } else if (request.method === "PUT") {
+    const uuid = params["uuid"] || "";
+    return uploadContractToIpfs({ uuid });
   }
   throw new Response(`Unsupported method ${request.method}`, { status: 404 });
 };

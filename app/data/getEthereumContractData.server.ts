@@ -1,17 +1,11 @@
 import axios from "axios";
-import uploadToIpfs from "./uploadToIpfs.server";
 import getMysql from "./mysql.server";
 import { NotFoundError } from "aws-sdk-plus/dist/errors";
 import getPaymentPreferences from "./getPaymentPreferences.server";
 import FUNDRAISE_TYPES from "~/enums/fundraiseTypes";
-import fs from "fs";
-import bs58 from "bs58";
 import { providers, Contract, ContractInterface, utils, ethers } from "ethers";
 import { infuraEthersProvidersById } from "~/enums/web3Networks";
-import type { S3 } from "aws-sdk";
 
-const ipfsHashToBytes32 = (s: string) =>
-  `0x${Buffer.from(bs58.decode(s).slice(2)).toString("hex")}`;
 
 const getEthPriceInUsd = () =>
   axios
@@ -52,8 +46,6 @@ export type ReadyData = {
   share: string;
   returnMultiple: string;
   threshold: string;
-  hash: string;
-  hashAsAddress: string;
   abi: ContractInterface;
   bytecode: utils.BytesLike;
   price: number;
@@ -126,7 +118,6 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
           contractDetails,
           address,
           network,
-          contract,
           type,
           hash,
           amount,
@@ -247,37 +238,9 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                   .get(`https://ipfs.io/ipfs/${hash}`)
                   .then((res) => ({ ...res.data, versionHash: hash }))
               ),
-            (process.env.NODE_ENV === "production"
-              ? Promise.resolve(require("aws-sdk"))
-                  .then((AWS) => new AWS.S3() as S3)
-                  .then((s3) =>
-                    s3
-                      .getObject({
-                        Bucket: process.env.IS_PRODUCTION
-                          ? "constancy.fund"
-                          : "staging.constancy.fund",
-                        Key: `_contracts/${contract}/${uuid}.pdf`,
-                      })
-                      .promise()
-                      .then((data) => data.Body as Buffer)
-                  )
-              : Promise.resolve(
-                  fs.readFileSync(`public/_contracts/${contract}/${uuid}.pdf`)
-                )
-            )
-              .then((file) =>
-                uploadToIpfs({
-                  file,
-                }) // TODO: Remove from GET
-              )
-              .catch((e) => {
-                throw new Error(
-                  `Failed to get contract pdf and upload to ipfs: ${e.response?.data || e}`
-                );
-              }),
             getEthPriceInUsd(),
           ])
-            .then(([contractJson, hash, price]) => {
+            .then(([contractJson, price]) => {
               destroy();
               return {
                 valid: true,
@@ -291,8 +254,6 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                 share: contractDetails.share,
                 returnMultiple: contractDetails.return,
                 threshold: contractDetails.threshold,
-                hash,
-                hashAsAddress: ipfsHashToBytes32(hash),
                 versionHash: contractJson.versionHash,
                 abi: contractJson.abi,
                 bytecode: contractJson.bytecode,
