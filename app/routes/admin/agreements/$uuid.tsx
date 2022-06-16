@@ -1,11 +1,52 @@
 import { ActionFunction, redirect } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, Link, useLoaderData } from "@remix-run/react";
 import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
 import getAgreementAsAdmin from "~/data/getAgreementAsAdmin.server";
-import DefaultCatchBoundary from "~/_common/DefaultCatchBoundary";
-import DefaultErrorBoundary from "~/_common/DefaultErrorBoundary";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import deleteAgreementAsAdmin from "~/data/deleteAgreementAsAdmin.server";
+import styled from "styled-components";
+export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
+export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
+
+const ButtonyLink = styled(Link)`
+  padding: 8px 20px;
+  border-color: unset;
+  border-width: unset;
+  border-style: unset;
+  height: 35px;
+  font-weight: normal;
+  overflow: visible;
+  white-space: nowrap;
+  display: flex;
+  min-width: fit-content;
+  width: 80px;
+  justify-content: center;
+  align-items: center;
+  vertical-align: middle;
+  background: ${(props) => props.theme.palette.color.purple};
+  color: white;
+  text-decoration: none;
+  box-sizing: border-box;
+  border-radius: 5px;
+  cursor: pointer;
+
+  & * {
+    display: flex;
+  }
+
+  :focus {
+    outline: unset;
+  }
+
+  &: hover {
+    opacity: 0.8;
+  }
+`;
+
+const ActionsContainer = styled.div`
+  gap: 16px;
+  display: flex;
+`;
 
 const AdminAgreementPage = () => {
   const data = useLoaderData<Awaited<ReturnType<typeof getAgreementAsAdmin>>>();
@@ -23,7 +64,7 @@ const AdminAgreementPage = () => {
       <h6>Fundraise Details:</h6>
       <ul>
         {Object.entries(data.details).map(([k, v]) => (
-          <li>
+          <li key={k}>
             <b>{k}:</b> {v}
           </li>
         ))}
@@ -36,9 +77,12 @@ const AdminAgreementPage = () => {
         </p>
       )}
       <h6>Actions:</h6>
-      <Form method={"delete"}>
-        <PrimaryAction type={"submit"} label={"Delete"} />
-      </Form>
+      <ActionsContainer>
+        <ButtonyLink to={`/contract/${data.uuid}`}>Go</ButtonyLink>
+        <Form method={"delete"}>
+          <PrimaryAction type={"submit"} label={"Delete"} />
+        </Form>
+      </ActionsContainer>
     </div>
   );
 };
@@ -68,8 +112,5 @@ export const action: ActionFunction = ({ request, params }) => {
       }
     });
 };
-
-export const ErrorBoundary = DefaultErrorBoundary;
-export const CatchBoundary = DefaultCatchBoundary;
 
 export default AdminAgreementPage;

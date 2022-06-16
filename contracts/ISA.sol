@@ -74,10 +74,15 @@ contract ISA is Ownable {
 
     function creatorWithdraw() public {
         uint256 toInvestor = investorCut();
+        uint256 total = investmentAllocated + revenueAllocated + balance - toInvestor;
+        require(
+            total > 0,
+            "Nothing to withdraw"
+        );
+
         totalRevenue += balance - toInvestor;
         totalReturned += toInvestor;
         returnAllocated += toInvestor;
-        uint256 total = investmentAllocated + revenueAllocated + balance - toInvestor;
         investmentAllocated = 0;
         revenueAllocated = 0;
         balance = 0;
@@ -90,11 +95,16 @@ contract ISA is Ownable {
     }
 
     function investorWithdraw() public {
-        uint256 toInvestor = investorCut();
+        uint256 toInvestor = investorCut();        
+        uint256 total = returnAllocated + toInvestor;
+        require(
+            total > 0,
+            "Nothing to withdraw"
+        );
+        
         totalRevenue += balance - toInvestor;
         totalReturned += toInvestor;
         revenueAllocated += balance - toInvestor;
-        uint256 total = returnAllocated + toInvestor;
         returnAllocated = 0;
         balance = 0;
         

@@ -1,3 +1,4 @@
+import { useTransition } from "@remix-run/react";
 import React from "react";
 import styled from "styled-components";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -72,24 +73,28 @@ export const SecondaryAction = ({
   height?: string;
   width?: string;
   id?: string;
-}) => (
-  <StyledSecondaryAction
-    autoFocus
-    tabIndex={0}
-    onClick={disabled === true ? undefined : onClick}
-    disabled={disabled}
-    ref={innerRef}
-    onKeyPress={(e) => (e.key === "Enter" ? onClick(e) : false)}
-    height={height}
-    width={width}
-    id={id}
-  >
-    {isLoading ? (
-      <LoadingIndicator size="20px" thickness={3} />
-    ) : (
-      <StyledSecondaryActionLinkText fontSize={fontSize}>
-        {label}
-      </StyledSecondaryActionLinkText>
-    )}
-  </StyledSecondaryAction>
-);
+}) => {
+  const transition = useTransition();
+  const loading = isLoading || transition.state !== "idle";
+  return (
+    <StyledSecondaryAction
+      autoFocus
+      tabIndex={0}
+      onClick={disabled === true ? undefined : onClick}
+      disabled={disabled}
+      ref={innerRef}
+      onKeyPress={(e) => (e.key === "Enter" ? onClick(e) : false)}
+      height={height}
+      width={width}
+      id={id}
+    >
+      {loading ? (
+        <LoadingIndicator size="20px" thickness={3} />
+      ) : (
+        <StyledSecondaryActionLinkText fontSize={fontSize}>
+          {label}
+        </StyledSecondaryActionLinkText>
+      )}
+    </StyledSecondaryAction>
+  );
+};

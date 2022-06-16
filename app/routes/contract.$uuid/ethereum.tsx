@@ -32,6 +32,7 @@ const ViewSmartContract = (
   props: Omit<DeployedData, "valid" | "deployed"> & { isInvestor: boolean }
 ) => {
   const [walletAddress, setWalletAddress] = useState("");
+  const fetcher = useFetcher();
   useEffect(() => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     provider
@@ -87,7 +88,10 @@ const ViewSmartContract = (
     return contract
       .invest({ value: ethers.utils.parseEther(investment) })
       .then((tx: ethers.ContractTransaction) => tx.wait())
-      .then(() => setLoading(false));
+      .then(() => {
+        setLoading(false);
+        fetcher.load("");
+      });
   }, [setLoading, props.address, props.abi]);
   const Summary = useCallback(
     () => (

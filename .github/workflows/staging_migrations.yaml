@@ -4,7 +4,7 @@ on:
   push:
     branches: main
     paths:
-      - "migrations/**"
+      - "data/migrations/**"
       - ".github/workflows/staging.yaml"
 
 env:
