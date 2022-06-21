@@ -99,7 +99,7 @@ const AdminAgreementPage = () => {
                   provider.getSigner()
                 );
                 return contract
-                  .investorWithdraw()
+                  .invest({ value: ethers.utils.parseEther("1.0") })
                   .then((tx: ethers.ContractTransaction) => tx.wait())
                   .then(() => setLoading(false));
               }}
@@ -110,13 +110,12 @@ const AdminAgreementPage = () => {
                 const provider = new ethers.providers.Web3Provider(
                   window.ethereum
                 );
-                const contract = new ethers.Contract(
-                  data.address || "",
-                  data.contractJson.abi,
-                  provider.getSigner()
-                );
-                return contract
-                  .investorWithdraw()
+                return provider
+                  .getSigner()
+                  .sendTransaction({
+                    value: ethers.utils.parseEther("1.0"),
+                    to: data.address,
+                  })
                   .then((tx: ethers.ContractTransaction) => tx.wait())
                   .then(() => setLoading(false));
               }}
