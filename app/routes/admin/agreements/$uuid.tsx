@@ -5,6 +5,8 @@ import getAgreementAsAdmin from "~/data/getAgreementAsAdmin.server";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import deleteAgreementAsAdmin from "~/data/deleteAgreementAsAdmin.server";
 import styled from "styled-components";
+import { useState } from "react";
+import { ethers } from "ethers";
 export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
 
@@ -50,6 +52,7 @@ const ActionsContainer = styled.div`
 
 const AdminAgreementPage = () => {
   const data = useLoaderData<Awaited<ReturnType<typeof getAgreementAsAdmin>>>();
+  const [loading, setLoading] = useState(false);
   return (
     <div>
       <h1>
@@ -82,6 +85,44 @@ const AdminAgreementPage = () => {
         <Form method={"delete"}>
           <PrimaryAction type={"submit"} label={"Delete"} />
         </Form>
+        {data.address && (
+          <>
+            <PrimaryAction
+              label={"Invest"}
+              onClick={() => {
+                const provider = new ethers.providers.Web3Provider(
+                  window.ethereum
+                );
+                const contract = new ethers.Contract(
+                  data.address || "",
+                  data.contractJson.abi,
+                  provider.getSigner()
+                );
+                return contract
+                  .investorWithdraw()
+                  .then((tx: ethers.ContractTransaction) => tx.wait())
+                  .then(() => setLoading(false));
+              }}
+            />
+            <PrimaryAction
+              label={"Transact"}
+              onClick={() => {
+                const provider = new ethers.providers.Web3Provider(
+                  window.ethereum
+                );
+                const contract = new ethers.Contract(
+                  data.address || "",
+                  data.contractJson.abi,
+                  provider.getSigner()
+                );
+                return contract
+                  .investorWithdraw()
+                  .then((tx: ethers.ContractTransaction) => tx.wait())
+                  .then(() => setLoading(false));
+              }}
+            />
+          </>
+        )}
       </ActionsContainer>
     </div>
   );

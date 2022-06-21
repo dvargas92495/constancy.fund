@@ -5,6 +5,7 @@ import getPaymentPreferences from "./getPaymentPreferences.server";
 import FUNDRAISE_TYPES from "~/enums/fundraiseTypes";
 import { providers, Contract, ContractInterface, utils, ethers } from "ethers";
 import { infuraEthersProvidersById } from "~/enums/web3Networks";
+import getEthereumAbiByFundraiseType from "./getEthereumAbiByFundraiseType.server";
 
 
 const getEthPriceInUsd = () =>
@@ -228,16 +229,7 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
               });
           }
           return Promise.all([
-            execute(
-              `SELECT hash FROM smart_contracts WHERE contract = ? ORDER BY version DESC LIMIT 1`,
-              [type]
-            )
-              .then((records) => records as { hash: string }[])
-              .then(([{ hash }]) =>
-                axios
-                  .get(`https://ipfs.io/ipfs/${hash}`)
-                  .then((res) => ({ ...res.data, versionHash: hash }))
-              ),
+            getEthereumAbiByFundraiseType(type, execute),
             getEthPriceInUsd(),
           ])
             .then(([contractJson, price]) => {

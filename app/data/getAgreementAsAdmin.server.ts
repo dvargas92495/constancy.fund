@@ -4,6 +4,7 @@ import getEversign from "./eversign.server";
 import FUNDRAISE_TYPES from "../../app/enums/fundraiseTypes";
 import STAGES from "../../app/enums/contract_stages";
 import { displayNameById } from "~/enums/web3Networks";
+import getEthereumAbiByFundraiseType from "./getEthereumAbiByFundraiseType.server";
 
 const getAgreementAsAdmin = (
   userId: string,
@@ -23,7 +24,6 @@ LEFT JOIN deployed_smart_contracts sc ON sc.agreement_uuid = a.uuid
 WHERE a.uuid = ?`,
         [params["uuid"]]
       ).then(async (results) => {
-        destroy();
         const details = results as {
           type: number;
           userId: string;
@@ -37,11 +37,15 @@ WHERE a.uuid = ?`,
           address?: string;
           network?: number;
         }[];
-        if (!details.length)
+        if (!details.length) {
           throw new Response(`Could not find agreement: ${params["uuid"]}`, {
             status: 404,
           });
+        }
         const [agreement] = details;
+        const agreementType = FUNDRAISE_TYPES[agreement.type].id;
+        const contractJson = await getEthereumAbiByFundraiseType(agreementType, execute);
+        destroy();
         const { id } = agreement;
         const status = id
           ? await getEversign()
@@ -59,7 +63,7 @@ WHERE a.uuid = ?`,
           clerk.users.getUser(agreement.userId)
         );
         return {
-          type: FUNDRAISE_TYPES[agreement.type].id,
+          type: agreementType,
           uuid: agreement.uuid,
           creatorName: `${creator.firstName} ${creator.lastName}`,
           creatorEmail: creator.emailAddresses.find(
@@ -72,6 +76,7 @@ WHERE a.uuid = ?`,
           amount: agreement.amount,
           network: displayNameById[agreement.network || 0],
           address: agreement.address,
+          contractJson,
         };
       })
     );
