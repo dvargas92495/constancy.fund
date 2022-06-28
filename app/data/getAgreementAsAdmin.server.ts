@@ -3,8 +3,14 @@ import getMysql from "./mysql.server";
 import getEversign from "./eversign.server";
 import FUNDRAISE_TYPES from "../../app/enums/fundraiseTypes";
 import STAGES from "../../app/enums/contract_stages";
-import { displayNameById } from "~/enums/web3Networks";
+import { infuraEthersProvidersById } from "~/enums/web3Networks";
 import getEthereumAbiByFundraiseType from "./getEthereumAbiByFundraiseType.server";
+import axios from "axios";
+import FormData from "form-data";
+
+const Authorization = `Basic ${Buffer.from(
+  `${process.env.IPFS_INFURA_ID}:${process.env.IPFS_INFURA_SECRET}`
+).toString("base64")}`;
 
 const getAgreementAsAdmin = (
   userId: string,
@@ -44,7 +50,10 @@ WHERE a.uuid = ?`,
         }
         const [agreement] = details;
         const agreementType = FUNDRAISE_TYPES[agreement.type].id;
-        const contractJson = await getEthereumAbiByFundraiseType(agreementType, execute);
+        const contractJson = await getEthereumAbiByFundraiseType(
+          agreementType,
+          execute
+        );
         destroy();
         const { id } = agreement;
         const status = id
@@ -62,6 +71,20 @@ WHERE a.uuid = ?`,
         const creator = await import("@clerk/clerk-sdk-node").then((clerk) =>
           clerk.users.getUser(agreement.userId)
         );
+        const formData = new FormData();
+        const ls = await axios
+          .post(
+            `https://ipfs.infura.io:5001/api/v0/pin/ls?arg=${contractJson.versionHash}`,
+            formData,
+            {
+              headers: {
+                ...formData.getHeaders(),
+                Authorization,
+              },
+            }
+          )
+          .then((r) => JSON.stringify(r.data))
+          .catch((e) => JSON.stringify(e.response?.data));
         return {
           type: agreementType,
           uuid: agreement.uuid,
@@ -74,9 +97,10 @@ WHERE a.uuid = ?`,
           status: STAGES[status],
           details: Object.fromEntries(details.map((d) => [d.label, d.value])),
           amount: agreement.amount,
-          network: displayNameById[agreement.network || 0],
+          network: infuraEthersProvidersById[agreement.network || 0],
           address: agreement.address,
           contractJson,
+          ls,
         };
       })
     );

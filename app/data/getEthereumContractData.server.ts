@@ -7,7 +7,6 @@ import { providers, Contract, ContractInterface, utils, ethers } from "ethers";
 import { infuraEthersProvidersById } from "~/enums/web3Networks";
 import getEthereumAbiByFundraiseType from "./getEthereumAbiByFundraiseType.server";
 
-
 const getEthPriceInUsd = () =>
   axios
     .get(
@@ -15,7 +14,9 @@ const getEthPriceInUsd = () =>
     )
     .then((r) => r.data.ethereum.usd as number)
     .catch((e) => {
-      throw new Error(`Failed to get ETH price in USD:\n${e.response?.data || e.message}`);
+      throw new Error(
+        `Failed to get ETH price in USD:\n${e.response?.data || e.message}`
+      );
     });
 
 export type InvalidData = { valid: false; deployed: false };
@@ -37,6 +38,8 @@ export type DeployedData = {
   investmentAllocated: string;
   revenueAllocated: string;
   returnAllocated: string;
+  creatorWithdrawPreview: string;
+  investorWithdrawPreview: string;
   totalBalance: string;
 };
 export type ReadyData = {
@@ -177,6 +180,16 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                   contract
                     .returnAllocated()
                     .then((s: ethers.BigNumber) => utils.formatEther(s)),
+                  !contract.creatorWithdrawPreview
+                    ? Promise.resolve("0")
+                    : contract.creatorWithdrawPreview.then(
+                        (s: ethers.BigNumber) => utils.formatEther(s)
+                      ),
+                  !contract.investorWithdrawPreview
+                    ? Promise.resolve("0")
+                    : contract
+                        .investorWithdrawPreview()
+                        .then((s: ethers.BigNumber) => utils.formatEther(s)),
                   provider
                     .getBalance(contract.address)
                     .then((s) => utils.formatEther(s))
@@ -199,6 +212,8 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                   investmentAllocated,
                   revenueAllocated,
                   returnAllocated,
+                  creatorWithdrawPreview,
+                  investorWithdrawPreview,
                   totalBalance,
                 ]) =>
                   ({
@@ -219,6 +234,8 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                     investmentAllocated,
                     revenueAllocated,
                     returnAllocated,
+                    creatorWithdrawPreview,
+                    investorWithdrawPreview,
                     totalBalance,
                   } as const)
               )
@@ -254,7 +271,9 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
             })
             .catch((e) => {
               throw new Error(
-                `Failed to get ETH contract setup data: ${e.response?.data || e}`
+                `Failed to get ETH contract setup data: ${
+                  e.response?.data || e
+                }`
               );
             });
         }

@@ -7,6 +7,11 @@ import deleteAgreementAsAdmin from "~/data/deleteAgreementAsAdmin.server";
 import styled from "styled-components";
 import { useState } from "react";
 import { ethers } from "ethers";
+import TextFieldBox from "~/_common/TextFieldBox";
+import TextFieldDescription from "~/_common/TextFieldDescription";
+import TextInputContainer from "~/_common/TextInputContainer";
+import TextInputOneLine from "~/_common/TextInputOneLine";
+import Toast from "~/_common/Toast";
 export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
 
@@ -53,6 +58,9 @@ const ActionsContainer = styled.div`
 const AdminAgreementPage = () => {
   const data = useLoaderData<Awaited<ReturnType<typeof getAgreementAsAdmin>>>();
   const [loading, setLoading] = useState(false);
+  const [amount, setAmount] = useState("0");
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   return (
     <div>
       <h1>
@@ -80,49 +88,104 @@ const AdminAgreementPage = () => {
         </p>
       )}
       <h6>Actions:</h6>
+      {data.address && (
+        <TextFieldBox>
+          <TextFieldDescription required>Amount</TextFieldDescription>
+          <TextInputContainer width={"350px"}>
+            <TextInputOneLine
+              required
+              defaultValue={"0"}
+              onChange={(e) => setAmount(e.target.value)}
+            />{" "}
+            ETH
+          </TextInputContainer>
+        </TextFieldBox>
+      )}
       <ActionsContainer>
         <ButtonyLink to={`/contract/${data.uuid}`}>Go</ButtonyLink>
         <Form method={"delete"}>
-          <PrimaryAction type={"submit"} label={"Delete"} />
+          <PrimaryAction type={"submit"} label={"Delete"} isLoading={loading} />
         </Form>
         {data.address && (
           <>
             <PrimaryAction
               label={"Invest"}
+              isLoading={loading}
+              disabled={Number(amount) === 0}
               onClick={() => {
-                const provider = new ethers.providers.Web3Provider(
-                  window.ethereum
-                );
-                const contract = new ethers.Contract(
-                  data.address || "",
-                  data.contractJson.abi,
-                  provider.getSigner()
-                );
-                return contract
-                  .invest({ value: ethers.utils.parseEther("1.0") })
-                  .then((tx: ethers.ContractTransaction) => tx.wait())
-                  .then(() => setLoading(false));
-              }}
-            />
-            <PrimaryAction
-              label={"Transact"}
-              onClick={() => {
+                setLoading(true);
                 const provider = new ethers.providers.Web3Provider(
                   window.ethereum
                 );
                 return provider
-                  .getSigner()
-                  .sendTransaction({
-                    value: ethers.utils.parseEther("1.0"),
-                    to: data.address,
+                  .getNetwork()
+                  .then((n) => {
+                    if (n.name !== data.network) {
+                      return Promise.reject(
+                        new Error(
+                          `Expected network ${n.name} but currently logged into ${data.network}`
+                        )
+                      );
+                    }
+                    const contract = new ethers.Contract(
+                      data.address || "",
+                      data.contractJson.abi,
+                      provider.getSigner()
+                    );
+                    return contract
+                      .invest({ value: ethers.utils.parseEther(amount) })
+                      .then((tx: ethers.ContractTransaction) => tx.wait());
                   })
-                  .then((tx: ethers.ContractTransaction) => tx.wait())
-                  .then(() => setLoading(false));
+                  .then(() =>
+                    setMessage(`Successfully invested ${amount} in contract`)
+                  )
+                  .catch((e) => setError(e.message))
+                  .finally(() => setLoading(false));
+              }}
+            />
+            <PrimaryAction
+              label={"Transact"}
+              isLoading={loading}
+              disabled={Number(amount) === 0}
+              onClick={() => {
+                setLoading(true);
+                const provider = new ethers.providers.Web3Provider(
+                  window.ethereum
+                );
+                return provider
+                  .getNetwork()
+                  .then((n) => {
+                    if (n.name !== data.network) {
+                      return Promise.reject(
+                        new Error(
+                          `Expected network ${n.name} but currently logged into ${data.network}`
+                        )
+                      );
+                    }
+                    return provider
+                      .getSigner()
+                      .sendTransaction({
+                        value: ethers.utils.parseEther(amount),
+                        to: data.address,
+                      })
+                      .then((tx: ethers.ContractTransaction) => tx.wait());
+                  })
+                  .then(() =>
+                    setMessage(`Successfully sent ${amount} to contract`)
+                  )
+                  .catch((e) => setError(e.message))
+                  .finally(() => setLoading(false));
               }}
             />
           </>
         )}
       </ActionsContainer>
+      <Toast open={!!error} onClose={() => setError("")} color="danger">
+        {error}
+      </Toast>
+      <Toast open={!!message} onClose={() => setMessage("")} color="success">
+        {message}
+      </Toast>
     </div>
   );
 };

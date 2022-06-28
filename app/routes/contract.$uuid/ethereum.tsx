@@ -8,15 +8,16 @@ import getEthereumContractData, {
 } from "~/data/getEthereumContractData.server";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import { ethers } from "ethers";
-import DefaultErrorBoundary from "~/_common/DefaultErrorBoundary";
+export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
 import saveDeployedSmartContract from "~/data/saveDeployedSmartContract.server";
 import TextFieldBox from "~/_common/TextFieldBox";
 import TextFieldDescription from "~/_common/TextFieldDescription";
 import TextInputContainer from "~/_common/TextInputContainer";
 import TextInputOneLine from "~/_common/TextInputOneLine";
 import { infuraEthersProvidersById } from "~/enums/web3Networks";
-import DefaultCatchBoundary from "~/_common/DefaultCatchBoundary";
+export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 import uploadContractToIpfs from "~/data/uploadContractToIpfs.server";
+import Toast from "~/_common/Toast";
 
 declare global {
   interface Window {
@@ -32,7 +33,8 @@ const ViewSmartContract = (
   props: Omit<DeployedData, "valid" | "deployed"> & { isInvestor: boolean }
 ) => {
   const [walletAddress, setWalletAddress] = useState("");
-  const fetcher = useFetcher();
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   useEffect(() => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     provider
@@ -60,7 +62,12 @@ const ViewSmartContract = (
     return contract
       .creatorWithdraw()
       .then((tx: ethers.ContractTransaction) => tx.wait())
-      .then(() => setLoading(false));
+      .then(() => setMessage(`Successfully withdrew from contract!`))
+      .catch((e: Error) => setError(e.message))
+      .finally(() => {
+        setLoading(false);
+        window.location.reload();
+      });
   }, [setLoading, props.address, props.abi]);
   const investorWithdraw = useCallback(() => {
     setLoading(true);
@@ -73,8 +80,13 @@ const ViewSmartContract = (
     return contract
       .investorWithdraw()
       .then((tx: ethers.ContractTransaction) => tx.wait())
-      .then(() => setLoading(false));
-  }, [setLoading, props.address, props.abi]);
+      .then(() => setMessage(`Successfully withdrew from contract!`))
+      .catch((e: Error) => setError(e.message))
+      .finally(() => {
+        setLoading(false);
+        window.location.reload();
+      });
+  }, [setLoading, setError, setMessage, props.address, props.abi]);
   const defaultInvestment = (props.amount / props.price).toFixed(6);
   const [investment, setInvestment] = useState(defaultInvestment);
   const invest = useCallback(() => {
@@ -88,11 +100,15 @@ const ViewSmartContract = (
     return contract
       .invest({ value: ethers.utils.parseEther(investment) })
       .then((tx: ethers.ContractTransaction) => tx.wait())
-      .then(() => {
+      .then(() =>
+        setMessage(`Successfully invested ${investment} in contract!`)
+      )
+      .catch((e: Error) => setError(e.message))
+      .finally(() => {
         setLoading(false);
-        fetcher.load("");
+        window.location.reload();
       });
-  }, [setLoading, props.address, props.abi]);
+  }, [setLoading, setMessage, setError, props.address, props.abi]);
   const Summary = useCallback(
     () => (
       <>
@@ -185,7 +201,10 @@ const ViewSmartContract = (
               label={"Invest"}
               isLoading={loading}
             />
-            <p>Click the button below to withdraw your funds so far:</p>
+            <p>
+              Click the button below to withdraw your funds (
+              {props.investorWithdrawPreview} ETH) so far:
+            </p>
             <PrimaryAction
               onClick={investorWithdraw}
               label={"Withdraw"}
@@ -201,7 +220,10 @@ const ViewSmartContract = (
         </p>
       ) : (
         <>
-          <p>Click the button below to withdraw your funds so far:</p>
+          <p>
+            Click the button below to withdraw your funds (
+            {props.creatorWithdrawPreview} ETH) so far:
+          </p>
           <PrimaryAction
             onClick={creatorWithdraw}
             label={"Withdraw"}
@@ -214,6 +236,12 @@ const ViewSmartContract = (
           <Summary />
         </>
       )}
+      <Toast open={!!error} onClose={() => setError("")} color="danger">
+        {error}
+      </Toast>
+      <Toast open={!!message} onClose={() => setMessage("")} color="success">
+        {message}
+      </Toast>
     </p>
   );
 };
@@ -365,9 +393,6 @@ const EthereumContractPage = () => {
     </ContractContainer>
   );
 };
-
-export const ErrorBoundary = DefaultErrorBoundary;
-export const CatchBoundary = DefaultCatchBoundary;
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const { userId } = await import("@clerk/remix/ssr.server.js").then((clerk) =>

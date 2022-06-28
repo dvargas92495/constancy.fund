@@ -56,7 +56,7 @@ const StyledSecondaryAction = styled.div<{
 export const SecondaryAction = ({
   label,
   onClick,
-  disabled,
+  disabled: _disabled,
   innerRef,
   fontSize,
   isLoading,
@@ -76,11 +76,12 @@ export const SecondaryAction = ({
 }) => {
   const transition = useTransition();
   const loading = isLoading || transition.state !== "idle";
+  const disabled = _disabled || loading;
   return (
     <StyledSecondaryAction
       autoFocus
       tabIndex={0}
-      onClick={disabled === true ? undefined : onClick}
+      onClick={disabled ? undefined : onClick}
       disabled={disabled}
       ref={innerRef}
       onKeyPress={(e) => (e.key === "Enter" ? onClick(e) : false)}
