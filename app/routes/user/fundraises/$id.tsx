@@ -346,7 +346,9 @@ const AgreementRow = (
               <Icon name={"edit"} heightAndWidth="14px" color="purple" />
             )}
           </StagePill>
-          {CONTRACT_STAGES[row.status].replace(/_/g, " ").toUpperCase()}
+          <Link href={`/contract/${row.uuid}`}>
+            {CONTRACT_STAGES[row.status].replace(/_/g, " ").toUpperCase()}
+          </Link>
         </StatusRow>
       </TableCell>
       <TableCell>

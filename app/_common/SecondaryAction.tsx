@@ -34,7 +34,7 @@ const StyledSecondaryAction = styled.div<{
   box-sizing: border-box;
   border-radius: 5px;
   border: 1px solid ${(props) => props.theme.palette.color.purple};
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "cursor")};
 
   & * {
     display: flex;
@@ -45,7 +45,10 @@ const StyledSecondaryAction = styled.div<{
   }
 
   &: hover {
-    background: ${(props) => props.theme.palette.color.purple}10;
+    background: ${(props) =>
+      props.disabled
+        ? props.theme.palette.color.backgroundColorDarker
+        : `${props.theme.palette.color.purple}10`};
     color: white;
 
     & ${StyledSecondaryActionLinkText} {

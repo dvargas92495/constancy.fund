@@ -209,6 +209,7 @@ const ViewSmartContract = (
               onClick={investorWithdraw}
               label={"Withdraw"}
               isLoading={loading}
+              disabled={Number(props.investorWithdrawPreview) === 0}
             />
             <Summary />
           </>
@@ -228,6 +229,7 @@ const ViewSmartContract = (
             onClick={creatorWithdraw}
             label={"Withdraw"}
             isLoading={loading}
+            disabled={Number(props.creatorWithdrawPreview) === 0}
           />
           <p>
             Make sure all users and clients send revenue for your project to

@@ -32,7 +32,7 @@ const StyledPrimaryAction = styled.button<{
       : props.theme.palette.color.purple};
   box-sizing: border-box;
   border-radius: 5px;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "cursor")};
 
   & * {
     display: flex;
@@ -43,7 +43,7 @@ const StyledPrimaryAction = styled.button<{
   }
 
   &: hover {
-    opacity: 0.8;
+    opacity: ${props => props.disabled ? "1" : "0.8"};
   }
 `;
 

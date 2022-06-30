@@ -3,7 +3,14 @@ import getMysql from "./mysql.server";
 import { NotFoundError } from "aws-sdk-plus/dist/errors";
 import getPaymentPreferences from "./getPaymentPreferences.server";
 import FUNDRAISE_TYPES from "~/enums/fundraiseTypes";
-import { providers, Contract, ContractInterface, utils, ethers } from "ethers";
+import {
+  providers,
+  Contract,
+  ContractInterface,
+  utils,
+  ethers,
+  ContractFunction,
+} from "ethers";
 import { infuraEthersProvidersById } from "~/enums/web3Networks";
 import getEthereumAbiByFundraiseType from "./getEthereumAbiByFundraiseType.server";
 
@@ -156,40 +163,40 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                   contract.investor().then((s: string) => s.toLowerCase()),
                   Promise.resolve(res.data.abi),
                   getEthPriceInUsd(),
-                  contract
-                    .totalInvested()
-                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
-                  contract
-                    .totalRevenue()
-                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
-                  contract
-                    .totalReturned()
-                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
-                  contract
-                    .balance()
-                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
-                  contract
-                    .investorCut()
-                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
-                  contract
-                    .investmentAllocated()
-                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
-                  contract
-                    .revenueAllocated()
-                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
-                  contract
-                    .returnAllocated()
-                    .then((s: ethers.BigNumber) => utils.formatEther(s)),
+                  (contract.totalInvested as ContractFunction)().then(
+                    (s: ethers.BigNumber) => utils.formatEther(s)
+                  ),
+                  (contract.totalRevenue as ContractFunction)().then(
+                    (s: ethers.BigNumber) => utils.formatEther(s)
+                  ),
+                  (contract.totalReturned as ContractFunction)().then(
+                    (s: ethers.BigNumber) => utils.formatEther(s)
+                  ),
+                  (contract.balance as ContractFunction)().then(
+                    (s: ethers.BigNumber) => utils.formatEther(s)
+                  ),
+                  (contract.investorCut as ContractFunction)().then(
+                    (s: ethers.BigNumber) => utils.formatEther(s)
+                  ),
+                  (contract.investmentAllocated as ContractFunction)().then(
+                    (s: ethers.BigNumber) => utils.formatEther(s)
+                  ),
+                  (contract.revenueAllocated as ContractFunction)().then(
+                    (s: ethers.BigNumber) => utils.formatEther(s)
+                  ),
+                  (contract.returnAllocated as ContractFunction)().then(
+                    (s: ethers.BigNumber) => utils.formatEther(s)
+                  ),
                   !contract.creatorWithdrawPreview
-                    ? Promise.resolve("0")
-                    : contract.creatorWithdrawPreview.then(
-                        (s: ethers.BigNumber) => utils.formatEther(s)
-                      ),
+                    ? Promise.resolve("")
+                    : (
+                        contract.creatorWithdrawPreview as ContractFunction
+                      )().then((s: ethers.BigNumber) => utils.formatEther(s)),
                   !contract.investorWithdrawPreview
-                    ? Promise.resolve("0")
-                    : contract
-                        .investorWithdrawPreview()
-                        .then((s: ethers.BigNumber) => utils.formatEther(s)),
+                    ? Promise.resolve("")
+                    : (
+                        contract.investorWithdrawPreview as ContractFunction
+                      )().then((s: ethers.BigNumber) => utils.formatEther(s)),
                   provider
                     .getBalance(contract.address)
                     .then((s) => utils.formatEther(s))
@@ -234,8 +241,19 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
                     investmentAllocated,
                     revenueAllocated,
                     returnAllocated,
-                    creatorWithdrawPreview,
-                    investorWithdrawPreview,
+                    creatorWithdrawPreview:
+                      creatorWithdrawPreview ||
+                      (
+                        Number(investmentAllocated) +
+                        Number(revenueAllocated) +
+                        Number(balance) -
+                        Number(investorCut)
+                      ).toFixed(6),
+                    investorWithdrawPreview:
+                      investorWithdrawPreview ||
+                      (Number(returnAllocated) + Number(investorCut)).toFixed(
+                        6
+                      ),
                     totalBalance,
                   } as const)
               )
