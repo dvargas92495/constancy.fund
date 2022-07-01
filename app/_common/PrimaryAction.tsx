@@ -32,7 +32,7 @@ const StyledPrimaryAction = styled.button<{
       : props.theme.palette.color.purple};
   box-sizing: border-box;
   border-radius: 5px;
-  cursor: ${(props) => (props.disabled ? "not-allowed" : "cursor")};
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
 
   & * {
     display: flex;

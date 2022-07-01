@@ -13,6 +13,7 @@ import {
 } from "ethers";
 import { infuraEthersProvidersById } from "~/enums/web3Networks";
 import getEthereumAbiByFundraiseType from "./getEthereumAbiByFundraiseType.server";
+import apiInfuraIpfs from "./apiIpfsInfura.server";
 
 const getEthPriceInUsd = () =>
   axios
@@ -149,8 +150,8 @@ const getEthereumContractData = ({ uuid }: { uuid: string }) => {
               infuraEthersProvidersById[network],
               process.env.INFURA_ID
             );
-            return axios
-              .get(`https://ipfs.io/ipfs/${hash}`)
+            return apiInfuraIpfs<string>(`get?arg=${hash}`)
+              .then((res) => JSON.parse(res))
               .catch((e) => {
                 throw new Error(
                   `Failed to find IPFS hash ${hash}: ${e.response?.data || e}`

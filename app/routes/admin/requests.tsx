@@ -75,7 +75,7 @@ const AdminRequestsPage = () => {
   const navigate = useNavigate();
   return (
     <div>
-      <h1>View all of the agreements below.</h1>
+      <h1>View all of the latest requests below.</h1>
       <TableContainer>
         <Table>
           <thead>

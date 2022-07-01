@@ -34,7 +34,7 @@ const StyledSecondaryAction = styled.div<{
   box-sizing: border-box;
   border-radius: 5px;
   border: 1px solid ${(props) => props.theme.palette.color.purple};
-  cursor: ${(props) => (props.disabled ? "not-allowed" : "cursor")};
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
 
   & * {
     display: flex;

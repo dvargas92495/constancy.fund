@@ -89,6 +89,11 @@ const TABS = [
     iconName: "arrow-right",
     path: "requests",
   },
+  {
+    text: "IPFS",
+    iconName: "public",
+    path: "ipfs",
+  },
 ] as const;
 
 const DashboardTab = ({ path, iconName, text }: typeof TABS[number]) => {

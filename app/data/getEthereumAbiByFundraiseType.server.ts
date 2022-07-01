@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { Execute } from "./mysql.server";
 import type { ContractInterface } from "ethers";
+import apiInfuraIpfs from "./apiIpfsInfura.server";
 
 const getEthereumAbiByFundraiseType = (type: string, execute: Execute) =>
   execute(
@@ -9,11 +10,10 @@ const getEthereumAbiByFundraiseType = (type: string, execute: Execute) =>
   )
     .then((records) => records as { hash: string }[])
     .then(([{ hash }]) =>
-      axios
-        .get<{ abi: ContractInterface; bytecode: string }>(
-          `https://ipfs.io/ipfs/${hash}`
-        )
-        .then((res) => ({ ...res.data, versionHash: hash }))
+      apiInfuraIpfs<string>(`get?arg=${hash}`).then((res) => ({
+        ...(JSON.parse(res) as { abi: ContractInterface; bytecode: string }),
+        versionHash: hash,
+      }))
     );
 
 export default getEthereumAbiByFundraiseType;
