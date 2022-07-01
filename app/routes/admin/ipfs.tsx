@@ -107,7 +107,6 @@ export const action: ActionFunction = ({ request }) => {
         return axios
           .get(`https://ipfs.io/ipfs/${hash}`)
           .then((res) => {
-            console.log(res.data)
             return apiInfuraIpfs(`pin/add?arg=${hash}`, {
               files: Buffer.from(JSON.stringify(res.data)),
             }).catch((e) => {
