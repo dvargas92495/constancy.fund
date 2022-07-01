@@ -22,6 +22,7 @@ const ContentContainer = styled.div`
   padding: 50px;
   margin-top: 80px;
   width: 100%;
+  flex-grow: 1;
 `;
 
 const DrawerContainer = styled.div`
@@ -80,6 +81,11 @@ const TABS = [
     path: "",
   },
   {
+    text: "Emails",
+    iconName: "mail",
+    path: "emails",
+  },
+  {
     text: "Agreements",
     iconName: "fundraise",
     path: "agreements",
@@ -119,16 +125,17 @@ const Main = styled.main`
   flex-grow: 1,
   padding-bottom: 16px,
   color: text.primary;
-  height: fit-content;
   width: calc(100% - ${DRAWER_WIDTH}px);
   flex-direction:column;
   display:flex;
+  min-height: 100%;
 `;
 
 const MainContainer = styled.div`
   flex-grow: 1;
   display: flex;
-  flexdirection: column;
+  flex-direction: column;
+  min-height: 100%;
 `;
 
 const List = styled.ul`

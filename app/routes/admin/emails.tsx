@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Link, LoaderFunction, Outlet, useLoaderData, useMatches } from "remix";
 import styled from "styled-components";
-import getEmailData from "../data/getEmailData.server";
-import TextFieldDescription from "../_common/TextFieldDescription";
-import TextFieldBox from "../_common/TextFieldBox";
-import TextInputContainer from "../_common/TextInputContainer";
+import getEmailData from "~/data/getEmailData.server";
+import TextFieldDescription from "~/_common/TextFieldDescription";
+import TextFieldBox from "~/_common/TextFieldBox";
+import TextInputContainer from "~/_common/TextInputContainer";
 
 export const loader: LoaderFunction = () => {
   const development = process.env.NODE_ENV === "development";
@@ -15,12 +15,20 @@ export const loader: LoaderFunction = () => {
 
 const RootContainer = styled.div`
   display: flex;
-  justify-content: space-between;
+  gap: 128px;
   min-width: 60vw;
+  height: 100%;
 `;
 
 const PreviewBoundary = styled.div`
   border: 1px solid black;
+  flex-grow: 1;
+`;
+
+const PreviewContainer = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 const EmailsRoute = () => {
@@ -29,20 +37,20 @@ const EmailsRoute = () => {
   >();
   const [user, setUser] = useState(0);
   const [agreement, setAgreement] = useState(0);
-  const isRoot = useMatches().slice(-1)[0].id === "routes/emails/index";
+  const isRoot = useMatches().slice(-1)[0].id === "routes/admin/emails";
   return data.development ? (
     <RootContainer>
       <div>
         <h1>Email Templates</h1>
         <ul>
           <li>
-            <Link to={"/emails/creator-signed"}>Creator Signed</Link>
+            <Link to={"creator-signed"}>Creator Signed</Link>
           </li>
           <li>
-            <Link to={"/emails/investor-signed"}>Investor Signed</Link>
+            <Link to={"investor-signed"}>Investor Signed</Link>
           </li>
           <li>
-            <Link to={"/emails/invitation-to-fund"}>Invitation To Fund</Link>
+            <Link to={"invitation-to-fund"}>Invitation To Fund</Link>
           </li>
         </ul>
         {!isRoot && (
@@ -86,7 +94,7 @@ const EmailsRoute = () => {
         )}
       </div>
       {!isRoot && (
-        <div>
+        <PreviewContainer>
           <h1>Preview</h1>
           <PreviewBoundary>
             <Outlet
@@ -103,7 +111,7 @@ const EmailsRoute = () => {
               }}
             />
           </PreviewBoundary>
-        </div>
+        </PreviewContainer>
       )}
     </RootContainer>
   ) : (

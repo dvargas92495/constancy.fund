@@ -1,5 +1,5 @@
 import { useOutletContext } from "remix";
-import InvitationToFund from "../../emails/InvitationToFund";
+import InvitationToFund from "~/emails/InvitationToFund";
 
 const PreviewInvitationToFund = () => {
   const data = useOutletContext<Parameters<typeof InvitationToFund>[0]>();
