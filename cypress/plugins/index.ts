@@ -3,13 +3,14 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export default (
-  on: Cypress.PluginEvents,
+  _: Cypress.PluginEvents,
   config: Cypress.PluginConfigOptions
 ) => {
   config.supportFile = "cypress/support/index.ts";
-  config.projectId = process.env.CYPRESS_PROJECT_ID;
+  config.projectId = process.env.CYPRESS_PROJECT_ID || '';
   // config.baseUrl = process.env.ORIGIN;
   config.env.ORIGIN = process.env.ORIGIN;
-  config.env.CYPRESS_USER_PASSWORD = process.env.CYPRESS_USER_PASSWORD;
+  config.env.CYPRESS_CREATOR_PASSWORD = process.env.CYPRESS_CREATOR_PASSWORD;
+  config.env.CYPRESS_INVESTOR_PASSWORD = process.env.CYPRESS_INVESTOR_PASSWORD;
   return config;
 };

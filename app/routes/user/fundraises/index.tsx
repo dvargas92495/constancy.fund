@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { UserButton, useUser } from "@clerk/remix";
+import { UserButton } from "@clerk/remix";
 import { LoaderFunction, redirect, ActionFunction } from "@remix-run/node";
 import { useNavigate, useLoaderData, useFetcher, Link } from "@remix-run/react";
 import deleteFundraiseData from "~/data/deleteFundraiseData.server";
@@ -19,6 +19,8 @@ import formatAmount from "~/util/formatAmount";
 import getFundraises from "~/data/getFundraises.server";
 import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
 import { SecondaryAction } from "~/_common/SecondaryAction";
+export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
+export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
 
 const NotCompletedMessageContainer = styled.div`
   display: flex;
@@ -29,6 +31,7 @@ const NotCompletedMessageContainer = styled.div`
 
 const Container = styled.div`
   max-width: 1000px;
+  width: 100%;
 `;
 
 const FundraisingContainer = styled.div``;
@@ -146,57 +149,52 @@ const FundraiseContentRow = (row: Fundraises[number]) => {
     fetcher.submit({ uuid: row.uuid }, { method: "delete" });
   }, [row.uuid, fetcher]);
   return (
-    <Link to={`/user/fundraises/${row.uuid}`}>
-      <tr>
-        <td style={{ minWidth: "120px", verticalAlign: "top" }}>{row.type}</td>
-        <td style={{ minWidth: "320px", verticalAlign: "top" }}>
-          <DetailComponent
-            details={row.details}
-            clauses={Array.from(row.clauses)}
+    <tr>
+      <td style={{ minWidth: "120px", verticalAlign: "top" }}>
+        <Link to={`/user/fundraises/${row.uuid}`}>{row.type}</Link>
+      </td>
+      <td style={{ minWidth: "320px", verticalAlign: "top" }}>
+        <DetailComponent
+          details={row.details}
+          clauses={Array.from(row.clauses)}
+        />
+      </td>
+      <td style={{ minWidth: "120px", verticalAlign: "top" }}>
+        {row.progress}
+      </td>
+      <td style={{ minWidth: "120px", verticalAlign: "top" }}>
+        {row.investorCount}
+      </td>
+      <td style={{ minWidth: "240px", verticalAlign: "top" }}>
+        <ActionCell>
+          <SecondaryAction
+            onClick={() => {
+              navigate(`/user/fundraises/${row.uuid}`);
+            }}
+            label={"See Investors"}
+            width={"100%"}
           />
-        </td>
-        <td style={{ minWidth: "120px", verticalAlign: "top" }}>
-          {row.progress}
-        </td>
-        <td style={{ minWidth: "120px", verticalAlign: "top" }}>
-          {row.investorCount}
-        </td>
-        <td style={{ minWidth: "240px", verticalAlign: "top" }}>
-          <ActionCell>
-            <SecondaryAction
-              onClick={() => {
-                navigate(`/user/fundraises/${row.uuid}`);
-              }}
-              label={"See Investors"}
-              width={"100%"}
-            />
-            <SecondaryAction
-              onClick={onPreview}
-              label={"Preview"}
-              width={"100%"}
-            />
-            <SecondaryAction
-              onClick={onDelete}
-              label={"Delete"}
-              width={"100%"}
-            />
-          </ActionCell>
-        </td>
-      </tr>
-    </Link>
+          <SecondaryAction
+            onClick={onPreview}
+            label={"Preview"}
+            width={"100%"}
+          />
+          <SecondaryAction onClick={onDelete} label={"Delete"} width={"100%"} />
+        </ActionCell>
+      </td>
+    </tr>
   );
 };
 
 const FirstContainer = styled.div`
   margin-top: 32px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 `;
 
 const UserFundraiseIndex = () => {
-  const { isSignedIn, user } = useUser();
-  if (!user || !isSignedIn) {
-    throw new Error(`Somehow tried to load a non-logged in User profile`);
-  }
   const data = useLoaderData<Data>();
   const navigate = useNavigate();
   return (
@@ -280,8 +278,8 @@ const UserFundraiseIndex = () => {
   );
 };
 
-export const loader: LoaderFunction = createAuthenticatedLoader(
-  (userId, params) =>
+export const loader: LoaderFunction = (args) =>
+  createAuthenticatedLoader((userId, params) =>
     getFundraises({ userId })
       .then((r) => {
         if (!r.completed || params["stay"]) {
@@ -296,7 +294,7 @@ export const loader: LoaderFunction = createAuthenticatedLoader(
         console.error(e);
         return {};
       })
-);
+  )(args);
 
 export const action: ActionFunction = async ({ request }) => {
   return import("@clerk/remix/ssr.server.js")

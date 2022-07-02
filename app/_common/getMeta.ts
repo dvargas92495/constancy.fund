@@ -3,8 +3,8 @@ import type { MetaFunction } from "@remix-run/server-runtime";
 const getMeta =
   ({
     title: pageTitle,
-    description = "",
-    img = "",
+    description = "You don't have to sell your soul to get funded",
+    img = "/images/Logo.png",
   }: {
     title: string;
     description?: string;

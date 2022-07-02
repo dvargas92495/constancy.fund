@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
-import formatAmount from "../../../util/formatAmount";
+import formatAmount from "../../../../util/formatAmount";
 import Icon from "~/_common/Icon";
 import TextInputContainer from "~/_common/TextInputContainer";
 import TextInputOneLine from "~/_common/TextInputOneLine";
@@ -12,11 +12,13 @@ import TextFieldDescription from "~/_common/TextFieldDescription";
 import SubSectionTitle from "~/_common/SubSectionTitle";
 import TextInputMultiLine from "~/_common/TextInputMultiLine";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
-import { redirect, ActionFunction } from "remix";
+import { redirect, ActionFunction } from "@remix-run/node";
+import { Form } from "@remix-run/react";
 import createFundraise from "~/data/createFundraise.server";
-import type { FundraiseId } from "../../../enums/fundraiseTypes";
+import type { FundraiseId } from "../../../../enums/fundraiseTypes";
 import { v4 } from "uuid";
 import { SecondaryAction } from "~/_common/SecondaryAction";
+import { PrimaryAction } from "~/_common/PrimaryAction";
 export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
 export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 
@@ -127,6 +129,13 @@ const InfoPill = styled.div`
 `;
 
 const ContainerWithInfo = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  grid-gap: 20px;
+`;
+
+const ActionBar = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -252,7 +261,7 @@ const ISADetailForm = () => {
   const [maxReturn, setMaxReturn] = useState(0);
   const total = amount * frequency;
   return (
-    <>
+    <Form method={"post"}>
       <Section>
         <SubSectionTitle>How do you want to raise?</SubSectionTitle>
         <HowMuchSubSection>
@@ -410,14 +419,18 @@ const ISADetailForm = () => {
       <Section>
         <SubSectionTitle>Additional Contract Clauses</SubSectionTitle>
         <InfoText>
-          Do you have any special requirements in this contract that you&apos;d like
-          to add? It is <b>strongly</b> advised to cross-check these terms with
-          a legal professional.
+          Do you have any special requirements in this contract that you&apos;d
+          like to add? It is <b>strongly</b> advised to cross-check these terms
+          with a legal professional.
         </InfoText>
         <AdditionalClauses />
       </Section>
+      <ActionBar>
+        <PrimaryAction label={"Create"} type={"submit"} />
+        <SecondaryAction label={"Back"} href={"/user/fundraises"} />
+      </ActionBar>
       <ErrorSnackbar />
-    </>
+    </Form>
   );
 };
 
@@ -473,6 +486,10 @@ export const action: ActionFunction = ({ request }) => {
       console.error(e);
       return { success: false, error: e.message };
     });
+};
+
+export const handle = {
+  title: "Create New ISA Fundraise",
 };
 
 export default ISADetailForm;

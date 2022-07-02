@@ -3,8 +3,8 @@ const TYPES = [
     id: "isa",
     name: "Income Sharing Agreement (ISA)",
     description:
-      "Raise a monthly stipend or a one-time sum and pay it back with your future revenues once you hit a certain revenue threshold. ",
-    help: "Ideal if you are just getting started and don't have revenues yet.",
+      "Raise a monthly stipend or a one-time sum and pay it back with your future revenue once you hit a certain revenue threshold. ",
+    help: "Ideal if you are just getting started and don't have revenue yet.",
     enabled: true,
   },
   {

@@ -13,4 +13,8 @@ const UnknownSetupPage = () => {
   );
 };
 
+export const handle = {
+  title: "Unknown Fundraise Type",
+};
+
 export default UnknownSetupPage;
