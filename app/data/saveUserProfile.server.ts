@@ -64,6 +64,11 @@ const saveUserProfile = (userId: string, data: Record<string, string[]>) => {
             type: dbTypeById[key].toString(),
             fields: updatedPP[key],
           }));
+        const questionaires = Object.fromEntries(
+          Object.entries(data)
+            .filter(([k]) => k.startsWith("questionaires"))
+            .map(([k, v]) => [k.replace(/^questionaires-/, ""), v[0]])
+        );
         return Promise.all([
           users.updateUser(userId, {
             firstName: data.firstName[0],
@@ -73,7 +78,7 @@ const saveUserProfile = (userId: string, data: Record<string, string[]>) => {
               companyName: data.companyName[0],
               completed: true,
               contactEmail: data.contactEmail[0],
-              questionaires: data.questionaires,
+              questionaires,
               socialProfiles: data.socialProfiles,
               attachDeck: data.attachDeck[0],
               registeredCountry: data.registeredCountry[0],

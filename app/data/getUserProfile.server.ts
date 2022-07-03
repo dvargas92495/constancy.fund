@@ -21,7 +21,8 @@ const getUserProfile = (userId: string, execute?: Execute) =>
       middleName: (u.publicMetadata?.middleName as string) || "",
       profileImageUrl: u.profileImageUrl,
       companyName: (u.publicMetadata?.companyName as string) || "",
-      questionaires: (u.publicMetadata?.questionaires as string[]) || [],
+      questionaires:
+        (u.publicMetadata?.questionaires as Record<string, string>) || [],
       socialProfiles: (u.publicMetadata?.socialProfiles as string[]) || [],
       attachDeck: (u.publicMetadata?.attachDeck as string) || "",
       demoVideo: (u.publicMetadata?.demoVideo as string) || "",

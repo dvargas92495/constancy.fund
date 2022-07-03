@@ -62,7 +62,11 @@ variable "convertkit_api_key" {
   type = string
 }
 
-variable "cypress_user_password" {
+variable "cypress_creator_password" {
+  type = string
+}
+
+variable "cypress_investor_password" {
   type = string
 }
 
@@ -290,10 +294,16 @@ resource "github_actions_secret" "convertkit_api_key" {
   plaintext_value  = var.convertkit_api_key
 }
 
-resource "github_actions_secret" "cypress_user_password" {
+resource "github_actions_secret" "cypress_creator_password" {
   repository       = "constancy.fund"
-  secret_name      = "CYPRESS_USER_PASSWORD"
-  plaintext_value  = var.cypress_user_password
+  secret_name      = "CYPRESS_CREATOR_PASSWORD"
+  plaintext_value  = var.cypress_creator_password
+}
+
+resource "github_actions_secret" "cypress_investor_password" {
+  repository       = "constancy.fund"
+  secret_name      = "CYPRESS_INVESTOR_PASSWORD"
+  plaintext_value  = var.cypress_investor_password
 }
 
 resource "github_actions_secret" "cypress_project_id" {

@@ -10,7 +10,7 @@ const login = (email: string, password: string) => {
   cy.url().should("eq", `${Cypress.env("ORIGIN")}/user`);
 };
 
-const fillOutUserProfile = () => {
+const fillOutCreatorProfile = () => {
   cy.get('input[name="companyName"]').clear().type("Vargas Arts, LLC");
   const questionaires = [
     "ISAs for everybody.",
@@ -18,9 +18,14 @@ const fillOutUserProfile = () => {
     "I made $50K on my own in the first year.",
     "2% off every contract. Let's gooo.",
   ];
-  cy.get('textarea[name="questionaires"]')
+  cy.get("textarea")
     .clear()
     .each((c, i) => cy.wrap(c).type(questionaires[i]));
+  cy.get('input[name="demoVideo"]')
+    .clear()
+    .type("https://www.loom.com/share/833d682690a0450bbd799bffef1dd0d6");
+  cy.get('input[name="attachDeck"]').clear().type("https://google.com");
+
   const socials = [
     "https://twitter.com/dvargas92495",
     "https://github.com/dvargas92495",
@@ -30,10 +35,7 @@ const fillOutUserProfile = () => {
   cy.get('input[name="socialProfiles"]')
     .clear()
     .each((c, i) => cy.wrap(c).type(socials[i]));
-  cy.get('input[name="demoVideo"]')
-    .clear()
-    .type("https://www.loom.com/share/833d682690a0450bbd799bffef1dd0d6");
-  cy.get('input[name="attachDeck"]').clear().type("https://google.com");
+
   cy.get('input[name="paymentPreference.ethereum"]').check();
   cy.get('input[name="paymentPreference.ethereum.Address"]')
     .clear()
@@ -128,6 +130,57 @@ const logOut = () => {
   cy.url().should("eq", Cypress.env("ORIGIN"));
 };
 
+const fillOutInvestorProfile = () => {
+  cy.get('input[name="companyName"]').clear().type("Lotsa Capital, LLC");
+
+  const questionaires = [
+    "ISAs for everybody.",
+    "Pay for infrastructure. And just generaly enjoy life.",
+    "I made $50K on my own in the first year.",
+    "2% off every contract. Let's gooo.",
+  ];
+  cy.get("textarea")
+    .clear()
+    .each((c, i) => cy.wrap(c).type(questionaires[i]));
+  /*
+  const socials = [
+    "https://twitter.com/dvargas92495",
+    "https://github.com/dvargas92495",
+    "https://linkedin.com/in/dvargas92495",
+    "https://davidvargas.me",
+  ];
+  cy.get('input[name="socialProfiles"]')
+    .clear()
+    .each((c, i) => cy.wrap(c).type(socials[i]));
+
+  cy.get('input[name="paymentPreference.ethereum"]').check();
+  cy.get('input[name="paymentPreference.ethereum.Address"]')
+    .clear()
+    .type("0x6d7C5b7B06e63679AdA34D06b2F98d567CEcf1Eb");
+
+  cy.get('input[name="registeredCountry"]').clear().type("United States");
+  cy.get('li > div[data-code="country-select-US"]').click();
+  cy.get('input[name="companyRegistrationNumber"]').clear().type("8675309-69");
+  cy.get('input[name="companyAddressStreet"]').clear().type("Main St");
+  cy.get('input[name="companyAddressNumber"]').clear().type("123");
+  cy.get('input[name="companyAddressCity"]').clear().type("Gotham");
+  cy.get('input[name="companyAddressZip"]').clear().type("12345");
+
+  cy.get('input[name="firstName"]').clear().type("David");
+  cy.get('input[name="lastName"]').clear().type("Vargas");
+  cy.get('input[name="contactEmail"]')
+    .clear()
+    .type("test-creator@constancy.fund");
+  cy.get('input[name="representativeAddressStreet"]').clear().type("Main St");
+  cy.get('input[name="representativeAddressNumber"]').clear().type("123");
+  cy.get('input[name="representativeAddressCity"]').clear().type("Gotham");
+  cy.get('input[name="representativeAddressZip"]').clear().type("12345");
+
+  cy.get("button[type=submit]").click();
+  cy.get("#success-profile-alert").should("be.visible");
+  */
+};
+
 const investInCreator = () => {
   cy.get("@publicLink").then((link) => cy.visit(link as unknown as string));
   cy.get("#top-bar-profile #back-this-project").click();
@@ -166,10 +219,11 @@ describe("Testing core workflows", () => {
       }
     });
     login("test-creator@constancy.fund", "CYPRESS_CREATOR_PASSWORD");
-    fillOutUserProfile();
+    fillOutCreatorProfile();
     createIsaFundraise();
     logOut();
     login("test-investor@constancy.fund", "CYPRESS_INVESTOR_PASSWORD");
+    fillOutInvestorProfile();
     investInCreator();
   });
 });

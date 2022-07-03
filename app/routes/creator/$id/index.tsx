@@ -298,7 +298,7 @@ const CreatorProfile = (): React.ReactElement => {
     companyName,
     demoVideo,
     socialProfiles = [],
-    questionaires = [],
+    questionaires = {},
     fundraises = [],
     paymentPreferences = [],
   } = props;
@@ -534,11 +534,11 @@ const CreatorProfile = (): React.ReactElement => {
           </Section>
           <Section>
             <SectionInnerContent>
-              {QUESTIONAIRES.map(({ q }, i) => (
-                <QuestionAireBox key={i}>
+              {QUESTIONAIRES.map(({ q, id }) => (
+                <QuestionAireBox key={id}>
                   <ContractExplainerTitle>{q}</ContractExplainerTitle>
                   <ContractExplainerInfo>
-                    {questionaires[i]}
+                    {questionaires[id]}
                   </ContractExplainerInfo>
                 </QuestionAireBox>
               ))}

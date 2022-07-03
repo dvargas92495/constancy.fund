@@ -21,6 +21,7 @@ import { SecondaryAction } from "~/_common/SecondaryAction";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
 export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
+import RadioGroup from "~/_common/RadioGroup";
 
 const ISA_SUPPORT_TYPES = [
   {
@@ -206,52 +207,9 @@ const AdditionalClauses = () => {
   );
 };
 
-const RadioGroup = styled.div`
+const _RadioGroup = styled.div`
   display: flex;
   flex-direction: row;
-`;
-
-const RadioContainer = styled.div`
-  border-radius: 50%;
-  color: #73778b;
-  width: 50%;
-  padding: 0px;
-  text-decoration: none;
-  user-select: none;
-  vertical-align: middle;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  box-sizing: border-box;
-  background-color: transparent;
-  outline: 0;
-  border: 0;
-  margin: 0;
-  display: inline-flex;
-`;
-
-const RadioInput = styled.input`
-  &:hover {
-    background: none;
-  }
-  &:checked {
-    border-style: solid;
-    border-width: 1px;
-    border-color: black;
-  }
-  width: 50%;
-  padding: 0;
-  cursor: inherit;
-  position: absolute;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  margin: 0;
-  padding: 0;
-  z-index: 1;
 `;
 
 const ISADetailForm = () => {
@@ -265,53 +223,27 @@ const ISADetailForm = () => {
       <Section>
         <SubSectionTitle>How do you want to raise?</SubSectionTitle>
         <HowMuchSubSection>
-          <RadioGroup>
-            {ISA_SUPPORT_TYPES.map(({ label, value, description }) => (
-              <RadioContainer key={value}>
-                <RadioInput
-                  type={"radio"}
-                  name="supportType"
-                  key={value}
-                  value={value}
-                  required
-                  onChange={(e) => setSupportType(e.target.value)}
-                />
-                {value === supportType ? (
-                  <SupportTypeCard active={true}>
-                    <SectionCircle margin={"0"} width={"40px"} height={"40px"}>
-                      <Icon
-                        name={"home"}
-                        heightAndWidth="18px"
-                        color="purple"
-                      />
-                    </SectionCircle>
-                    <SupportTypeContentBox>
-                      <SupportTypeTitle>{label}</SupportTypeTitle>
-                      <SupportTypeDescription>
-                        {description}
-                      </SupportTypeDescription>
-                    </SupportTypeContentBox>
-                  </SupportTypeCard>
-                ) : (
-                  <SupportTypeCard>
-                    <SectionCircle margin={"0"} width={"40px"}>
-                      <Icon
-                        name={"home"}
-                        heightAndWidth="18px"
-                        color="darkerText"
-                      />
-                    </SectionCircle>
-                    <SupportTypeContentBox>
-                      <SupportTypeTitle>{label}</SupportTypeTitle>
-                      <SupportTypeDescription>
-                        {description}
-                      </SupportTypeDescription>
-                    </SupportTypeContentBox>
-                  </SupportTypeCard>
-                )}
-              </RadioContainer>
-            ))}
-          </RadioGroup>
+          <RadioGroup
+            options={ISA_SUPPORT_TYPES}
+            name={"supportType"}
+            onChange={setSupportType}
+            defaultValue={""}
+            renderItem={({ active, label, description }) => (
+              <SupportTypeCard active={active}>
+                <SectionCircle margin={"0"} width={"40px"} height={"40px"}>
+                  <Icon
+                    name={"home"}
+                    heightAndWidth="18px"
+                    color={active ? "purple" : "darkerText"}
+                  />
+                </SectionCircle>
+                <SupportTypeContentBox>
+                  <SupportTypeTitle>{label}</SupportTypeTitle>
+                  <SupportTypeDescription>{description}</SupportTypeDescription>
+                </SupportTypeContentBox>
+              </SupportTypeCard>
+            )}
+          />
         </HowMuchSubSection>
 
         <HowMuchSetValuesSection>

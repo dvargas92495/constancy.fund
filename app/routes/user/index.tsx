@@ -6,7 +6,7 @@ import saveUserProfile from "~/data/saveUserProfile.server";
 import CountrySelect from "~/_common/CountrySelect";
 import PaymentPreferences from "~/_common/PaymentPreferences";
 import QUESTIONAIRES from "~/_common/questionaires";
-import Icon from "~/_common/Icon";
+import Icon, { IconName } from "~/_common/Icon";
 import styled from "styled-components";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import { SecondaryAction } from "~/_common/SecondaryAction";
@@ -30,6 +30,7 @@ import ImageUploader from "~/_common/ImageUploader";
 import { ClerkCatchBoundary, useUser } from "@clerk/remix";
 import DefaultErrorBoundary from "~/_common/DefaultErrorBoundary";
 import Toast from "~/_common/Toast";
+import RadioGroup from "~/_common/RadioGroup";
 
 const SubSection = styled.div`
   margin-top: 60px;
@@ -44,6 +45,32 @@ const AddressArea = styled.div`
   align-items: flex-end;
   grid-gap: 5px;
   width: fill-available;
+`;
+
+const ProfileTypeContainer = styled.div<{ active: boolean }>`
+  padding: 8px;
+  border-radius: 24px;
+  border: 1px solid ${(props) => props.theme};
+  border: ${(props) =>
+    props.active
+      ? "1px solid" + props.theme.palette.color.purple
+      : "1px solid" + props.theme.palette.color.lightgrey};
+  color: ${(props) =>
+    props.active
+      ? props.theme.palette.color.purple
+      : props.theme.palette.color.darkGrey};
+`;
+
+const ProfileTypeLabel = styled.h2`
+  font-size: 18px;
+  font-weight: 600;
+  margin: 8px 0px;
+`;
+
+const ProfileTypeDescription = styled.h2`
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.75;
 `;
 
 const QuestionaireBox = styled.div`
@@ -151,6 +178,31 @@ const SocialProfile = React.memo(
   )
 );
 
+const ProfileCard: React.FC<{ iconName: IconName }> = ({
+  children,
+  iconName,
+}) => (
+  <Section>
+    <SectionCircle>
+      <Icon name={iconName} heightAndWidth="24px" color="purple" />
+    </SectionCircle>
+    {children}
+  </Section>
+);
+
+const USER_PROFILE_TYPES = [
+  {
+    label: "Creator",
+    description: "Raise money from investors to fund your endeavors",
+    value: "creator",
+  },
+  {
+    label: "Investor",
+    description: "Invest in other creators and build out your portfolio",
+    value: "investor",
+  },
+] as const;
+
 const UserProfile = () => {
   const loaderData =
     useLoaderData<Awaited<ReturnType<typeof getUserProfile>>>();
@@ -197,6 +249,8 @@ const UserProfile = () => {
       setIsChanges(false);
     }
   }, [setSnackbarOpen, actionData, setIsChanges, changes.current]);
+  const defaultProfileType = "creator";
+  const [profileType, setProfileType] = useState(defaultProfileType);
   return (
     <UserProfileForm
       method="put"
@@ -243,12 +297,10 @@ const UserProfile = () => {
         {/* <UserButton /> */}
       </TopBar>
       <ContentContainer>
-        <Section>
-          <SectionCircle>
-            <Icon name={"personFine"} heightAndWidth="24px" color="purple" />
-          </SectionCircle>
-          <SectionTitle>Your fundraising Profile</SectionTitle>
-          <InfoText>This is what investors will see first</InfoText>
+        <ProfileCard iconName={"personFine"}>
+          <SectionTitle style={{ marginBottom: 32 }}>
+            Your fundraising Profile
+          </SectionTitle>
           <NameandProfileImageSection>
             <NameAreaBox>
               <TextFieldBox>
@@ -263,6 +315,19 @@ const UserProfile = () => {
                   />
                 </TextInputContainer>
               </TextFieldBox>
+              <RadioGroup
+                options={USER_PROFILE_TYPES}
+                defaultValue={defaultProfileType}
+                renderItem={({ active, label, description }) => (
+                  <ProfileTypeContainer active={active}>
+                    <ProfileTypeLabel>{label}</ProfileTypeLabel>
+                    <ProfileTypeDescription>
+                      {description}
+                    </ProfileTypeDescription>
+                  </ProfileTypeContainer>
+                )}
+                onChange={setProfileType}
+              />
             </NameAreaBox>
             <ProfileImageContainer>
               <ProfileImageBox>
@@ -272,7 +337,9 @@ const UserProfile = () => {
                   handleSuccess={saveImage}
                 >
                   <img
-                    src={user?.profileImageUrl}
+                    src={
+                      user?.profileImageUrl || "/images/profile-default.jpeg"
+                    }
                     width={"100%"}
                     height={"100%"}
                   />
@@ -284,74 +351,83 @@ const UserProfile = () => {
             </ProfileImageContainer>
           </NameandProfileImageSection>
           <SubSection>
-            <SubSectionTitle>Why should people invest in you?</SubSectionTitle>
+            <SubSectionTitle>
+              {profileType === "creator" && "Why should people invest in you?"}
+              {profileType === "investor" &&
+                "Why should people raise from you?"}
+            </SubSectionTitle>
             <QuestionaireBox>
-              {QUESTIONAIRES.map(({ q }, i) => (
-                <TextFieldBox key={i}>
-                  <TextFieldDescription required>{q}</TextFieldDescription>
-                  <TextInputContainer width={"600px"}>
-                    <TextInputMultiLine
-                      key={i}
-                      name={"questionaires"}
-                      required
-                      defaultValue={questionaires[i]}
-                    />
-                  </TextInputContainer>
-                </TextFieldBox>
-              ))}
+              {QUESTIONAIRES.filter((q) => q.type === profileType).map(
+                ({ q, id }) => (
+                  <TextFieldBox key={id}>
+                    <TextFieldDescription required>{q}</TextFieldDescription>
+                    <TextInputContainer width={"600px"}>
+                      <TextInputMultiLine
+                        key={id}
+                        name={`questionaires-${id}`}
+                        required
+                        defaultValue={questionaires[id]}
+                      />
+                    </TextInputContainer>
+                  </TextFieldBox>
+                )
+              )}
             </QuestionaireBox>
           </SubSection>
-          <SubSection>
-            <SubSectionTitle>How can people find you?</SubSectionTitle>
-            <QuestionaireBox>
-              {SOCIAL_PROFILES.map(({ iconName }, i) => (
-                <SocialProfile
-                  key={i}
-                  iconName={iconName}
-                  defaultValue={socialProfiles[i]}
-                />
-              ))}
-            </QuestionaireBox>
-          </SubSection>
-          <SubSection>
-            <SubSectionTitle>
-              <Icon name={"youtube"} heightAndWidth="20px" color="purple" />
-              Attach a demo video
-            </SubSectionTitle>
-            <TextInputContainer width={"350px"}>
-              <TextInputOneLine
-                defaultValue={demoVideo}
-                placeholder="https://"
-                name={"demoVideo"}
-              />
-            </TextInputContainer>
-          </SubSection>
-          <SubSection>
-            <SubSectionTitle>
-              <Icon name={"monitor"} heightAndWidth="20px" color="purple" />
-              Attach a slide deck
-            </SubSectionTitle>
-            <TextInputContainer width={"350px"}>
-              <TextInputOneLine
-                defaultValue={attachDeck}
-                placeholder="https://"
-                name={"attachDeck"}
-              />
-            </TextInputContainer>
-          </SubSection>
-        </Section>
+          {profileType === "creator" && (
+            <>
+              <SubSection>
+                <SubSectionTitle>
+                  <Icon name={"youtube"} heightAndWidth="20px" color="purple" />
+                  Attach a demo video
+                </SubSectionTitle>
+                <TextInputContainer width={"350px"}>
+                  <TextInputOneLine
+                    defaultValue={demoVideo}
+                    placeholder="https://"
+                    name={"demoVideo"}
+                  />
+                </TextInputContainer>
+              </SubSection>
+              <SubSection>
+                <SubSectionTitle>
+                  <Icon name={"monitor"} heightAndWidth="20px" color="purple" />
+                  Attach a slide deck
+                </SubSectionTitle>
+                <TextInputContainer width={"350px"}>
+                  <TextInputOneLine
+                    defaultValue={attachDeck}
+                    placeholder="https://"
+                    name={"attachDeck"}
+                  />
+                </TextInputContainer>
+              </SubSection>
+            </>
+          )}
+          {profileType === "investor" && (
+            <>{/** what else do we want here? */}</>
+          )}
+        </ProfileCard>
 
-        <Section>
-          <SectionCircle>
-            <Icon name={"dollar"} heightAndWidth="24px" color="purple" />
-          </SectionCircle>
+        <ProfileCard iconName={"webIcon"}>
+          <SectionTitle>Social Connections</SectionTitle>
+          <InfoText>How can people find you?</InfoText>
+          <QuestionaireBox>
+            {SOCIAL_PROFILES.map(({ iconName }, i) => (
+              <SocialProfile
+                key={i}
+                iconName={iconName}
+                defaultValue={socialProfiles[i]}
+              />
+            ))}
+          </QuestionaireBox>
+        </ProfileCard>
+
+        <ProfileCard iconName={"dollar"}>
           <PaymentPreferences defaultValue={paymentPreferences} />
-        </Section>
+        </ProfileCard>
 
-        <Section>
-          <SectionCircle>
-            <Icon name={"book"} heightAndWidth="24px" color="purple" />
-          </SectionCircle>
+        <ProfileCard iconName={"book"}>
           <SectionTitle>Legal Information</SectionTitle>
           <InfoText>
             You must have a registered company to be able to use this service.
@@ -539,7 +615,7 @@ const UserProfile = () => {
               </AddressArea>
             </SubSection>
           </div>
-        </Section>
+        </ProfileCard>
       </ContentContainer>
       <Toast open={snackbarOpen} onClose={() => setSnackbarOpen(false)}>
         <span id={"success-profile-alert"}>Successfully Saved Profile!</span>
