@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { UserButton, useUser } from "@clerk/remix";
 import CONTRACT_STAGES from "~/enums/contract_stages";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
@@ -10,9 +10,6 @@ import {
   useParams,
 } from "@remix-run/react";
 import formatAmount from "~/util/formatAmount";
-import TopBar from "~/_common/TopBar";
-import InfoArea from "~/_common/InfoArea";
-import PageTitle from "~/_common/PageTitle";
 import ContentContainer from "~/_common/ContentContainer";
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
@@ -34,6 +31,7 @@ import TextFieldDescription from "~/_common/TextFieldDescription";
 import TextInputContainer from "~/_common/TextInputContainer";
 import TextInputOneLine from "~/_common/TextInputOneLine";
 import SuccessSnackbar from "~/_common/SuccessSnackbar";
+import { useDashboardActions } from "~/_common/DashboardActionContext";
 export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
 export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 
@@ -270,8 +268,8 @@ const TitleTopBoxSmall = styled.div`
   margin-bottom: 20px;
 `;
 
-type FundraiseData = Awaited<ReturnType<typeof getFundraiseData>>;
-type Agreements = FundraiseData["agreements"];
+type LoaderData = Awaited<ReturnType<typeof getFundraiseData>>;
+type Agreements = LoaderData["agreements"];
 const STAGE_COLORS = [
   "#48cae4",
   "#0096c7",
@@ -377,8 +375,7 @@ const Container = styled.div`
 
 const UserFundraisesContract = () => {
   const { id = "" } = useParams();
-  const user = useUser();
-  const fundraiseData = useLoaderData<FundraiseData>();
+  const fundraiseData = useLoaderData<LoaderData>();
   const rows = useMemo<Agreements>(
     () => fundraiseData.agreements,
     [fundraiseData.agreements]
@@ -390,13 +387,6 @@ const UserFundraisesContract = () => {
   const total = useMemo(
     () => Number(fundraiseData.details.amount) * frequency,
     [fundraiseData]
-  );
-  const rowsToSign = useMemo(
-    () =>
-      rows.filter(
-        (row) => CONTRACT_STAGES[row.status] === "CONFIRM_NEW_BACKER"
-      ),
-    [rows]
   );
   const rowsConfirmed = useMemo(
     () =>
@@ -414,41 +404,18 @@ const UserFundraisesContract = () => {
   );
   const [publicLinkCopied, setPublicLinkCopied] = useState(false);
   const [hiddenLink, setHiddenLink] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { setShowSecondary } = useDashboardActions();
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.addEventListener("copied", () =>
+        setPublicLinkCopied(true)
+      );
+    }
+    setShowSecondary(true);
+  }, [containerRef, setPublicLinkCopied]);
   return (
-    <Container>
-      <TopBar>
-        <InfoArea>
-          <PageTitle onClick={() => setHiddenLink(!hiddenLink)}>
-            My Fundraise
-          </PageTitle>
-          <InfoSubBar>
-            {hiddenLink && (
-              <RemixLink to={`/user/fundraises?stay=true`}>
-                All Fundraises
-              </RemixLink>
-            )}
-            <UpdatePill>
-              {rowsToSign.length > 0 && <span>🎉 </span>}
-              <span>
-                <b>{rowsToSign.length}</b> New
-              </span>
-            </UpdatePill>
-            <SecondaryAction
-              onClick={() => {
-                window.navigator.clipboard.writeText(
-                  `${window.location.origin}/creator/${user.user?.id}?fundraise=${id}`
-                );
-                setPublicLinkCopied(true);
-              }}
-              label={"Copy Fundraise Link"}
-              height={"40px"}
-              width={"180px"}
-              fontSize={"16px"}
-            />
-          </InfoSubBar>
-        </InfoArea>
-        <UserButton />
-      </TopBar>
+    <Container ref={containerRef} id={"container"}>
       <Toast open={publicLinkCopied} onClose={() => setPublicLinkCopied(false)}>
         Public Link Copied!
       </Toast>
@@ -456,7 +423,14 @@ const UserFundraisesContract = () => {
         <ProfileBottomContainer paddingTop={"0"}>
           <Section>
             <TitleTopBox>
-              <SectionTitle>Progress</SectionTitle>
+              <SectionTitle onClick={() => setHiddenLink(!hiddenLink)}>
+                Progress
+              </SectionTitle>
+              {hiddenLink && (
+                <RemixLink to={`/user/fundraises?stay=true`}>
+                  All Fundraises
+                </RemixLink>
+              )}
               <ProgressPill>
                 {fundraiseData.details.supportType === "monthly" && (
                   <ProgressPillProgress>
@@ -690,6 +664,42 @@ export const action: ActionFunction = async ({ request, params }) => {
         });
       }
     });
+};
+
+const TopBarWidgets = ({ data }: { data: LoaderData }) => {
+  const rowsToSign = useMemo(
+    () =>
+      data.agreements.filter(
+        (row) => CONTRACT_STAGES[row.status] === "CONFIRM_NEW_BACKER"
+      ),
+    [data]
+  );
+  return (
+    <UpdatePill>
+      {rowsToSign.length > 0 && <span>🎉 </span>}
+      <span>
+        <b>{rowsToSign.length}</b> New
+      </span>
+    </UpdatePill>
+  );
+};
+
+export const handle = {
+  title: "My Fundraise",
+  secondaryLabel: "Copy Fundraise Link",
+  onSecondary: ({
+    data,
+    params,
+  }: {
+    data: LoaderData;
+    params: Record<string, string>;
+  }) => {
+    window.navigator.clipboard.writeText(
+      `${window.location.origin}/creator/${data.userId}?fundraise=${params.id}`
+    );
+    document.querySelector(`#container`)?.dispatchEvent(new Event("copied"));
+  },
+  TopBarWidgets,
 };
 
 export default UserFundraisesContract;

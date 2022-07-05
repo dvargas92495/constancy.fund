@@ -142,43 +142,42 @@ const fillOutInvestorProfile = () => {
   cy.get("textarea")
     .clear()
     .each((c, i) => cy.wrap(c).type(questionaires[i]));
-  /*
   const socials = [
-    "https://twitter.com/dvargas92495",
-    "https://github.com/dvargas92495",
-    "https://linkedin.com/in/dvargas92495",
-    "https://davidvargas.me",
+    "https://twitter.com/ConstancyFund",
+    "https://github.com/dvargas92495/constancy.fund",
+    "https://linkedin.com/in/constancyfund",
+    "https://constancy.fund",
   ];
   cy.get('input[name="socialProfiles"]')
     .clear()
     .each((c, i) => cy.wrap(c).type(socials[i]));
-
   cy.get('input[name="paymentPreference.ethereum"]').check();
   cy.get('input[name="paymentPreference.ethereum.Address"]')
     .clear()
-    .type("0x6d7C5b7B06e63679AdA34D06b2F98d567CEcf1Eb");
+    .type("0x3C0C541D8FE924389Ee59FCB586f7F082268881d");
+  cy.get('input[name="paymentPreference.paypal.EmailAddress"]')
+    .clear()
+    .type("test-investor@constancy.fund");
 
   cy.get('input[name="registeredCountry"]').clear().type("United States");
   cy.get('li > div[data-code="country-select-US"]').click();
-  cy.get('input[name="companyRegistrationNumber"]').clear().type("8675309-69");
-  cy.get('input[name="companyAddressStreet"]').clear().type("Main St");
-  cy.get('input[name="companyAddressNumber"]').clear().type("123");
-  cy.get('input[name="companyAddressCity"]').clear().type("Gotham");
-  cy.get('input[name="companyAddressZip"]').clear().type("12345");
+  cy.get('input[name="companyRegistrationNumber"]').clear().type("1231233");
+  cy.get('input[name="companyAddressStreet"]').clear().type("Main Ave");
+  cy.get('input[name="companyAddressNumber"]').clear().type("456");
+  cy.get('input[name="companyAddressCity"]').clear().type("Bikini Bottom");
+  cy.get('input[name="companyAddressZip"]').clear().type("54321");
 
-  cy.get('input[name="firstName"]').clear().type("David");
-  cy.get('input[name="lastName"]').clear().type("Vargas");
+  cy.get('input[name="firstName"]').clear().type("Test");
+  cy.get('input[name="lastName"]').clear().type("McTester");
   cy.get('input[name="contactEmail"]')
     .clear()
-    .type("test-creator@constancy.fund");
-  cy.get('input[name="representativeAddressStreet"]').clear().type("Main St");
-  cy.get('input[name="representativeAddressNumber"]').clear().type("123");
-  cy.get('input[name="representativeAddressCity"]').clear().type("Gotham");
-  cy.get('input[name="representativeAddressZip"]').clear().type("12345");
-
-  cy.get("button[type=submit]").click();
-  cy.get("#success-profile-alert").should("be.visible");
-  */
+    .type("test-investor@constancy.fund");
+  cy.get('input[name="representativeAddressStreet"]').clear().type("Main Ave");
+  cy.get('input[name="representativeAddressNumber"]').clear().type("456");
+  cy.get('input[name="representativeAddressCity"]')
+    .clear()
+    .type("Bikini Bottom");
+  cy.get('input[name="representativeAddressZip"]').clear().type("54321");
 };
 
 const investInCreator = () => {

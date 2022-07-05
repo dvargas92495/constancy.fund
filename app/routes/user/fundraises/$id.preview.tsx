@@ -4,12 +4,7 @@ import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import pdfViewerCore from "@react-pdf-viewer/core/lib/styles/index.css";
 import pdfViewerLayout from "@react-pdf-viewer/default-layout/lib/styles/index.css";
-import {
-  Form,
-  useLoaderData,
-  useParams,
-  useFetcher,
-} from "@remix-run/react";
+import { Form, useLoaderData, useParams, useFetcher } from "@remix-run/react";
 import {
   ActionFunction,
   LinksFunction,
@@ -19,9 +14,6 @@ import formatAmount from "../../../util/formatAmount";
 import styled from "styled-components";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import { SecondaryAction } from "~/_common/SecondaryAction";
-import TopBar from "~/_common/TopBar";
-import InfoArea from "~/_common/InfoArea";
-import PageTitle from "~/_common/PageTitle";
 import ContentContainer from "~/_common/ContentContainer";
 import Section from "~/_common/Section";
 import SectionTitle from "~/_common/SectionTitle";
@@ -33,6 +25,7 @@ import waitForContractDraft from "~/data/waitForContractDraft.server";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
 import refreshContractDraft from "~/data/refreshContractDraft.server";
+import { useDashboardActions } from "~/_common/DashboardActionContext";
 export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
 export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 
@@ -171,23 +164,19 @@ const UserFundraisePreview = () => {
   const onRefresh = useCallback(() => {
     fetcher.submit({ uuid: id }, { method: "put" });
   }, [id, fetcher]);
+  const { setShowPrimary } = useDashboardActions();
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
       if (e.shiftKey && e.ctrlKey && e.metaKey && e.altKey && e.key === "R") {
         onRefresh();
       }
     };
+    setShowPrimary(true);
     document.addEventListener("keydown", listener);
     return () => document.removeEventListener("keydown", listener);
   }, [onRefresh]);
   return (
     <Container method="post">
-      <TopBar>
-        <InfoArea>
-          <PageTitle>Preview Contract {"&"} Confirm Terms</PageTitle>
-          <PrimaryAction type={"submit"} label={"Confirm Terms"} />
-        </InfoArea>
-      </TopBar>
       <ContentContainer>
         <Section>
           <SectionTitle>Confirm Key Agreements</SectionTitle>
@@ -343,6 +332,11 @@ export const links: LinksFunction = () => {
     { rel: "stylesheet", href: pdfViewerCore },
     { rel: "stylesheet", href: pdfViewerLayout },
   ];
+};
+
+export const handle = {
+  title: "Preview Contract & Confirm Terms",
+  primaryLabel: "Confirm Terms",
 };
 
 export default UserFundraisePreview;

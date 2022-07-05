@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import formatAmount from "../../../../util/formatAmount";
 import Icon from "~/_common/Icon";
@@ -22,6 +22,7 @@ import { PrimaryAction } from "~/_common/PrimaryAction";
 export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
 export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 import RadioGroup from "~/_common/RadioGroup";
+import { useDashboardActions } from "~/_common/DashboardActionContext";
 
 const ISA_SUPPORT_TYPES = [
   {
@@ -218,6 +219,11 @@ const ISADetailForm = () => {
   const [frequency, setFrequency] = useState(1);
   const [maxReturn, setMaxReturn] = useState(0);
   const total = amount * frequency;
+  const { setShowPrimary, setShowSecondary } = useDashboardActions();
+  useEffect(() => {
+    setShowPrimary(true);
+    setShowSecondary(true);
+  }, [setShowPrimary, setShowSecondary]);
   return (
     <Form method={"post"}>
       <Section>
@@ -357,10 +363,6 @@ const ISADetailForm = () => {
         </InfoText>
         <AdditionalClauses />
       </Section>
-      <ActionBar>
-        <PrimaryAction label={"Create"} type={"submit"} />
-        <SecondaryAction label={"Back"} href={"/user/fundraises"} />
-      </ActionBar>
       <ErrorSnackbar />
     </Form>
   );
@@ -422,6 +424,9 @@ export const action: ActionFunction = ({ request }) => {
 
 export const handle = {
   title: "Create New ISA Fundraise",
+  primaryLabel: "Create",
+  secondaryLabel: "Back",
+  onSecondary: () => window.location.assign("/user/fundraises"),
 };
 
 export default ISADetailForm;

@@ -19,8 +19,7 @@ const DrawerRoot = styled.div`
 `;
 
 const ContentContainer = styled.div`
-  padding: 50px;
-  margin-top: 80px;
+  padding: 32px 50px;
   width: 100%;
   flex-grow: 1;
 `;

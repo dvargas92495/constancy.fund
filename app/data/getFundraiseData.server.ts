@@ -83,6 +83,7 @@ const getFundraiseData = ({ uuid, userId }: { uuid: string; userId: string }) =>
           }))
           .sort((a, b) => b.status - a.status),
         details,
+        userId,
       };
     });
   });

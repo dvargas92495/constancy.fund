@@ -1,14 +1,9 @@
-import React, { useState, useCallback } from "react";
-import { UserButton } from "@clerk/remix";
+import React, { useState, useCallback, useEffect } from "react";
 import { LoaderFunction, redirect, ActionFunction } from "@remix-run/node";
 import { useNavigate, useLoaderData, useFetcher, Link } from "@remix-run/react";
 import deleteFundraiseData from "~/data/deleteFundraiseData.server";
 import Icon from "~/_common/Icon";
 import { PrimaryAction } from "~/_common/PrimaryAction";
-import TopBar from "~/_common/TopBar";
-import InfoArea from "~/_common/InfoArea";
-import PageTitle from "~/_common/PageTitle";
-import ActionButton from "~/_common/ActionButton";
 import ContentContainer from "~/_common/ContentContainer";
 import Section from "~/_common/Section";
 import SectionCircle from "~/_common/SectionCircle";
@@ -19,6 +14,7 @@ import formatAmount from "~/util/formatAmount";
 import getFundraises from "~/data/getFundraises.server";
 import createAuthenticatedLoader from "~/data/createAuthenticatedLoader";
 import { SecondaryAction } from "~/_common/SecondaryAction";
+import { useDashboardActions } from "~/_common/DashboardActionContext";
 export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
 
@@ -194,28 +190,22 @@ const FirstContainer = styled.div`
   width: 100%;
 `;
 
+export const handle = {
+  title: "My Fundraise",
+  secondaryLabel: "Fill Profile",
+  onSecondary: () => window.location.assign(`/user`),
+};
+
 const UserFundraiseIndex = () => {
   const data = useLoaderData<Data>();
   const navigate = useNavigate();
+
+  const { setShowSecondary } = useDashboardActions();
+  useEffect(() => {
+    setShowSecondary(data.completed);
+  }, [setShowSecondary, data]);
   return (
     <Container>
-      <TopBar>
-        <InfoArea>
-          <PageTitle>My Fundraise</PageTitle>
-          <ActionButton>
-            {!data.completed && (
-              <PrimaryAction
-                onClick={() => navigate(`/user`)}
-                label={"Fill Profile"}
-                height={"40px"}
-                width={"130px"}
-                fontSize={"16px"}
-              />
-            )}
-          </ActionButton>
-        </InfoArea>
-        <UserButton />
-      </TopBar>
       <ContentContainer>
         <Section>
           {!data.completed && (

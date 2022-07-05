@@ -1,12 +1,27 @@
 import getMeta from "~/_common/getMeta";
-import React from "react";
+import React, { useState } from "react";
 import { createGlobalStyle } from "styled-components";
-import { Link as RemixLink, Outlet, useLoaderData } from "@remix-run/react";
+import {
+  Link as RemixLink,
+  Outlet,
+  useLoaderData,
+  useMatches,
+  useSubmit,
+} from "@remix-run/react";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
 import ListItemIcon from "~/_common/ListItemIcon";
 import ListItemText from "~/_common/ListItemText";
+import TopBar from "~/_common/TopBar";
+import InfoArea from "~/_common/InfoArea";
+import PageTitle from "~/_common/PageTitle";
+import ActionButton from "~/_common/ActionButton";
+import { PrimaryAction } from "~/_common/PrimaryAction";
+import { SecondaryAction } from "~/_common/SecondaryAction";
+import DashboardActionContextProvider, {
+  useDashboardActions,
+} from "~/_common/DashboardActionContext";
 
 const DRAWER_WIDTH = 255;
 const DrawerRoot = styled.div`
@@ -109,7 +124,7 @@ const Main = styled.main`
   flex-grow: 1,
   padding-bottom: 16px,
   color: text.primary;
-  height: fit-content;
+  height: 100%;
   width: calc(100% - ${DRAWER_WIDTH}px);
   flex-direction:column;
   display:flex;
@@ -118,7 +133,9 @@ const Main = styled.main`
 const MainContainer = styled.div`
   flex-grow: 1;
   display: flex;
-  flexdirection: column;
+  flex-direction: column;
+  overflow: auto;
+  height: 100%;
 `;
 
 const List = styled.ul`
@@ -128,6 +145,42 @@ const List = styled.ul`
     width: 100%;
   }
 `;
+
+const DashboardTopBar = () => {
+  const matches = useMatches();
+  const { handle = {}, data, params } = matches[matches.length - 1];
+  const { showPrimary, showSecondary } = useDashboardActions();
+  const submit = useSubmit();
+  const { TopBarWidgets } = handle;
+  return (
+    <TopBar>
+      <InfoArea>
+        <PageTitle>{handle.title}</PageTitle>
+        <ActionButton>
+          {TopBarWidgets && <TopBarWidgets data={data} />}
+          {showSecondary && (
+            <SecondaryAction
+              onClick={() => handle.onSecondary?.({ data, params })}
+              label={handle?.secondaryLabel}
+              height={"40px"}
+              width={"180px"}
+              fontSize={"16px"}
+            />
+          )}
+          {showPrimary && (
+            <PrimaryAction
+              label={handle.primaryLabel}
+              height={"40px"}
+              width={"130px"}
+              fontSize={"16px"}
+              onClick={() => submit(document.querySelector("form"))}
+            />
+          )}
+        </ActionButton>
+      </InfoArea>
+    </TopBar>
+  );
+};
 
 const Dashboard = () => {
   const { isAdmin } = useLoaderData<{ isAdmin: boolean }>();
@@ -152,9 +205,12 @@ const Dashboard = () => {
         </DrawerContainer>
       </DrawerRoot>
       <Main>
-        <MainContainer>
-          <Outlet />
-        </MainContainer>
+        <DashboardActionContextProvider>
+          <MainContainer>
+            <DashboardTopBar />
+            <Outlet />
+          </MainContainer>
+        </DashboardActionContextProvider>
       </Main>
     </Root>
   );

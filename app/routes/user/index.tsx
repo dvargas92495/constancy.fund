@@ -8,14 +8,8 @@ import PaymentPreferences from "~/_common/PaymentPreferences";
 import QUESTIONAIRES from "~/_common/questionaires";
 import Icon, { IconName } from "~/_common/Icon";
 import styled from "styled-components";
-import { PrimaryAction } from "~/_common/PrimaryAction";
-import { SecondaryAction } from "~/_common/SecondaryAction";
 import TextInputContainer from "~/_common/TextInputContainer";
 import TextInputOneLine from "~/_common/TextInputOneLine";
-import TopBar from "~/_common/TopBar";
-import InfoArea from "~/_common/InfoArea";
-import PageTitle from "~/_common/PageTitle";
-import ActionButton from "~/_common/ActionButton";
 import ContentContainer from "~/_common/ContentContainer";
 import Section from "~/_common/Section";
 import SectionCircle from "~/_common/SectionCircle";
@@ -27,10 +21,12 @@ import SubSectionTitle from "~/_common/SubSectionTitle";
 import TextInputMultiLine from "~/_common/TextInputMultiLine";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import ImageUploader from "~/_common/ImageUploader";
-import { ClerkCatchBoundary, useUser } from "@clerk/remix";
-import DefaultErrorBoundary from "~/_common/DefaultErrorBoundary";
+import { useUser } from "@clerk/remix";
+export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
+export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 import Toast from "~/_common/Toast";
 import RadioGroup from "~/_common/RadioGroup";
+import { useDashboardActions } from "~/_common/DashboardActionContext";
 
 const SubSection = styled.div`
   margin-top: 60px;
@@ -203,9 +199,10 @@ const USER_PROFILE_TYPES = [
   },
 ] as const;
 
+type LoaderData = Awaited<ReturnType<typeof getUserProfile>>;
+
 const UserProfile = () => {
-  const loaderData =
-    useLoaderData<Awaited<ReturnType<typeof getUserProfile>>>();
+  const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData();
 
   const {
@@ -231,7 +228,8 @@ const UserProfile = () => {
     representativeAddressZip,
     paymentPreferences,
   } = loaderData;
-  const [isChanges, setIsChanges] = useState(false);
+  const { showPrimary, setShowPrimary, setShowSecondary } =
+    useDashboardActions();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const changes = useRef(new Set<HTMLElement>());
   const { user } = useUser();
@@ -246,9 +244,12 @@ const UserProfile = () => {
     if (actionData?.success) {
       setSnackbarOpen(true);
       changes.current.clear();
-      setIsChanges(false);
+      setShowPrimary(false);
     }
-  }, [setSnackbarOpen, actionData, setIsChanges, changes.current]);
+  }, [setSnackbarOpen, actionData, setShowPrimary, changes.current]);
+  useEffect(() => {
+    setShowSecondary(completed);
+  }, [completed, setShowSecondary]);
   const defaultProfileType = "creator";
   const [profileType, setProfileType] = useState(defaultProfileType);
   return (
@@ -261,41 +262,13 @@ const UserProfile = () => {
         } else {
           changes.current.add(el);
         }
-        if (changes.current.size && !isChanges) {
-          setIsChanges(true);
-        } else if (!changes.current.size && isChanges) {
-          setIsChanges(false);
+        if (changes.current.size && !showPrimary) {
+          setShowPrimary(true);
+        } else if (!changes.current.size && showPrimary) {
+          setShowPrimary(false);
         }
       }}
     >
-      <TopBar>
-        <InfoArea>
-          <PageTitle>Your Profile</PageTitle>
-          <ActionButton>
-            {completed && (
-              <SecondaryAction
-                onClick={() => window.open(`/creator/${id}`)}
-                label={"View Public Profile"}
-                height={"40px"}
-                width={"180px"}
-                fontSize={"16px"}
-                id={"view-public-profile"}
-              />
-            )}
-            {isChanges && (
-              <PrimaryAction
-                disabled={!isChanges}
-                label={"Save Edits"}
-                height={"40px"}
-                width={"130px"}
-                fontSize={"16px"}
-                type={"submit"}
-              />
-            )}
-          </ActionButton>
-        </InfoArea>
-        {/* <UserButton /> */}
-      </TopBar>
       <ContentContainer>
         <ProfileCard iconName={"personFine"}>
           <SectionTitle style={{ marginBottom: 32 }}>
@@ -663,11 +636,12 @@ export const action: ActionFunction = ({ request }) => {
     .catch((e) => ({ success: false, error: e.message }));
 };
 
-export const CatchBoundary = ClerkCatchBoundary(() => {
-  const { data } = useCatch();
-  return <div>{data}</div>;
-});
-
-export const ErrorBoundary = DefaultErrorBoundary;
+export const handle = {
+  title: "Your Profile",
+  primaryLabel: "Save Edits",
+  secondaryLabel: "View Public Profile",
+  onSecondary: ({ data }: { data: LoaderData }) =>
+    window.open(`/creator/${data.id}`),
+};
 
 export default UserProfile;
