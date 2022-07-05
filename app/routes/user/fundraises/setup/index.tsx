@@ -6,6 +6,8 @@ import { PrimaryAction } from "~/_common/PrimaryAction";
 import Section from "~/_common/Section";
 import InfoText from "~/_common/InfoText";
 import SubSectionTitle from "~/_common/SubSectionTitle";
+import { useDashboardActions } from "~/_common/DashboardActionContext";
+import { useEffect } from "react";
 export { default as ErrorBoundary } from "~/_common/DefaultErrorBoundary";
 export { default as CatchBoundary } from "~/_common/DefaultCatchBoundary";
 
@@ -14,6 +16,8 @@ const FundraisingTypeTopRow = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
+  width: 100%;
+  gap: 16px;
 `;
 const FundraisingTypeTitleSubTitleContainer = styled.div`
   display: flex;
@@ -41,6 +45,11 @@ const FundraisingTypeHelpBox = styled.div`
 
 const UserFundraisesSetup = () => {
   const navigate = useNavigate();
+  const { setShowSecondary, setShowPrimary } = useDashboardActions();
+  useEffect(() => {
+    setShowSecondary(false);
+    setShowPrimary(false);
+  }, [setShowSecondary, setShowPrimary]);
   return (
     <>
       {FUNDRAISE_TYPES.map(({ name, description, help, enabled, id }) => (

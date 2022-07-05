@@ -134,7 +134,6 @@ const MainContainer = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  overflow: auto;
   height: 100%;
 `;
 
@@ -146,10 +145,15 @@ const List = styled.ul`
   }
 `;
 
+const DashboardContentContainer = styled.div`
+  overflow: auto;
+`;
+
 const DashboardTopBar = () => {
   const matches = useMatches();
   const { handle = {}, data, params } = matches[matches.length - 1];
-  const { showPrimary, showSecondary } = useDashboardActions();
+  const { showPrimary, showSecondary, setShowPrimary, setShowSecondary } =
+    useDashboardActions();
   const submit = useSubmit();
   const { TopBarWidgets } = handle;
   return (
@@ -208,7 +212,9 @@ const Dashboard = () => {
         <DashboardActionContextProvider>
           <MainContainer>
             <DashboardTopBar />
-            <Outlet />
+            <DashboardContentContainer>
+              <Outlet />
+            </DashboardContentContainer>
           </MainContainer>
         </DashboardActionContextProvider>
       </Main>

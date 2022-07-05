@@ -59,15 +59,13 @@ const fillOutCreatorProfile = () => {
   cy.get('input[name="representativeAddressCity"]').clear().type("Gotham");
   cy.get('input[name="representativeAddressZip"]').clear().type("12345");
 
-  cy.get("button[type=submit]").click();
+  cy.contains("Save Edits").click();
   cy.get("#success-profile-alert").should("be.visible");
 };
 
 const createIsaFundraise = () => {
   cy.contains("My Fundraise").click();
-  cy.url().should("eq", `${Cypress.env("ORIGIN")}/user/fundraises`);
-  cy.contains("Start New Fundraise").click();
-  cy.url().should("eq", `${Cypress.env("ORIGIN")}/user/fundraises/isa`);
+  cy.url().should("eq", `${Cypress.env("ORIGIN")}/user/fundraises/setup`);
   cy.contains("Income Sharing Agreement (ISA)")
     .parent()
     .parent()
@@ -205,6 +203,9 @@ const investInCreator = () => {
 };
 
 describe("Testing core workflows", () => {
+  before(() => {
+    cy.exec("ts-node cypress/scripts/setup.ts")
+  })
   it("Creates a contract between a user and an investor", () => {
     cy.visit(Cypress.env("ORIGIN"), { failOnStatusCode: false });
     cy.get("div#user-container > div").then((val) => {
