@@ -7,6 +7,7 @@ import {
   Link,
   useActionData,
   useLoaderData,
+  useMatches,
   useTransition,
 } from "@remix-run/react";
 import {
@@ -38,6 +39,8 @@ import createAgreement from "~/data/createAgreement.server";
 import ErrorSnackbar from "~/_common/ErrorSnackbar";
 import validatePaymentPreferences from "~/data/validatePaymentPreferences";
 import { LoadingIndicator } from "~/_common/LoadingIndicator";
+import { getAuth } from "@clerk/remix/ssr.server.js";
+import { match } from "assert";
 
 type Data = Awaited<ReturnType<typeof getAgreement>>;
 
@@ -228,6 +231,7 @@ const EnterDetails = () => {
     () => transition.state === "submitting" || transition.state === "loading",
     [transition.state]
   );
+  const matches = useMatches();
   return showLoadingScreen ? (
     <LoadingScreenContainer id={"wait-contract-generated"}>
       <h3>Please wait while your contract is being generated...</h3>
@@ -235,7 +239,7 @@ const EnterDetails = () => {
     </LoadingScreenContainer>
   ) : (
     <ProfileContainer method={"post"}>
-      <Link to={`/creator/${state.user.id}`}>
+      <Link to={matches[matches.length - 2].pathname}>
         <BackButton>
           <Icon heightAndWidth={"20px"} name={"backArrow"} />
           Go Back
@@ -503,7 +507,11 @@ const EnterDetails = () => {
                 Street
               </TextFieldDescription>
               <TextInputContainer width={"270px"}>
-                <TextInputOneLine required name={"investorAddressStreet"} />
+                <TextInputOneLine
+                  required
+                  name={"investorAddressStreet"}
+                  defaultValue={state.investor?.companyAddressStreet || ""}
+                />
               </TextInputContainer>
             </TextFieldBox>
             <TextFieldBox>
@@ -511,7 +519,11 @@ const EnterDetails = () => {
                 No
               </TextFieldDescription>
               <TextInputContainer width={"80px"}>
-                <TextInputOneLine name={"investorAddressNumber"} required />
+                <TextInputOneLine
+                  name={"investorAddressNumber"}
+                  required
+                  defaultValue={state.investor?.companyAddressNumber || ""}
+                />
               </TextInputContainer>
             </TextFieldBox>
           </TextfieldHorizontalBox>
@@ -519,13 +531,21 @@ const EnterDetails = () => {
             <TextFieldBox>
               <TextFieldDescription $small>City</TextFieldDescription>
               <TextInputContainer width={"270px"}>
-                <TextInputOneLine name={"investorAddressCity"} required />
+                <TextInputOneLine
+                  name={"investorAddressCity"}
+                  required
+                  defaultValue={state.investor?.companyAddressCity || ""}
+                />
               </TextInputContainer>
             </TextFieldBox>
             <TextFieldBox>
               <TextFieldDescription $small>ZIP</TextFieldDescription>
               <TextInputContainer width={"80px"}>
-                <TextInputOneLine name={"investorAddressZip"} required />
+                <TextInputOneLine
+                  name={"investorAddressZip"}
+                  required
+                  defaultValue={state.investor?.companyAddressZip || ""}
+                />
               </TextInputContainer>
             </TextFieldBox>
           </TextfieldHorizontalBox>
@@ -534,7 +554,10 @@ const EnterDetails = () => {
               Registered Country
             </TextFieldDescription>
             <TextInputContainer width={"350px"}>
-              <CountrySelect name={"investorAddressCountry"} />
+              <CountrySelect
+                name={"investorAddressCountry"}
+                defaultValue={state.investor?.registeredCountry}
+              />
             </TextInputContainer>
           </TextFieldBox>
         </Section>
@@ -550,19 +573,21 @@ const EnterDetails = () => {
   );
 };
 
-export const loader: LoaderFunction = ({ params, request }) => {
+export const loader: LoaderFunction = async ({ params, request }) => {
   const searchParams = new URL(request.url).searchParams;
+  const auth = await getAuth(request);
   return getAgreement({
-    userId: params["id"] || "",
+    investorUserId: auth.userId || "",
+    creatorUserId: params["id"] || "",
     fundraise: searchParams.get("fundraise") || undefined,
     agreement: searchParams.get("agreement") || undefined,
   });
 };
 
-export const action: ActionFunction = ({ params, request }) => {
+export const action: ActionFunction = async ({ params, request }) => {
   return import("@clerk/remix/ssr.server.js")
     .then((clerk) => clerk.getAuth(request))
-    .then(async () => {
+    .then(async (auth) => {
       const formData = await request.formData();
       const data = Object.fromEntries(
         Array.from(formData.keys()).map((k) => [
@@ -586,6 +611,14 @@ export const action: ActionFunction = ({ params, request }) => {
       else if (!data.investorAddressCountry?.[0])
         throw new Error("`investorAddressCountry` is required");
 
+      const investorUserId = auth.userId || "";
+      const creatorUserId = params.id || "";
+      if (!creatorUserId) {
+        throw new Error("Creator User Id is required");
+      }
+      if (creatorUserId === investorUserId) {
+        throw new Error("You cannot invest in your own fundraise");
+      }
       const paymentPreferences = validatePaymentPreferences(data);
       const searchParams = new URL(request.url).searchParams;
 
@@ -594,8 +627,9 @@ export const action: ActionFunction = ({ params, request }) => {
         amount: Number(data.amount[0]),
         email: data.email[0],
         uuid: searchParams.get("agreement") || undefined,
+        investorUserId,
         contractUuid: searchParams.get("fundraise") || undefined,
-        userId: params.id || "",
+        creatorUserId,
         investorAddressStreet: data.investorAddressStreet[0],
         investorAddressNumber: data.investorAddressNumber[0],
         investorAddressCity: data.investorAddressCity[0],

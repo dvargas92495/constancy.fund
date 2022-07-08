@@ -1,3 +1,5 @@
+import getClerkEmail from "~/util/getClerkEmail";
+import getClerkName from "~/util/getClerkName";
 import getPaymentPreferences from "./getPaymentPreferences.server";
 import type { Execute } from "./mysql.server";
 
@@ -11,13 +13,10 @@ const getUserProfile = (userId: string, execute?: Execute) =>
     return {
       id: userId,
       completed: (u.publicMetadata?.completed as boolean) || false,
-      contactEmail:
-        (u.publicMetadata?.contactEmail as string) ||
-        u.emailAddresses.find((e) => e.id === u.primaryEmailAddressId)
-          ?.emailAddress ||
-        "",
+      contactEmail: getClerkEmail(u),
       firstName: u.firstName || "",
       lastName: u.lastName || "",
+      name: getClerkName(u),
       middleName: (u.publicMetadata?.middleName as string) || "",
       profileImageUrl: u.profileImageUrl,
       companyName: (u.publicMetadata?.companyName as string) || "",

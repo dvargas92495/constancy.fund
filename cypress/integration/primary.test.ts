@@ -72,7 +72,7 @@ const createIsaFundraise = () => {
     .contains("Select")
     .click();
   cy.url().should("eq", `${Cypress.env("ORIGIN")}/user/fundraises/setup/isa`);
-  cy.contains("Monthly Stipend").click();
+  cy.contains("Monthly Stipend").click({ force: true });
   cy.contains("Amount you'd like to raise")
     .siblings()
     .first()
@@ -204,8 +204,8 @@ const investInCreator = () => {
 
 describe("Testing core workflows", () => {
   before(() => {
-    cy.exec("ts-node cypress/scripts/setup.ts")
-  })
+    cy.exec("ts-node cypress/scripts/setup.ts");
+  });
   it("Creates a contract between a user and an investor", () => {
     cy.visit(Cypress.env("ORIGIN"), { failOnStatusCode: false });
     cy.get("div#user-container > div").then((val) => {

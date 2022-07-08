@@ -306,7 +306,7 @@ const App = () => {
           }}
         />
         <Scripts />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
+        {/*<LiveReload />*/}
       </body>
     </html>
   );

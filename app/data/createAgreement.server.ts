@@ -10,6 +10,7 @@ import path from "path";
 import { v4 } from "uuid";
 import { Id, dbTypeById } from "~/enums/paymentPreferences";
 import type { Lambda } from "aws-sdk";
+import { users } from "@clerk/clerk-sdk-node";
 
 const invokeDirect =
   process.env.NODE_ENV === "production"
@@ -83,7 +84,8 @@ const createAgreement = ({
   email,
   amount,
   contractUuid,
-  userId,
+  investorUserId,
+  creatorUserId,
   investorAddressStreet,
   investorAddressNumber,
   investorAddressCity,
@@ -96,7 +98,8 @@ const createAgreement = ({
   email: string;
   uuid?: string;
   contractUuid?: string;
-  userId: string;
+  investorUserId?: string;
+  creatorUserId: string;
   investorAddressNumber: string;
   investorAddressStreet: string;
   investorAddressCity: string;
@@ -107,12 +110,21 @@ const createAgreement = ({
   getMysql().then(({ execute, destroy }) => {
     return (
       uuid
-        ? execute(
-            `UPDATE investor i
+        ? (investorUserId
+            ? // TODO: Decide if we want to update investor's data first before updating existing agreement
+              execute(
+                `UPDATE agreement a
+         SET a.investorUuid = ?
+         WHERE a.uuid=?`,
+                [investorUserId, uuid]
+              )
+            : execute(
+                `UPDATE investor i
            INNER JOIN agreement a ON a.investorUuid = i.uuid 
            SET i.name=?, i.email=?, a.amount=?
            WHERE a.uuid=?`,
-            [name, email, amount, uuid]
+                [name, email, amount, uuid]
+              )
           ).then(() => uuid)
         : Promise.resolve(v4()).then((agreementUuid) =>
             (contractUuid
@@ -121,29 +133,29 @@ const createAgreement = ({
                   `SELECT c.uuid
                 FROM contract c
                 WHERE c.userId = ?`,
-                  [userId]
+                  [creatorUserId]
                 ).then((res) => (res as { uuid: string }[])[0]?.uuid)
-            ).then((contractUuid) => {
-              const investorUuid = v4();
-              return execute(
-                `INSERT INTO investor (uuid, name, email) VALUES (?, ?, ?)`,
-                [investorUuid, name, email]
-              )
-                .then(() =>
-                  Promise.all([
-                    execute(
-                      `INSERT INTO agreement (uuid, amount, contractUuid, investorUuid)
+            ).then(async (contractUuid) => {
+              const investorUuid: string =
+                investorUserId ||
+                (await Promise.resolve(v4()).then((uuid) =>
+                  execute(
+                    `INSERT INTO investor (uuid, name, email) VALUES (?, ?, ?)`,
+                    [uuid, name, email]
+                  ).then(() => uuid)
+                ));
+              return Promise.all([
+                execute(
+                  `INSERT INTO agreement (uuid, amount, contractUuid, investorUuid)
            VALUES (?, ?, ?, ?)`,
-                      [agreementUuid, amount, contractUuid, investorUuid]
-                    ),
-                    createPaymentPreferences({
-                      paymentPreferences,
-                      userId: investorUuid,
-                      execute,
-                    }),
-                  ])
-                )
-                .then(() => agreementUuid);
+                  [agreementUuid, amount, contractUuid, investorUuid]
+                ),
+                createPaymentPreferences({
+                  paymentPreferences,
+                  userId: investorUuid,
+                  execute,
+                }),
+              ]).then(() => agreementUuid);
             })
           )
     )

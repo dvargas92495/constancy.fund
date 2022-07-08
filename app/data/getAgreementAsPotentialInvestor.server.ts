@@ -3,11 +3,13 @@ import getUserProfile from "./getUserProfile.server";
 import getMysql from "./mysql.server";
 
 const getAgreementAsPotentialInvestor = ({
+  investorUserId,
   agreement,
   fundraise,
-  userId,
+  creatorUserId,
 }: {
-  userId: string;
+  investorUserId: string;
+  creatorUserId: string;
   agreement?: string;
   fundraise?: string;
 }) =>
@@ -36,7 +38,7 @@ const getAgreementAsPotentialInvestor = ({
        FROM contract c
        INNER JOIN contractdetail cd ON cd.contractUuid = c.uuid
        WHERE c.userId = ?`,
-            [userId]
+            [creatorUserId]
           ).then((res) =>
             (res as { contractUuid: string }[]).filter(
               (r, _, all) => r.contractUuid === all[0].contractUuid
@@ -57,20 +59,26 @@ const getAgreementAsPotentialInvestor = ({
         throw new NotFoundError(
           `Could not find fundraise based on the input parameters`
         );
-      if (fundraises[0].userId !== userId)
+      if (fundraises[0].userId !== creatorUserId)
         throw new BadRequestError(
-          `Fundraise found is not owned by userId ${userId}`
+          `Fundraise found is not owned by userId ${creatorUserId}`
         );
       const details: Record<string, string> = Object.fromEntries(
         fundraises.map((f) => [f.label, f.value])
       );
-      return getUserProfile(fundraises[0].userId, execute).then((user) => {
+      return Promise.all([
+        investorUserId ? getUserProfile(investorUserId, execute) : undefined,
+        // getUserProfile(fundraises[0].userId, execute), We don't need creator data anymore?
+      ]).then(([
+        investor
+        // user, 
+      ]) => {
         destroy();
         return {
           details,
-          user,
-          name: fundraises[0].name || "",
-          email: fundraises[0].email || "",
+          investor,
+          name: investor?.name || fundraises[0].name || "",
+          email: investor?.contactEmail || fundraises[0].email || "",
           amount: fundraises[0].amount || 0,
           uuid: fundraises[0].uuid || "",
           contractUuid: fundraises[0].contractUuid,
