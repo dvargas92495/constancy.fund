@@ -1,4 +1,4 @@
-import { useOutletContext } from "remix";
+import { useOutletContext } from "@remix-run/react";
 import InvestorSigned from "~/emails/InvestorSigned";
 
 const PreviewInvestorSigned = () => {

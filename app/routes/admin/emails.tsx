@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link, LoaderFunction, Outlet, useLoaderData, useMatches } from "remix";
+import { Link, Outlet, useLoaderData, useMatches } from "@remix-run/react";
+import { LoaderFunction } from "@remix-run/node";
 import styled from "styled-components";
 import getEmailData from "~/data/getEmailData.server";
 import TextFieldDescription from "~/_common/TextFieldDescription";
@@ -61,7 +62,7 @@ const EmailsRoute = () => {
               <TextInputContainer width={"350px"}>
                 <select
                   value={user}
-                  style={{  maxHeight: 200  }}
+                  style={{ maxHeight: 200 }}
                   onChange={(e) => setUser(Number(e.target.value))}
                   required
                 >
@@ -78,7 +79,7 @@ const EmailsRoute = () => {
               <TextInputContainer width={"350px"}>
                 <select
                   value={agreement}
-                  style={{  maxHeight: 200  }}
+                  style={{ maxHeight: 200 }}
                   onChange={(e) => setAgreement(Number(e.target.value))}
                   required
                 >
@@ -100,7 +101,8 @@ const EmailsRoute = () => {
             <Outlet
               context={{
                 investorName: data.ids[agreement].investor.name,
-                investorPaymentPreferences: data.ids[agreement].investor.paymentPreferences,
+                investorPaymentPreferences:
+                  data.ids[agreement].investor.paymentPreferences,
                 creatorId: data.users[user].id,
                 creatorName: data.users[user].name,
                 creatorPaymentPreferences: data.users[user].paymentPreferences,

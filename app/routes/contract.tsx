@@ -1,4 +1,5 @@
-import { Link, LoaderFunction, useLoaderData } from "remix";
+import { Link, useLoaderData } from "@remix-run/react";
+import { LoaderFunction } from "@remix-run/node";
 import styled from "styled-components";
 import getContracts from "~/data/getContracts.server";
 import UserAvatar from "~/_common/UserAvatar";

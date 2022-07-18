@@ -1,5 +1,5 @@
 import FUNDRAISE_TYPES from "~/enums/fundraiseTypes";
-import { useNavigate } from "remix";
+import { useNavigate } from "@remix-run/react";
 import Icon from "~/_common/Icon";
 import styled from "styled-components";
 import { PrimaryAction } from "~/_common/PrimaryAction";

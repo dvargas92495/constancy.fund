@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from "react";
 import getMeta from "~/_common/getMeta";
 import QUESTIONAIRES from "~/_common/questionaires";
-import {
-  LoaderFunction,
-  MetaFunction,
-  useLoaderData,
-  useNavigate,
-  useParams,
-} from "remix";
+import { useLoaderData, useNavigate, useParams } from "@remix-run/react";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 
 import Icon from "~/_common/Icon";
 import styled, { keyframes, css } from "styled-components";

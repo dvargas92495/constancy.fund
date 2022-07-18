@@ -47,16 +47,23 @@ const getAllAgreements = (userId: string) =>
         );
 
         return {
-          agreements: agreements.map((a) => ({
+          data: agreements.map((a) => ({
             ...a,
             status: STAGES[statuses[a.id || ""] || 0],
             type: FUNDRAISE_TYPES[a.type].id,
           })),
+          columns: [
+            { label: "Type", key: "type" },
+            { label: "Status", key: "status" },
+            { label: "Creator Name", key: "userId" },
+            { label: "Investor Name", key: "name" },
+            { label: "Amount", key: "amount" },
+          ],
         };
       });
     })
     .catch(() => ({
-      agreements: [],
+      data: [],
     }));
 
 export default getAllAgreements;

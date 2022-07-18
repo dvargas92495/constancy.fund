@@ -1,5 +1,5 @@
 import React from "react";
-import { Outlet } from "remix";
+import { Outlet } from "@remix-run/react";
 import styled from "styled-components";
 
 export const TopBarProfile = styled.div`

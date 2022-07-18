@@ -80,6 +80,11 @@ const TABS = [
     path: "",
   },
   {
+    text: "Contract Templates",
+    iconName: "book",
+    path: "/contracts",
+  },
+  {
     text: "Emails",
     iconName: "mail",
     path: "emails",

@@ -3,7 +3,8 @@ import getMeta from "~/_common/getMeta";
 import styled from "styled-components";
 import { PrimaryAction } from "~/_common/PrimaryAction";
 import axios from "axios";
-import { ActionFunction, Form, useActionData, useCatch } from "remix";
+import { Form, useActionData, useCatch } from "@remix-run/react";
+import { ActionFunction } from "@remix-run/node";
 import MainImage from "~/_common/Images/runner.svg";
 import AutomateImage from "~/_common/Images/automate.svg";
 import Icon from "~/_common/Icon";
@@ -302,8 +303,8 @@ const Home: React.FC = () => {
         </UseCaseTitle>
         <ShortPitchDescription>
           Its hard getting to your initial capital if your company does not fit
-          the growth expectations of Venture Capital investments or you don&apos;t
-          want to sell equity because of conflicting company values.
+          the growth expectations of Venture Capital investments or you
+          don&apos;t want to sell equity because of conflicting company values.
         </ShortPitchDescription>
       </ShortPitchSection>
       <UseCaseContainer>
@@ -321,8 +322,8 @@ const Home: React.FC = () => {
           <UseCaseExampleBox>
             <UseCaseExampleTitle>Small Businesses</UseCaseExampleTitle>
             <UseCaseExampleDescription>
-              Can&apos;t get Venture Capital investments or getting a loan from a
-              bank is not the right fit?
+              Can&apos;t get Venture Capital investments or getting a loan from
+              a bank is not the right fit?
             </UseCaseExampleDescription>
           </UseCaseExampleBox>
           <UseCaseExampleBox>
